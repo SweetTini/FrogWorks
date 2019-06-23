@@ -9,13 +9,13 @@ namespace FrogWorks
 
         public Display Display { get; set; }
 
-        public RendererBatch RenderBatch { get; set; }
+        public RendererBatch RendererBatch { get; set; }
 
         public Game(int width, int height)
         {
             Graphics = new GraphicsDeviceManager(this);
             Display = new Display(Graphics, width, height);
-            RenderBatch = new RendererBatch(GraphicsDevice);
+            RendererBatch = new RendererBatch(GraphicsDevice);
         }
 
         protected override void Update(GameTime gameTime)
@@ -26,13 +26,13 @@ namespace FrogWorks
         protected override void Draw(GameTime gameTime)
         {
             Display.DrawSceneOnBuffer(null);
-            Display.DrawScreen(RenderBatch);
+            Display.DrawScreen(RendererBatch);
             base.Draw(gameTime);
         }
 
         protected override void EndRun()
         {
-            RenderBatch.Dispose();
+            RendererBatch.Dispose();
             base.EndRun();
         }
     }
