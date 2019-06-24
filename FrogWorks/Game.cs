@@ -7,8 +7,8 @@ namespace FrogWorks
     public class Game : XnaGame
     {
         private Scene _currentScene, _nextScene;
-        private Version _version = new Version(0, 0, 1, 0);
         private string _title = "New Game";
+        private Version _version = new Version(0, 0, 1, 0);
         private bool _displayVersion;
 
         public GraphicsDeviceManager Graphics { get; private set; }
