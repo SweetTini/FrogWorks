@@ -8,7 +8,7 @@ namespace FrogWorks
     {
         protected GraphicsDeviceManager Graphics { get; private set; }
 
-        protected RenderTarget2D ScreenBuffer { get; private set; }
+        protected RenderTarget2D BackBuffer { get; private set; }
 
         protected Matrix ScreenMatrix { get; private set; }
 
@@ -18,9 +18,9 @@ namespace FrogWorks
 
         public int Height { get; private set; }
 
-        public int ScreenWidth { get; private set; }
+        public int BackBufferWidth { get; private set; }
 
-        public int ScreenHeight { get; private set; }
+        public int BackBufferHeight { get; private set; }
 
         public int HorizontalPadding { get; private set; }
 
@@ -44,7 +44,7 @@ namespace FrogWorks
             Graphics.DeviceReset += OnDeviceChanged;
             SetFixedScale();
 
-            ScreenBuffer = new RenderTarget2D(Graphics.GraphicsDevice, Width, Height);
+            BackBuffer = new RenderTarget2D(Graphics.GraphicsDevice, Width, Height);
         }
 
         public void SetFixedScale(int scale = 1)
@@ -100,28 +100,25 @@ namespace FrogWorks
                     break;
             }
 
-            ScreenWidth = (int)(Width * HorizontalScale);
-            ScreenHeight = (int)(Height * VerticalScale);
-            HorizontalPadding = (parameters.BackBufferWidth - ScreenWidth) / 2;
-            VerticalPadding = (parameters.BackBufferHeight - ScreenHeight) / 2;
-            Viewport = new Viewport(HorizontalPadding, VerticalPadding, ScreenWidth, ScreenHeight, 0, 1);
+            BackBufferWidth = (int)(Width * HorizontalScale);
+            BackBufferHeight = (int)(Height * VerticalScale);
+            HorizontalPadding = (parameters.BackBufferWidth - BackBufferWidth) / 2;
+            VerticalPadding = (parameters.BackBufferHeight - BackBufferHeight) / 2;
+            Viewport = new Viewport(HorizontalPadding, VerticalPadding, BackBufferWidth, BackBufferHeight, 0, 1);
             ScreenMatrix = Matrix.CreateScale(VerticalScale);
         }
 
-        internal void DrawSceneOnBuffer(Scene scene)
+        internal void DrawBackBuffer(RendererBatch batch, Scene scene)
         {
-            Graphics.GraphicsDevice.SetRenderTarget(ScreenBuffer);
+            Graphics.GraphicsDevice.SetRenderTarget(BackBuffer);
             Graphics.GraphicsDevice.Viewport = new Viewport(0, 0, Width, Height);
 
             Graphics.GraphicsDevice.SetRenderTarget(null);
             Graphics.GraphicsDevice.Viewport = Viewport;
-        }
 
-        internal void DrawScreen(RendererBatch batch)
-        {
             Graphics.GraphicsDevice.Clear(ClearColor);
             batch.Sprite.Begin(samplerState: SamplerState.PointClamp, transformMatrix: ScreenMatrix);
-            batch.Sprite.Draw(ScreenBuffer, Vector2.Zero, Color.White);
+            batch.Sprite.Draw(BackBuffer, Vector2.Zero, Color.White);
             batch.Sprite.End();
         }
 
