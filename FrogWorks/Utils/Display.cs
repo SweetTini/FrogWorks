@@ -12,7 +12,7 @@ namespace FrogWorks
 
         protected RenderTarget2D BackBuffer { get; private set; }
 
-        protected Matrix ScreenMatrix { get; private set; }
+        protected Matrix ScaleMatrix { get; private set; }
 
         protected Viewport Viewport { get; private set; }
 
@@ -20,13 +20,17 @@ namespace FrogWorks
 
         public int Height { get; private set; }
 
-        public int BackBufferWidth { get; private set; }
-
-        public int BackBufferHeight { get; private set; }
-
         public int ExtendedWidth { get; private set; }
 
         public int ExtendedHeight { get; private set; }
+
+        public int ScreenWidth { get; private set; }
+
+        public int ScreenHeight { get; private set; }
+
+        public int BackBufferWidth { get; private set; }
+
+        public int BackBufferHeight { get; private set; }
 
         public int HorizontalPadding { get; private set; }
 
@@ -78,12 +82,14 @@ namespace FrogWorks
 
         internal void ApplyScaling()
         {
-            var parameters = Graphics.GraphicsDevice.PresentationParameters;
-            var sourceRatio = 1f * parameters.BackBufferHeight / parameters.BackBufferWidth;
-            var targetRatio = 1f * Height / Width;
             var lastExtendedWidth = ExtendedWidth;
             var lastExtendedHeight = ExtendedHeight;
+            ScreenWidth = Graphics.GraphicsDevice.PresentationParameters.BackBufferWidth;
+            ScreenHeight = Graphics.GraphicsDevice.PresentationParameters.BackBufferHeight;
             ExtendedWidth = ExtendedHeight = 0;
+
+            var sourceRatio = 1f * ScreenHeight / ScreenWidth;
+            var targetRatio = 1f * Height / Width;
 
             switch (Scaling)
             {
@@ -92,48 +98,48 @@ namespace FrogWorks
                     break;
                 case Scaling.Fit:
                     HorizontalScale = VerticalScale = sourceRatio < targetRatio 
-                        ? 1f * parameters.BackBufferHeight / Height 
-                        : 1f * parameters.BackBufferWidth / Width;
+                        ? 1f * ScreenHeight / Height 
+                        : 1f * ScreenWidth / Width;
                     break;
                 case Scaling.PixelPerfect:
                     HorizontalScale = VerticalScale = sourceRatio < targetRatio
-                        ? parameters.BackBufferHeight / Height
-                        : parameters.BackBufferWidth / Width;
+                        ? 1f * ScreenHeight / Height
+                        : 1f * ScreenWidth / Width;
                     break;
                 case Scaling.Stretch:
-                    HorizontalScale = 1f * parameters.BackBufferWidth / Width;
-                    VerticalScale = 1f * parameters.BackBufferHeight / Height;
+                    HorizontalScale = 1f * ScreenWidth / Width;
+                    VerticalScale = 1f * ScreenHeight / Height;
                     break;
                 case Scaling.Extend:
                     if (sourceRatio < targetRatio)
                     {
-                        var scale = 1f * parameters.BackBufferHeight / Height;
-                        var worldScale = 1f * Height / parameters.BackBufferHeight;
-                        ExtendedWidth = (int)Math.Round((parameters.BackBufferWidth - Width * scale) * worldScale);
+                        var scale = 1f * ScreenHeight / Height;
+                        var worldScale = 1f * Height / ScreenHeight;
+                        ExtendedWidth = (int)Math.Round((ScreenWidth - Width * scale) * worldScale);
                         HorizontalScale = VerticalScale = scale;
                     }
                     else
                     {
-                        var scale = 1f * parameters.BackBufferWidth / Width;
-                        var worldScale = 1f * Width / parameters.BackBufferWidth;
-                        ExtendedHeight = (int)Math.Round((parameters.BackBufferHeight - Height * scale) * worldScale);
+                        var scale = 1f * ScreenWidth / Width;
+                        var worldScale = 1f * Width / ScreenWidth;
+                        ExtendedHeight = (int)Math.Round((ScreenHeight - Height * scale) * worldScale);
                         HorizontalScale = VerticalScale = scale;
                     }
 
                     break;
                 case Scaling.Crop:
                     HorizontalScale = VerticalScale = sourceRatio > targetRatio
-                        ? 1f * parameters.BackBufferHeight / Height
-                        : 1f * parameters.BackBufferWidth / Width;
+                        ? 1f * ScreenHeight / Height
+                        : 1f * ScreenWidth / Width;
                     break;
             }
 
             BackBufferWidth = (int)((Width + ExtendedWidth) * HorizontalScale);
             BackBufferHeight = (int)((Height + ExtendedHeight) * VerticalScale);
-            HorizontalPadding = (parameters.BackBufferWidth - BackBufferWidth) / 2;
-            VerticalPadding = (parameters.BackBufferHeight - BackBufferHeight) / 2;
+            HorizontalPadding = (ScreenWidth - BackBufferWidth) / 2;
+            VerticalPadding = (ScreenHeight - BackBufferHeight) / 2;
             Viewport = new Viewport(HorizontalPadding, VerticalPadding, BackBufferWidth, BackBufferHeight, 0, 1);
-            ScreenMatrix = Matrix.CreateScale(HorizontalScale, VerticalScale, 1f);
+            ScaleMatrix = Matrix.CreateScale(HorizontalScale, VerticalScale, 1f);
 
             _isBackBufferDirty = lastExtendedWidth != ExtendedWidth || lastExtendedHeight != ExtendedHeight;
         }
@@ -147,7 +153,7 @@ namespace FrogWorks
             Graphics.GraphicsDevice.Viewport = Viewport;
 
             Graphics.GraphicsDevice.Clear(ClearColor);
-            batch.Sprite.Begin(samplerState: SamplerState.PointClamp, transformMatrix: ScreenMatrix);
+            batch.Sprite.Begin(samplerState: SamplerState.PointClamp, transformMatrix: ScaleMatrix);
             batch.Sprite.Draw(BackBuffer, Vector2.Zero, Color.White);
             batch.Sprite.End();
         }
