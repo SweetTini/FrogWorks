@@ -22,9 +22,12 @@ namespace FrogWorks
             get { return _title; }
             set
             {
-                if (value == _title) return;
-                _title = value;
-                OnTitleOrVersionChanged();
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    if (value == _title) return;
+                    _title = value.Trim();
+                    OnTitleOrVersionChanged();
+                }
             }
         }
 
