@@ -23,21 +23,25 @@ namespace FrogWorks
 
         public void Store(P instance)
         {
-            if (instance == null) return;
-            var type = instance.GetType();
-            Initialize(type);
+            if (instance != null)
+            {
+                var type = instance.GetType();
+                Initialize(type);
 
-            if (!_cache[type].Contains(instance))
-                _cache[type].Push(instance);
+                if (!_cache[type].Contains(instance))
+                    _cache[type].Push(instance);
+            }
         }
 
         public void Store<T>(T instance) where T : P, new()
         {
-            if (instance == null) return;
-            Initialize<T>();
+            if (instance != null)
+            {
+                Initialize<T>();
 
-            if (!_cache[typeof(T)].Contains(instance))
-                _cache[typeof(T)].Push(instance);
+                if (!_cache[typeof(T)].Contains(instance))
+                    _cache[typeof(T)].Push(instance);
+            }
         }
 
         public void Clear()
