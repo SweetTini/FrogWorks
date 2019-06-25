@@ -26,7 +26,7 @@ namespace FrogWorks
         {
         }
 
-        public void EndUpdate()
+        public virtual void EndUpdate()
         {
         }
 
