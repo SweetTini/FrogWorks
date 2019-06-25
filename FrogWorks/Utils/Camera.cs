@@ -43,8 +43,7 @@ namespace FrogWorks
             get
             {
                 UpdateMatrices();
-                var size = new Vector2(Viewport.Width, Viewport.Height);
-                return Vector2.Transform(size, _inverseMatrix);
+                return Vector2.Transform(new Vector2(Viewport.Width, Viewport.Height), _inverseMatrix);
             }
         }
 
