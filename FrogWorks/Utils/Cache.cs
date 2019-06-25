@@ -23,8 +23,8 @@ namespace FrogWorks
 
         public void Store(P instance)
         {
+            if (instance == null) return;
             var type = instance.GetType();
-
             Initialize(type);
 
             if (!_cache[type].Contains(instance))
@@ -33,6 +33,7 @@ namespace FrogWorks
 
         public void Store<T>(T instance) where T : P, new()
         {
+            if (instance == null) return;
             Initialize<T>();
 
             if (!_cache[typeof(T)].Contains(instance))

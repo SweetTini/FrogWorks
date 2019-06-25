@@ -112,8 +112,7 @@ namespace FrogWorks
 
         private void OnSceneChanged(Scene currentScene, Scene lastScene)
         {
-            if (lastScene != null)
-                _sceneCache.Store(lastScene);
+            _sceneCache.Store(lastScene);
         }
 
         private void OnTitleChanged()
