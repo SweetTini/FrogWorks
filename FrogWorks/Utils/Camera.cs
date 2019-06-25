@@ -62,8 +62,9 @@ namespace FrogWorks
             get { return _position; }
             set
             {
-                _isDirty = _isDirty || _position != value;
+                if (value == _position) return;
                 _position = value;
+                _isDirty = true;
             }
         }
 
@@ -72,9 +73,9 @@ namespace FrogWorks
             get { return _position.X; }
             set
             {
-                if (value != _position.X)
-                    _isDirty = true;
+                if (value == _position.X) return;
                 _position.X = value;
+                _isDirty = true;
             }
         }
 
@@ -83,9 +84,9 @@ namespace FrogWorks
             get { return _position.Y; }
             set
             {
-                if (value != _position.Y)
-                    _isDirty = true;
+                if (value == _position.Y) return;
                 _position.Y = value;
+                _isDirty = true;
             }
         }
 
@@ -94,9 +95,9 @@ namespace FrogWorks
             get { return _origin; }
             set
             {
-                if (value != _origin)
-                    _isDirty = true;
+                if (value == _origin) return;
                 _origin = value;
+                _isDirty = true;
             }
         }
 
@@ -105,9 +106,9 @@ namespace FrogWorks
             get { return _scale; }
             set
             {
-                if (value != _scale)
-                    _isDirty = true;
+                if (value == _scale) return;
                 _scale = value;
+                _isDirty = true;
             }
         }
 
@@ -116,9 +117,9 @@ namespace FrogWorks
             get { return _angle; }
             set
             {
-                if (value != _angle)
-                    _isDirty = true;
+                if (value == _angle) return;
                 _angle = value;
+                _isDirty = true;
             }
         }
 

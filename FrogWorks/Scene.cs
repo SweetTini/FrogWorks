@@ -18,7 +18,15 @@ namespace FrogWorks
         {
         }
 
-        public virtual void Update()
+        public virtual void BeginUpdate()
+        {
+        }
+
+        public virtual void Update(float deltaTime)
+        {
+        }
+
+        public void EndUpdate()
         {
         }
 

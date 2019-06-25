@@ -9,7 +9,7 @@ namespace FrogWorks
         private Scene _currentScene, _nextScene;
         private string _title = "New Game";
         private Version _version = new Version(0, 0, 1, 0);
-        private bool _displayVersion;
+        private bool _displayVersionOnTitle;
 
         public static Game Instance { get; private set; }
 
@@ -28,7 +28,7 @@ namespace FrogWorks
                 {
                     if (value == _title) return;
                     _title = value.Trim();
-                    OnHeaderChanged();
+                    OnTitleChanged();
                 }
             }
         }
@@ -40,20 +40,22 @@ namespace FrogWorks
             {
                 if (value == _version) return;
                 _version = value;
-                OnHeaderChanged();
+                OnTitleChanged();
             }
         }
 
-        public bool DisplayVersion
+        public bool DisplayVersionOnTitle
         {
-            get { return _displayVersion; }
+            get { return _displayVersionOnTitle; }
             set
             {
-                if (value == _displayVersion) return;
-                _displayVersion = value;
-                OnHeaderChanged();
+                if (value == _displayVersionOnTitle) return;
+                _displayVersionOnTitle = value;
+                OnTitleChanged();
             }
         }
+
+        public int FramesPerSecond { get; private set; }
 
         public Game(int width, int height)
         {
@@ -62,12 +64,19 @@ namespace FrogWorks
             Display = new Display(Graphics, width, height);
             RendererBatch = new RendererBatch(GraphicsDevice);
             Content.RootDirectory = "Content";
-            OnHeaderChanged();
+            OnTitleChanged();
         }
 
         protected override void Update(GameTime gameTime)
         {
-            _currentScene?.Update();
+            var deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (deltaTime > 0f)
+                FramesPerSecond = (int)Math.Round(1f / deltaTime);
+
+            _currentScene?.BeginUpdate();
+            _currentScene?.Update(deltaTime);
+            _currentScene?.EndUpdate();
 
             if (_nextScene != _currentScene)
             {
@@ -97,9 +106,9 @@ namespace FrogWorks
         {
         }
 
-        private void OnHeaderChanged()
+        private void OnTitleChanged()
         {
-            var version = _displayVersion ? $"(ver. {_version.ToString()})" : "";
+            var version = _displayVersionOnTitle ? $"(ver. {_version.ToString()})" : "";
             Window.Title = $"{_title} {version}".Trim();
         }
     }
