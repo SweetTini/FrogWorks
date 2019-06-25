@@ -38,6 +38,7 @@
     <Compile Include="Game.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scene.cs" />
+    <Compile Include="Utils\Camera.cs" />
     <Compile Include="Utils\PrimitiveBatch.cs" />
     <Compile Include="Utils\RendererBatch.cs" />
     <Compile Include="Utils\Display.cs" />

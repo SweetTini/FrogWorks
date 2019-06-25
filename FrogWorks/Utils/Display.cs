@@ -6,6 +6,7 @@ namespace FrogWorks
 {
     public class Display
     {
+        private Scaling _scaling = Scaling.Fit;
         private bool _isBackBufferDirty;
 
         protected GraphicsDeviceManager Graphics { get; private set; }
@@ -40,11 +41,22 @@ namespace FrogWorks
 
         public float VerticalScale { get; private set; } = 1f;
 
-        public Scaling Scaling { get; private set; } = Scaling.Fit;
+        public Scaling Scaling
+        {
+            get { return _scaling; }
+            set
+            {
+                if (value != _scaling)
+                {
+                    Scaling = value;
+                    Graphics.ApplyChanges();
+                }
+            }
+        }
 
         public Color ClearColor { get; set; } = Color.Black;
 
-        public Display(GraphicsDeviceManager graphics, int width, int height)
+        internal Display(GraphicsDeviceManager graphics, int width, int height)
         {
             Graphics = graphics;
             Width = width;
@@ -71,12 +83,6 @@ namespace FrogWorks
             Graphics.PreferredBackBufferWidth = displayMode.Width;
             Graphics.PreferredBackBufferHeight = displayMode.Height;
             Graphics.IsFullScreen = true;
-            Graphics.ApplyChanges();
-        }
-
-        public void SetScaling(Scaling scaling)
-        {
-            Scaling = scaling;
             Graphics.ApplyChanges();
         }
 

@@ -11,7 +11,7 @@ namespace FrogWorks
 
         public bool IsDisposed { get; private set; }
 
-        public RendererBatch(GraphicsDevice graphicsDevice)
+        internal RendererBatch(GraphicsDevice graphicsDevice)
         {
             Sprite = new SpriteBatch(graphicsDevice);
             Primitive = new PrimitiveBatch(graphicsDevice);

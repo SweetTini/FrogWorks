@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FrogWorks
 {
-    public class Scene
+    public abstract class Scene
     {
     }
 }

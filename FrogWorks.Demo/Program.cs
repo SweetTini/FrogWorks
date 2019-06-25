@@ -7,8 +7,9 @@ namespace FrogWorks.Demo
         [STAThread]
         static void Main()
         {
-            using (var game = new Game(640, 480))
+            using (var game = new Game(320, 240))
             {
+                game.Display.SetFixedScale(2);
                 game.Run();
             }
         }
