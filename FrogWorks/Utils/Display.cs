@@ -48,7 +48,7 @@ namespace FrogWorks
             {
                 if (value != _scaling)
                 {
-                    Scaling = value;
+                    _scaling = value;
                     Graphics.ApplyChanges();
                 }
             }
@@ -56,7 +56,7 @@ namespace FrogWorks
 
         public Color ClearColor { get; set; } = Color.Black;
 
-        internal Display(GraphicsDeviceManager graphics, int width, int height)
+        internal Display(GraphicsDeviceManager graphics, GameWindow window, int width, int height)
         {
             Graphics = graphics;
             Width = width;
@@ -64,6 +64,7 @@ namespace FrogWorks
 
             Graphics.DeviceCreated += OnDeviceChanged;
             Graphics.DeviceReset += OnDeviceChanged;
+            window.ClientSizeChanged += OnDeviceChanged;
             SetFixedScale();
             ResetBackBuffer();
         }
@@ -109,8 +110,8 @@ namespace FrogWorks
                     break;
                 case Scaling.PixelPerfect:
                     HorizontalScale = VerticalScale = sourceRatio < targetRatio
-                        ? 1f * ScreenHeight / Height
-                        : 1f * ScreenWidth / Width;
+                        ? ScreenHeight / Height
+                        : ScreenWidth / Width;
                     break;
                 case Scaling.Stretch:
                     HorizontalScale = 1f * ScreenWidth / Width;

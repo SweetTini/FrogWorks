@@ -6,6 +6,8 @@ namespace FrogWorks
     {
         public Color BackgroundColor { get; set; } = Color.CornflowerBlue;
 
+        protected Camera Camera { get; private set; } = new Camera();
+
         protected Scene()
         {
         }

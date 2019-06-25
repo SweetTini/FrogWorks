@@ -61,7 +61,7 @@ namespace FrogWorks
         {
             Instance = this;
             Graphics = new GraphicsDeviceManager(this);
-            Display = new Display(Graphics, width, height);
+            Display = new Display(Graphics, Window, width, height);
             RendererBatch = new RendererBatch(GraphicsDevice);
             Content.RootDirectory = "Content";
             OnTitleChanged();
