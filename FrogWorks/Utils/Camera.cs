@@ -180,7 +180,7 @@ namespace FrogWorks
             {
                 _transformMatrix = Matrix.CreateTranslation(new Vector3(-_position - _origin, 0f)) 
                     * Matrix.CreateRotationZ(_angle) 
-                    * Matrix.CreateScale(new Vector3(_scale * Vector2.One, 1)) 
+                    * Matrix.CreateScale(new Vector3(_scale * Vector2.One, 1f)) 
                     * Matrix.CreateTranslation(new Vector3(_origin, 0f));
                 _inverseMatrix = Matrix.Invert(_transformMatrix);
                 _isDirty = false;

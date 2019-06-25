@@ -28,7 +28,7 @@ namespace FrogWorks
                 {
                     if (value == _title) return;
                     _title = value.Trim();
-                    OnTitleOrVersionChanged();
+                    OnHeaderChanged();
                 }
             }
         }
@@ -40,7 +40,7 @@ namespace FrogWorks
             {
                 if (value == _version) return;
                 _version = value;
-                OnTitleOrVersionChanged();
+                OnHeaderChanged();
             }
         }
 
@@ -51,7 +51,7 @@ namespace FrogWorks
             {
                 if (value == _displayVersion) return;
                 _displayVersion = value;
-                OnTitleOrVersionChanged();
+                OnHeaderChanged();
             }
         }
 
@@ -62,11 +62,22 @@ namespace FrogWorks
             Display = new Display(Graphics, width, height);
             RendererBatch = new RendererBatch(GraphicsDevice);
             Content.RootDirectory = "Content";
-            OnTitleOrVersionChanged();
+            OnHeaderChanged();
         }
 
         protected override void Update(GameTime gameTime)
         {
+            _currentScene?.Update();
+
+            if (_nextScene != _currentScene)
+            {
+                _currentScene?.End();
+                var lastScene = _currentScene;
+                _currentScene = _nextScene;
+                OnSceneChanged(_currentScene, lastScene);
+                _currentScene?.Begin();
+            }
+
             base.Update(gameTime);
         }
 
@@ -82,7 +93,11 @@ namespace FrogWorks
             base.EndRun();
         }
 
-        private void OnTitleOrVersionChanged()
+        private void OnSceneChanged(Scene currentScene, Scene lastScene)
+        {
+        }
+
+        private void OnHeaderChanged()
         {
             var version = _displayVersion ? $"(ver. {_version.ToString()})" : "";
             Window.Title = $"{_title} {version}".Trim();

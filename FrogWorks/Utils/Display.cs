@@ -154,10 +154,11 @@ namespace FrogWorks
         {
             Graphics.GraphicsDevice.SetRenderTarget(BackBuffer);
             Graphics.GraphicsDevice.Viewport = new Viewport(0, 0, Width + ExtendedWidth, Height + ExtendedHeight);
+            Graphics.GraphicsDevice.Clear(scene?.BackgroundColor ?? ClearColor);
+            scene?.Draw(batch);
 
             Graphics.GraphicsDevice.SetRenderTarget(null);
             Graphics.GraphicsDevice.Viewport = Viewport;
-
             Graphics.GraphicsDevice.Clear(ClearColor);
             batch.Sprite.Begin(samplerState: SamplerState.PointClamp, transformMatrix: ScaleMatrix);
             batch.Sprite.Draw(BackBuffer, Vector2.Zero, Color.White);
