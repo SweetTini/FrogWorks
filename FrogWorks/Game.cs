@@ -7,6 +7,7 @@ namespace FrogWorks
     public class Game : XnaGame
     {
         private Scene _currentScene, _nextScene;
+        private Cache<Scene> _sceneCache;
         private string _title = "New Game";
         private Version _version = new Version(0, 0, 1, 0);
         private bool _displayVersionOnTitle;
@@ -59,12 +60,19 @@ namespace FrogWorks
 
         public Game(int width, int height)
         {
+            _sceneCache = new Cache<Scene>();
+
             Instance = this;
             Graphics = new GraphicsDeviceManager(this);
             Display = new Display(Graphics, Window, width, height);
             RendererBatch = new RendererBatch(GraphicsDevice);
             Content.RootDirectory = "Content";
             OnTitleChanged();
+        }
+
+        public void SetScene<T>() where T : Scene, new()
+        {
+            _nextScene = _sceneCache.Create<T>();
         }
 
         protected override void Update(GameTime gameTime)
@@ -104,6 +112,8 @@ namespace FrogWorks
 
         private void OnSceneChanged(Scene currentScene, Scene lastScene)
         {
+            if (lastScene != null)
+                _sceneCache.Store(lastScene);
         }
 
         private void OnTitleChanged()

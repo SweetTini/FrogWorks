@@ -152,7 +152,7 @@ namespace FrogWorks
         internal void DrawBackBuffer(RendererBatch batch, Scene scene)
         {
             Graphics.GraphicsDevice.SetRenderTarget(BackBuffer);
-            Graphics.GraphicsDevice.Viewport = new Viewport(0, 0, Width + ExtendedWidth, Height + ExtendedHeight);
+            Graphics.GraphicsDevice.Viewport = new Viewport(0, 0, Width, Height);
             Graphics.GraphicsDevice.Clear(scene?.BackgroundColor ?? ClearColor);
             scene?.Draw(batch);
 
