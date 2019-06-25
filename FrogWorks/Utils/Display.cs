@@ -46,11 +46,9 @@ namespace FrogWorks
             get { return _scaling; }
             set
             {
-                if (value != _scaling)
-                {
-                    _scaling = value;
-                    Graphics.ApplyChanges();
-                }
+                if (value == _scaling) return;
+                _scaling = value;
+                Graphics.ApplyChanges();
             }
         }
 
