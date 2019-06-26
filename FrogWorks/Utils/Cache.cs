@@ -3,16 +3,16 @@ using System.Collections.Generic;
 
 namespace FrogWorks
 {
-    public class Cache<P>
+    public class Cache<U>
     {
-        private Dictionary<Type, Stack<P>> _cache;
+        private Dictionary<Type, Stack<U>> _cache;
 
         public Cache()
         {
-            _cache = new Dictionary<Type, Stack<P>>();
+            _cache = new Dictionary<Type, Stack<U>>();
         }
 
-        public T Create<T>() where T : P, new()
+        public T Create<T>() where T : U, new()
         {
             Initialize<T>();
 
@@ -21,7 +21,7 @@ namespace FrogWorks
                 : new T();
         }
 
-        public void Store(P instance)
+        public void Store(U instance)
         {
             if (instance != null)
             {
@@ -33,7 +33,7 @@ namespace FrogWorks
             }
         }
 
-        public void Store<T>(T instance) where T : P, new()
+        public void Store<T>(T instance) where T : U, new()
         {
             if (instance != null)
             {
@@ -50,7 +50,7 @@ namespace FrogWorks
                 stack.Clear();
         }
 
-        public void Clear<T>() where T : P, new()
+        public void Clear<T>() where T : U, new()
         {
             if (_cache.ContainsKey(typeof(T)))
                 _cache[typeof(T)].Clear();
@@ -59,13 +59,13 @@ namespace FrogWorks
         private void Initialize(Type type)
         {
             if (!_cache.ContainsKey(type))
-                _cache.Add(type, new Stack<P>());
+                _cache.Add(type, new Stack<U>());
         }
 
-        private void Initialize<T>() where T : P, new()
+        private void Initialize<T>() where T : U, new()
         {
             if (!_cache.ContainsKey(typeof(T)))
-                _cache.Add(typeof(T), new Stack<P>());
+                _cache.Add(typeof(T), new Stack<U>());
         }
     }
 }
