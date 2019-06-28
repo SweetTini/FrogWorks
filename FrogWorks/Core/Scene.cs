@@ -6,10 +6,17 @@ namespace FrogWorks
     {
         public Color BackgroundColor { get; set; } = Color.CornflowerBlue;
 
-        protected Camera Camera { get; private set; } = new Camera();
+        internal LayerManager Layers { get; private set; }
+
+        internal EntityManager Entities { get; private set; }
+
+        protected Layer DefaultLayer { get; private set; }
 
         protected Scene()
         {
+            Layers = new LayerManager(this);
+            Entities = new EntityManager(this);
+            DefaultLayer = Layers.AddOrGet("Default");
         }
 
         public virtual void Begin()
@@ -22,10 +29,13 @@ namespace FrogWorks
 
         public virtual void BeginUpdate()
         {
+            Entities.ProcessQueues();
+            Layers.ProcessQueues();
         }
 
         public virtual void Update(float deltaTime)
         {
+            Layers.Update(deltaTime);
         }
 
         public virtual void EndUpdate()
@@ -34,6 +44,7 @@ namespace FrogWorks
 
         public virtual void Draw(RendererBatch batch)
         {
+            Layers.Draw(batch);
         }
     }
 }
