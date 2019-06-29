@@ -12,6 +12,8 @@
 
         public bool IsVisible { get; set; }
 
+        public bool IsDestroyed { get; internal set; }
+
         protected Component()
             : this(true, true)
         {
@@ -51,6 +53,8 @@
 
         public void Destroy()
         {
+            Entity?.Components.Remove(this);
+            IsDestroyed = true;
         }
     }
 }

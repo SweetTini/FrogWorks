@@ -74,23 +74,33 @@ namespace FrogWorks
 
         protected Entity()
         {
+            Components = new ComponentManager(this);
         }
 
         public virtual void Update(float deltaTime)
         {
+            Components.ProcessQueues();
+            Components.Update(deltaTime);
         }
 
         public virtual void Draw(RendererBatch batch)
         {
+            Components.Draw(batch);
         }
 
         public virtual void OnAdded(Layer layer)
         {
             Layer = layer;
+
+            foreach (var component in Components)
+                component.OnEntityAdded(this);
         }
 
         public virtual void OnRemoved()
         {
+            foreach (var component in Components)
+                component.OnEntityRemoved(this);
+
             Layer = null;
         }
 
