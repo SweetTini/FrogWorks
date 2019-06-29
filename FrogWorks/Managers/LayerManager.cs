@@ -61,7 +61,7 @@ namespace FrogWorks
 
             if (_isUnsorted)
             {
-                _layers.Sort(Layer.Compare);
+                _layers.Sort(Layer.ComparePriority);
                 _isUnsorted = false;
             }
         }

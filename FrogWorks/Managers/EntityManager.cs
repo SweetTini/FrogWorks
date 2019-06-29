@@ -58,7 +58,7 @@ namespace FrogWorks
 
             if (_isUnsorted)
             {
-                _entities.Sort(Entity.Compare);
+                _entities.Sort(Entity.CompareDepth);
                 _isUnsorted = false;
             }
         }

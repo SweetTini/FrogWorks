@@ -6,7 +6,7 @@ namespace FrogWorks
     {
         private int _priority;
 
-        internal static Comparison<Layer> Compare
+        internal static Comparison<Layer> ComparePriority
         {
             get { return (layer, other) => Math.Sign(layer.Priority - other.Priority); }
         }

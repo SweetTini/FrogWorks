@@ -8,7 +8,7 @@ namespace FrogWorks
         private Vector2 _position;
         private int _depth;
 
-        internal static Comparison<Entity> Compare
+        internal static Comparison<Entity> CompareDepth
         {
             get { return (entity, other) => Math.Sign(entity.Depth - other.Depth); }
         }

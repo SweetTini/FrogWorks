@@ -6,11 +6,11 @@ namespace FrogWorks
     {
         public Color BackgroundColor { get; set; } = Color.CornflowerBlue;
 
-        internal LayerManager Layers { get; private set; }
+        protected internal LayerManager Layers { get; private set; }
 
-        internal EntityManager Entities { get; private set; }
+        protected internal EntityManager Entities { get; private set; }
 
-        public Layer DefaultLayer { get; private set; }
+        protected internal Layer DefaultLayer { get; private set; }
 
         public bool IsEnabled { get; private set; }
 

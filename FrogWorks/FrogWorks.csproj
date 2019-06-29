@@ -35,10 +35,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Components\GraphicsComponent.cs" />
     <Compile Include="Core\Component.cs" />
     <Compile Include="Core\Entity.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Core\Layer.cs" />
+    <Compile Include="Graphics\Texture.cs" />
     <Compile Include="Managers\ComponentManager.cs" />
     <Compile Include="Managers\EntityManager.cs" />
     <Compile Include="Managers\LayerManager.cs" />
@@ -51,6 +53,7 @@
     <Compile Include="Utils\RendererBatch.cs" />
     <Compile Include="Utils\Display.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
