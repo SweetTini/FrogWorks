@@ -10,7 +10,9 @@ namespace FrogWorks
 
         internal EntityManager Entities { get; private set; }
 
-        protected Layer DefaultLayer { get; private set; }
+        public Layer DefaultLayer { get; private set; }
+
+        public bool IsEnabled { get; private set; }
 
         protected Scene()
         {
@@ -21,10 +23,18 @@ namespace FrogWorks
 
         public virtual void Begin()
         {
+            IsEnabled = true;
+
+            foreach (var entity in Entities)
+                entity.OnSceneBegan(this);
         }
 
         public virtual void End()
         {
+            foreach (var entity in Entities)
+                entity.OnSceneEnded(this);
+
+            IsEnabled = false;
         }
 
         public virtual void BeginUpdate()

@@ -6,6 +6,7 @@ namespace FrogWorks
     public abstract class Entity
     {
         private Vector2 _position;
+        private int _depth;
 
         internal static Comparison<Entity> Compare
         {
@@ -54,11 +55,22 @@ namespace FrogWorks
             }
         }
 
-        public int Depth { get; set; }
+        public int Depth
+        {
+            get { return _depth; }
+            set
+            {
+                if (value == _depth) return;
+                _depth = value;
+                Scene?.Entities.MarkUnsorted();
+            }
+        }
 
         public bool IsEnabled { get; set; } = true;
 
         public bool IsVisible { get; set; } = true;
+
+        public bool IsDestroyed { get; internal set; }
 
         protected Entity()
         {
@@ -96,6 +108,8 @@ namespace FrogWorks
 
         public void Destroy()
         {
+            Scene?.Entities.Remove(this);
+            IsDestroyed = true;
         }
     }
 }

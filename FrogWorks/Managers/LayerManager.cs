@@ -12,14 +12,26 @@ namespace FrogWorks
 
         internal static Stack<Layer> Cache { get; } = new Stack<Layer>();
 
-        public Layer this[int index] => _layers.WithinRange(index) ? _layers[index] : null;
+        public Layer this[int index]
+        {
+            get
+            {
+                if (!_layers.WithinRange(index))
+                    throw new IndexOutOfRangeException("Index is outside the range of layers to access.");
+
+                return _layers[index];
+            }
+        }
 
         public Layer this[string name]
         {
             get
             {
                 Layer layer;
-                TryGet(name, out layer);
+
+                if (!TryGet(name, out layer))
+                    throw new Exception($"Cannot find layer with name \"{name}\".");
+
                 return layer;
             }
         }
