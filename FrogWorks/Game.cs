@@ -1,5 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
+using System.IO;
+using System.Reflection;
 using XnaGame = Microsoft.Xna.Framework.Game;
 
 namespace FrogWorks
@@ -12,7 +14,7 @@ namespace FrogWorks
         private Version _version = new Version(0, 0, 1, 0);
         private bool _displayVersionOnTitle;
 
-        public static Game Instance { get; private set; }
+        internal static Game Instance { get; private set; }
 
         protected GraphicsDeviceManager Graphics { get; private set; }
 
@@ -56,7 +58,17 @@ namespace FrogWorks
             }
         }
 
-        public int FramesPerSecond { get; private set; }
+        public static int FramesPerSecond { get; private set; }
+
+        public static string AssemblyDirectory
+        {
+            get { return Path.GetDirectoryName(Assembly.GetEntryAssembly().Location); }
+        }
+
+        public static string ContentDirectory
+        {
+            get { return Path.Combine(AssemblyDirectory, Instance.Content.RootDirectory); }
+        }
 
         public Game(int width, int height)
         {

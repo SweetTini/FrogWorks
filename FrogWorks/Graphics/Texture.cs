@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.IO;
 
 namespace FrogWorks
 {
@@ -80,5 +81,41 @@ namespace FrogWorks
                 IsDisposed = true;
             }
         }
+
+        #region Static Methods
+        public static Texture Load(string filePath, string rootDirectory = "")
+        {
+            if (string.IsNullOrWhiteSpace(rootDirectory))
+                rootDirectory = Game.ContentDirectory;
+
+            using (var stream = File.OpenRead(Path.Combine(rootDirectory, filePath)))
+            {
+                var xnaTexture = Texture2D.FromStream(Game.Instance.GraphicsDevice, stream);
+                return new Texture(xnaTexture, xnaTexture.Bounds);
+            }
+        }
+
+        public static Texture[] Split(Texture2D xnaTexture, int frameWidth, int frameHeight)
+        {
+            var columns = xnaTexture.Width / frameWidth;
+            var rows = xnaTexture.Height / frameHeight;
+            var frames = new Texture[columns * rows];
+
+            for (int i = 0; i < frames.Length; i++)
+            {
+                var x = i % columns;
+                var y = i / columns;
+
+                frames[i] = new Texture(xnaTexture, x * frameWidth, y * frameHeight, frameWidth, frameHeight);
+            }
+
+            return frames;
+        }
+
+        public static Texture[] Split(Texture texture, int frameWidth, int frameHeight)
+        {
+            return Split(texture.XnaTexture, frameWidth, frameHeight);
+        }
+        #endregion
     }
 }
