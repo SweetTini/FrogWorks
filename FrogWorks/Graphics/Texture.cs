@@ -86,7 +86,7 @@ namespace FrogWorks
         public static Texture Load(string filePath, string rootDirectory = "")
         {
             if (string.IsNullOrWhiteSpace(rootDirectory))
-                rootDirectory = Game.ContentDirectory;
+                rootDirectory = Game.Instance.ContentDirectory;
 
             using (var stream = File.OpenRead(Path.Combine(rootDirectory, filePath)))
             {
