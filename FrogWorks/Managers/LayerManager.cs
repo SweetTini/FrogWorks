@@ -81,8 +81,15 @@ namespace FrogWorks
         internal void Draw(RendererBatch batch)
         {
             foreach (var layer in _layers)
+            {
                 if (layer.IsVisible)
+                {
+                    layer.ConfigureBatch(batch);
                     _scene.Entities.Draw(layer, batch);
+                }
+            }
+
+            batch.Reset();
         }
 
         public Layer AddOrGet(string name, int priority = 0)
@@ -95,8 +102,9 @@ namespace FrogWorks
                     ? Cache.Pop() 
                     : new Layer();
 
-                layer.Name = name;
                 _layers.Add(layer);
+                layer.Name = name;
+                layer.OnAdded(_scene);
             }
 
             layer.Priority = priority;

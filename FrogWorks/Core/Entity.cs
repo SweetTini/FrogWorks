@@ -17,7 +17,7 @@ namespace FrogWorks
 
         public Scene Scene => Layer?.Scene;
 
-        internal ComponentManager Components { get; private set; }
+        protected internal ComponentManager Components { get; private set; }
 
         public Vector2 Position
         {
@@ -94,6 +94,8 @@ namespace FrogWorks
 
             foreach (var component in Components)
                 component.OnEntityAdded(this);
+
+            Scene?.Entities.MarkUnsorted();
         }
 
         public virtual void OnRemoved()

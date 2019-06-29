@@ -9,9 +9,8 @@ namespace FrogWorks.Demo
         {
             using (var game = new Game(320, 240))
             {
-                game.SetScene<DisplayTestScene>();
+                game.SetScene<CoreTestScene>();
                 game.Window.AllowUserResizing = true;
-                game.Display.SetFixedScale(2);
                 game.Run();
             }
         }

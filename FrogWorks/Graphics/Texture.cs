@@ -49,7 +49,10 @@ namespace FrogWorks
 
         public void Draw(RendererBatch batch, Vector2 position, Vector2? origin = null, Vector2? scale = null, float angle = 0f, Color? color = null, SpriteEffects effects = SpriteEffects.None)
         {
-            batch.Sprite.Draw(XnaTexture, position, Bounds, color ?? Color.White, angle, origin ?? Vector2.Zero, scale ?? Vector2.One, effects, 0f);
+            batch.DrawSprite((sprite) =>
+            {
+                sprite.Draw(XnaTexture, position, Bounds, color ?? Color.White, angle, origin ?? Vector2.Zero, scale ?? Vector2.One, effects, 0f);
+            });
         }
 
         public Texture ClipRegion(Rectangle bounds)

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework.Graphics;
+using System;
 
 namespace FrogWorks
 {
@@ -14,6 +15,12 @@ namespace FrogWorks
         public Scene Scene { get; private set; }
 
         public Camera Camera { get; private set; } = new Camera();
+
+        public BlendState BlendState { get; set; }
+
+        public DepthStencilState DepthStencilState { get; set; }
+
+        public Effect ShaderEffect { get; set; }
 
         public string Name { get; internal set; }
 
@@ -36,6 +43,11 @@ namespace FrogWorks
 
         internal Layer()
         {
+        }
+
+        internal void ConfigureBatch(RendererBatch batch)
+        {
+            batch.Configure(BlendState, DepthStencilState, ShaderEffect, null, Camera.TransformMatrix);
         }
 
         internal void OnAdded(Scene scene)
