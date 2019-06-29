@@ -85,7 +85,7 @@ namespace FrogWorks
         public void Add(Layer layer, Entity entity)
         {
             if (!_entities.Contains(entity) && !_entitiesToAdd.ContainsKey(entity))
-                _entitiesToAdd.Add(entity, layer ?? _scene.DefaultLayer);
+                _entitiesToAdd.Add(entity, layer ?? _scene.MainLayer);
         }
 
         public void Add(Layer layer, params Entity[] entities)

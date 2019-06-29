@@ -108,7 +108,12 @@ namespace FrogWorks
             Layer layer;
 
             if (TryGet(name, out layer))
+            {
+                if (layer.IsDefault)
+                    throw new Exception("Cannot remove the default layer.");
+
                 _layersToRemove.Add(layer);
+            }
         }
 
         public bool Exists(string name)

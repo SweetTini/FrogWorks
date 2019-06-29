@@ -12,7 +12,7 @@ namespace FrogWorks.Demo
 
         public override void Draw(RendererBatch batch)
         {
-            var camera = DefaultLayer.Camera;
+            var camera = MainLayer.Camera;
             batch.Primitive.Begin(viewMatrix: camera.TransformMatrix);
             batch.Primitive.FillRectangle(camera.Left, camera.Top, 32f, 32f, Color.Red);
             batch.Primitive.FillRectangle(camera.Right - 32f, camera.Top, 32f, 32f, Color.Yellow);

@@ -10,7 +10,7 @@ namespace FrogWorks
 
         protected internal EntityManager Entities { get; private set; }
 
-        protected internal Layer DefaultLayer { get; private set; }
+        protected internal Layer MainLayer { get; private set; }
 
         public bool IsEnabled { get; private set; }
 
@@ -18,7 +18,8 @@ namespace FrogWorks
         {
             Layers = new LayerManager(this);
             Entities = new EntityManager(this);
-            DefaultLayer = Layers.AddOrGet("Default");
+            MainLayer = Layers.AddOrGet("Main");
+            MainLayer.IsDefault = true;
         }
 
         public virtual void Begin()

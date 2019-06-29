@@ -32,6 +32,8 @@ namespace FrogWorks
 
         public bool IsVisible { get; set; } = true;
 
+        internal bool IsDefault { get; set; }
+
         internal Layer()
         {
         }
@@ -43,6 +45,10 @@ namespace FrogWorks
 
         internal void OnRemoved()
         {
+            foreach (var entity in Scene.Entities)
+                if (entity.Layer.Equals(this))
+                    entity.Destroy();
+
             Scene = null;
         }
     }
