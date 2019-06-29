@@ -10,6 +10,19 @@ namespace FrogWorks
         private List<Component> _components, _componentsToRemove;
         private bool _isLocked;
 
+        public Component this[int index]
+        {
+            get
+            {
+                if (!_components.WithinRange(index))
+                    throw new IndexOutOfRangeException("Index is outside the range of components to access.");
+
+                return _components[index];
+            }
+        }
+
+        public int Count => _components.Count;
+
         internal ComponentManager(Entity entity)
         {
             _entity = entity;
