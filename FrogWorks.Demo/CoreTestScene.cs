@@ -6,9 +6,11 @@
             : base()
         {
             BackgroundColor = ColorConvert.FromHsl(0, 100, 80);
+            AddLayer("Test");
             CreateApple(160, 144, 0);
-            CreateApple(200, 174, -1);
-            CreateApple(120, 174, 1);
+            CreateApple(180, 174, -1);
+            CreateApple(140, 174, 0);
+            CreateApple(160, 114, -1, GetLayer("Test"));
         }
 
         void CreateApple(float x, float y, int depth, Layer layer = null)
