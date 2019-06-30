@@ -203,5 +203,23 @@ namespace FrogWorks
             return Components.Count;
         }
         #endregion
+
+        #region Layers
+        public void MoveToLayer(string name)
+        {
+            if (Scene == null) return;
+
+            var index = Scene.Layers.IndexOf(name);
+            if (index > -1) Layer = Scene.Layers[index];
+        }
+
+        public void MoveToLayer(Layer layer)
+        {
+            if (layer == null || Scene == null) return;
+
+            var index = Scene.Layers.IndexOf(layer.Name);
+            if (index > -1) Layer = layer;
+        }
+        #endregion
     }
 }
