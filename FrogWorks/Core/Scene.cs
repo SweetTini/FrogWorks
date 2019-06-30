@@ -26,14 +26,14 @@ namespace FrogWorks
         {
             IsEnabled = true;
 
-            foreach (var entity in Entities)
-                entity.OnSceneBegan(this);
+            for (int i = 0; i < Entities.Count; i++)
+                Entities[i].OnSceneBegan(this);
         }
 
         public virtual void End()
         {
-            foreach (var entity in Entities)
-                entity.OnSceneEnded(this);
+            for (int i = 0; i < Entities.Count; i++)
+                Entities[i].OnSceneEnded(this);
 
             IsEnabled = false;
         }

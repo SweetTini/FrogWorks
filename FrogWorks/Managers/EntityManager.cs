@@ -7,8 +7,7 @@ namespace FrogWorks
     public class EntityManager : IEnumerable<Entity>, IEnumerable
     {
         private Scene _scene;
-        private List<Entity> _entities, _entitiesToRemove;
-        private Dictionary<Entity, Layer> _entitiesToAdd;
+        private List<Entity> _entities, _entitiesToAdd, _entitiesToRemove;
         private bool _isUnsorted;
 
         public Entity this[int index]
@@ -28,18 +27,18 @@ namespace FrogWorks
         {
             _scene = scene;
             _entities = new List<Entity>();
+            _entitiesToAdd = new List<Entity>();
             _entitiesToRemove = new List<Entity>();
-            _entitiesToAdd = new Dictionary<Entity, Layer>();
         }
 
         internal void ProcessQueues()
         {
             if (_entitiesToRemove.Count > 0)
             {
-                foreach (var entity in _entitiesToRemove)
+                for (int i = 0; i < _entitiesToRemove.Count; i++)
                 {
-                    _entities.Remove(entity);
-                    entity.OnRemoved();
+                    _entities.Remove(_entitiesToRemove[i]);
+                    _entitiesToRemove[i].OnRemoved();
                 }
 
                 _entitiesToRemove.Clear();
@@ -47,11 +46,9 @@ namespace FrogWorks
 
             if (_entitiesToAdd.Count > 0)
             {
-                foreach (var entityLayerPair in _entitiesToAdd)
-                {
-                    _entities.Add(entityLayerPair.Key);
-                    entityLayerPair.Key.OnAdded(entityLayerPair.Value);
-                }
+
+                for (int i = 0; i < _entitiesToAdd.Count; i++)
+                    _entities.Add(_entitiesToAdd[i]);
 
                 _entitiesToAdd.Clear();
             }
@@ -70,28 +67,31 @@ namespace FrogWorks
 
         internal void Update(Layer layer, float deltaTime)
         {
-            foreach (var entity in _entities)
-                if (!entity.IsDestroyed && entity.Layer.Equals(layer) && entity.IsEnabled)
-                    entity.Update(deltaTime);
+            for (int i = 0; i < _entities.Count; i++)
+                if (!_entities[i].IsDestroyed && _entities[i].Layer.Equals(layer) && _entities[i].IsEnabled)
+                    _entities[i].Update(deltaTime);
         }
 
         internal void Draw(Layer layer, RendererBatch batch)
         {
-            foreach (var entity in _entities)
-                if (!entity.IsDestroyed && entity.Layer.Equals(layer) && entity.IsVisible)
-                    entity.Draw(batch);
+            for (int i = 0; i < _entities.Count; i++)
+                if (!_entities[i].IsDestroyed && _entities[i].Layer.Equals(layer) && _entities[i].IsVisible)
+                    _entities[i].Draw(batch);
         }
 
         public void Add(Layer layer, Entity entity)
         {
-            if (!_entities.Contains(entity) && !_entitiesToAdd.ContainsKey(entity))
-                _entitiesToAdd.Add(entity, layer ?? _scene.MainLayer);
+            if (!_entities.Contains(entity) && !_entitiesToAdd.Contains(entity))
+            {
+                _entitiesToAdd.Add(entity);
+                entity.OnAdded(layer ?? _scene.MainLayer);
+            }
         }
 
         public void Add(Layer layer, params Entity[] entities)
         {
-            foreach (var entity in entities)
-                Add(layer, entity);
+            for (int i = 0; i < entities.Length; i++)
+                Add(layer, entities[i]);
         }
 
         public void Add(Layer layer, IEnumerable<Entity> entities)
@@ -108,8 +108,8 @@ namespace FrogWorks
 
         public void Remove(params Entity[] entities)
         {
-            foreach (var entity in entities)
-                Remove(entity);
+            for (int i = 0; i < entities.Length; i++)
+                Remove(entities[i]);
         }
 
         public void Remove(IEnumerable<Entity> entities)

@@ -92,16 +92,16 @@ namespace FrogWorks
         {
             Layer = layer;
 
-            foreach (var component in Components)
-                component.OnEntityAdded(this);
+            for (int i = 0; i < Components.Count; i++)
+                Components[i].OnEntityAdded(this);
 
             Scene?.Entities.MarkUnsorted();
         }
 
         public virtual void OnRemoved()
         {
-            foreach (var component in Components)
-                component.OnEntityRemoved(this);
+            for (int i = 0; i < Components.Count; i++)
+                Components[i].OnEntityRemoved(this);
 
             Layer = null;
         }

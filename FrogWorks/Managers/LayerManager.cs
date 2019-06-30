@@ -8,7 +8,6 @@ namespace FrogWorks
     {
         private Scene _scene;
         private List<Layer> _layers, _layersToRemove;
-        private bool _isUnsorted;
 
         internal static Stack<Layer> Cache { get; } = new Stack<Layer>();
 
@@ -49,50 +48,39 @@ namespace FrogWorks
         {
             if (_layersToRemove.Count > 0)
             {
-                foreach (var layer in _layersToRemove)
+                for (int i = 0; i < _layersToRemove.Count; i++)
                 {
-                    _layers.Remove(layer);
-                    layer.OnRemoved();
-                    Cache.Push(layer);
+                    _layers.Remove(_layersToRemove[i]);
+                    _layersToRemove[i].OnRemoved();
+                    Cache.Push(_layersToRemove[i]);
                 }
 
                 _layersToRemove.Clear();
             }
-
-            if (_isUnsorted)
-            {
-                _layers.Sort(Layer.ComparePriority);
-                _isUnsorted = false;
-            }
-        }
-
-        internal void MarkUnsorted()
-        {
-            _isUnsorted = true;
         }
 
         internal void Update(float deltaTime)
         {
-            foreach (var layer in _layers)
-                if (layer.IsEnabled)
-                    _scene.Entities.Update(layer, deltaTime);
+            for (int i = 0; i < _layers.Count; i++)
+                if (_layers[i].IsEnabled)
+                    _scene.Entities.Update(_layers[i], deltaTime);
         }
 
         internal void Draw(RendererBatch batch)
         {
-            foreach (var layer in _layers)
+            for (int i = 0; i < _layers.Count; i++)
             {
-                if (layer.IsVisible)
+                if (_layers[i].IsVisible)
                 {
-                    layer.ConfigureBatch(batch);
-                    _scene.Entities.Draw(layer, batch);
+                    _layers[i].ConfigureBatch(batch);
+                    _scene.Entities.Draw(_layers[i], batch);
                 }
             }
 
             batch.Reset();
         }
 
-        public Layer AddOrGet(string name, int priority = 0)
+        public Layer AddOrGet(string name)
         {
             Layer layer;
 
@@ -107,7 +95,6 @@ namespace FrogWorks
                 layer.OnAdded(_scene);
             }
 
-            layer.Priority = priority;
             return layer;
         }
 
@@ -126,8 +113,8 @@ namespace FrogWorks
 
         public bool Exists(string name)
         {
-            foreach (var layer in _layers)
-                if (string.Equals(layer.Name, name, StringComparison.InvariantCultureIgnoreCase))
+            for (int i = 0; i < _layers.Count; i++)
+                if (string.Equals(_layers[i].Name, name, StringComparison.InvariantCultureIgnoreCase))
                     return true;
 
             return false;
@@ -135,18 +122,82 @@ namespace FrogWorks
 
         public bool TryGet(string name, out Layer layer)
         {
-            layer = null;
+            int index;
+            return TryGet(name, out layer, out index);
+        }
 
-            foreach (var layerToCheck in _layers)
+        public bool TryGet(string name, out Layer layer, out int index)
+        {
+            layer = null;
+            index = -1;
+
+            for (int i = 0; i < _layers.Count; i++)
             {
-                if (string.Equals(layer.Name, name, StringComparison.InvariantCultureIgnoreCase))
+                if (string.Equals(layer.Name, _layers[i].Name, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    layer = layerToCheck;
+                    layer = _layers[i];
+                    index = i;
                     return true;
                 }
             }
 
             return false;
+        }
+
+        public void MoveToFront(string name)
+        {
+            Layer layer;
+            int index;
+
+            if (TryGet(name, out layer, out index) && index < _layers.Count - 1)
+            {
+                _layers.Remove(layer);
+                _layers.Add(layer);
+            }
+        }
+
+        public void MoveToFront(string sourceName, string targetName)
+        {
+            Layer source, target;
+            int sourceIndex, targetIndex;
+
+            if (TryGet(sourceName, out source, out sourceIndex) && TryGet(targetName, out target, out targetIndex))
+            {
+                if (sourceIndex < targetIndex)
+                {
+                    _layers.Remove(source);
+                    _layers.Insert(_layers.IndexOf(target) + 1, source);
+
+                }
+            }
+        }
+
+        public void MoveToBack(string name)
+        {
+            Layer layer;
+            int index;
+
+            if (TryGet(name, out layer, out index) && index > 0)
+            {
+                _layers.Remove(layer);
+                _layers.Insert(0, layer);
+            }
+        }
+
+        public void MoveToBack(string sourceName, string targetName)
+        {
+            Layer source, target;
+            int sourceIndex, targetIndex;
+
+            if (TryGet(sourceName, out source, out sourceIndex) && TryGet(targetName, out target, out targetIndex))
+            {
+                if (sourceIndex > targetIndex)
+                {
+                    _layers.Remove(source);
+                    _layers.Insert(_layers.IndexOf(target), source);
+
+                }
+            }
         }
 
         public Layer[] ToArray()

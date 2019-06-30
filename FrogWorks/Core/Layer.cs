@@ -5,13 +5,6 @@ namespace FrogWorks
 {
     public class Layer
     {
-        private int _priority;
-
-        internal static Comparison<Layer> ComparePriority
-        {
-            get { return (layer, other) => Math.Sign(layer.Priority - other.Priority); }
-        }
-
         public Scene Scene { get; private set; }
 
         public Camera Camera { get; private set; } = new Camera();
@@ -23,17 +16,6 @@ namespace FrogWorks
         public Effect ShaderEffect { get; set; }
 
         public string Name { get; internal set; }
-
-        public int Priority
-        {
-            get { return _priority; }
-            set
-            {
-                if (value == _priority) return;
-                _priority = value;
-                Scene?.Layers.MarkUnsorted();
-            }
-        }
 
         public bool IsEnabled { get; set; } = true;
 
@@ -57,9 +39,9 @@ namespace FrogWorks
 
         internal void OnRemoved()
         {
-            foreach (var entity in Scene.Entities)
-                if (entity.Layer.Equals(this))
-                    entity.Destroy();
+            for (int i = 0; i < Scene.Entities.Count; i++)
+                if (Scene.Entities[i].Layer.Equals(this))
+                    Scene.Entities[i].Destroy();
 
             Scene = null;
         }

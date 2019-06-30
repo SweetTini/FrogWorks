@@ -76,8 +76,8 @@ namespace FrogWorks
         {
             Vector2 lowest = vertices[0];
 
-            foreach (var point in vertices)
-                lowest = Vector2.Min(lowest, point);
+            for (int i = 1; i < vertices.Length; i++)
+                lowest = Vector2.Min(lowest, vertices[i]);
 
             return lowest;
         }
@@ -86,8 +86,8 @@ namespace FrogWorks
         {
             Vector2 highest = vertices[0];
 
-            foreach (var point in vertices)
-                highest = Vector2.Max(highest, point);
+            for (int i = 1; i < vertices.Length; i++)
+                highest = Vector2.Max(highest, vertices[i]);
 
             return highest;
         }

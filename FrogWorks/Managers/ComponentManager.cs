@@ -34,10 +34,10 @@ namespace FrogWorks
         {
             if (_componentsToRemove.Count > 0)
             {
-                foreach (var component in _componentsToRemove)
+                for (int i = 0; i < _componentsToRemove.Count; i++)
                 {
-                    _components.Remove(component);
-                    component.OnRemoved();
+                    _components.Remove(_componentsToRemove[i]);
+                    _componentsToRemove[i].OnRemoved();
                 }
 
                 _componentsToRemove.Clear();
@@ -46,18 +46,18 @@ namespace FrogWorks
 
         internal void Update(float deltaTime)
         {
-            foreach (var component in _components)
-                if (!component.IsDestroyed && component.IsEnabled)
-                    component.Update(deltaTime);
+            for (int i = 0; i < _components.Count; i++)
+                if (!_components[i].IsDestroyed && _components[i].IsEnabled)
+                    _components[i].Update(deltaTime);
         }
 
         internal void Draw(RendererBatch batch)
         {
             _isLocked = true;
 
-            foreach (var component in _components)
-                if (!component.IsDestroyed && component.IsVisible)
-                    component.Draw(batch);
+            for (int i = 0; i < _components.Count; i++)
+                if (!_components[i].IsDestroyed && _components[i].IsVisible)
+                    _components[i].Draw(batch);
 
             _isLocked = false;
         }
@@ -76,8 +76,8 @@ namespace FrogWorks
 
         public void Add(params Component[] components)
         {
-            foreach (var component in components)
-                Add(component);
+            for (int i = 0; i < components.Length; i++)
+                Add(components[i]);
         }
 
         public void Add(IEnumerable<Component> components)
@@ -97,8 +97,8 @@ namespace FrogWorks
 
         public void Remove(params Component[] components)
         {
-            foreach (var component in components)
-                Remove(component);
+            for (int i = 0; i < components.Length; i++)
+                Remove(components[i]);
         }
 
         public void Remove(IEnumerable<Component> components)
