@@ -26,12 +26,12 @@ namespace FrogWorks
         {
             get
             {
-                Layer layer;
+                var index = IndexOf(name);
 
-                if (!TryGet(name, out layer))
+                if (index == -1)
                     throw new Exception($"Cannot find layer with name \"{name}\".");
 
-                return layer;
+                return _layers[index];
             }
         }
 
@@ -80,30 +80,30 @@ namespace FrogWorks
             batch.Reset();
         }
 
-        public Layer AddOrGet(string name)
+        public Layer Add(string name)
         {
-            Layer layer;
+            var index = IndexOf(name);
 
-            if (!TryGet(name, out layer))
-            {
-                layer = Cache.Count > 0 
-                    ? Cache.Pop() 
-                    : new Layer();
+            if (index > -1)
+                return _layers[index];
 
-                _layers.Add(layer);
-                layer.Name = name;
-                layer.OnAdded(_scene);
-            }
+            var layer = Cache.Count > 0 ? Cache.Pop() : new Layer();
+            layer.Name = name;
+
+            _layers.Add(layer);
+            layer.OnAdded(_scene);
 
             return layer;
         }
 
         public void Remove(string name)
         {
-            Layer layer;
+            var index = IndexOf(name);
 
-            if (TryGet(name, out layer))
+            if (index > -1)
             {
+                var layer = _layers[index];
+
                 if (layer.IsDefault)
                     throw new Exception("Cannot remove the default layer.");
 
@@ -111,92 +111,112 @@ namespace FrogWorks
             }
         }
 
-        public bool Exists(string name)
+        public int IndexOf(string name)
         {
             for (int i = 0; i < _layers.Count; i++)
-                if (string.Equals(_layers[i].Name, name, StringComparison.InvariantCultureIgnoreCase))
-                    return true;
+                if (string.Equals(name, _layers[i].Name, StringComparison.InvariantCultureIgnoreCase))
+                    return i;
 
-            return false;
-        }
-
-        public bool TryGet(string name, out Layer layer)
-        {
-            int index;
-            return TryGet(name, out layer, out index);
-        }
-
-        public bool TryGet(string name, out Layer layer, out int index)
-        {
-            layer = null;
-            index = -1;
-
-            for (int i = 0; i < _layers.Count; i++)
-            {
-                if (string.Equals(layer.Name, _layers[i].Name, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    layer = _layers[i];
-                    index = i;
-                    return true;
-                }
-            }
-
-            return false;
+            return -1;
         }
 
         public void MoveToFront(string name)
         {
-            Layer layer;
-            int index;
+            var index = IndexOf(name);
 
-            if (TryGet(name, out layer, out index) && index < _layers.Count - 1)
+            if (index > -1)
+            {
+                var layer = _layers[index];
+                _layers.Remove(layer);
+                _layers.Add(layer);
+            }
+        }
+
+        public void MoveToFront(Layer layer)
+        {
+            var index = _layers.IndexOf(layer);
+
+            if (index > -1)
             {
                 _layers.Remove(layer);
                 _layers.Add(layer);
             }
         }
 
-        public void MoveToFront(string sourceName, string targetName)
+        public void MoveToBack(string name)
         {
-            Layer source, target;
-            int sourceIndex, targetIndex;
+            var index = IndexOf(name);
 
-            if (TryGet(sourceName, out source, out sourceIndex) && TryGet(targetName, out target, out targetIndex))
+            if (index > -1)
             {
-                if (sourceIndex < targetIndex)
-                {
-                    _layers.Remove(source);
-                    _layers.Insert(_layers.IndexOf(target) + 1, source);
-
-                }
+                var layer = _layers[index];
+                _layers.Remove(layer);
+                _layers.Insert(0, layer);
             }
         }
 
-        public void MoveToBack(string name)
+        public void MoveToBack(Layer layer)
         {
-            Layer layer;
-            int index;
+            var index = _layers.IndexOf(layer);
 
-            if (TryGet(name, out layer, out index) && index > 0)
+            if (index > -1)
             {
                 _layers.Remove(layer);
                 _layers.Insert(0, layer);
             }
         }
 
-        public void MoveToBack(string sourceName, string targetName)
+        public void MoveAhead(string sourceName, string targetName)
         {
-            Layer source, target;
-            int sourceIndex, targetIndex;
+            var sourceIndex = IndexOf(sourceName);
+            var targetIndex = IndexOf(targetName);
 
-            if (TryGet(sourceName, out source, out sourceIndex) && TryGet(targetName, out target, out targetIndex))
+            if (sourceIndex > -1 && targetIndex > -1 && sourceIndex < targetIndex)
             {
-                if (sourceIndex > targetIndex)
-                {
-                    _layers.Remove(source);
-                    _layers.Insert(_layers.IndexOf(target), source);
+                var source = _layers[sourceIndex];
+                var target = _layers[targetIndex];
 
-                }
+                _layers.Remove(source);
+                _layers.Insert(_layers.IndexOf(target) + 1, source);
+            }
+        }
+
+        public void MoveAhead(Layer source, Layer target)
+        {
+            var sourceIndex = _layers.IndexOf(source);
+            var targetIndex = _layers.IndexOf(target);
+
+            if (sourceIndex > -1 && targetIndex > -1 && sourceIndex < targetIndex)
+            {
+                _layers.Remove(source);
+                _layers.Insert(_layers.IndexOf(target) + 1, source);
+            }
+        }
+
+        public void MoveBehind(string sourceName, string targetName)
+        {
+            var sourceIndex = IndexOf(sourceName);
+            var targetIndex = IndexOf(targetName);
+
+            if (sourceIndex > -1 && targetIndex > -1 && sourceIndex > targetIndex)
+            {
+                var source = _layers[sourceIndex];
+                var target = _layers[targetIndex];
+
+                _layers.Remove(source);
+                _layers.Insert(_layers.IndexOf(target), source);
+            }
+        }
+
+        public void MoveBehind(Layer source, Layer target)
+        {
+            var sourceIndex = _layers.IndexOf(source);
+            var targetIndex = _layers.IndexOf(target);
+
+            if (sourceIndex > -1 && targetIndex > -1 && sourceIndex > targetIndex)
+            {
+                _layers.Remove(source);
+                _layers.Insert(_layers.IndexOf(target), source);
             }
         }
 

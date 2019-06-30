@@ -9,7 +9,7 @@
         {
             Image = new Image(Texture.Load("Images\\Apple.png"), false);
             Image.CenterOrigin();
-            Components.Add(Image);
+            AddComponent(Image);
         }
     }
 }

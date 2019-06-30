@@ -46,7 +46,6 @@ namespace FrogWorks
 
             if (_entitiesToAdd.Count > 0)
             {
-
                 for (int i = 0; i < _entitiesToAdd.Count; i++)
                     _entities.Add(_entitiesToAdd[i]);
 
@@ -84,7 +83,7 @@ namespace FrogWorks
             if (!_entities.Contains(entity) && !_entitiesToAdd.Contains(entity))
             {
                 _entitiesToAdd.Add(entity);
-                entity.OnAdded(layer ?? _scene.MainLayer);
+                entity.OnAdded(layer);
             }
         }
 

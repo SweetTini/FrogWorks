@@ -14,7 +14,7 @@
         void CreateApple(float x, float y, int depth, Layer layer = null)
         {
             var apple = new AppleEntity() { X = x, Y = y, Depth = depth };
-            Entities.Add(layer, apple);
+            AddEntityToLayer(layer, apple);
         }
     }
 }

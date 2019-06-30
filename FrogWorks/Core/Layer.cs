@@ -1,11 +1,10 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
-using System;
 
 namespace FrogWorks
 {
     public class Layer
     {
-        public Scene Scene { get; private set; }
+        protected internal Scene Scene { get; private set; }
 
         public Camera Camera { get; private set; } = new Camera();
 
@@ -44,6 +43,36 @@ namespace FrogWorks
                     Scene.Entities[i].Destroy();
 
             Scene = null;
+        }
+
+        public void MoveToFront()
+        {
+            Scene?.Layers.MoveToFront(this);
+        }
+
+        public void MoveToBack()
+        {
+            Scene?.Layers.MoveToBack(this);
+        }
+
+        public void MoveAheadOfLayer(string name)
+        {
+            Scene?.Layers.MoveAhead(Name, name);
+        }
+
+        public void MoveAheadOfLayer(Layer layer)
+        {
+            Scene?.Layers.MoveAhead(this, layer);
+        }
+
+        public void MoveBehindLayer(string name)
+        {
+            Scene?.Layers.MoveBehind(Name, name);
+        }
+
+        public void MoveBehindLayer(Layer layer)
+        {
+            Scene?.Layers.MoveBehind(this, layer);
         }
     }
 }

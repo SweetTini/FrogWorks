@@ -2,11 +2,11 @@
 {
     public abstract class Component
     {
-        public Entity Entity { get; private set; }
+        protected internal Entity Entity { get; private set; }
 
-        public Layer Layer => Entity?.Layer;
+        protected internal Layer Layer => Entity?.Layer;
 
-        public Scene Scene => Entity?.Layer?.Scene;
+        protected internal Scene Scene => Entity?.Layer?.Scene;
 
         public bool IsEnabled { get; set; }
 

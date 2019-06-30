@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
+using System.Collections.Generic;
 
 namespace FrogWorks
 {
@@ -13,11 +14,11 @@ namespace FrogWorks
             get { return (entity, other) => Math.Sign(entity.Depth - other.Depth); }
         }
 
-        public Layer Layer { get; private set; }
+        internal ComponentManager Components { get; private set; }
 
-        public Scene Scene => Layer?.Scene;
+        protected internal Layer Layer { get; private set; }
 
-        protected internal ComponentManager Components { get; private set; }
+        protected internal Scene Scene => Layer?.Scene;
 
         public Vector2 Position
         {
@@ -123,5 +124,84 @@ namespace FrogWorks
             Scene?.Entities.Remove(this);
             IsDestroyed = true;
         }
+
+        #region Components
+        public void AddComponent(Component component)
+        {
+            Components.Add(component);
+        }
+
+        public void AddComponents(params Component[] components)
+        {
+            Components.Add(components);
+        }
+
+        public void AddComponents(IEnumerable<Component> components)
+        {
+            Components.Add(components);
+        }
+
+        public void RemoveComponent(Component component)
+        {
+            Components.Remove(component);
+        }
+
+        public void RemoveComponents(params Component[] components)
+        {
+            Components.Remove(components);
+        }
+
+        public void RemoveComponents(IEnumerable<Component> components)
+        {
+            Components.Remove(components);
+        }
+
+        public IEnumerable<T> GetComponentsOfType<T>() where T : Component
+        {
+            for (int i = 0; i < Components.Count; i++)
+                if (Components[i] is T)
+                    yield return Components[i] as T;
+        }
+
+        public int CountComponentsOfType<T>() where T : Component
+        {
+            var count = 0;
+
+            for (int i = 0; i < Components.Count; i++)
+                if (Components[i] is T)
+                    count++;
+
+            return count;
+        }
+
+        public T FindComponentOfType<T>() where T : Component
+        {
+            for (int i = 0; i < Components.Count; i++)
+                if (Components[i] is T)
+                    return Components[i] as T;
+
+            return null;
+        }
+
+        public bool HasComponentOfType<T>() where T : Component
+        {
+            for (int i = 0; i < Components.Count; i++)
+                if (Components[i] is T)
+                    return true;
+
+            return false;
+        }
+
+        public IEnumerable<Component> GetComponents()
+        {
+            for (int i = 0; i < Components.Count; i++)
+                yield return Components[i];
+        }
+
+        public int CountComponents()
+        {
+            return Components.Count;
+        }
+        #endregion
     }
 }
