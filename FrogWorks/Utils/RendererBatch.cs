@@ -22,6 +22,8 @@ namespace FrogWorks
 
         protected RenderingMode RenderingMode { get; private set; } = RenderingMode.None;
 
+        protected bool WrapTexture { get; set; }
+
         public bool IsDrawing { get; private set; }
 
         public bool IsDisposed { get; private set; }
@@ -32,7 +34,7 @@ namespace FrogWorks
             Primitive = new PrimitiveBatch(graphicsDevice);
         }
 
-        public void Configure(BlendState blendState = null, DepthStencilState depthStencilState = null, Effect shaderEffect = null, Matrix? projectionMatrix = null, Matrix ? transformMatrix = null)
+        public void Configure(BlendState blendState = null, DepthStencilState depthStencilState = null, Effect shaderEffect = null, Matrix? projectionMatrix = null, Matrix? transformMatrix = null)
         {
             BlendState = blendState ?? BlendState.AlphaBlend;
             DepthStencilState = depthStencilState ?? DepthStencilState.None;
@@ -70,10 +72,10 @@ namespace FrogWorks
             else Primitive.End();
 
             RenderingMode = RenderingMode.None;
-            IsDrawing = false;
+            WrapTexture = IsDrawing = false;
         }
 
-        public void DrawSprites(Action<SpriteBatch> drawAction)
+        public void DrawSprites(Action<SpriteBatch> drawAction, bool wrapTexture = false)
         {
             if (!IsDrawing)
                 throw new Exception("Begin must be called before drawing sprites.");
@@ -81,8 +83,15 @@ namespace FrogWorks
             if (RenderingMode != RenderingMode.Sprites)
             {
                 Primitive.End();
-                Sprite.Begin(SpriteSortMode.Deferred, BlendState, SamplerState.PointClamp, DepthStencilState, RasterizerState.CullCounterClockwise, ShaderEffect, TransformMatrix);
+                Sprite.Begin(SpriteSortMode.Deferred, BlendState, wrapTexture ? SamplerState.PointWrap : SamplerState.PointClamp, DepthStencilState, RasterizerState.CullCounterClockwise, ShaderEffect, TransformMatrix);
+                WrapTexture = wrapTexture;
                 RenderingMode = RenderingMode.Sprites;
+            }
+            else if (WrapTexture != wrapTexture)
+            {
+                Sprite.End();
+                Sprite.Begin(SpriteSortMode.Deferred, BlendState, wrapTexture ? SamplerState.PointWrap : SamplerState.PointClamp, DepthStencilState, RasterizerState.CullCounterClockwise, ShaderEffect, TransformMatrix);
+                WrapTexture = wrapTexture;
             }
 
             drawAction(Sprite);
