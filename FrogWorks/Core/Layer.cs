@@ -26,11 +26,6 @@ namespace FrogWorks
         {
         }
 
-        internal void ConfigureBatch(RendererBatch batch)
-        {
-            batch.Configure(BlendState, DepthStencilState, ShaderEffect, null, Camera.TransformMatrix);
-        }
-
         internal void OnAdded(Scene scene)
         {
             Scene = scene;
@@ -43,6 +38,11 @@ namespace FrogWorks
                     Scene.Entities[i].Destroy();
 
             Scene = null;
+        }
+
+        public void ConfigureBatch(RendererBatch batch)
+        {
+            batch.Configure(BlendState, DepthStencilState, ShaderEffect, null, Camera.TransformMatrix);
         }
 
         public void MoveToFront()

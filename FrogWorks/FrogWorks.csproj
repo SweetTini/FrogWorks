@@ -37,6 +37,7 @@
   <ItemGroup>
     <Compile Include="Components\GraphicsComponent.cs" />
     <Compile Include="Components\Graphics\Image.cs" />
+    <Compile Include="Components\Graphics\TiledImage.cs" />
     <Compile Include="Core\Component.cs" />
     <Compile Include="Core\Entity.cs" />
     <Compile Include="Game.cs" />

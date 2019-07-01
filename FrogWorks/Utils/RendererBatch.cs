@@ -6,9 +6,9 @@ namespace FrogWorks
 {
     public class RendererBatch : IDisposable
     {
-        public SpriteBatch Sprite { get; private set; }
+        protected internal SpriteBatch Sprite { get; private set; }
 
-        public PrimitiveBatch Primitive { get; private set; }
+        protected internal PrimitiveBatch Primitive { get; private set; }
 
         protected BlendState BlendState { get; set; }
 
@@ -20,6 +20,10 @@ namespace FrogWorks
 
         protected Matrix? TransformMatrix { get; set; }
 
+        protected RenderingMode RenderingMode { get; private set; } = RenderingMode.None;
+
+        public bool IsDrawing { get; private set; }
+
         public bool IsDisposed { get; private set; }
 
         internal RendererBatch(GraphicsDevice graphicsDevice)
@@ -28,7 +32,7 @@ namespace FrogWorks
             Primitive = new PrimitiveBatch(graphicsDevice);
         }
 
-        internal void Configure(BlendState blendState = null, DepthStencilState depthStencilState = null, Effect shaderEffect = null, Matrix? projectionMatrix = null, Matrix ? transformMatrix = null)
+        public void Configure(BlendState blendState = null, DepthStencilState depthStencilState = null, Effect shaderEffect = null, Matrix? projectionMatrix = null, Matrix ? transformMatrix = null)
         {
             BlendState = blendState ?? BlendState.AlphaBlend;
             DepthStencilState = depthStencilState ?? DepthStencilState.None;
@@ -37,7 +41,7 @@ namespace FrogWorks
             TransformMatrix = transformMatrix;
         }
 
-        internal void Reset()
+        public void Reset()
         {
             BlendState = BlendState.AlphaBlend;
             DepthStencilState = DepthStencilState.None;
@@ -46,18 +50,57 @@ namespace FrogWorks
             TransformMatrix = null;
         }
 
-        public void DrawSprite(Action<SpriteBatch> drawAction)
+        public void Begin()
         {
-            Sprite.Begin(SpriteSortMode.Deferred, BlendState,SamplerState.PointClamp, DepthStencilState, RasterizerState.CullCounterClockwise, ShaderEffect, TransformMatrix);
-            drawAction(Sprite);
-            Sprite.End();
+            if (IsDrawing)
+                throw new Exception("End must be called before Begin.");
+
+            Sprite.Begin(SpriteSortMode.Deferred, BlendState, SamplerState.PointClamp, DepthStencilState, RasterizerState.CullCounterClockwise, ShaderEffect, TransformMatrix);
+            RenderingMode = RenderingMode.Sprites;
+            IsDrawing = true;
         }
 
-        public void DrawPrimitive(Action<PrimitiveBatch> drawAction)
+        public void End()
         {
-            Primitive.Begin(BlendState, SamplerState.PointClamp, DepthStencilState, ProjectionMatrix, TransformMatrix);
+            if (!IsDrawing)
+                throw new Exception("End cannot be called before Begin.");
+
+            if (RenderingMode == RenderingMode.Sprites)
+                Sprite.End();
+            else Primitive.End();
+
+            RenderingMode = RenderingMode.None;
+            IsDrawing = false;
+        }
+
+        public void DrawSprites(Action<SpriteBatch> drawAction)
+        {
+            if (!IsDrawing)
+                throw new Exception("Begin must be called before drawing sprites.");
+
+            if (RenderingMode != RenderingMode.Sprites)
+            {
+                Primitive.End();
+                Sprite.Begin(SpriteSortMode.Deferred, BlendState, SamplerState.PointClamp, DepthStencilState, RasterizerState.CullCounterClockwise, ShaderEffect, TransformMatrix);
+                RenderingMode = RenderingMode.Sprites;
+            }
+
+            drawAction(Sprite);
+        }
+
+        public void DrawPrimitives(Action<PrimitiveBatch> drawAction)
+        {
+            if (!IsDrawing)
+                throw new Exception("Begin must be called before drawing primitives.");
+
+            if (RenderingMode != RenderingMode.Primitives)
+            {
+                Sprite.End();
+                Primitive.Begin(BlendState, SamplerState.PointClamp, DepthStencilState, ProjectionMatrix, TransformMatrix);
+                RenderingMode = RenderingMode.Primitives;
+            }
+
             drawAction(Primitive);
-            Primitive.End();
         }
 
         public void Dispose()
@@ -75,5 +118,12 @@ namespace FrogWorks
                 IsDisposed = true;
             }
         }
+    }
+
+    public enum RenderingMode
+    {
+        None,
+        Sprites,
+        Primitives
     }
 }

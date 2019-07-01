@@ -126,7 +126,7 @@ namespace FrogWorks
         public float AngleInDegrees
         {
             get { return MathHelper.ToDegrees(_angle); }
-            set { Angle = MathHelper.ToRadians(_angle); }
+            set { Angle = MathHelper.ToRadians(value); }
         }
 
         public Camera()

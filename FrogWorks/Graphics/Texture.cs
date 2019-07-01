@@ -11,6 +11,10 @@ namespace FrogWorks
 
         public Rectangle Bounds { get; private set; }
 
+        public int Width => Bounds.Width;
+
+        public int Height => Bounds.Height;
+
         public bool IsDisposed { get; private set; }
 
         public Texture(Texture2D xnaTexture)
@@ -47,12 +51,9 @@ namespace FrogWorks
         {
         }
 
-        public void Draw(RendererBatch batch, Vector2 position, Vector2? origin = null, Vector2? scale = null, float angle = 0f, Color? color = null, SpriteEffects effects = SpriteEffects.None)
+        public void Draw(RendererBatch batch, Vector2 position, Vector2 origin, Vector2 scale, float angle, Color color, SpriteEffects effects)
         {
-            batch.DrawSprite((sprite) =>
-            {
-                sprite.Draw(XnaTexture, position, Bounds, color ?? Color.White, angle, origin ?? Vector2.Zero, scale ?? Vector2.One, effects, 0f);
-            });
+            batch.DrawSprites((sprite) => sprite.Draw(XnaTexture, position, Bounds, color, angle, origin, scale, effects, 0f));
         }
 
         public Texture ClipRegion(Rectangle bounds)

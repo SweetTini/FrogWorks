@@ -4,7 +4,7 @@ namespace FrogWorks
 {
     public class Image : GraphicsComponent
     {
-        public Texture Texture { get; private set; }
+        public Texture Texture { get; protected set; }
 
         public Rectangle Bounds
         {

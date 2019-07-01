@@ -73,7 +73,10 @@ namespace FrogWorks
                 if (_layers[i].IsVisible)
                 {
                     _layers[i].ConfigureBatch(batch);
+
+                    batch.Begin();
                     _scene.Entities.Draw(_layers[i], batch);
+                    batch.End();
                 }
             }
 
