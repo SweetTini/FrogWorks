@@ -11,6 +11,7 @@ namespace FrogWorks.Demo
             {
                 game.SetScene<CoreTestScene>();
                 game.Window.AllowUserResizing = true;
+                game.IsMouseVisible = true;
                 game.Run();
             }
         }

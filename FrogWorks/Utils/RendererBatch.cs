@@ -36,6 +36,9 @@ namespace FrogWorks
 
         public void Configure(BlendState blendState = null, DepthStencilState depthStencilState = null, Effect shaderEffect = null, Matrix? projectionMatrix = null, Matrix? transformMatrix = null)
         {
+            if (IsDrawing)
+                throw new Exception("Cannot modify setting while the rendering process is active.");
+
             BlendState = blendState ?? BlendState.AlphaBlend;
             DepthStencilState = depthStencilState ?? DepthStencilState.None;
             ShaderEffect = shaderEffect;
@@ -45,6 +48,9 @@ namespace FrogWorks
 
         public void Reset()
         {
+            if (IsDrawing)
+                throw new Exception("Cannot modify setting while the rendering process is active.");
+
             BlendState = BlendState.AlphaBlend;
             DepthStencilState = DepthStencilState.None;
             ShaderEffect = null;
@@ -84,8 +90,8 @@ namespace FrogWorks
             {
                 Primitive.End();
                 Sprite.Begin(SpriteSortMode.Deferred, BlendState, wrapTexture ? SamplerState.PointWrap : SamplerState.PointClamp, DepthStencilState, RasterizerState.CullCounterClockwise, ShaderEffect, TransformMatrix);
-                WrapTexture = wrapTexture;
                 RenderingMode = RenderingMode.Sprites;
+                WrapTexture = wrapTexture;
             }
             else if (WrapTexture != wrapTexture)
             {

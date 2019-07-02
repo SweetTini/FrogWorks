@@ -17,6 +17,7 @@
             CreateApple(190, 90, 0);
             CreateApple(130, 150, 1);
             CreateApple(130, 90, -1);
+
             CreateCheckerBoard(0, GetLayer("Test"));
         }
 

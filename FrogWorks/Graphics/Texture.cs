@@ -11,9 +11,9 @@ namespace FrogWorks
 
         public Rectangle Bounds { get; private set; }
 
-        public int Width => Bounds.Width;
+        public int Width { get; private set; }
 
-        public int Height => Bounds.Height;
+        public int Height { get; private set; }
 
         public bool IsDisposed { get; private set; }
 
@@ -34,6 +34,8 @@ namespace FrogWorks
 
             XnaTexture = xnaTexture;
             Bounds = bounds.Intersect(xnaTexture.Bounds);
+            Width = Bounds.Width;
+            Height = Bounds.Height;
         }
 
         public Texture(Texture texture, Rectangle bounds)
@@ -56,7 +58,7 @@ namespace FrogWorks
             batch.DrawSprites((sprite) => sprite.Draw(XnaTexture, position, Bounds, color, angle, origin, scale, effects, 0f));
         }
 
-        public void Wrap(RendererBatch batch, Vector2 position, Rectangle bounds, Vector2 origin, Vector2 scale, float angle, Color color, SpriteEffects effects)
+        public void Draw(RendererBatch batch, Vector2 position, Rectangle bounds, Vector2 origin, Vector2 scale, float angle, Color color, SpriteEffects effects)
         {
             batch.DrawSprites((sprite) => sprite.Draw(XnaTexture, position, bounds, color, angle, origin, scale, effects, 0f), true);
         }

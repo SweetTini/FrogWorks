@@ -9,7 +9,7 @@ namespace FrogWorks.Demo
         public CheckerBoardEntity()
             : base()
         {
-            Image = new TiledImage(Texture.Load("Images\\Checker.png"), 100, 100, false);
+            Image = new TiledImage(Texture.Load("Images\\Checker.png"), 320, 240, false);
             AddComponent(Image);
         }
     }

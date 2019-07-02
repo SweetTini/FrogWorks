@@ -29,31 +29,41 @@ namespace FrogWorks
             }
         }
 
-        public Vector2 UpperBounds
+        public float Left
         {
             get
             {
                 UpdateMatrices();
-                return Vector2.Transform(Vector2.Zero, _inverseMatrix);
+                return Vector2.Transform(Vector2.Zero, _inverseMatrix).X;
             }
         }
 
-        public Vector2 LowerBounds
+        public float Right
         {
             get
             {
                 UpdateMatrices();
-                return Vector2.Transform(new Vector2(Viewport.Width, Viewport.Height), _inverseMatrix);
+                return Vector2.Transform(Vector2.UnitX * Viewport.Width, _inverseMatrix).X;
             }
         }
 
-        public float Left => UpperBounds.X;
+        public float Top
+        {
+            get
+            {
+                UpdateMatrices();
+                return Vector2.Transform(Vector2.Zero, _inverseMatrix).Y;
+            }
+        }
 
-        public float Right => LowerBounds.X;
-
-        public float Top => UpperBounds.Y;
-
-        public float Bottom => LowerBounds.Y;
+        public float Bottom
+        {
+            get
+            {
+                UpdateMatrices();
+                return Vector2.Transform(Vector2.UnitY * Viewport.Height, _inverseMatrix).Y;
+            }
+        }
 
         public Viewport Viewport { get; private set; }
 

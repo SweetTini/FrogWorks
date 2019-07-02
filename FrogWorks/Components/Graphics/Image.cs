@@ -6,10 +6,9 @@ namespace FrogWorks
     {
         public Texture Texture { get; protected set; }
 
-        public Rectangle Bounds
-        {
-            get { return Texture.Bounds.Transform(DrawPosition, Origin, Scale, Angle); }
-        }
+        public virtual Rectangle Bounds => new Rectangle(0, 0, Texture.Width, Texture.Height);
+
+        public Rectangle AbsoluteBounds => Bounds.Transform(DrawPosition, Origin, Scale, Angle);
 
         public Image(Texture texture, bool isEnabled)
             : base(isEnabled)
@@ -24,43 +23,41 @@ namespace FrogWorks
 
         public void SetOrigin(Origin origin)
         {
-            var bounds = Texture.Bounds;
-
             switch (origin)
             {
                 case FrogWorks.Origin.TopLeft:
-                    Origin = new Vector2(bounds.Left, bounds.Top);
+                    Origin = new Vector2(Bounds.Left, Bounds.Top);
                     break;
                 case FrogWorks.Origin.Top:
-                    Origin = new Vector2(bounds.Center.X, bounds.Top);
+                    Origin = new Vector2(Bounds.Center.X, Bounds.Top);
                     break;
                 case FrogWorks.Origin.TopRight:
-                    Origin = new Vector2(bounds.Right, bounds.Top);
+                    Origin = new Vector2(Bounds.Right, Bounds.Top);
                     break;
                 case FrogWorks.Origin.Left:
-                    Origin = new Vector2(bounds.Left, bounds.Center.Y);
+                    Origin = new Vector2(Bounds.Left, Bounds.Center.Y);
                     break;
                 case FrogWorks.Origin.Center:
-                    Origin = bounds.Center.ToVector2();
+                    Origin = Bounds.Center.ToVector2();
                     break;
                 case FrogWorks.Origin.Right:
-                    Origin = new Vector2(bounds.Right, bounds.Center.Y);
+                    Origin = new Vector2(Bounds.Right, Bounds.Center.Y);
                     break;
                 case FrogWorks.Origin.BottomLeft:
-                    Origin = new Vector2(bounds.Left, bounds.Bottom);
+                    Origin = new Vector2(Bounds.Left, Bounds.Bottom);
                     break;
                 case FrogWorks.Origin.Bottom:
-                    Origin = new Vector2(bounds.Center.X, bounds.Bottom);
+                    Origin = new Vector2(Bounds.Center.X, Bounds.Bottom);
                     break;
                 case FrogWorks.Origin.BottomRight:
-                    Origin = new Vector2(bounds.Right, bounds.Bottom);
+                    Origin = new Vector2(Bounds.Right, Bounds.Bottom);
                     break;
             }
         }
 
         public void CenterOrigin()
         {
-            Origin = Texture.Bounds.Center.ToVector2();
+            Origin = Bounds.Center.ToVector2();
         }
     }
 
