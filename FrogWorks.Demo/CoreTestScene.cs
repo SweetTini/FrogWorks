@@ -18,18 +18,30 @@
             CreateApple(130, 150, 1);
             CreateApple(130, 90, -1);
 
-            CreateCheckerBoard(0, GetLayer("Test"));
+            CreateCheckerBoard(0, 0, 0, TestLayer);
         }
 
         void CreateApple(float x, float y, int depth, Layer layer = null)
         {
-            var apple = new AppleEntity() { X = x, Y = y, Depth = depth };
+            var apple = new AppleEntity()
+            {
+                X = x,
+                Y = y,
+                Depth = depth
+            };
+
             AddEntityToLayer(layer, apple);
         }
 
-        void CreateCheckerBoard(int depth, Layer layer = null)
+        void CreateCheckerBoard(float x, float y, int depth, Layer layer = null)
         {
-            var checkerBoard = new CheckerBoardEntity() { Depth = depth };
+            var checkerBoard = new CheckerBoardEntity()
+            {
+                X = x,
+                Y = y,
+                Depth = depth
+            };
+
             AddEntitiesToLayer(layer, checkerBoard);
         }
     }
