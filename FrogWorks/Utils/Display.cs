@@ -13,9 +13,9 @@ namespace FrogWorks
 
         protected RenderTarget2D BackBuffer { get; private set; }
 
-        protected Matrix ScaleMatrix { get; private set; }
-
         protected Viewport Viewport { get; private set; }
+
+        protected internal Matrix ScaleMatrix { get; private set; }
 
         public int Width { get; private set; }
 

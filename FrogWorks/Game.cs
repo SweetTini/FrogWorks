@@ -80,6 +80,8 @@ namespace FrogWorks
             RendererBatch = new RendererBatch(GraphicsDevice);
             Content.RootDirectory = "Content";
             OnTitleChanged();
+
+            Input.Initialize();
         }
 
         public void SetScene<T>() where T : Scene, new()
@@ -93,6 +95,8 @@ namespace FrogWorks
 
             if (deltaTime > 0f)
                 FramesPerSecond = (int)Math.Round(1f / deltaTime);
+
+            Input.Update(IsActive);
 
             _currentScene?.BeginUpdate();
             _currentScene?.Update(deltaTime);
@@ -119,6 +123,7 @@ namespace FrogWorks
         protected override void EndRun()
         {
             RendererBatch.Dispose();
+            Input.Close();
             base.EndRun();
         }
 
