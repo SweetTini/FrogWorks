@@ -15,7 +15,7 @@ namespace FrogWorks
 
         public static Color FromHsl(int hue, int saturation, int lightness)
         {
-            hue = (hue % 360 + 360) % 360;
+            hue = hue.Mod(360);
 
             var s = MathHelper.Clamp(saturation, 0, 100) / 100f;
             var l = MathHelper.Clamp(lightness, 0, 100) / 100f;
@@ -42,7 +42,7 @@ namespace FrogWorks
 
         public static Color FromHsv(int hue, int saturation, int value)
         {
-            hue = (hue % 360 + 360) % 360;
+            hue = hue.Mod(360);
 
             var s = MathHelper.Clamp(saturation, 0, 100) / 100f;
             var v = MathHelper.Clamp(value, 0, 100) / 100f;

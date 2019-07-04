@@ -18,7 +18,17 @@
             CreateApple(130, 150, 1);
             CreateApple(130, 90, -1);
 
-            CreateCheckerBoard(0, 0, 0, TestLayer);
+            CreateCheckerBoard(12, 12, 0, TestLayer);
+        }
+
+        public override void Update(float deltaTime)
+        {
+            TestLayer.Camera.AngleInDegrees += Input.Keyboard.GetAxis(Keys.D, Keys.A) * .5f;
+            TestLayer.Camera.Zoom += Input.Keyboard.GetAxis(Keys.S, Keys.W) * .005f;
+            TestLayer.Camera.X += Input.Keyboard.GetAxis(Keys.RightArrow, Keys.LeftArrow) * 2f;
+            TestLayer.Camera.Y += Input.Keyboard.GetAxis(Keys.DownArrow, Keys.UpArrow) * 2f;
+
+            base.Update(deltaTime);
         }
 
         void CreateApple(float x, float y, int depth, Layer layer = null)

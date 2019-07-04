@@ -36,12 +36,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Components\GraphicsComponent.cs" />
+    <Compile Include="Components\Graphics\AnimatedBackgroundImage.cs" />
+    <Compile Include="Components\Graphics\AnimatedTiledImage.cs" />
+    <Compile Include="Components\Graphics\BackgroundImage.cs" />
     <Compile Include="Components\Graphics\Image.cs" />
+    <Compile Include="Components\Graphics\Sprite.cs" />
     <Compile Include="Components\Graphics\TiledImage.cs" />
+    <Compile Include="Components\Graphics\TileMap.cs" />
     <Compile Include="Core\Component.cs" />
     <Compile Include="Core\Entity.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Core\Layer.cs" />
+    <Compile Include="Graphics\Animation.cs" />
     <Compile Include="Graphics\Texture.cs" />
     <Compile Include="Inputs\Input.cs" />
     <Compile Include="Inputs\Readers\GamePadReader.cs" />
@@ -56,6 +62,7 @@
     <Compile Include="Utils\Camera.cs" />
     <Compile Include="Utils\ColorConvert.cs" />
     <Compile Include="Utils\Extensions.cs" />
+    <Compile Include="Utils\Map.cs" />
     <Compile Include="Utils\PrimitiveBatch.cs" />
     <Compile Include="Utils\RendererBatch.cs" />
     <Compile Include="Utils\Display.cs" />

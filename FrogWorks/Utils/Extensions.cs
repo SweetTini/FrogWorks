@@ -7,6 +7,18 @@ namespace FrogWorks
 {
     public static class Extensions
     {
+        #region Numerics
+        public static int Mod(this int number, int divisor)
+        {
+            return (number % divisor + divisor) % divisor;
+        }
+
+        public static float Mod(this float number, float divisor)
+        {
+            return (number % divisor + divisor) % divisor;
+        }
+        #endregion
+
         #region Range
         public static bool Between(this int number, int min, int max)
         {
@@ -53,8 +65,8 @@ namespace FrogWorks
         public static Rectangle Transform(this Rectangle rect, Vector2? position = null, Vector2? origin = null, Vector2? scale = null, float angle = 0f)
         {
             var result = rect.ToVertices().Transform(position, origin, scale, angle);
-            var lowest = result.Min().ToPoint();
-            var highest = result.Max().ToPoint();
+            var lowest = result.Min().Round().ToPoint();
+            var highest = result.Max().Round().ToPoint();
 
             return new Rectangle(lowest.X, lowest.Y, highest.X - lowest.X, highest.Y - lowest.Y);
         }
@@ -68,6 +80,25 @@ namespace FrogWorks
                 new Vector2(rect.Right, rect.Bottom),
                 new Vector2(rect.Left, rect.Bottom)
             };
+        }
+        #endregion
+
+        #region Vectors
+        public static Vector2 Clamp(this Vector2 vector, Vector2 lowest, Vector2 highest)
+        {
+            return new Vector2(
+                MathHelper.Clamp(vector.X, lowest.X, highest.X),
+                MathHelper.Clamp(vector.Y, lowest.Y, highest.Y));
+        }
+
+        public static Vector2 Round(this Vector2 vector)
+        {
+            return new Vector2((float)Math.Round(vector.X), (float)Math.Round(vector.Y));
+        }
+
+        public static Vector2 Round(this Vector2 vector, int digits)
+        {
+            return new Vector2((float)Math.Round(vector.X, digits), (float)Math.Round(vector.Y, digits));
         }
         #endregion
 

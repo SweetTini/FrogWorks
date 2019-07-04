@@ -7,9 +7,12 @@ namespace FrogWorks
     public class Camera
     {
         private Matrix _transformMatrix, _inverseMatrix;
+        private Viewport _viewport;
         private Vector2 _position, _origin;
-        private float _scale = 1f, _angle;
+        private float _zoom = 1f, _angle;
         private bool _isDirty = true;
+
+        public Action<Camera> OnCameraUpdated { get; set; }
 
         public Matrix TransformMatrix
         {
@@ -29,43 +32,33 @@ namespace FrogWorks
             }
         }
 
-        public float Left
+        public Vector2 Upper
         {
             get
             {
                 UpdateMatrices();
-                return Vector2.Transform(Vector2.Zero, _inverseMatrix).X;
+                return Vector2.Transform(Vector2.Zero, _inverseMatrix).Round();
             }
         }
 
-        public float Right
+        public Vector2 Lower
         {
             get
             {
                 UpdateMatrices();
-                return Vector2.Transform(Vector2.UnitX * Viewport.Width, _inverseMatrix).X;
+                return Vector2.Transform(new Vector2(_viewport.Width, _viewport.Height), _inverseMatrix).Round();
             }
         }
 
-        public float Top
-        {
-            get
-            {
-                UpdateMatrices();
-                return Vector2.Transform(Vector2.Zero, _inverseMatrix).Y;
-            }
-        }
+        public float Left => Upper.X;
 
-        public float Bottom
-        {
-            get
-            {
-                UpdateMatrices();
-                return Vector2.Transform(Vector2.UnitY * Viewport.Height, _inverseMatrix).Y;
-            }
-        }
+        public float Right => Lower.X;
 
-        public Viewport Viewport { get; private set; }
+        public float Top => Upper.Y;
+
+        public float Bottom => Lower.Y;
+
+        public Rectangle Bounds { get; private set; }
 
         public Vector2 Position
         {
@@ -111,13 +104,15 @@ namespace FrogWorks
             }
         }
 
-        public float Scale
+        public float Zoom
         {
-            get { return _scale; }
+            get { return _zoom; }
             set
             {
-                if (value == _scale) return;
-                _scale = value;
+                value = MathHelper.Clamp(value, .1f, 10f);
+
+                if (value == _zoom) return;
+                _zoom = value;
                 _isDirty = true;
             }
         }
@@ -146,7 +141,7 @@ namespace FrogWorks
 
         public Camera(int width, int height)
         {
-            Viewport = new Viewport(0, 0, width, height);
+            _viewport = new Viewport(0, 0, width, height);
             CenterOrigin();
             UpdateMatrices();
         }
@@ -158,7 +153,7 @@ namespace FrogWorks
 
         public void CenterOrigin()
         {
-            Origin = new Vector2(Viewport.Width, Viewport.Height) * .5f;
+            Origin = new Vector2(_viewport.Width, _viewport.Height) * .5f;
         }
 
         public Vector2 ViewToWorld(Vector2 position)
@@ -191,10 +186,13 @@ namespace FrogWorks
             {
                 _transformMatrix = Matrix.CreateTranslation(new Vector3(-_position - _origin, 0f)) 
                     * Matrix.CreateRotationZ(_angle) 
-                    * Matrix.CreateScale(new Vector3(_scale * Vector2.One, 1f)) 
+                    * Matrix.CreateScale(new Vector3(_zoom * Vector2.One, 1f)) 
                     * Matrix.CreateTranslation(new Vector3(_origin, 0f));
                 _inverseMatrix = Matrix.Invert(_transformMatrix);
                 _isDirty = false;
+
+                Bounds = _viewport.Bounds.Transform(_position + _origin, _origin, Vector2.One / _zoom, _angle);
+                OnCameraUpdated?.Invoke(this);
             }
         }
     }
