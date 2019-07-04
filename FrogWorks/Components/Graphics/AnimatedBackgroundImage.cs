@@ -16,7 +16,7 @@ namespace FrogWorks
             get { return _index; }
             set
             {
-                _index = value.Mod(Textures.Length);
+                _index = value.Mod(Frames.Length);
                 _timer = 0f;
             }
         }
