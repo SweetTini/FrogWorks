@@ -1,11 +1,7 @@
-﻿using Microsoft.Xna.Framework;
-
-namespace FrogWorks.Demo
+﻿namespace FrogWorks.Demo
 {
     public class CoreTestScene : Scene
     {
-        float test = 0f;
-
         protected BitmapFont Font { get; set; }
 
         protected Layer TestLayer { get; set; }
@@ -35,7 +31,7 @@ namespace FrogWorks.Demo
             TestLayer.Camera.Zoom += Input.Keyboard.GetAxis(Keys.S, Keys.W) * .005f;
             TestLayer.Camera.X += Input.Keyboard.GetAxis(Keys.RightArrow, Keys.LeftArrow) * 2f;
             TestLayer.Camera.Y += Input.Keyboard.GetAxis(Keys.DownArrow, Keys.UpArrow) * 2f;
-            test += .005f;
+
             base.Update(deltaTime);
         }
 
@@ -73,7 +69,7 @@ namespace FrogWorks.Demo
                 Depth = depth
             };
 
-            AddEntitiesToLayer(layer, checkerBoard);
+            AddEntityToLayer(layer, checkerBoard);
         }
     }
 }

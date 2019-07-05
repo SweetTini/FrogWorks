@@ -53,6 +53,7 @@ namespace FrogWorks
 
             if (wordWrap) text = WordWrap(text, bounds.Width);
             var offset = Vector2.UnitY * MeasureVerticalOffset(alignY, text, bounds.Height);
+            var position = bounds.Location.ToVector2();
             var lines = text.Split('\n');
 
             for (int i = 0; i < lines.Length; i++)
@@ -69,11 +70,9 @@ namespace FrogWorks
                         var kerning = 0;
                         if (j < line.Length - 1)
                             character.Kernings.TryGetValue(line[j + 1], out kerning);
-
-                        var charPosition = bounds.Location.ToVector2();
                         var charOrigin = (origin ?? Vector2.Zero) - (offset + character.Offset.ToVector2());
 
-                        character.Texture.Draw(batch, charPosition, charOrigin, scale ?? Vector2.One, angle, color ?? Color.White, effects);
+                        character.Texture.Draw(batch, position, charOrigin, scale ?? Vector2.One, angle, color ?? Color.White, effects);
                         offset.X += kerning + character.Spacing + Spacing;
                     }
                 }
