@@ -7,7 +7,7 @@ namespace FrogWorks
 {
     public static class Extensions
     {
-        #region Numerics
+        #region Numeric
         public static int Mod(this int number, int divisor)
         {
             return (number % divisor + divisor) % divisor;
@@ -89,7 +89,7 @@ namespace FrogWorks
         }
         #endregion
 
-        #region Vectors
+        #region Vector
         public static Vector2 Clamp(this Vector2 vector, Vector2 lowest, Vector2 highest)
         {
             return new Vector2(
