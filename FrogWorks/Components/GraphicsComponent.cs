@@ -39,6 +39,8 @@ namespace FrogWorks
 
         public Color Color { get; set; } = Color.White;
 
+        public float Opacity { get; set; } = 1f;
+
         public SpriteEffects SpriteEffects { get; set; }
 
         public bool FlipHorizontally

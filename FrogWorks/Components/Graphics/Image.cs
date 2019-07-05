@@ -18,7 +18,7 @@ namespace FrogWorks
 
         public override void Draw(RendererBatch batch)
         {
-            Texture.Draw(batch, DrawPosition, Origin, Scale, Angle, Color, SpriteEffects);
+            Texture.Draw(batch, DrawPosition, Origin, Scale, Angle, Color * MathHelper.Clamp(Opacity, 0f, 1f), SpriteEffects);
         }
 
         public void SetOrigin(Origin origin)

@@ -42,6 +42,8 @@ namespace FrogWorks
 
         public Color Color { get; set; } = Color.White;
 
+        public float Opacity { get; set; } = 1f;
+
         public SpriteEffects SpriteEffects { get; set; }
 
         public bool FlipHorizontally
@@ -82,7 +84,7 @@ namespace FrogWorks
                 var y = DrawableRegion.Top + (i / DrawableRegion.Width);
                 var position = DrawPosition + new Vector2(x * TileWidth, y * TileHeight);
 
-                TextureMap[x, y]?.Draw(batch, position, Vector2.Zero, Vector2.One, 0f, Color, SpriteEffects);
+                TextureMap[x, y]?.Draw(batch, position, Vector2.Zero, Vector2.One, 0f, Color * MathHelper.Clamp(Opacity, 0f, 1f), SpriteEffects);
             }
         }
 
