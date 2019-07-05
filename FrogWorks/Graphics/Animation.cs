@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FrogWorks
+﻿namespace FrogWorks
 {
-    public class Animation
+    public struct Animation
     {
+        public int[] Frames { get; internal set; }
+
+        public float Duration { get; internal set; }
+
+        public bool Loop { get; internal set; }
+
+        public int LoopCount { get; internal set; }
+
+        public int LoopFrom { get; internal set; }
     }
 }

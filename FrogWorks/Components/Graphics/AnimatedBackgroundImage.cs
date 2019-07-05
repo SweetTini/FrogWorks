@@ -37,6 +37,18 @@ namespace FrogWorks
             Duration = duration;
         }
 
+        public AnimatedBackgroundImage(Texture texture, int frameWidth, int frameHeight, float duration)
+            : base(texture, true)
+        {
+            Textures = Texture.Split(texture, frameWidth, frameHeight);
+            Texture = Textures[0];
+            Frames = new int[Textures.Length];
+            Duration = duration;
+
+            for (int i = 0; i < Textures.Length; i++)
+                Frames[i] = i;
+        }
+
         public override void Update(float deltaTime)
         {
             if (_duration == 0f) return;
