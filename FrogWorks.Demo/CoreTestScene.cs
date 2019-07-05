@@ -1,7 +1,11 @@
-﻿namespace FrogWorks.Demo
+﻿using Microsoft.Xna.Framework;
+
+namespace FrogWorks.Demo
 {
     public class CoreTestScene : Scene
     {
+        float test = 0f;
+
         protected BitmapFont Font { get; set; }
 
         protected Layer TestLayer { get; set; }
@@ -31,7 +35,7 @@
             TestLayer.Camera.Zoom += Input.Keyboard.GetAxis(Keys.S, Keys.W) * .005f;
             TestLayer.Camera.X += Input.Keyboard.GetAxis(Keys.RightArrow, Keys.LeftArrow) * 2f;
             TestLayer.Camera.Y += Input.Keyboard.GetAxis(Keys.DownArrow, Keys.UpArrow) * 2f;
-
+            test += .005f;
             base.Update(deltaTime);
         }
 
@@ -42,7 +46,7 @@
             MainLayer.ConfigureBatch(batch);
             batch.Begin();
 
-            Font.Draw(batch, "Sprite Test", 8, 8, 320, 16, HorizontalAlignment.Center);
+            Font.Draw(batch, "Arrow keys - Move\nWASD - Rotate and zoom", 8, 8, 320, 16, HorizontalAlignment.Center);
 
             batch.End();
             batch.Reset();
