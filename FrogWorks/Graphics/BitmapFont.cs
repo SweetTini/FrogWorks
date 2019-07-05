@@ -268,9 +268,11 @@ namespace FrogWorks
             return new BitmapFont
             {
                 Characters = new Dictionary<int, BitmapCharacter>(Characters),
+                _charSpacing = _charSpacing,
                 Spacing = Spacing,
                 DefaultLineHeight = DefaultLineHeight,
-                LineHeight = LineHeight
+                LineHeight = LineHeight,
+                IsMonospace = IsMonospace
             };
         }
     }
