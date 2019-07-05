@@ -2,7 +2,7 @@
 
 namespace FrogWorks
 {
-    public class TileSet : IDisposable
+    public class TileSet
     {
         private Texture[,] _tiles;
 
@@ -27,8 +27,6 @@ namespace FrogWorks
 
         public int TileHeight { get; private set; }
 
-        public bool IsDisposed { get; private set; }
-
         public TileSet(Texture texture, int tileWidth, int tileHeight)
         {
             Texture = texture;
@@ -52,21 +50,6 @@ namespace FrogWorks
         public TileSet Clone()
         {
             return new TileSet(Texture, TileWidth, TileHeight);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool isDisposing)
-        {
-            if (isDisposing && !IsDisposed)
-            {
-                Texture.Dispose();
-                IsDisposed = true;
-            }
         }
     }
 }
