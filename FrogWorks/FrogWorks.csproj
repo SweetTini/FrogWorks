@@ -48,6 +48,8 @@
     <Compile Include="Game.cs" />
     <Compile Include="Core\Layer.cs" />
     <Compile Include="Graphics\Animation.cs" />
+    <Compile Include="Graphics\BitmapCharacter.cs" />
+    <Compile Include="Graphics\BitmapFont.cs" />
     <Compile Include="Graphics\Texture.cs" />
     <Compile Include="Graphics\TileSet.cs" />
     <Compile Include="Inputs\Input.cs" />
