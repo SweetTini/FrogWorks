@@ -10,6 +10,7 @@ namespace FrogWorks.Demo
             : base()
         {
             Image = new BackgroundImage(Texture.Load("Images\\Checker.png"), false);
+            Image.Color = Color.LightPink;
             AddComponent(Image);
         }
     }

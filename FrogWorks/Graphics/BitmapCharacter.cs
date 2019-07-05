@@ -25,7 +25,7 @@ namespace FrogWorks
         }
 
         internal BitmapCharacter(Texture texture, int ascii, int offsetX = 0, int offsetY = 0, int spacing = 0)
-            : base()
+            : this()
         {
             Texture = texture;
             Ascii = ascii;

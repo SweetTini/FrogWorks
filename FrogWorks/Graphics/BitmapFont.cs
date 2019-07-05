@@ -34,6 +34,7 @@ namespace FrogWorks
         }
 
         public BitmapFont(Texture texture, int charWidth, int charHeight, string charSet)
+            : this()
         {
             var textures = Texture.Split(texture, charWidth, charHeight);
             var charCount = Math.Min(charSet.Length, textures.Length);

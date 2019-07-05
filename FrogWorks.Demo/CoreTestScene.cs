@@ -2,12 +2,17 @@
 {
     public class CoreTestScene : Scene
     {
+        protected BitmapFont Font { get; set; }
+
         protected Layer TestLayer { get; set; }
 
         public CoreTestScene()
             : base()
         {
             BackgroundColor = ColorConvert.FromHsl(0, 0, 59);
+
+            var charSet = " !\"\'*+,-.0123456789:;?ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+            Font = new BitmapFont(Texture.Load("Images\\MonoFont.png"), 12, 16, charSet);
 
             TestLayer = AddLayer("Test");
             TestLayer.MoveToBack();
@@ -17,7 +22,6 @@
             CreateApple(190, 90, 0);
             CreateApple(130, 150, 1);
             CreateApple(130, 90, -1);
-
             CreateCheckerBoard(12, 12, 0, TestLayer);
         }
 
@@ -29,6 +33,19 @@
             TestLayer.Camera.Y += Input.Keyboard.GetAxis(Keys.DownArrow, Keys.UpArrow) * 2f;
 
             base.Update(deltaTime);
+        }
+
+        public override void Draw(RendererBatch batch)
+        {
+            base.Draw(batch);
+
+            MainLayer.ConfigureBatch(batch);
+            batch.Begin();
+
+            Font.Draw(batch, "Sprite Test", 8, 8, 320, 16, HorizontalAlignment.Center);
+
+            batch.End();
+            batch.Reset();
         }
 
         void CreateApple(float x, float y, int depth, Layer layer = null)
