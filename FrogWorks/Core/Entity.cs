@@ -107,6 +107,12 @@ namespace FrogWorks
             Layer = null;
         }
 
+        public virtual void OnLayerChanged(Layer layer, Layer lastLayer)
+        {
+            for (int i = 0; i < Components.Count; i++)
+                Components[i].OnLayerChanged(layer, lastLayer);
+        }
+
         public virtual void OnSceneBegan(Scene scene)
         {
         }
@@ -210,7 +216,13 @@ namespace FrogWorks
             if (Scene == null) return;
 
             var index = Scene.Layers.IndexOf(name);
-            if (index > -1) Layer = Scene.Layers[index];
+
+            if (index > -1)
+            {
+                var lastLayer = Layer;
+                Layer = Scene.Layers[index];
+                OnLayerChanged(Layer, lastLayer);
+            }
         }
 
         public void MoveToLayer(Layer layer)
@@ -218,7 +230,13 @@ namespace FrogWorks
             if (layer == null || Scene == null) return;
 
             var index = Scene.Layers.IndexOf(layer.Name);
-            if (index > -1) Layer = layer;
+
+            if (index > -1)
+            {
+                var lastLayer = Layer;
+                Layer = layer;
+                OnLayerChanged(Layer, lastLayer);
+            }
         }
         #endregion
     }

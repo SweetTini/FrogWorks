@@ -51,6 +51,10 @@
         {
         }
 
+        public virtual void OnLayerChanged(Layer layer, Layer lastLayer)
+        {
+        }
+
         public void Destroy()
         {
             Entity?.Components.Remove(this);

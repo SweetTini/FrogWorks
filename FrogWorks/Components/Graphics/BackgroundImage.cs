@@ -82,18 +82,21 @@ namespace FrogWorks
 
         public override void OnEntityAdded(Entity entity)
         {
-            if (entity.Equals(Entity) && Entity.Layer != null)
-            {
-                var camera = Entity.Layer.Camera;
-                UpdateDrawableRegion(camera);
-                camera.OnCameraUpdated += UpdateDrawableRegion;
-            }
+            var camera = entity.Layer.Camera;
+            camera.OnCameraUpdated += UpdateDrawableRegion;
+            UpdateDrawableRegion(camera);
         }
 
         public override void OnEntityRemoved(Entity entity)
         {
-            if (entity.Equals(Entity) && Entity.Layer != null)
-                Entity.Layer.Camera.OnCameraUpdated -= UpdateDrawableRegion;
+            entity.Layer.Camera.OnCameraUpdated -= UpdateDrawableRegion;
+        }
+
+        public override void OnLayerChanged(Layer layer, Layer lastLayer)
+        {
+            lastLayer.Camera.OnCameraUpdated -= UpdateDrawableRegion;
+            layer.Camera.OnCameraUpdated += UpdateDrawableRegion;
+            UpdateDrawableRegion(layer.Camera);
         }
 
         private void UpdateDrawableRegion(Camera camera)
