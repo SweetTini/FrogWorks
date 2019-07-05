@@ -109,7 +109,7 @@ namespace FrogWorks
             get { return _zoom; }
             set
             {
-                value = MathHelper.Clamp(value, .1f, 10f);
+                value = MathHelper.Clamp(value, .1f, 5f);
 
                 if (value == _zoom) return;
                 _zoom = value;
