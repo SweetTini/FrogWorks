@@ -35,6 +35,12 @@ namespace FrogWorks
             return 0 <= index && index < array.Length;
         }
 
+        public static bool WithinRange<T>(this T[,] array, int columnIndex, int rowIndex)
+        {
+            return columnIndex >= 0 && columnIndex < array.GetLength(0)
+                && rowIndex >= 0 && rowIndex < array.GetLength(1);
+        }
+
         public static bool WithinRange<T>(this IEnumerable<T> list, int index)
         {
             return 0 <= index && index < list.Count();

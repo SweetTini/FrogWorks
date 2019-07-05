@@ -49,6 +49,7 @@
     <Compile Include="Core\Layer.cs" />
     <Compile Include="Graphics\Animation.cs" />
     <Compile Include="Graphics\Texture.cs" />
+    <Compile Include="Graphics\TileSet.cs" />
     <Compile Include="Inputs\Input.cs" />
     <Compile Include="Inputs\Readers\GamePadReader.cs" />
     <Compile Include="Inputs\Readers\KeyboardReader.cs" />
