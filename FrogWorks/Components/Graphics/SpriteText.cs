@@ -190,7 +190,8 @@ namespace FrogWorks
 
                 for (int j = 0; j < line.Length; j++)
                 {
-                    var character = Font[line[j]];
+                    var ascii = line[j];
+                    var character = Font[ascii];
                     if (character == null) continue;
 
                     var kerning = 0;
