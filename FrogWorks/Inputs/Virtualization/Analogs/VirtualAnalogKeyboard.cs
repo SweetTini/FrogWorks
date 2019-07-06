@@ -20,8 +20,8 @@ namespace FrogWorks
         public override Vector2 Value => _value;
 
         public VirtualAnalogKeyboard(Keys left, Keys right, Keys up, Keys down)
-                : this(left, right, up, down, OverlapMode.Cancel)
-            {
+            : this(left, right, up, down, OverlapMode.Cancel)
+        {
         }
 
         public VirtualAnalogKeyboard(Keys left, Keys right, Keys up, Keys down, OverlapMode overlapMode)
