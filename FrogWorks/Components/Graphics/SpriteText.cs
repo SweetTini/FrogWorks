@@ -10,7 +10,7 @@ namespace FrogWorks
         private int _width, _height;
         private HorizontalAlignment _horizAlign;
         private VerticalAlignment _vertAlign;
-        private bool _wordWrap, _isDirty;
+        private bool _wordWrap;
 
         protected List<SpriteTextCharacter> Characters { get; private set; }
 
@@ -20,6 +20,8 @@ namespace FrogWorks
 
         public Rectangle AbsoluteBounds => Bounds.Transform(DrawPosition, Origin, Scale, Angle);
 
+        protected bool IsDirty { get; private set; }
+
         public string Text
         {
             get { return _text; }
@@ -27,7 +29,7 @@ namespace FrogWorks
             {
                 if (value == _text) return;
                 _text = value;
-                _isDirty = true;
+                IsDirty = true;
             }
         }
 
@@ -40,7 +42,7 @@ namespace FrogWorks
 
                 if (value == _width) return;
                 _width = value;
-                _isDirty = true;
+                IsDirty = true;
             }
         }
 
@@ -53,7 +55,7 @@ namespace FrogWorks
 
                 if (value == _height) return;
                 _height = value;
-                _isDirty = true;
+                IsDirty = true;
             }
         }
 
@@ -64,7 +66,7 @@ namespace FrogWorks
             {
                 if (value == Font.Spacing) return;
                 Font.Spacing = value;
-                _isDirty = true;
+                IsDirty = true;
             }
         }
 
@@ -75,7 +77,7 @@ namespace FrogWorks
             {
                 if (value == Font.LineHeight) return;
                 Font.LineHeight = value;
-                _isDirty = true;
+                IsDirty = true;
             }
         }
 
@@ -86,7 +88,7 @@ namespace FrogWorks
             {
                 if (value == _horizAlign) return;
                 _horizAlign = value;
-                _isDirty = true;
+                IsDirty = true;
             }
         }
 
@@ -97,7 +99,7 @@ namespace FrogWorks
             {
                 if (value == _vertAlign) return;
                 _vertAlign = value;
-                _isDirty = true;
+                IsDirty = true;
             }
         }
 
@@ -108,7 +110,7 @@ namespace FrogWorks
             {
                 if (value == _wordWrap) return;
                 _wordWrap = value;
-                _isDirty = true;
+                IsDirty = true;
             }
         }
 
@@ -124,7 +126,7 @@ namespace FrogWorks
 
         public override void Draw(RendererBatch batch)
         {
-            if (_isDirty) Refresh();
+            if (IsDirty) Refresh();
 
             for (int i = 0; i < Characters.Count; i++)
             {
@@ -206,7 +208,12 @@ namespace FrogWorks
                 offset.Y += Font.DefaultLineHeight + Font.LineHeight;
             }
 
-            _isDirty = false;
+            IsDirty = false;
+        }
+
+        protected void MarkAsDirty()
+        {
+            IsDirty = true;
         }
     }
 
