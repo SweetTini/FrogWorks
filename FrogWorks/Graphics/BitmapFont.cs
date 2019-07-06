@@ -25,8 +25,6 @@ namespace FrogWorks
 
         public int LineHeight { get; set; }
 
-        public bool IsMonospace { get; internal set; }
-
         private BitmapFont()
         {
             _builder = new StringBuilder();
@@ -44,7 +42,6 @@ namespace FrogWorks
 
             _charSpacing = charWidth;
             DefaultLineHeight = charHeight;
-            IsMonospace = true;
         }
 
         public void Draw(RendererBatch batch, string text, Rectangle bounds, HorizontalAlignment horizAlign = HorizontalAlignment.Left, VerticalAlignment vertAlign = VerticalAlignment.Top, bool wordWrap = false, Vector2? origin = null, Vector2? scale = null, float angle = 0f, Color? color = null, SpriteEffects effects = SpriteEffects.None)
@@ -94,9 +91,6 @@ namespace FrogWorks
             {
                 character.Offset = new Point(offsetX, offsetY);
                 character.Spacing = spacing;
-
-                if (character.Spacing != _charSpacing)
-                    IsMonospace = false;
             }
         }
 
@@ -184,16 +178,17 @@ namespace FrogWorks
         public int MeasureHorizontalOffset(HorizontalAlignment alignment, string line, int width)
         {
             var lineWidth = MeasureWidth(line);
+            var spacing = _charSpacing + Spacing;
             var offset = 0;
 
             switch (alignment)
             {
                 case HorizontalAlignment.Left: break;
-                case HorizontalAlignment.Center: offset = (width - lineWidth) / 2; break;
+                case HorizontalAlignment.Center: offset = (int)Math.Round((width - lineWidth) / 2f); break;
                 case HorizontalAlignment.Right: offset = width - lineWidth; break;
             }
 
-            return IsMonospace ? offset / _charSpacing * _charSpacing : offset;
+            return offset;
         }
 
         public int MeasureVerticalOffset(VerticalAlignment alignment, string text, int height)
@@ -205,11 +200,11 @@ namespace FrogWorks
             switch (alignment)
             {
                 case VerticalAlignment.Top: break;
-                case VerticalAlignment.Center: offset = (height - textHeight) / 2; break;
+                case VerticalAlignment.Center: offset = (int)Math.Round((height - textHeight) / 2f); break;
                 case VerticalAlignment.Bottom: offset = height - textHeight; break;
             }
 
-            return IsMonospace && lineHeight != 0 ? offset / lineHeight * lineHeight : offset;
+            return offset;
         }
 
         public string WordWrap(string text, int maxWidth)
@@ -271,8 +266,7 @@ namespace FrogWorks
                 _charSpacing = _charSpacing,
                 Spacing = Spacing,
                 DefaultLineHeight = DefaultLineHeight,
-                LineHeight = LineHeight,
-                IsMonospace = IsMonospace
+                LineHeight = LineHeight
             };
         }
     }
