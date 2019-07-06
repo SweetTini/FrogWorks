@@ -46,7 +46,6 @@ namespace FrogWorks
         {
             var posValue = positive ? 1 : 0;
             var negValue = negative ? 1 : 0;
-
             return (posValue + negValue) > 1 ? both : posValue - negValue;
         }
 

@@ -179,9 +179,9 @@ namespace FrogWorks
                 Repeat = _isRepeating = false;
         }
 
-        public static implicit operator bool(VirtualButton input)
+        public static implicit operator bool(VirtualButton button)
         {
-            return input.IsDown;
+            return button.IsDown;
         }
     }
 

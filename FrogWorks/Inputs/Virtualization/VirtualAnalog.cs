@@ -81,9 +81,9 @@ namespace FrogWorks
                 Register(node);
         }
 
-        public static implicit operator Vector2(VirtualAnalog input)
+        public static implicit operator Vector2(VirtualAnalog analog)
         {
-            return input.CurrentValue;
+            return analog.CurrentValue;
         }
     }
 

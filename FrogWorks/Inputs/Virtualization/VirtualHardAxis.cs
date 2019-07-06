@@ -65,9 +65,9 @@ namespace FrogWorks
                 Register(node);
         }
 
-        public static implicit operator int(VirtualHardAxis input)
+        public static implicit operator int(VirtualHardAxis axis)
         {
-            return input.CurrentValue;
+            return axis.CurrentValue;
         }
     }
 }

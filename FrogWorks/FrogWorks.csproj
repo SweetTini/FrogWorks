@@ -58,6 +58,28 @@
     <Compile Include="Inputs\Readers\KeyboardReader.cs" />
     <Compile Include="Inputs\Readers\MouseReader.cs" />
     <Compile Include="Inputs\VirtualInput.cs" />
+    <Compile Include="Inputs\Virtualization\Analogs\VirtualAnalogDPad.cs" />
+    <Compile Include="Inputs\Virtualization\Analogs\VirtualAnalogRightAnalog.cs" />
+    <Compile Include="Inputs\Virtualization\Analogs\VirtualAnalogLeftAnalog.cs" />
+    <Compile Include="Inputs\Virtualization\Analogs\VirtualAnalogKeyboard.cs" />
+    <Compile Include="Inputs\Virtualization\Axes\VirtualAxisDPadHoriz.cs" />
+    <Compile Include="Inputs\Virtualization\Axes\VirtualAxisDPadVert.cs" />
+    <Compile Include="Inputs\Virtualization\Axes\VirtualAxisKeyboard.cs" />
+    <Compile Include="Inputs\Virtualization\Axes\VirtualAxisRightAnalogVert.cs" />
+    <Compile Include="Inputs\Virtualization\Axes\VirtualAxisRightAnalogHoriz.cs" />
+    <Compile Include="Inputs\Virtualization\Axes\VirtualAxisLeftAnalogVert.cs" />
+    <Compile Include="Inputs\Virtualization\Axes\VirtualAxisLeftAnalogHoriz.cs" />
+    <Compile Include="Inputs\Virtualization\Buttons\VirtualButtonAnalogHoriz.cs" />
+    <Compile Include="Inputs\Virtualization\Buttons\VirtualButtonAnalogVert.cs" />
+    <Compile Include="Inputs\Virtualization\Buttons\VirtualButtonHardAxisTrigger.cs" />
+    <Compile Include="Inputs\Virtualization\Buttons\VirtualButtonAxisTrigger.cs" />
+    <Compile Include="Inputs\Virtualization\Buttons\VirtualButtonGamePad.cs" />
+    <Compile Include="Inputs\Virtualization\Buttons\VirtualButtonKeyboard.cs" />
+    <Compile Include="Inputs\Virtualization\Buttons\VirtualButtonLeftTrigger.cs" />
+    <Compile Include="Inputs\Virtualization\Buttons\VirtualButtonRightAnalog.cs" />
+    <Compile Include="Inputs\Virtualization\Buttons\VirtualButtonLeftAnalog.cs" />
+    <Compile Include="Inputs\Virtualization\Buttons\VirtualButtonMouse.cs" />
+    <Compile Include="Inputs\Virtualization\Buttons\VirtualButtonRightTrigger.cs" />
     <Compile Include="Inputs\Virtualization\VirtualAnalog.cs" />
     <Compile Include="Inputs\Virtualization\VirtualAxis.cs" />
     <Compile Include="Inputs\Virtualization\VirtualButton.cs" />
@@ -79,9 +101,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Components\Logic\" />
-    <Folder Include="Inputs\Virtualization\Analogs\" />
-    <Folder Include="Inputs\Virtualization\Axes\" />
-    <Folder Include="Inputs\Virtualization\Buttons\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
