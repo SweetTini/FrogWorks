@@ -47,19 +47,19 @@ namespace FrogWorks
             IsMonospace = true;
         }
 
-        public void Draw(RendererBatch batch, string text, Rectangle bounds, HorizontalAlignment alignX = HorizontalAlignment.Left, VerticalAlignment alignY = VerticalAlignment.Top, bool wordWrap = false, Vector2? origin = null, Vector2? scale = null, float angle = 0f, Color? color = null, SpriteEffects effects = SpriteEffects.None)
+        public void Draw(RendererBatch batch, string text, Rectangle bounds, HorizontalAlignment horizAlign = HorizontalAlignment.Left, VerticalAlignment vertAlign = VerticalAlignment.Top, bool wordWrap = false, Vector2? origin = null, Vector2? scale = null, float angle = 0f, Color? color = null, SpriteEffects effects = SpriteEffects.None)
         {
             if (string.IsNullOrEmpty(text)) return;
 
             if (wordWrap) text = WordWrap(text, bounds.Width);
-            var offset = Vector2.UnitY * MeasureVerticalOffset(alignY, text, bounds.Height);
+            var offset = Vector2.UnitY * MeasureVerticalOffset(vertAlign, text, bounds.Height);
             var position = bounds.Location.ToVector2();
             var lines = text.Split('\n');
 
             for (int i = 0; i < lines.Length; i++)
             {
                 var line = lines[i];
-                offset.X = MeasureHorizontalOffset(alignX, line, bounds.Width);
+                offset.X = MeasureHorizontalOffset(horizAlign, line, bounds.Width);
 
                 for (int j = 0; j < line.Length; j++)
                 {
@@ -81,9 +81,9 @@ namespace FrogWorks
             }
         }
 
-        public void Draw(RendererBatch batch, string text, int x, int y, int width, int height, HorizontalAlignment alignX = HorizontalAlignment.Left, VerticalAlignment alignY = VerticalAlignment.Top, bool wordWrap = false, Vector2? origin = null, Vector2? scale = null, float angle = 0f, Color? color = null, SpriteEffects effects = SpriteEffects.None)
+        public void Draw(RendererBatch batch, string text, int x, int y, int width, int height, HorizontalAlignment horizAlign = HorizontalAlignment.Left, VerticalAlignment vertAlign = VerticalAlignment.Top, bool wordWrap = false, Vector2? origin = null, Vector2? scale = null, float angle = 0f, Color? color = null, SpriteEffects effects = SpriteEffects.None)
         {
-            Draw(batch, text, new Rectangle(x, y, width, height), alignX, alignY, wordWrap, origin, scale, angle, color, effects);
+            Draw(batch, text, new Rectangle(x, y, width, height), horizAlign, vertAlign, wordWrap, origin, scale, angle, color, effects);
         }
 
         public void Configure(int ascii, int offsetX, int offsetY, int spacing)
@@ -178,7 +178,7 @@ namespace FrogWorks
                     if (text[i] == '\n')
                         lines++;
 
-            return lines * LineHeight;
+            return lines * (DefaultLineHeight + LineHeight);
         }
 
         public int MeasureHorizontalOffset(HorizontalAlignment alignment, string line, int width)

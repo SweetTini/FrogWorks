@@ -41,6 +41,7 @@
     <Compile Include="Components\Graphics\BackgroundImage.cs" />
     <Compile Include="Components\Graphics\Image.cs" />
     <Compile Include="Components\Graphics\Sprite.cs" />
+    <Compile Include="Components\Graphics\SpriteText.cs" />
     <Compile Include="Components\Graphics\TiledImage.cs" />
     <Compile Include="Components\Graphics\TileMap.cs" />
     <Compile Include="Core\Component.cs" />
