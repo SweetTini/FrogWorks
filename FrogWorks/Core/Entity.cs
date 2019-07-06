@@ -132,11 +132,6 @@ namespace FrogWorks
         }
 
         #region Components
-        public void AddComponent(Component component)
-        {
-            Components.Add(component);
-        }
-
         public void AddComponents(params Component[] components)
         {
             Components.Add(components);
@@ -145,11 +140,6 @@ namespace FrogWorks
         public void AddComponents(IEnumerable<Component> components)
         {
             Components.Add(components);
-        }
-
-        public void RemoveComponent(Component component)
-        {
-            Components.Remove(component);
         }
 
         public void RemoveComponents(params Component[] components)

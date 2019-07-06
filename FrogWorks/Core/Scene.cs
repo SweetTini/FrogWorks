@@ -83,21 +83,6 @@ namespace FrogWorks
         #endregion
 
         #region Entities
-        public void AddEntity(Entity entity)
-        {
-            Entities.Add(MainLayer, entity);
-        }
-
-        public void AddEntityToLayer(string name, Entity entity)
-        {
-            AddEntityToLayer(GetLayer(name), entity);
-        }
-
-        public void AddEntityToLayer(Layer layer, Entity entity)
-        {
-            Entities.Add(layer ?? MainLayer, entity);
-        }
-
         public void AddEntities(params Entity[] entities)
         {
             Entities.Add(MainLayer, entities);
@@ -126,11 +111,6 @@ namespace FrogWorks
         public void AddEntitiesToLayer(Layer layer, IEnumerable<Entity> entities)
         {
             Entities.Add(layer ?? MainLayer, entities);
-        }
-
-        public void RemoveEntity(Entity entity)
-        {
-            Entities.Remove(entity);
         }
 
         public void RemoveEntities(params Entity[] entities)

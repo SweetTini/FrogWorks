@@ -57,7 +57,7 @@
                 Depth = depth
             };
 
-            AddEntityToLayer(layer, apple);
+            AddEntitiesToLayer(layer, apple);
         }
 
         void CreateCheckerBoard(float x, float y, int depth, Layer layer = null)
@@ -69,7 +69,7 @@
                 Depth = depth
             };
 
-            AddEntityToLayer(layer, checkerBoard);
+            AddEntitiesToLayer(layer, checkerBoard);
         }
     }
 }
