@@ -7,7 +7,7 @@ namespace FrogWorks
     {
         private float _timer, _repeatTimer;
         private float _bufferTime, _initialRepeatTime, _multiRepeatTime;
-        private bool _canRepeat, _isConsumed;
+        private bool _canRepeat, _isRepeating, _isConsumed;
 
         protected List<VirtualButtonNode> Nodes { get; private set; }
 
@@ -92,9 +92,8 @@ namespace FrogWorks
 
         public override void Update(float deltaTime)
         {
-            _isConsumed = false;
             _timer -= deltaTime;
-            var bypass = false;
+            var bypass = _isConsumed = false;
 
             for (int i = 0; i < Nodes.Count; i++)
             {
@@ -110,27 +109,28 @@ namespace FrogWorks
 
             if (!bypass)
             {
-                Repeat = false;
                 _timer = _repeatTimer = 0f;
+                Repeat = _isRepeating = false;
                 return;
             }
 
             if (_canRepeat)
             {
-                Repeat = false;
-
-                if (_repeatTimer == 0f)
-                {
-                    _repeatTimer = _initialRepeatTime;
-                    return;
-                }
-
                 _repeatTimer -= deltaTime;
+                Repeat = false;
 
                 if (_repeatTimer <= 0f)
                 {
-                    Repeat = true;
-                    _repeatTimer = _multiRepeatTime;
+                    if (!_isRepeating)
+                    {
+                        _repeatTimer = _initialRepeatTime;
+                        _isRepeating = true;
+                    }
+                    else
+                    {
+                        _repeatTimer = _multiRepeatTime;
+                        Repeat = true;
+                    }
                 }
             }
         }
@@ -175,7 +175,8 @@ namespace FrogWorks
             _multiRepeatTime = Math.Abs(multiRepeatTime);
             _canRepeat = _initialRepeatTime > 0f;
 
-            if (!_canRepeat) Repeat = false;
+            if (!_canRepeat)
+                Repeat = _isRepeating = false;
         }
 
         public static implicit operator bool(VirtualButton input)
