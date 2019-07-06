@@ -1,11 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace FrogWorks.Utils
+namespace FrogWorks
 {
     public static class Easing
     {
@@ -124,8 +120,8 @@ namespace FrogWorks.Utils
         {
             return (float time) =>
                 time <= .5f
-                    ? first(time * 2f) * .5f
-                    : last(time * 2f - 1f) * .5f + .5f;
+                    ? first(time * 2f) / 2f
+                    : last(time * 2f - 1f) / 2f + .5f;
         }
     }
 
