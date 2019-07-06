@@ -58,6 +58,10 @@
     <Compile Include="Inputs\Readers\KeyboardReader.cs" />
     <Compile Include="Inputs\Readers\MouseReader.cs" />
     <Compile Include="Inputs\VirtualInput.cs" />
+    <Compile Include="Inputs\Virtualization\VirtualAnalog.cs" />
+    <Compile Include="Inputs\Virtualization\VirtualAxis.cs" />
+    <Compile Include="Inputs\Virtualization\VirtualButton.cs" />
+    <Compile Include="Inputs\Virtualization\VirtualHardAxis.cs" />
     <Compile Include="Managers\ComponentManager.cs" />
     <Compile Include="Managers\EntityManager.cs" />
     <Compile Include="Managers\LayerManager.cs" />
@@ -75,6 +79,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Components\Logic\" />
+    <Folder Include="Inputs\Virtualization\Analogs\" />
+    <Folder Include="Inputs\Virtualization\Axes\" />
+    <Folder Include="Inputs\Virtualization\Buttons\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

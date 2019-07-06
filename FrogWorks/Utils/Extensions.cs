@@ -90,6 +90,16 @@ namespace FrogWorks
         #endregion
 
         #region Vector
+        public static Vector2 AngleToVector(this float angle, float length)
+        {
+            return new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle)) * length;
+        }
+
+        public static float VectorToAngle(this Vector2 vector)
+        {
+            return (float)Math.Atan2(vector.Y, vector.X);
+        }
+
         public static Vector2 Clamp(this Vector2 vector, Vector2 lowest, Vector2 highest)
         {
             return new Vector2(
@@ -143,6 +153,33 @@ namespace FrogWorks
             Vector2.Transform(vertices, ref transformMatrix, result);
 
             return result;
+        }
+        #endregion
+
+        #region Inputs
+        public static int SignThreshold(this float number, float threshold)
+        {
+            return Math.Abs(number) >= threshold ? Math.Sign(number) : 0;
+        }
+
+        public static Vector2 SnapAngle(this Vector2 vector, float segments)
+        {
+            segments = Math.Abs(segments);
+
+            var divider = MathHelper.Pi / (segments > 0f ? segments : 1f);
+            var angle = (float)Math.Floor((vector.VectorToAngle() + divider * .5f) / divider) * divider;
+
+            return angle.AngleToVector(vector.Length());
+        }
+
+        public static Vector2 SnapAndNormalizeAngle(this Vector2 vector, float segments)
+        {
+            segments = Math.Abs(segments);
+
+            var divider = MathHelper.Pi / (segments > 0f ? segments : 1f);
+            var angle = (float)Math.Floor((vector.VectorToAngle() + divider * .5f) / divider) * divider;
+
+            return angle.AngleToVector(1f);
         }
         #endregion
     }
