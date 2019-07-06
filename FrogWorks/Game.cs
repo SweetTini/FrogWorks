@@ -96,7 +96,7 @@ namespace FrogWorks
             if (deltaTime > 0f)
                 FramesPerSecond = (int)Math.Round(1f / deltaTime);
 
-            Input.Update(IsActive);
+            Input.Update(IsActive, deltaTime);
 
             _currentScene?.BeginUpdate();
             _currentScene?.Update(deltaTime);

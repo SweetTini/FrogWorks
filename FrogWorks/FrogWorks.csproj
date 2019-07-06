@@ -57,6 +57,7 @@
     <Compile Include="Inputs\Readers\GamePadReader.cs" />
     <Compile Include="Inputs\Readers\KeyboardReader.cs" />
     <Compile Include="Inputs\Readers\MouseReader.cs" />
+    <Compile Include="Inputs\VirtualInput.cs" />
     <Compile Include="Managers\ComponentManager.cs" />
     <Compile Include="Managers\EntityManager.cs" />
     <Compile Include="Managers\LayerManager.cs" />
