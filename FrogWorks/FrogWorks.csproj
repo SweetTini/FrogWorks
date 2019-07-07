@@ -44,6 +44,7 @@
     <Compile Include="Components\Graphics\SpriteText.cs" />
     <Compile Include="Components\Graphics\TiledImage.cs" />
     <Compile Include="Components\Graphics\TileMap.cs" />
+    <Compile Include="Components\Logic\Alarm.cs" />
     <Compile Include="Components\Logic\Coroutine.cs" />
     <Compile Include="Components\Logic\CoroutineCollection.cs" />
     <Compile Include="Components\Logic\StateMachine.cs" />

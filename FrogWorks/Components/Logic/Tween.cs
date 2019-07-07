@@ -39,8 +39,8 @@ namespace FrogWorks
         protected void Initialize(Ease ease, float duration, TweenMode mode, bool canStart)
         {
             Ease = ease;
+            Duration = Math.Max(Math.Abs(duration), float.Epsilon);
             TimeLeft = Percent = Value = 0f;
-            Duration = duration > 0f ? duration : float.Epsilon;
             Mode = mode;
             IsEnabled = false;
 
@@ -113,11 +113,8 @@ namespace FrogWorks
 
         public void Start(float duration, bool reverse)
         {
-            if (duration > 0f)
-            {
-                Duration = duration;
-                Start(reverse);
-            }
+            Duration = Math.Max(Math.Abs(duration), float.Epsilon);
+            Start(reverse);
         }
 
         public void Stop()
