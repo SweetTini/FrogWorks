@@ -11,8 +11,8 @@
         {
             BackgroundColor = ColorConvert.FromHsl(0, 0, 59);
 
-            var charSet = " !\"\'*+,-.0123456789:;?ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-            Font = new BitmapFont(Texture.Load("Images\\MonoFont.png"), 12, 16, charSet);
+            var charSet = " !\"\'*+,-./0123456789:;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+            Font = new BitmapFont(Texture.Load("Images\\MonoFont.png"), 10, 16, charSet);
 
             TestLayer = AddLayer("Test");
             TestLayer.MoveToBack();

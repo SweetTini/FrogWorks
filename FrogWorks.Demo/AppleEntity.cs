@@ -12,8 +12,8 @@
             Image = new Image(Texture.Load("Images\\Apple.png"), false);
             Image.CenterOrigin();
 
-            var charSet = " !\"\'*+,-.0123456789:;?ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-            var font = new BitmapFont(Texture.Load("Images\\MonoFont.png"), 12, 16, charSet);
+            var charSet = " !\"\'*+,-./0123456789:;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+            var font = new BitmapFont(Texture.Load("Images\\MonoFont.png"), 10, 16, charSet);
             Text = new SpriteText(font, string.Empty, 36, 64);
             Text.Y = 6;
             Text.HorizontalAlignment = HorizontalAlignment.Center;
