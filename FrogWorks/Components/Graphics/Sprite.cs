@@ -4,9 +4,9 @@ using System.Collections.Generic;
 namespace FrogWorks
 {
     public class Sprite<T> : Image
+        where T : struct
     {
         private T _key;
-        private Animation? _animation;
         private float _timer, _duration;
         private int _index, _loops, _loopFrom;
         private bool _isPlaying;
@@ -25,7 +25,10 @@ namespace FrogWorks
             }
         }
 
-        public int FrameCount => _animation?.Frames.Length ?? 1;
+        public int FrameCount
+        {
+            get { return Animations.ContainsKey(_key) ? Animations[_key].Frames.Length : 1; }
+        }
 
         public float Duration
         {
@@ -39,7 +42,7 @@ namespace FrogWorks
             set { _loopFrom = value.Mod(FrameCount); }
         }
 
-        public Action<T, Animation> OnLooped { get; set; }
+        public Action<T, Animation> OnLoop { get; set; }
 
         public Action<T, Animation> OnFinished { get; set; }
 
@@ -53,28 +56,31 @@ namespace FrogWorks
 
         public override void Update(float deltaTime)
         {
-            if (!_animation.HasValue || !_isPlaying || _duration == 0f) return;
+            Animation animation;
 
-            _timer += deltaTime;
-
-            if (_timer >= _duration)
+            if (_isPlaying && _duration > 0 && Animations.TryGetValue(_key, out animation))
             {
-                _timer -= _duration;
-                _index++;
+                _timer += deltaTime;
 
-                if (_index >= _animation.Value.Frames.Length)
+                if (_timer >= _duration)
                 {
-                    if (_animation.Value.Loop && (_animation.Value.LoopCount <= 0 || _loops < _animation.Value.LoopCount))
+                    _timer -= _duration;
+                    _index++;
+
+                    if (_index >= animation.Frames.Length)
                     {
-                        _index = _loopFrom;
-                        if (_loops < _animation.Value.LoopCount) _loops++;
-                        OnLooped?.Invoke(_key, _animation.Value);
-                    }
-                    else
-                    {
-                        _index = _animation.Value.Frames.Length - 1;
-                        OnFinished?.Invoke(_key, _animation.Value);
-                        _isPlaying = false;
+                        if (animation.Loop && (animation.LoopCount <= 0 || _loops < animation.LoopCount))
+                        {
+                            _index = _loopFrom;
+                            if (_loops < animation.LoopCount) _loops++;
+                            OnLoop?.Invoke(_key, animation);
+                        }
+                        else
+                        {
+                            _index = animation.Frames.Length - 1;
+                            OnFinished?.Invoke(_key, animation);
+                            _isPlaying = false;
+                        }
                     }
                 }
             }
@@ -82,19 +88,23 @@ namespace FrogWorks
 
         public override void Draw(RendererBatch batch)
         {
-            var index = _animation?.Frames[_index] ?? 0;
+            Animation animation;
+            var index = 0;
+
+            if (Animations.TryGetValue(_key, out animation))
+                index = animation.Frames[_index];
+
             Texture = Textures[index];
             base.Draw(batch);
         }
 
         public void Play(T key, bool restart = false)
         {
-            if (!IsPlaying(key) || restart)
+            if (Animations.ContainsKey(key) && (!IsPlaying(key) || restart))
             {
                 _key = key;
-                _animation = Animations[key];
-                _duration = _animation.Value.Duration;
-                _loopFrom = _animation.Value.LoopFrom;
+                _duration = Animations[_key].Duration;
+                _loopFrom = Animations[_key].LoopFrom;
                 _timer = 0f;
                 _index = _loops = 0;
                 _isPlaying = true;
@@ -103,15 +113,12 @@ namespace FrogWorks
 
         public bool IsPlaying()
         {
-            return _isPlaying && _animation.HasValue;
+            return Animations.ContainsKey(_key) && _isPlaying;
         }
 
         public bool IsPlaying(T key)
         {
-            return _isPlaying
-                && Animations.ContainsKey(key)
-                && _animation.HasValue
-                && _animation.Value.Equals(Animations[key]);
+            return Animations.ContainsKey(key) && key.Equals(_key) && _isPlaying;
         }
 
         public void Pause()
@@ -121,7 +128,7 @@ namespace FrogWorks
 
         public void Resume()
         {
-            if (!_isPlaying && _animation.HasValue)
+            if (Animations.ContainsKey(_key) && !_isPlaying)
                 _isPlaying = true;
         }
 
@@ -159,9 +166,7 @@ namespace FrogWorks
         {
             if (Animations.ContainsKey(key))
             {
-                if (IsPlaying(key))
-                    Reset();
-
+                if (IsPlaying(key)) Reset();
                 Animations.Remove(key);
             }
         }
@@ -175,7 +180,6 @@ namespace FrogWorks
         private void Reset()
         {
             _key = default(T);
-            _animation = null;
             _timer = _duration = 0f;
             _index = _loops = _loopFrom = 0;
             _isPlaying = false;

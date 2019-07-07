@@ -1,0 +1,86 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+
+namespace FrogWorks
+{
+    public class Coroutine : Component
+    {
+        private Stack<IEnumerator> _enumerators;
+        private float _timer;
+        private bool _hasEnded;
+
+        public bool IsFinished { get; private set; }
+
+        public bool RemoveOnCompletion { get; set; } = true;
+
+        public Coroutine(bool removeOnCompletion = true)
+            : base(false, false)
+        {
+            _enumerators = new Stack<IEnumerator>();
+            RemoveOnCompletion = removeOnCompletion;
+        }
+
+        public Coroutine(IEnumerator callback, bool removeOnCompletion = true)
+            : base(true, false)
+        {
+            _enumerators = new Stack<IEnumerator>();
+            _enumerators.Push(callback);
+            RemoveOnCompletion = removeOnCompletion;
+        }
+
+        public override void Update(float deltaTime)
+        {
+            _hasEnded = false;
+            _timer -= deltaTime;
+
+            if (_timer <= 0f)
+            {
+                _timer = 0f;
+
+                if (_enumerators.Count > 0)
+                {
+                    var callback = _enumerators.Peek();
+
+                    if (callback.MoveNext() && !_hasEnded)
+                    {
+                        if (callback.Current is int)
+                            _timer = (int)callback.Current;
+                        else if (callback.Current is float)
+                            _timer = (float)callback.Current;
+                        else if (callback.Current is IEnumerator)
+                            _enumerators.Push(callback.Current as IEnumerator);
+                    }
+                    else if (!_hasEnded)
+                    {
+                        _enumerators.Pop();
+
+                        if (_enumerators.Count == 0)
+                        {
+                            IsFinished = true;
+                            IsEnabled = false;
+                            if (RemoveOnCompletion)
+                                Destroy();
+                        }
+                    }
+                }
+            }
+        }
+
+        public void Replace(IEnumerator callback)
+        {
+            IsEnabled = _hasEnded = true;
+            IsFinished = false;
+            _timer = 0f;
+            _enumerators.Clear();
+            _enumerators.Push(callback);
+        }
+
+        public void Cancel()
+        {
+            IsEnabled = false;
+            IsFinished = _hasEnded = true;
+            _timer = 0f;
+            _enumerators.Clear();
+        }
+    }
+}

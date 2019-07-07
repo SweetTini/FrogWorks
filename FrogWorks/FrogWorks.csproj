@@ -44,6 +44,8 @@
     <Compile Include="Components\Graphics\SpriteText.cs" />
     <Compile Include="Components\Graphics\TiledImage.cs" />
     <Compile Include="Components\Graphics\TileMap.cs" />
+    <Compile Include="Components\Logic\Coroutine.cs" />
+    <Compile Include="Components\Logic\StateMachine.cs" />
     <Compile Include="Components\Logic\Tween.cs" />
     <Compile Include="Core\Component.cs" />
     <Compile Include="Core\Entity.cs" />
@@ -97,6 +99,7 @@
     <Compile Include="Utils\Extensions.cs" />
     <Compile Include="Utils\Map.cs" />
     <Compile Include="Utils\PrimitiveBatch.cs" />
+    <Compile Include="Utils\Randomizer.cs" />
     <Compile Include="Utils\RendererBatch.cs" />
     <Compile Include="Utils\Display.cs" />
   </ItemGroup>

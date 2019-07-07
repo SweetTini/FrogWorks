@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace FrogWorks
 {
@@ -180,6 +181,16 @@ namespace FrogWorks
             var angle = (float)Math.Floor((vector.VectorToAngle() + divider * .5f) / divider) * divider;
 
             return angle.AngleToVector(1f);
+        }
+        #endregion
+
+        #region Reflection
+        public static Delegate GetMethod<T>(object obj, string name)
+            where T : class
+        {
+            var flags =  BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+            var method = obj.GetType().GetMethod(name, flags);
+            return method != null ? Delegate.CreateDelegate(typeof(T), obj, name) : null;
         }
         #endregion
     }

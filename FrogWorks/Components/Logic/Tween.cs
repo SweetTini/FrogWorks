@@ -25,11 +25,11 @@ namespace FrogWorks
 
         public TweenMode Mode { get; private set; }
 
-        public Action<Tween> OnStart { get; set; }
-
         public Action<Tween> OnUpdate { get; set; }
 
-        public Action<Tween> OnFinished { get; set; }
+        public Action<Tween> OnBegin { get; set; }
+
+        public Action<Tween> OnEnd { get; set; }
 
         protected Tween()
             : base(true, false)
@@ -53,21 +53,19 @@ namespace FrogWorks
             Percent = MathHelper.Clamp(TimeLeft / Duration, 0f, 1f);
             Percent = !IsReversed ? 1f - Percent : Percent;
             Value = Ease?.Invoke(Percent) ?? Percent;
-
             OnUpdate?.Invoke(this);
 
             if (TimeLeft <= 0f)
             {
-                TimeLeft = 0f;           
+                TimeLeft = 0f;
+                OnEnd?.Invoke(this);
 
                 switch (Mode)
                 {
                     case TweenMode.Persist:
-                        OnFinished?.Invoke(this);
                         IsEnabled = false;
                         break;
                     case TweenMode.PlayOnce:
-                        OnFinished?.Invoke(this);
                         IsEnabled = false;
                         Destroy();
                         break;
@@ -82,7 +80,6 @@ namespace FrogWorks
                         }
                         else
                         {
-                            OnFinished?.Invoke(this);
                             IsEnabled = false;
                             Destroy();
                         }
@@ -110,12 +107,8 @@ namespace FrogWorks
             IsReversed = _hasBegunReversed = reverse;
             TimeLeft = Duration;
             Value = Percent = IsReversed ? 1f : 0f;
-
-            if (!IsEnabled)
-            {
-                OnStart?.Invoke(this);
-                IsEnabled = true;
-            }
+            IsEnabled = true;
+            OnBegin?.Invoke(this);
         }
 
         public void Start(float duration, bool reverse)
@@ -147,17 +140,17 @@ namespace FrogWorks
         public static Tween Create(Ease ease, float duration, TweenMode mode = TweenMode.Persist, bool canStart = false)
         {
             var tween = Cache.Count > 0 ? Cache.Pop() : new Tween();
-            tween.OnStart = tween.OnUpdate = tween.OnFinished = null;
+            tween.OnUpdate = tween.OnBegin = tween.OnEnd = null;
             tween.Initialize(ease, duration, mode, canStart);
             return tween;
         }
 
-        public static Tween CreateAndApply(Entity entity, Ease ease, float duration, TweenMode mode, Action<Tween> onUpdate, Action<Tween> onStart = null, Action<Tween> onFinished = null)
+        public static Tween CreateAndApply(Entity entity, Ease ease, float duration, TweenMode mode, Action<Tween> onUpdate, Action<Tween> onBegin = null, Action<Tween> onEnd = null)
         {
             var tween = Create(ease, duration, mode, true);
             tween.OnUpdate += onUpdate;
-            tween.OnStart += onStart;
-            tween.OnFinished += onFinished;
+            tween.OnBegin += onBegin;
+            tween.OnEnd += onEnd;
             entity.AddComponents(tween);
             return tween;
         }
