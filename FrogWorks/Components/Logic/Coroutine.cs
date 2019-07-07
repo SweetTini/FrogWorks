@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace FrogWorks
@@ -82,5 +83,31 @@ namespace FrogWorks
             _timer = 0f;
             _enumerators.Clear();
         }
+
+        #region Static Methods
+        public static IEnumerator WaitForTicks(int ticks)
+        {
+            for (int i = 0; i < ticks; i++)
+                yield return 0;
+        }
+
+        public static IEnumerator WaitForSeconds(float seconds)
+        {
+            var timer = 0f;
+
+            while (timer < seconds)
+            {
+                var framesPerSecond = 1f * Game.Instance.FramesPerSecond;
+                if (framesPerSecond > 0)
+                    timer += 1f / framesPerSecond;
+                yield return 0;
+            }
+        }
+
+        public static IEnumerator WaitUntil(Func<bool> predicate)
+        {
+            while (!predicate()) yield return 0;
+        }
+        #endregion
     }
 }

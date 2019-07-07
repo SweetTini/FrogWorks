@@ -45,6 +45,7 @@
     <Compile Include="Components\Graphics\TiledImage.cs" />
     <Compile Include="Components\Graphics\TileMap.cs" />
     <Compile Include="Components\Logic\Coroutine.cs" />
+    <Compile Include="Components\Logic\CoroutineCollection.cs" />
     <Compile Include="Components\Logic\StateMachine.cs" />
     <Compile Include="Components\Logic\Tween.cs" />
     <Compile Include="Core\Component.cs" />
