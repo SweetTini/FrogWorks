@@ -121,8 +121,10 @@ namespace FrogWorks
             return Animations.ContainsKey(key) && key.Equals(_key) && _isPlaying;
         }
 
-        public void Pause()
+        public void Stop()
         {
+            _timer = 0f;
+            _index = _loops = 0;
             _isPlaying = false;
         }
 
@@ -132,10 +134,8 @@ namespace FrogWorks
                 _isPlaying = true;
         }
 
-        public void Stop()
+        public void Pause()
         {
-            _timer = 0f;
-            _index = _loops = 0;
             _isPlaying = false;
         }
 
