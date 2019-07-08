@@ -4,13 +4,13 @@ using System.Collections.Generic;
 
 namespace FrogWorks
 {
-    public class Shaker : Component
+    public class ShakerSet : Component
     {
         private bool _isActive;
 
-        internal static Stack<Shaker> Cache { get; } = new Stack<Shaker>();
+        internal static Stack<ShakerSet> Cache { get; } = new Stack<ShakerSet>();
 
-        public Vector2 Value { get; private set; }
+        public Vector2[] Values { get; private set; }
 
         public float Duration { get; private set; }
 
@@ -26,24 +26,26 @@ namespace FrogWorks
 
                 if (!_isActive)
                 {
-                    Value = Vector2.Zero;
-                    OnShake?.Invoke(Value);
+                    ResetValues();
+                    OnShake?.Invoke(Values);
                 }
             }
         }
 
         public bool RemoveOnCompletion { get; set; }
 
-        public Action<Vector2> OnShake { get; set; }
+        public Action<Vector2[]> OnShake { get; set; }
 
-        private Shaker()
+        private ShakerSet()
             : base(true, false)
         {
         }
 
-        private void Initialize(float duration, Action<Vector2> onShake, bool removeOnCompletion, bool canActivate = false)
+        private void Initialize(int length, float duration, Action<Vector2[]> onShake, bool removeOnCompletion, bool canActivate = false)
         {
-            Value = Vector2.Zero;
+            Values = new Vector2[Math.Max(Math.Abs(length), 1)];
+            ResetValues();
+
             Duration = Math.Max(Math.Abs(duration), float.Epsilon);
             TimeLeft = 0f;
             OnShake = onShake;
@@ -62,15 +64,16 @@ namespace FrogWorks
             if (TimeLeft <= 0f)
             {
                 TimeLeft = 0f;
-                Value = Vector2.Zero;
-                OnShake?.Invoke(Value);
+                ResetValues();
+                OnShake?.Invoke(Values);
                 if (RemoveOnCompletion)
                     Destroy();
                 return;
             }
 
-            Value = new Vector2(Randomizer.Current.Next(-1, 1), Randomizer.Current.Next(-1, 1));
-            OnShake?.Invoke(Value);
+            for (int i = 0; i < Values.Length; i++)
+                Values[i] = new Vector2(Randomizer.Current.Next(-1, 1), Randomizer.Current.Next(-1, 1));
+            OnShake?.Invoke(Values);
         }
 
         public override void OnRemoved()
@@ -92,17 +95,23 @@ namespace FrogWorks
             Activate();
         }
 
-        #region Static Methods
-        public static Shaker Create(float duration, Action<Vector2> onShake, bool removeOnCompletion, bool canActivate = false)
+        private void ResetValues()
         {
-            var shaker = Cache.Count > 0 ? Cache.Pop() : new Shaker();
-            shaker.Initialize(duration, onShake, removeOnCompletion, canActivate);
+            for (int i = 0; i < Values.Length; i++)
+                Values[i] = Vector2.Zero;
+        }
+
+        #region Static Methods
+        public static ShakerSet Create(int length, float duration, Action<Vector2[]> onShake, bool removeOnCompletion, bool canActivate = false)
+        {
+            var shaker = Cache.Count > 0 ? Cache.Pop() : new ShakerSet();
+            shaker.Initialize(length, duration, onShake, removeOnCompletion, canActivate);
             return shaker;
         }
 
-        public static Shaker CreateAndApply(Entity entity, float duration, Action<Vector2> onShake, bool removeOnCompletion = true)
+        public static ShakerSet CreateAndApply(Entity entity, int length, float duration, Action<Vector2[]> onShake, bool removeOnCompletion = true)
         {
-            var shaker = Create(duration, onShake, removeOnCompletion, true);
+            var shaker = Create(length, duration, onShake, removeOnCompletion, true);
             entity.AddComponents(shaker);
             return shaker;
         }
