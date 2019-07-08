@@ -1,10 +1,15 @@
-﻿namespace FrogWorks.Demo
+﻿using Microsoft.Xna.Framework;
+using System;
+
+namespace FrogWorks.Demo
 {
     public class AppleEntity : Entity
     {
         public Image Image { get; private set; }
 
         public SpriteText Text { get; private set; }
+
+        public Shaker Shaker { get; private set; }
 
         public AppleEntity()
             : base()
@@ -20,12 +25,17 @@
             Text.VerticalAlignment = VerticalAlignment.Center;
             Text.CenterOrigin();
 
+            Shaker = Shaker.CreateAndApply(this, 30f, ShakeImage);
+
             AddComponents(Image, Text);
         }
 
-        public override void Update(float deltaTime)
+        protected void ShakeImage(Vector2 offset)
         {
-            Text.Text = $"{Depth}";
+            Image.Position += offset;
+            Text.Position += offset;
+            var time = Shaker.TimeLeft.ToString("0.0");
+            Text.Text = $"{time}";
         }
     }
 }

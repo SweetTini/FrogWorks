@@ -72,7 +72,7 @@ namespace FrogWorks
             }
 
             for (int i = 0; i < Values.Length; i++)
-                Values[i] = new Vector2(Randomizer.Current.Next(-1, 1), Randomizer.Current.Next(-1, 1));
+                Values[i] = new Vector2(Randomizer.Current.NextFloat(-1f, 1f), Randomizer.Current.NextFloat(-1f, 1f)).Round();
             OnShake?.Invoke(Values);
         }
 

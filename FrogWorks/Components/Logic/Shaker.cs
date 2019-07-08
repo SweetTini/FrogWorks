@@ -69,7 +69,7 @@ namespace FrogWorks
                 return;
             }
 
-            Value = new Vector2(Randomizer.Current.Next(-1, 1), Randomizer.Current.Next(-1, 1));
+            Value = new Vector2(Randomizer.Current.NextFloat(-1f, 1f), Randomizer.Current.NextFloat(-1f, 1f)).Round();
             OnShake?.Invoke(Value);
         }
 
