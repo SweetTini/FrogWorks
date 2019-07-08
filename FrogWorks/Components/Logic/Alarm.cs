@@ -27,6 +27,7 @@ namespace FrogWorks
             TimeLeft = 0f;
             Mode = mode;
             OnFinished = onFinished;
+            IsDestroyed = false;
 
             if (canStart) Start();
         }

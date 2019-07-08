@@ -50,6 +50,7 @@ namespace FrogWorks
             TimeLeft = 0f;
             OnShake = onShake;
             RemoveOnCompletion = removeOnCompletion;
+            IsDestroyed = false;
             _isActive = false;
 
             if (canActivate) Activate();

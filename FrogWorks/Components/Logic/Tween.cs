@@ -43,6 +43,7 @@ namespace FrogWorks
             TimeLeft = Percent = Value = 0f;
             Mode = mode;
             IsEnabled = false;
+            IsDestroyed = false;
 
             if (canStart) Start();
         }
