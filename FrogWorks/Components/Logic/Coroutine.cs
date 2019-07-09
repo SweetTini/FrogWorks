@@ -97,9 +97,7 @@ namespace FrogWorks
 
             while (timer < seconds)
             {
-                var framesPerSecond = 1f * Game.Instance.FramesPerSecond;
-                if (framesPerSecond > 0)
-                    timer += 1f / framesPerSecond;
+                timer += Engine.Instance.DeltaTime;
                 yield return 0;
             }
         }

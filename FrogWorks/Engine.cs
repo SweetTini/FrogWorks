@@ -2,11 +2,10 @@
 using System;
 using System.IO;
 using System.Reflection;
-using XnaGame = Microsoft.Xna.Framework.Game;
 
 namespace FrogWorks
 {
-    public class Game : XnaGame
+    public class Engine : Game
     {
         private Scene _currentScene, _nextScene;
         private Cache<Scene> _sceneCache;
@@ -14,7 +13,17 @@ namespace FrogWorks
         private Version _version = new Version(0, 0, 1, 0);
         private bool _displayVersionOnTitle;
 
-        public static Game Instance { get; private set; }
+        internal static Engine Instance { get; private set; }
+
+        public static string AssemblyDirectory
+        {
+            get { return Path.GetDirectoryName(Assembly.GetEntryAssembly().Location); }
+        }
+
+        public static string ContentDirectory
+        {
+            get { return Path.Combine(AssemblyDirectory, Instance.Content.RootDirectory); }
+        }
 
         protected GraphicsDeviceManager Graphics { get; private set; }
 
@@ -60,17 +69,9 @@ namespace FrogWorks
 
         public int FramesPerSecond { get; private set; }
 
-        public string AssemblyDirectory
-        {
-            get { return Path.GetDirectoryName(Assembly.GetEntryAssembly().Location); }
-        }
+        public float DeltaTime { get; private set; }
 
-        public string ContentDirectory
-        {
-            get { return Path.Combine(AssemblyDirectory, Content.RootDirectory); }
-        }
-
-        public Game(int width, int height)
+        public Engine(int width, int height)
         {
             _sceneCache = new Cache<Scene>();
 
@@ -91,15 +92,15 @@ namespace FrogWorks
 
         protected override void Update(GameTime gameTime)
         {
-            var deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            DeltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (deltaTime > 0f)
-                FramesPerSecond = (int)Math.Round(1f / deltaTime);
+            if (DeltaTime > 0f)
+                FramesPerSecond = (int)Math.Round(1f / DeltaTime);
 
-            Input.Update(IsActive, deltaTime);
+            Input.Update(IsActive, DeltaTime);
 
             _currentScene?.BeginUpdate();
-            _currentScene?.Update(deltaTime);
+            _currentScene?.Update(DeltaTime);
             _currentScene?.EndUpdate();
 
             if (_nextScene != _currentScene)
@@ -108,6 +109,7 @@ namespace FrogWorks
                 var lastScene = _currentScene;
                 _currentScene = _nextScene;
                 OnSceneChanged(_currentScene, lastScene);
+                _currentScene?.Initialize();
                 _currentScene?.Begin();
             }
 

@@ -97,11 +97,11 @@ namespace FrogWorks
         public static Texture Load(string filePath, string rootDirectory = "")
         {
             if (string.IsNullOrWhiteSpace(rootDirectory))
-                rootDirectory = Game.Instance.ContentDirectory;
+                rootDirectory = Engine.Instance.ContentDirectory;
 
             using (var stream = File.OpenRead(Path.Combine(rootDirectory, filePath)))
             {
-                var xnaTexture = Texture2D.FromStream(Game.Instance.GraphicsDevice, stream);
+                var xnaTexture = Texture2D.FromStream(Engine.Instance.GraphicsDevice, stream);
                 return new Texture(xnaTexture, xnaTexture.Bounds);
             }
         }

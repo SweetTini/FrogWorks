@@ -55,7 +55,7 @@
     <Compile Include="Components\Logic\Wiggler.cs" />
     <Compile Include="Core\Component.cs" />
     <Compile Include="Core\Entity.cs" />
-    <Compile Include="Game.cs" />
+    <Compile Include="Engine.cs" />
     <Compile Include="Core\Layer.cs" />
     <Compile Include="Graphics\Animation.cs" />
     <Compile Include="Graphics\BitmapCharacter.cs" />

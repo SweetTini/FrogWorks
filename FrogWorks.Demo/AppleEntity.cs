@@ -4,6 +4,8 @@ namespace FrogWorks.Demo
 {
     public class AppleEntity : Entity
     {
+        private Vector2 _basePosition;
+
         public Image Image { get; private set; }
 
         public SpriteText Text { get; private set; }
@@ -29,12 +31,15 @@ namespace FrogWorks.Demo
             AddComponents(Image, Text);
         }
 
+        public override void OnSceneBegan(Scene scene)
+        {
+            _basePosition = Position;
+        }
+
         protected void ShakeImage(Vector2 offset)
         {
-            Image.Position += offset;
-            Text.Position += offset;
-            var time = Shaker.TimeLeft.ToString("0.0");
-            Text.Text = $"{time}";
+            Position = _basePosition + offset;
+            Text.Text = $"{Shaker.TimeLeft.ToString("0.0")}";
         }
     }
 }
