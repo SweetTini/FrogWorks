@@ -62,9 +62,11 @@ namespace FrogWorks
             IsEnabled = true;
         }
 
-        public void Start(float duration)
+        public void Start(float duration, bool removeOnCompletion = false)
         {
             Duration = Math.Max(Math.Abs(duration), float.Epsilon);
+            if (removeOnCompletion)
+                Mode = AlarmMode.PlayOnce;
             Start();
         }
 
@@ -93,15 +95,14 @@ namespace FrogWorks
 
         public static Alarm CreateAndApply(Entity entity, Action onFinished)
         {
-            var alarm = Create(1f, AlarmMode.PlayOnce, onFinished, true);
-            entity.AddComponents(alarm);
-            return alarm;
+            return CreateAndApply(entity, 1f, AlarmMode.PlayOnce, onFinished);
         }
 
         public static Alarm CreateAndApply(Entity entity, float duration, AlarmMode mode, Action onFinished)
         {
             var alarm = Create(duration, mode, onFinished, true);
-            entity.AddComponents(alarm);
+            if (entity != null)
+                entity.AddComponents(alarm);
             return alarm;
         }
         #endregion

@@ -6,8 +6,6 @@ namespace FrogWorks
 {
     public class Shaker : Component
     {
-        private bool _isActive;
-
         internal static Stack<Shaker> Cache { get; } = new Stack<Shaker>();
 
         public Vector2 Value { get; private set; }
@@ -15,22 +13,6 @@ namespace FrogWorks
         public float Duration { get; private set; }
 
         public float TimeLeft { get; private set; }
-
-        public bool IsActive
-        {
-            get { return _isActive; }
-            set
-            {
-                if (value == _isActive) return;
-                _isActive = value;
-
-                if (!_isActive)
-                {
-                    Value = Vector2.Zero;
-                    OnShake?.Invoke(Value);
-                }
-            }
-        }
 
         public bool RemoveOnCompletion { get; set; }
 
@@ -48,16 +30,13 @@ namespace FrogWorks
             TimeLeft = 0f;
             OnShake = onShake;
             RemoveOnCompletion = removeOnCompletion;
-            IsDestroyed = false;
-            _isActive = false;
+            IsDestroyed = IsEnabled = false;
 
-            if (canActivate) Activate();
+            if (canActivate) Start();
         }
 
         public override void Update(float deltaTime)
         {
-            if (!_isActive) return;
-
             TimeLeft -= deltaTime;
 
             if (TimeLeft <= 0f)
@@ -80,17 +59,27 @@ namespace FrogWorks
             Cache.Push(this);
         }
 
-        public void Activate()
+        public void Start()
         {
             TimeLeft = Duration;
-            _isActive = true;
+            IsEnabled = true;
         }
 
-        public void Activate(float duration, bool removeOnCompletion)
+        public void Start(float duration, bool removeOnCompletion = false)
         {
             Duration = Math.Max(Math.Abs(duration), float.Epsilon);
             RemoveOnCompletion = removeOnCompletion;
-            Activate();
+            Start();
+        }
+
+        public void Stop()
+        {
+            if (IsEnabled)
+            {
+                Value = Vector2.Zero;
+                OnShake?.Invoke(Value);
+                IsEnabled = false;
+            }
         }
 
         #region Static Methods
@@ -104,7 +93,8 @@ namespace FrogWorks
         public static Shaker CreateAndApply(Entity entity, float duration, Action<Vector2> onShake, bool removeOnCompletion = true)
         {
             var shaker = Create(duration, onShake, removeOnCompletion, true);
-            entity.AddComponents(shaker);
+            if (entity != null)
+                entity.AddComponents(shaker);
             return shaker;
         }
         #endregion

@@ -113,7 +113,8 @@ namespace FrogWorks
         public static ShakerSet CreateAndApply(Entity entity, int length, float duration, Action<Vector2[]> onShake, bool removeOnCompletion = true)
         {
             var shaker = Create(length, duration, onShake, removeOnCompletion, true);
-            entity.AddComponents(shaker);
+            if (entity != null)
+                entity.AddComponents(shaker);
             return shaker;
         }
         #endregion

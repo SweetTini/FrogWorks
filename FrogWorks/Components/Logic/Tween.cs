@@ -149,16 +149,22 @@ namespace FrogWorks
             tween.OnUpdate += onUpdate;
             tween.OnBegin += onBegin;
             tween.OnEnd += onEnd;
-            entity.AddComponents(tween);
+            if (entity != null)
+                entity.AddComponents(tween);
             return tween;
         }
 
         public static Tween Move(Entity entity, Vector2 target, Ease ease, float duration, TweenMode mode = TweenMode.PlayOnce)
         {
-            var position = entity.Position;
             var tween = Create(ease, duration, mode, true);
-            tween.OnUpdate = (t) => entity.Position = Vector2.Lerp(position, target, t.Value);
-            entity.AddComponents(tween);
+
+            if (entity != null)
+            {
+                var position = entity.Position;
+                tween.OnUpdate = (t) => entity.Position = Vector2.Lerp(position, target, t.Value);
+                entity.AddComponents(tween);
+            }
+
             return tween;
         }
         #endregion
