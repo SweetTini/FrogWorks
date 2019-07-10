@@ -17,7 +17,7 @@ namespace FrogWorks
             get { return Characters.ContainsKey(ascii) ? Characters[ascii] : null; }
         }
 
-        protected Dictionary<int, BitmapCharacter> Characters { get; private set; }
+        protected internal Dictionary<int, BitmapCharacter> Characters { get; private set; }
 
         public int Spacing { get; set; }
 
@@ -25,7 +25,7 @@ namespace FrogWorks
 
         public int LineHeight { get; set; }
 
-        private BitmapFont()
+        internal BitmapFont()
         {
             _builder = new StringBuilder();
             Characters = new Dictionary<int, BitmapCharacter>();
@@ -38,7 +38,7 @@ namespace FrogWorks
             var charCount = Math.Min(charSet.Length, textures.Length);
 
             for (int i = 0; i < charSet.Length; i++)
-                Characters.Add(charSet[i], new BitmapCharacter(textures[i], charSet[i], spacing: charWidth));
+                Characters.Add(charSet[i], new BitmapCharacter(textures[i], charSet[i], Point.Zero, charWidth));
 
             _charSpacing = charWidth;
             DefaultLineHeight = charHeight;

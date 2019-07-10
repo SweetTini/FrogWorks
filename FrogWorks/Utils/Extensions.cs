@@ -1,8 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Xml;
 
 namespace FrogWorks
 {
@@ -17,6 +19,25 @@ namespace FrogWorks
         public static float Mod(this float number, float divisor)
         {
             return (number % divisor + divisor) % divisor;
+        }
+        #endregion
+
+        #region String
+        public static string PadWithZeros(this int number, int digits)
+        {
+            var result = number.ToString();
+            while (result.Length < digits)
+                result = "0" + result;
+            return result;
+        }
+
+        public static string ReadNullTerminatedString(this BinaryReader reader)
+        {
+            var result = string.Empty;
+            char nextChar;
+            while ((nextChar = reader.ReadChar()) != 0)
+                result += nextChar;
+            return result;
         }
         #endregion
 
@@ -191,6 +212,62 @@ namespace FrogWorks
             var flags =  BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
             var method = obj.GetType().GetMethod(name, flags);
             return method != null ? Delegate.CreateDelegate(typeof(T), obj, name) : null;
+        }
+        #endregion
+
+        #region XML: Attributes
+        public static bool HasAttribute(this XmlElement element, string name)
+        {
+            return element.Attributes[name] != null;
+        }
+
+        public static string Attribute(this XmlElement element, string name, string defaultValue = "")
+        {
+            return element.Attributes[name]?.InnerText ?? defaultValue;
+        }
+
+        public static bool AttributeToBoolean(this XmlElement element, string name, bool defaultValue = false)
+        {
+            return element.Attributes[name] != null 
+                ? Convert.ToBoolean(element.Attributes[name])
+                : defaultValue;
+        }
+
+        public static int AttributeToInteger(this XmlElement element, string name, int defaultValue = 0)
+        {
+            return element.Attributes[name] != null
+                ? Convert.ToInt32(element.Attributes[name])
+                : defaultValue;
+        }
+
+        public static float AttributeToFloat(this XmlElement element, string name, float defaultValue = 0)
+        {
+            return element.Attributes[name] != null
+                ? Convert.ToSingle(element.Attributes[name])
+                : defaultValue;
+        }
+
+        public static Point AttributeToPoint(this XmlElement element, string nameForX, string nameForY, Point defaultValue = default(Point))
+        {
+            return new Point(
+                element.AttributeToInteger(nameForX, defaultValue.X),
+                element.AttributeToInteger(nameForY, defaultValue.Y));
+        }
+
+        public static Vector2 AttributeToVector2(this XmlElement element, string nameForX, string nameForY, Vector2 defaultValue = default(Vector2))
+        {
+            return new Vector2(
+                element.AttributeToFloat(nameForX, defaultValue.X),
+                element.AttributeToFloat(nameForY, defaultValue.Y));
+        }
+
+        public static Rectangle AttributeToRectangle(this XmlElement element, Rectangle defaultValue = default(Rectangle))
+        {
+            return new Rectangle(
+                element.AttributeToInteger("x", defaultValue.X),
+                element.AttributeToInteger("y", defaultValue.Y),
+                element.AttributeToInteger("width", defaultValue.Width),
+                element.AttributeToInteger("height", defaultValue.Height));
         }
         #endregion
     }

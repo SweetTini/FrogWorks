@@ -65,6 +65,7 @@
     <Compile Include="Graphics\Animation.cs" />
     <Compile Include="Graphics\BitmapCharacter.cs" />
     <Compile Include="Graphics\BitmapFont.cs" />
+    <Compile Include="Graphics\BmFont.cs" />
     <Compile Include="Graphics\Texture.cs" />
     <Compile Include="Graphics\TileSet.cs" />
     <Compile Include="Inputs\Input.cs" />
@@ -116,6 +117,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Collision\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="packages\MonoGame.Framework.DesktopGL.3.7.1.189\build\MonoGame.Framework.DesktopGL.targets" Condition="Exists('packages\MonoGame.Framework.DesktopGL.3.7.1.189\build\MonoGame.Framework.DesktopGL.targets')" />

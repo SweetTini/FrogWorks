@@ -24,13 +24,18 @@ namespace FrogWorks
             Kernings = new ReadOnlyDictionary<int, int>(_kernings);
         }
 
-        internal BitmapCharacter(Texture texture, int ascii, int offsetX = 0, int offsetY = 0, int spacing = 0)
+        internal BitmapCharacter(Texture texture, int ascii, Point offset = default(Point), int spacing = 0)
             : this()
         {
             Texture = texture;
             Ascii = ascii;
-            Offset = new Point(offsetX, offsetY);
+            Offset = offset;
             Spacing = spacing;
+        }
+
+        internal BitmapCharacter(Texture texture, int ascii, int offsetX = 0, int offsetY = 0, int spacing = 0)
+            : this(texture, ascii, new Point(offsetX, offsetY), spacing)
+        {           
         }
 
         internal void AddOrUpdateKerning(int ascii, int spacing)
