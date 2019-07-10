@@ -242,7 +242,7 @@ namespace FrogWorks
                 : defaultValue;
         }
 
-        public static float AttributeToFloat(this XmlElement element, string name, float defaultValue = 0)
+        public static float AttributeToFloat(this XmlElement element, string name, float defaultValue = 0f)
         {
             return element.Attributes[name] != null
                 ? Convert.ToSingle(element.Attributes[name].InnerText)
