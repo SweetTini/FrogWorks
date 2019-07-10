@@ -223,27 +223,29 @@ namespace FrogWorks
 
         public static string Attribute(this XmlElement element, string name, string defaultValue = "")
         {
-            return element.Attributes[name]?.InnerText ?? defaultValue;
+            return !string.IsNullOrEmpty(element.Attributes[name]?.InnerText)
+                ? element.Attributes[name].InnerText 
+                : defaultValue;
         }
 
         public static bool AttributeToBoolean(this XmlElement element, string name, bool defaultValue = false)
         {
             return element.Attributes[name] != null 
-                ? Convert.ToBoolean(element.Attributes[name])
+                ? Convert.ToBoolean(element.Attributes[name].InnerText)
                 : defaultValue;
         }
 
         public static int AttributeToInteger(this XmlElement element, string name, int defaultValue = 0)
         {
             return element.Attributes[name] != null
-                ? Convert.ToInt32(element.Attributes[name])
+                ? Convert.ToInt32(element.Attributes[name].InnerText)
                 : defaultValue;
         }
 
         public static float AttributeToFloat(this XmlElement element, string name, float defaultValue = 0)
         {
             return element.Attributes[name] != null
-                ? Convert.ToSingle(element.Attributes[name])
+                ? Convert.ToSingle(element.Attributes[name].InnerText)
                 : defaultValue;
         }
 
