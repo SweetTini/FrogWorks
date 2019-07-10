@@ -40,6 +40,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collision\Geometry\Circle.cs" />
+    <Compile Include="Collision\Geometry\IShape.cs" />
+    <Compile Include="Collision\Geometry\Polygon.cs" />
+    <Compile Include="Collision\Geometry\RectangleF.cs" />
     <Compile Include="Components\GraphicsComponent.cs" />
     <Compile Include="Components\Graphics\AnimatedBackgroundImage.cs" />
     <Compile Include="Components\Graphics\AnimatedTiledImage.cs" />
@@ -119,7 +123,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Collision\" />
+    <Folder Include="Collision\Broad\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="packages\MonoGame.Framework.DesktopGL.3.7.1.189\build\MonoGame.Framework.DesktopGL.targets" Condition="Exists('packages\MonoGame.Framework.DesktopGL.3.7.1.189\build\MonoGame.Framework.DesktopGL.targets')" />

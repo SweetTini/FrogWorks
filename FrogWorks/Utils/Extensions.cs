@@ -122,11 +122,31 @@ namespace FrogWorks
             return (float)Math.Atan2(vector.Y, vector.X);
         }
 
+        public static Vector2 Abs(this Vector2 vector)
+        {
+            return new Vector2(Math.Abs(vector.X), Math.Abs(vector.Y));
+        }
+
         public static Vector2 Clamp(this Vector2 vector, Vector2 lowest, Vector2 highest)
         {
             return new Vector2(
                 MathHelper.Clamp(vector.X, lowest.X, highest.X),
                 MathHelper.Clamp(vector.Y, lowest.Y, highest.Y));
+        }
+
+        public static float Cross(this Vector2 vector, Vector2 other)
+        {
+            return vector.X * other.Y - vector.Y * other.X;
+        }
+
+        public static Vector2 Cross(this Vector2 vector, float scale)
+        {
+            return new Vector2(scale * vector.Y, -scale * vector.X);
+        }
+
+        public static Vector2 Perpendicular(this Vector2 vector)
+        {
+            return new Vector2(vector.Y, -vector.X);
         }
 
         public static Vector2 Round(this Vector2 vector)
@@ -161,6 +181,19 @@ namespace FrogWorks
             return highest;
         }
 
+        public static Vector2[] Normalize(this Vector2[] vertices)
+        {
+            var modified = new Vector2[vertices.Length];
+
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                var j = (i + 1) % vertices.Length;
+                modified[i] = Vector2.Normalize((vertices[j] - vertices[i]).Perpendicular());
+            }
+
+            return modified;
+        }
+
         public static Vector2[] Transform(this Vector2[] vertices, Vector2? position = null, Vector2? origin = null, Vector2? scale = null, float angle = 0f)
         {
             var result = new Vector2[vertices.Length];
@@ -175,6 +208,76 @@ namespace FrogWorks
             Vector2.Transform(vertices, ref transformMatrix, result);
 
             return result;
+        }
+
+        public static Rectangle ToRectangle(this Vector2[] vertices)
+        {
+            var location = vertices.Min().Round();
+            var size = vertices.Max().Round() - location;
+            return new Rectangle(location.ToPoint(), size.ToPoint());
+        }
+
+        public static Vector2[] ToConvexHull(this Vector2[] vertices, int segments = 8)
+        {
+            if (vertices.Length < 3) return vertices;
+
+            segments = Math.Min(vertices.Length, segments);
+            var farthestIndex = 0;
+            var farthest = vertices[0].X;
+
+            for (int i = 1; i < segments; i++)
+            {
+                if (farthest < vertices[i].X)
+                {
+                    farthestIndex = i;
+                    farthest = vertices[i].X;
+                }
+                else if (farthest == vertices[i].X && vertices[farthestIndex].Y > vertices[i].Y)
+                {
+                    farthestIndex = i;
+                }
+            }
+
+            var hullIndices = new int[segments];
+            var index = farthestIndex;
+            var outCount = 0;
+
+            while (true)
+            {
+                hullIndices[outCount] = index;
+                var nextIndex = 0;
+
+                for (int i = 1; i < segments; i++)
+                {
+                    if (nextIndex == index)
+                    {
+                        nextIndex = i;
+                        continue;
+                    }
+
+                    var hullIndex = hullIndices[outCount];
+                    var edgeA = vertices[nextIndex] - vertices[hullIndex];
+                    var edgeB = vertices[i] - vertices[hullIndex];
+                    var determinant = edgeA.Cross(edgeB);
+
+                    if (determinant < 0 || determinant == 0 && Vector2.Dot(edgeB, edgeB) > Vector2.Dot(edgeA, edgeA))
+                        nextIndex = i;
+                }
+
+                outCount++;
+                index = nextIndex;
+                if (nextIndex == farthestIndex) break;
+            }
+
+            var hullVertices = new Vector2[segments];
+
+            for (int i = 0; i < outCount; i++)
+            {
+                var hullIndex = hullIndices[i];
+                hullVertices[i] = vertices[hullIndex];
+            }
+
+            return hullVertices;
         }
         #endregion
 
