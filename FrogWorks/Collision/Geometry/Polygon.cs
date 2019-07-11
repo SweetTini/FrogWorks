@@ -2,7 +2,7 @@
 
 namespace FrogWorks
 {
-    public struct Polygon : IShape
+    public class Polygon : Shape
     {
         private Vector2[] _vertices, _transform, _normals;
         private Vector2 _position, _origin, _scale;
@@ -29,7 +29,7 @@ namespace FrogWorks
 
         public int Count => _vertices.Length;
 
-        public Vector2 Position
+        public override Vector2 Position
         {
             get { return _position; }
             set
@@ -38,18 +38,6 @@ namespace FrogWorks
                 _position = value;
                 _isDirty = true;
             }
-        }
-
-        public float X
-        {
-            get { return Position.X; }
-            set { Position = new Vector2(value, Position.Y); }
-        }
-
-        public float Y
-        {
-            get { return Position.X; }
-            set { Position = new Vector2(Position.X, value); }
         }
 
         public Vector2 Origin
@@ -91,10 +79,9 @@ namespace FrogWorks
             set { Angle = MathHelper.ToRadians(value); }
         }
 
-        public Rectangle Bounds => Vertices.ToRectangle();
+        public override Rectangle Bounds => Vertices.ToRectangle();
 
         public Polygon(Vector2[] vertices)
-            : this()
         {
             _vertices = vertices.ToConvexHull();
             _origin = (vertices.Max() - vertices.Min()) / 2f;
@@ -103,7 +90,7 @@ namespace FrogWorks
             UpdateVertices(true);
         }
 
-        public void Draw(RendererBatch batch, Color color, bool fill = false)
+        public override void Draw(RendererBatch batch, Color color, bool fill = false)
         {
             var shape = this;
 
@@ -114,7 +101,7 @@ namespace FrogWorks
             });
         }
 
-        public bool Contains(Vector2 point)
+        public override bool Contains(Vector2 point)
         {
             var inside = false;
 
@@ -131,11 +118,6 @@ namespace FrogWorks
             }
 
             return inside;
-        }
-
-        public bool Contains(float x, float y)
-        {
-            return Contains(new Vector2(x, y));
         }
 
         private void UpdateVertices(bool forceUpdate = false)

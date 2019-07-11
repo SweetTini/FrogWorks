@@ -3,23 +3,9 @@ using System;
 
 namespace FrogWorks
 {
-    public struct Circle : IShape
+    public class Circle : Shape
     {
         private float _radius;
-
-        public Vector2 Position { get; set; }
-
-        public float X
-        {
-            get { return Position.X; }
-            set { Position = new Vector2(value, Position.Y); }
-        }
-
-        public float Y
-        {
-            get { return Position.X; }
-            set { Position = new Vector2(Position.X, value); }
-        }
 
         public Vector2 Center
         {
@@ -45,10 +31,17 @@ namespace FrogWorks
             set { _radius = Math.Abs(value); }
         }
 
-        public Rectangle Bounds => new Rectangle(Position.Round().ToPoint(), (Vector2.One * _radius * 2f).Round().ToPoint());
+        public override Rectangle Bounds
+        {
+            get
+            {
+                var location = Position.Round().ToPoint();
+                var size = (Vector2.One * _radius * 2f).Round().ToPoint();
+                return new Rectangle(location, size);
+            }
+        }
 
         public Circle(Vector2 center, float radius)
-            : this()
         {
             Center = center;
             Radius = radius;
@@ -59,7 +52,7 @@ namespace FrogWorks
         {
         }
 
-        public void Draw(RendererBatch batch, Color color, bool fill = false)
+        public override void Draw(RendererBatch batch, Color color, bool fill = false)
         {
             var shape = this;
 
@@ -70,14 +63,9 @@ namespace FrogWorks
             });
         }
 
-        public bool Contains(Vector2 point)
+        public override bool Contains(Vector2 point)
         {
             return (point - Center).LengthSquared() < Radius * Radius;
-        }
-
-        public bool Contains(float x, float y)
-        {
-            return Contains(new Vector2(x, y));
         }
     }
 }

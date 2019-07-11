@@ -40,8 +40,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collision\Collision.cs" />
     <Compile Include="Collision\Geometry\Circle.cs" />
-    <Compile Include="Collision\Geometry\IShape.cs" />
+    <Compile Include="Collision\Geometry\Shape.cs" />
     <Compile Include="Collision\Geometry\Polygon.cs" />
     <Compile Include="Collision\Geometry\RectangleF.cs" />
     <Compile Include="Components\GraphicsComponent.cs" />

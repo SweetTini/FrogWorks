@@ -2,23 +2,9 @@
 
 namespace FrogWorks
 {
-    public struct RectangleF : IShape
+    public class RectangleF : Shape
     {
         private Vector2 _size;
-
-        public Vector2 Position { get; set; }
-
-        public float X
-        {
-            get { return Position.X; }
-            set { Position = new Vector2(value, Position.Y); }
-        }
-
-        public float Y
-        {
-            get { return Position.X; }
-            set { Position = new Vector2(Position.X, value); }
-        }
 
         public Vector2 Size
         {
@@ -46,10 +32,9 @@ namespace FrogWorks
 
         public float Bottom => Position.Y + Size.Y;
 
-        public Rectangle Bounds => new Rectangle(Position.Round().ToPoint(), Size.Round().ToPoint());
+        public override Rectangle Bounds => new Rectangle(Position.Round().ToPoint(), Size.Round().ToPoint());
 
         public RectangleF(Vector2 position, Vector2 size)
-            : this()
         {
             Position = position;
             Size = size;
@@ -60,7 +45,7 @@ namespace FrogWorks
         {
         }
 
-        public void Draw(RendererBatch batch, Color color, bool fill = false)
+        public override void Draw(RendererBatch batch, Color color, bool fill = false)
         {
             var shape = this;
 
@@ -71,14 +56,9 @@ namespace FrogWorks
             });
         }
 
-        public bool Contains(Vector2 point)
+        public override bool Contains(Vector2 point)
         {
             return Left <= point.X && point.X < Right && Top <= point.Y && point.Y < Bottom;
-        }
-
-        public bool Contains(float x, float y)
-        {
-            return Contains(new Vector2(x, y));
         }
     }
 }
