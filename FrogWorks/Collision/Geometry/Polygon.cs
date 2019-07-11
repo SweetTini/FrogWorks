@@ -82,8 +82,14 @@ namespace FrogWorks
         public override Rectangle Bounds => Vertices.ToRectangle();
 
         public Polygon(Vector2[] vertices)
+            : this(vertices.Min(), vertices)
+        {
+        }
+
+        public Polygon(Vector2 position, Vector2[] vertices)
         {
             _vertices = vertices.ToConvexHull();
+            _position = position;
             _origin = (vertices.Max() - vertices.Min()) / 2f;
             _scale = Vector2.One;
 
