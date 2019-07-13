@@ -6,6 +6,8 @@ namespace FrogWorks
 {
     public class TileMap : Component
     {
+        private Vector2 _position;
+
         protected Map<Texture> TextureMap { get; private set; }
 
         public int Columns => TextureMap.Columns;
@@ -20,18 +22,40 @@ namespace FrogWorks
 
         public Rectangle DrawableRegion { get; private set; }
 
-        public Vector2 Position { get; set; }
+        public Vector2 Position
+        {
+            get { return _position; }
+            set
+            {
+                if (value == _position) return;
+                _position = value;
+                if (Entity?.Layer?.Camera != null)
+                    UpdateDrawableRegion(Entity.Layer.Camera);
+            }
+        }
 
         public float X
         {
-            get { return Position.X; }
-            set { Position = new Vector2(value, Position.Y); }
+            get { return _position.X; }
+            set
+            {
+                if (value == _position.X) return;
+                _position.X = value;
+                if (Entity?.Layer?.Camera != null)
+                    UpdateDrawableRegion(Entity.Layer.Camera);
+            }
         }
 
         public float Y
         {
-            get { return Position.Y; }
-            set { Position = new Vector2(Position.X, value); }
+            get { return _position.Y; }
+            set
+            {
+                if (value == _position.Y) return;
+                _position.Y = value;
+                if (Entity?.Layer?.Camera != null)
+                    UpdateDrawableRegion(Entity.Layer.Camera);
+            }
         }
 
         public Vector2 DrawPosition

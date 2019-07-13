@@ -56,6 +56,8 @@ namespace FrogWorks
 
         public Color ClearColor { get; set; } = Color.Black;
 
+        internal Action OnBackBufferChanged { get; set; }
+
         internal Display(GraphicsDeviceManager graphics, GameWindow window, int width, int height)
         {
             Graphics = graphics;
@@ -132,7 +134,6 @@ namespace FrogWorks
                         ExtendedHeight = (int)Math.Round((ScreenHeight - Height * scale) * worldScale);
                         HorizontalScale = VerticalScale = scale;
                     }
-
                     break;
                 case Scaling.Crop:
                     HorizontalScale = VerticalScale = sourceRatio > targetRatio
@@ -154,7 +155,7 @@ namespace FrogWorks
         internal void DrawBackBuffer(RendererBatch batch, Scene scene)
         {
             Graphics.GraphicsDevice.SetRenderTarget(BackBuffer);
-            Graphics.GraphicsDevice.Viewport = new Viewport(0, 0, Width, Height);
+            Graphics.GraphicsDevice.Viewport = new Viewport(0, 0, Width + ExtendedWidth, Height + ExtendedHeight);
             Graphics.GraphicsDevice.Clear(scene?.BackgroundColor ?? ClearColor);
             scene?.Draw(batch);
 
@@ -176,6 +177,7 @@ namespace FrogWorks
                 BackBuffer = new RenderTarget2D(Graphics.GraphicsDevice, Width + ExtendedWidth, Height + ExtendedHeight);
 
                 _isBackBufferDirty = false;
+                OnBackBufferChanged?.Invoke();
             }
         }
 

@@ -6,24 +6,48 @@ namespace FrogWorks
 {
     public class BackgroundImage : Component
     {
+        private Vector2 _position;
+
         public Texture Texture { get; protected set; }
 
         public Rectangle Bounds => new Rectangle(0, 0, Texture.Width, Texture.Height);
 
         public Rectangle DrawableRegion { get; private set; }
 
-        public Vector2 Position { get; set; }
+        public Vector2 Position
+        {
+            get { return _position; }
+            set
+            {
+                if (value == _position) return;
+                _position = value;
+                if (Entity?.Layer?.Camera != null)
+                    UpdateDrawableRegion(Entity.Layer.Camera);
+            }
+        }
 
         public float X
         {
-            get { return Position.X; }
-            set { Position = new Vector2(value, Position.Y); }
+            get { return _position.X; }
+            set
+            {
+                if (value == _position.X) return;
+                _position.X = value;
+                if (Entity?.Layer?.Camera != null)
+                    UpdateDrawableRegion(Entity.Layer.Camera);
+            }
         }
 
         public float Y
         {
-            get { return Position.Y; }
-            set { Position = new Vector2(Position.X, value); }
+            get { return _position.Y; }
+            set
+            {
+                if (value == _position.Y) return;
+                _position.Y = value;
+                if (Entity?.Layer?.Camera != null)
+                    UpdateDrawableRegion(Entity.Layer.Camera);
+            }
         }
 
         public Vector2 DrawPosition
@@ -108,10 +132,10 @@ namespace FrogWorks
             var x2 = (int)Math.Ceiling((camera.Bounds.Right + DrawPosition.X) / Bounds.Width);
             var y2 = (int)Math.Ceiling((camera.Bounds.Bottom + DrawPosition.Y) / Bounds.Height);
 
-            if (WrapHorizontally) y2 = y1 + 1;
-            if (WrapVertically) x2 = x1 + 1;
+            var width = !WrapVertically ? x2 - x1 : 1;
+            var height = !WrapHorizontally ? y2 - y1 : 1;
 
-            DrawableRegion = new Rectangle(x1, y1, x2 - x1, y2 - y1);
+            DrawableRegion = new Rectangle(x1, y1, width, height);
         }
     }
 }

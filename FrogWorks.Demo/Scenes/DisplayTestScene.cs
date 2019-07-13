@@ -33,15 +33,15 @@ namespace FrogWorks.Demo.Scenes
         {
             if (Input.Keyboard.IsPressed(Keys.Alpha1))
                 SetDisplayScaling(Scaling.None);
-            if (Input.Keyboard.IsPressed(Keys.Alpha2))
+            else if (Input.Keyboard.IsPressed(Keys.Alpha2))
                 SetDisplayScaling(Scaling.Fit);
-            if (Input.Keyboard.IsPressed(Keys.Alpha3))
+            else if (Input.Keyboard.IsPressed(Keys.Alpha3))
                 SetDisplayScaling(Scaling.PixelPerfect);
-            if (Input.Keyboard.IsPressed(Keys.Alpha4))
+            else if (Input.Keyboard.IsPressed(Keys.Alpha4))
                 SetDisplayScaling(Scaling.Stretch);
-            if (Input.Keyboard.IsPressed(Keys.Alpha5))
+            else if (Input.Keyboard.IsPressed(Keys.Alpha5))
                 SetDisplayScaling(Scaling.Extend);
-            if (Input.Keyboard.IsPressed(Keys.Alpha6))
+            else if (Input.Keyboard.IsPressed(Keys.Alpha6))
                 SetDisplayScaling(Scaling.Crop);
 
             base.Update(deltaTime);

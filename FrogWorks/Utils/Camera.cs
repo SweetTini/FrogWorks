@@ -137,6 +137,7 @@ namespace FrogWorks
         public Camera()
             : this(Engine.FrameWidth, Engine.FrameHeight)
         {
+            Engine.Instance.Display.OnBackBufferChanged += OnScreenChanged;
         }
 
         public Camera(int width, int height)
@@ -178,6 +179,13 @@ namespace FrogWorks
             Position += distanceToMove.Length() > maxDistance
                 ? Vector2.Normalize(distanceToMove) * maxDistance
                 : distanceToMove;
+        }
+
+        internal void OnScreenChanged()
+        {
+            var display = Engine.Instance.Display;
+            _viewport = new Viewport(0, 0, display.Width + display.ExtendedWidth, display.Height + display.ExtendedHeight);
+            _isDirty = true;
         }
 
         protected void UpdateMatrices()
