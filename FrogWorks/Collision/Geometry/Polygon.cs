@@ -243,7 +243,7 @@ namespace FrogWorks
             return hit;
         }
 
-        public bool IsClippable(Polygon polygon, int index, out Plane plane)
+        public bool TryClipping(Polygon polygon, int index, out Plane plane)
         {
             plane = new Plane();
 

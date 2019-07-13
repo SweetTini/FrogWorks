@@ -452,7 +452,7 @@ namespace FrogWorks
             Plane plane;
             var line = incPoly.GetClosestLine(refPoly, refPolyIndex);
 
-            if (!line.IsClippable(refPoly, refPolyIndex, out plane)) return false;
+            if (!line.TryClipping(refPoly, refPolyIndex, out plane)) return false;
 
             hit = line.KeepDeepestIntersection(plane);
             if (flip) hit.Normal *= -1f;
