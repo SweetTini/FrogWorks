@@ -78,17 +78,17 @@ namespace FrogWorks
             for (int i = 0; i < other.Count; i++)
             {
                 var numerator = Vector2.Dot(other.Normals[i], other.Vertices[i] - ray.Position);
-                var denomator = Vector2.Dot(other.Normals[i], ray.Normal);
-                if (denomator == 0f && numerator < 0f) return false;
+                var denominator = Vector2.Dot(other.Normals[i], ray.Normal);
+                if (denominator == 0f && numerator < 0f) return false;
 
-                if (denomator < 0f && numerator < lowest * denomator)
+                if (denominator < 0f && numerator < lowest * denominator)
                 {
-                    lowest = numerator / denomator;
+                    lowest = numerator / denominator;
                     index = i;
                 }
-                else if (denomator > 0f && numerator < highest * denomator)
+                else if (denominator > 0f && numerator < highest * denominator)
                 {
-                    highest = numerator / denomator;
+                    highest = numerator / denominator;
                 }
 
                 if (highest < lowest) return false;
@@ -105,7 +105,61 @@ namespace FrogWorks
         }
         #endregion
 
+        #region Shape
+        public static bool Collide(this Shape shape, Shape other)
+        {
+            if (shape is Circle)
+                return (shape as Circle).Collide(other);
+            else if (shape is RectangleF)
+                return (shape as RectangleF).Collide(other);
+            else if (other is Polygon)
+                return (shape as Polygon).Collide(other);
+
+            return false;
+        }
+
+        public static bool Collide(this Shape shape, Shape other, out Manifold hit)
+        {
+            hit = new Manifold();
+
+            if (shape is Circle)
+                return (shape as Circle).Collide(other, out hit);
+            else if (shape is RectangleF)
+                return (shape as RectangleF).Collide(other, out hit);
+            else if (other is Polygon)
+                return (shape as Polygon).Collide(other, out hit);
+
+            return false;
+        }
+        #endregion
+
         #region Circle
+        public static bool Collide(this Circle circle, Shape other)
+        {
+            if (other is Circle)
+                return circle.Collide(other as Circle);
+            else if (other is RectangleF)
+                return circle.Collide(other as RectangleF);
+            else if (other is Polygon)
+                return circle.Collide(other as Polygon);
+
+            return false;
+        }
+
+        public static bool Collide(this Circle circle, Shape other, out Manifold hit)
+        {
+            hit = new Manifold();
+
+            if (other is Circle)
+                return circle.Collide(other as Circle, out hit);
+            else if (other is RectangleF)
+                return circle.Collide(other as RectangleF, out hit);
+            else if (other is Polygon)
+                return circle.Collide(other as Polygon, out hit);
+
+            return false;
+        }
+
         public static bool Collide(this Circle circle, Circle other)
         {
             var radius = circle.Radius + other.Radius;
@@ -242,6 +296,32 @@ namespace FrogWorks
         #endregion
 
         #region Rectangle
+        public static bool Collide(this RectangleF rect, Shape other)
+        {
+            if (other is Circle)
+                return rect.Collide(other as Circle);
+            else if (other is RectangleF)
+                return rect.Collide(other as RectangleF);
+            else if (other is Polygon)
+                return rect.Collide(other as Polygon);
+
+            return false;
+        }
+
+        public static bool Collide(this RectangleF rect, Shape other, out Manifold hit)
+        {
+            hit = new Manifold();
+
+            if (other is Circle)
+                return rect.Collide(other as Circle, out hit);
+            else if (other is RectangleF)
+                return rect.Collide(other as RectangleF, out hit);
+            else if (other is Polygon)
+                return rect.Collide(other as Polygon, out hit);
+
+            return false;
+        }
+
         public static bool Collide(this RectangleF rect, Circle other)
         {
             return other.Collide(rect);
@@ -298,6 +378,32 @@ namespace FrogWorks
         #endregion
 
         #region Polygon
+        public static bool Collide(this Polygon polygon, Shape other)
+        {
+            if (other is Circle)
+                return polygon.Collide(other as Circle);
+            else if (other is RectangleF)
+                return polygon.Collide(other as RectangleF);
+            else if (other is Polygon)
+                return polygon.Collide(other as Polygon);
+
+            return false;
+        }
+
+        public static bool Collide(this Polygon polygon, Shape other, out Manifold hit)
+        {
+            hit = new Manifold();
+
+            if (other is Circle)
+                return polygon.Collide(other as Circle, out hit);
+            else if (other is RectangleF)
+                return polygon.Collide(other as RectangleF, out hit);
+            else if (other is Polygon)
+                return polygon.Collide(other as Polygon, out hit);
+
+            return false;
+        }
+
         public static bool Collide(this Polygon polygon, Circle other)
         {
             return GJK.Collide(polygon, other);
