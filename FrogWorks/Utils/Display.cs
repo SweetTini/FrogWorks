@@ -48,7 +48,6 @@ namespace FrogWorks
             {
                 if (value == _scaling) return;
                 _scaling = value;
-                Graphics.ApplyChanges();
                 ApplyScaling();
                 ResetBackBuffer();
             }

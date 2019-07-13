@@ -5,14 +5,10 @@ namespace FrogWorks.Demo.Scenes
 {
     public class DisplayTestScene : Scene
     {
-        protected TextEntity TextEntity { get; private set; }
-
-        protected BackgroundEntity BackgroundEntity { get; private set; }
-
         public DisplayTestScene()
             : base()
         {
-            TextEntity = new TextEntity()
+            var textEntity = new TextEntity()
             {
                 Y = Engine.FrameHeight / 2f,
                 Text = "Press 1-6 to change scaling.",
@@ -20,13 +16,15 @@ namespace FrogWorks.Demo.Scenes
                 VerticalAlignment = VerticalAlignment.Center
             };
 
-            BackgroundEntity = new BackgroundEntity()
+            var backgroundEntity = new BackgroundEntity()
             {
-                Color = Color.Gray,
+                Color = Color.DarkCyan,
+                Coefficient = Vector2.One * .5f,
+                Autoscroll = true,
                 Depth = -100
             };
 
-            AddEntities(TextEntity, BackgroundEntity);
+            AddEntities(textEntity, backgroundEntity);
         }
 
         public override void Update(float deltaTime)
