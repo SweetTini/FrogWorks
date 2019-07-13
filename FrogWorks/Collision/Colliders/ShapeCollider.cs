@@ -29,7 +29,9 @@ namespace FrogWorks
 
         internal override void OnTranslated(Vector2 position, Vector2 lastPosition)
         {
-            Shape.Position = AbsolutePosition;
+            if (Shape != null)
+                Shape.Position = AbsolutePosition;
+
             base.OnTranslated(position, lastPosition);
         }
     }
