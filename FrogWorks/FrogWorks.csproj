@@ -42,9 +42,12 @@
   <ItemGroup>
     <Compile Include="Collision\Collision.cs" />
     <Compile Include="Collision\Geometry\Circle.cs" />
+    <Compile Include="Collision\Geometry\Ray.cs" />
     <Compile Include="Collision\Geometry\Shape.cs" />
     <Compile Include="Collision\Geometry\Polygon.cs" />
     <Compile Include="Collision\Geometry\RectangleF.cs" />
+    <Compile Include="Collision\Response\Manifold.cs" />
+    <Compile Include="Collision\Response\Raycast.cs" />
     <Compile Include="Components\GraphicsComponent.cs" />
     <Compile Include="Components\Graphics\AnimatedBackgroundImage.cs" />
     <Compile Include="Components\Graphics\AnimatedTiledImage.cs" />

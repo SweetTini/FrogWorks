@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 
 namespace FrogWorks
 {
@@ -47,18 +48,30 @@ namespace FrogWorks
 
         public override void Draw(RendererBatch batch, Color color, bool fill = false)
         {
-            var shape = this;
-
             batch.DrawPrimitives((primitive) =>
             {
-                if (fill) primitive.FillRectangle(shape.Position, shape.Size, color);
-                else primitive.DrawRectangle(shape.Position, shape.Size, color);
+                if (fill) primitive.FillRectangle(Position, Size, color);
+                else primitive.DrawRectangle(Position, Size, color);
             });
         }
 
         public override bool Contains(Vector2 point)
         {
             return Left <= point.X && point.X < Right && Top <= point.Y && point.Y < Bottom;
+        }
+
+        public override Proxy ToProxy()
+        {
+            return new Proxy(ToVertices());
+        }
+
+        public Vector2[] ToVertices()
+        {
+            return new[]
+            {
+                Position, new Vector2(Position.X + Size.X, Position.Y),
+                Position + Size, new Vector2(Position.X, Position.Y + Size.Y),
+            };
         }
     }
 }

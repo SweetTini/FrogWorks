@@ -54,18 +54,21 @@ namespace FrogWorks
 
         public override void Draw(RendererBatch batch, Color color, bool fill = false)
         {
-            var shape = this;
-
             batch.DrawPrimitives((primitive) =>
             {
-                if (fill) primitive.FillCircle(shape.Center, shape.Radius, color);
-                else primitive.DrawCircle(shape.Center, shape.Radius, color);
+                if (fill) primitive.FillCircle(Center, Radius, color);
+                else primitive.DrawCircle(Center, Radius, color);
             });
         }
 
         public override bool Contains(Vector2 point)
         {
             return (point - Center).LengthSquared() < Radius * Radius;
+        }
+
+        public override Proxy ToProxy()
+        {
+            return new Proxy(new[] { Center }, Radius);
         }
     }
 }
