@@ -252,7 +252,7 @@ namespace FrogWorks
             var leftPlane = new Plane(-edgeNormal, Vector2.Dot(-edgeNormal, polyLine.Startpoint));
             var rightPlane = new Plane(edgeNormal, Vector2.Dot(edgeNormal, polyLine.Endpoint));
 
-            if (Clip(leftPlane) || Clip(rightPlane))
+            if (!Clip(leftPlane) || !Clip(rightPlane))
                 return false;
 
             plane.Normal = edgeNormal.Perpendicular();
@@ -276,7 +276,7 @@ namespace FrogWorks
             Startpoint = output[0];
             Endpoint = output[1];
 
-            return index < 2;
+            return index == 2;
         }
     }
 
