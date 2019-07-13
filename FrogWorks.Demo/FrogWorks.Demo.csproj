@@ -42,12 +42,12 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AppleEntity.cs" />
-    <Compile Include="CheckerBoardEntity.cs" />
-    <Compile Include="CoreTestScene.cs" />
-    <Compile Include="DisplayTestScene.cs" />
+    <Compile Include="DefaultFont.cs" />
+    <Compile Include="Entities\BackgroundEntity.cs" />
+    <Compile Include="Entities\TextEntity.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scenes\DisplayTestScene.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">

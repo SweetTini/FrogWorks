@@ -135,7 +135,7 @@ namespace FrogWorks
         }
 
         public Camera()
-            : this(Engine.Instance.Display.Width, Engine.Instance.Display.Height)
+            : this(Engine.FrameWidth, Engine.FrameHeight)
         {
         }
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FrogWorks.Demo.Scenes;
+using System;
 
 namespace FrogWorks.Demo
 {
@@ -9,9 +10,9 @@ namespace FrogWorks.Demo
         {
             using (var game = new Engine(320, 240))
             {
-                game.SetScene<CoreTestScene>();
                 game.Window.AllowUserResizing = true;
                 game.IsMouseVisible = true;
+                game.SetScene<DisplayTestScene>();
                 game.Run();
             }
         }
