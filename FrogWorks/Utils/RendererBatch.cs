@@ -81,7 +81,7 @@ namespace FrogWorks
             WrapTexture = IsDrawing = false;
         }
 
-        public void DrawSprites(Action<SpriteBatch> drawAction, bool wrapTexture = false)
+        public void DrawSprites(Action<SpriteBatch> draw, bool wrapTexture = false)
         {
             if (!IsDrawing)
                 throw new Exception("Begin must be called before drawing sprites.");
@@ -100,10 +100,10 @@ namespace FrogWorks
                 WrapTexture = wrapTexture;
             }
 
-            drawAction(Sprite);
+            draw(Sprite);
         }
 
-        public void DrawPrimitives(Action<PrimitiveBatch> drawAction)
+        public void DrawPrimitives(Action<PrimitiveBatch> draw)
         {
             if (!IsDrawing)
                 throw new Exception("Begin must be called before drawing primitives.");
@@ -115,7 +115,7 @@ namespace FrogWorks
                 RenderingMode = RenderingMode.Primitives;
             }
 
-            drawAction(Primitive);
+            draw(Primitive);
         }
 
         public void Dispose()

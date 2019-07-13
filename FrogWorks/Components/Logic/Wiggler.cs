@@ -57,9 +57,9 @@ namespace FrogWorks
                     Value = (float)Math.Cos(_sineCounter) * Counter;
                     break;
                 case WigglerMode.EaseInOut:
-                    Value = Counter >= .5f 
-                        ? (float)Math.Cos(_sineCounter) * (1f - Counter)
-                        : (float)Math.Cos(_sineCounter) * Counter;
+                    Value = Counter <= .5f
+                        ? (float)Math.Cos(_sineCounter) * Counter
+                        : (float)Math.Cos(_sineCounter) * (1f - Counter);
                     break;
             }
 

@@ -20,6 +20,11 @@ namespace FrogWorks
         {
             return (number % divisor + divisor) % divisor;
         }
+
+        public static float Inverse(this float number)
+        {
+            return number != 0f ? 1f / number : number;
+        }
         #endregion
 
         #region String
@@ -144,6 +149,13 @@ namespace FrogWorks
             return new Vector2(scale * vector.Y, -scale * vector.X);
         }
 
+        public static Vector2 Inverse(this Vector2 vector)
+        {
+            return new Vector2(
+                vector.X != 0f ? 1f / vector.X : 0f, 
+                vector.Y != 0f ? 1f / vector.Y : 0f);
+        }
+
         public static Vector2 Perpendicular(this Vector2 vector)
         {
             return new Vector2(vector.Y, -vector.X);
@@ -157,6 +169,11 @@ namespace FrogWorks
         public static Vector2 Round(this Vector2 vector, int digits)
         {
             return new Vector2((float)Math.Round(vector.X, digits), (float)Math.Round(vector.Y, digits));
+        }
+
+        public static Vector2 Sign(this Vector2 vector)
+        {
+            return new Vector2(Math.Sign(vector.X), Math.Sign(vector.Y));
         }
         #endregion
 
