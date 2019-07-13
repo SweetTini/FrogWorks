@@ -125,6 +125,16 @@ namespace FrogWorks
             return inside;
         }
 
+        public override Shape Clone()
+        {
+            return new Polygon(Position, _vertices)
+            {
+                Origin = Origin,
+                Scale = Scale,
+                Angle = Angle
+            };
+        }
+
         public override Proxy ToProxy()
         {
             return new Proxy(Vertices);

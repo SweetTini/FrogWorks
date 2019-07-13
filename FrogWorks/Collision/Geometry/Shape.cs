@@ -29,6 +29,8 @@ namespace FrogWorks
             return Contains(new Vector2(x, y));
         }
 
+        public abstract Shape Clone();
+
         public abstract Proxy ToProxy();
     }
 

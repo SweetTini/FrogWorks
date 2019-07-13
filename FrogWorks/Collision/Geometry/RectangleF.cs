@@ -60,6 +60,11 @@ namespace FrogWorks
             return Left <= point.X && point.X < Right && Top <= point.Y && point.Y < Bottom;
         }
 
+        public override Shape Clone()
+        {
+            return new RectangleF(Position, Size);
+        }
+
         public override Proxy ToProxy()
         {
             return new Proxy(ToVertices());

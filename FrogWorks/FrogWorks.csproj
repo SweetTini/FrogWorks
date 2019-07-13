@@ -46,6 +46,7 @@
     <Compile Include="Collision\Geometry\Shape.cs" />
     <Compile Include="Collision\Geometry\Polygon.cs" />
     <Compile Include="Collision\Geometry\RectangleF.cs" />
+    <Compile Include="Collision\GJK.cs" />
     <Compile Include="Collision\Response\Manifold.cs" />
     <Compile Include="Collision\Response\Raycast.cs" />
     <Compile Include="Components\GraphicsComponent.cs" />

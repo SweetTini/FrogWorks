@@ -171,6 +171,11 @@ namespace FrogWorks
             return new Vector2((float)Math.Round(vector.X, digits), (float)Math.Round(vector.Y, digits));
         }
 
+        public static Vector2 SafeNormalize(this Vector2 vector)
+        {
+            return vector == Vector2.Zero ? vector : Vector2.Normalize(vector);
+        }
+
         public static Vector2 Sign(this Vector2 vector)
         {
             return new Vector2(Math.Sign(vector.X), Math.Sign(vector.Y));

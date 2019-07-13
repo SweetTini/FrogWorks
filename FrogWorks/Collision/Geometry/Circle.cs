@@ -66,6 +66,11 @@ namespace FrogWorks
             return (point - Center).LengthSquared() < Radius * Radius;
         }
 
+        public override Shape Clone()
+        {
+            return new Circle(Center, Radius);
+        }
+
         public override Proxy ToProxy()
         {
             return new Proxy(new[] { Center }, Radius);
