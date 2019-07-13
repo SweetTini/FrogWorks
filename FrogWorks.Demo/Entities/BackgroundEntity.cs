@@ -16,7 +16,7 @@ namespace FrogWorks.Demo.Entities
 
         public Vector2 Coefficient { get; set; } = Vector2.One;
 
-        public bool Autoscroll { get; set; }
+        public bool AutoScroll { get; set; }
 
         public BackgroundEntity()
             : base()
@@ -27,7 +27,7 @@ namespace FrogWorks.Demo.Entities
 
         public override void Update(float deltaTime)
         {
-            if (Autoscroll)
+            if (AutoScroll)
             {
                 Background.Position += Coefficient;
                 Background.X = Background.X.Mod(Background.Texture.Width);

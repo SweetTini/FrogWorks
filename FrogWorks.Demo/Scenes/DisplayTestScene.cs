@@ -10,7 +10,7 @@ namespace FrogWorks.Demo.Scenes
         {
             var textEntity = new TextEntity()
             {
-                Y = Engine.FrameHeight / 2f,
+                Y = Engine.Height / 2f,
                 Text = "Press 1-6 to change scaling.",
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center
@@ -20,7 +20,7 @@ namespace FrogWorks.Demo.Scenes
             {
                 Color = Color.DarkCyan,
                 Coefficient = Vector2.One * .5f,
-                Autoscroll = true,
+                AutoScroll = true,
                 Depth = -100
             };
 

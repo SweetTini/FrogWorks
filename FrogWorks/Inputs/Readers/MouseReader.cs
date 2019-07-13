@@ -14,11 +14,18 @@ namespace FrogWorks
         {
             get
             {
-                return Vector2.Transform(CurrentState.Position.ToVector2(), Matrix.Invert(Engine.Instance.Display.ScaleMatrix));
+                var display = Engine.Instance.Display;
+                var padding = new Vector2(display.HorizontalPadding, display.VerticalPadding);
+                var position = CurrentState.Position.ToVector2();
+
+                return Vector2.Transform(position - padding, Matrix.Invert(display.ScaleMatrix)).Round();
             }
             set
             {
-                var position = Vector2.Transform(value, Engine.Instance.Display.ScaleMatrix).Round().ToPoint();
+                var display = Engine.Instance.Display;
+                var padding = new Vector2(display.HorizontalPadding, display.VerticalPadding);
+                var position = (Vector2.Transform(value, display.ScaleMatrix) + padding).Round().ToPoint();
+
                 Mouse.SetPosition(position.X, position.Y);
             }
         }

@@ -6,7 +6,7 @@ namespace FrogWorks
     public static class Collision
     {
         #region Raycasting
-        public static bool CastRay(this Ray ray, Shape other, out Raycast hit)
+        public static bool Cast(this Ray ray, Shape other, out Raycast hit)
         {
             hit = new Raycast(ray);
 

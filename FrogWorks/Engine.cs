@@ -15,9 +15,9 @@ namespace FrogWorks
 
         internal static Engine Instance { get; private set; }
 
-        public static int FrameWidth { get; private set; }
+        public static int Width { get; private set; }
 
-        public static int FrameHeight { get; private set; }
+        public static int Height { get; private set; }
 
         public static string AssemblyDirectory
         {
@@ -80,8 +80,8 @@ namespace FrogWorks
             _sceneCache = new Cache<Scene>();
 
             Instance = this;
-            FrameWidth = width;
-            FrameHeight = height;
+            Width = width;
+            Height = height;
             Graphics = new GraphicsDeviceManager(this);
             Display = new Display(Graphics, Window, width, height);
             RendererBatch = new RendererBatch(GraphicsDevice);

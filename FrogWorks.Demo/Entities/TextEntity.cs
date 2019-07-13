@@ -33,7 +33,7 @@ namespace FrogWorks.Demo.Entities
         public TextEntity()
             : base()
         {
-            SpriteText = new SpriteText(DefaultFont.Font, string.Empty, Engine.FrameWidth);
+            SpriteText = new SpriteText(DefaultFont.Font, string.Empty, Engine.Width);
             AddComponents(SpriteText);
         }
     }

@@ -6,6 +6,7 @@ namespace FrogWorks
 {
     public abstract class Entity
     {
+        private Collider _collider;
         private Vector2 _position;
         private int _depth;
 
@@ -19,6 +20,18 @@ namespace FrogWorks
         protected internal Layer Layer { get; private set; }
 
         protected internal Scene Scene => Layer?.Scene;
+
+        protected Collider Collider
+        {
+            get { return _collider; }
+            set
+            {
+                if (value == _collider || value.Entity != null) return;
+                _collider?.OnRemoved();
+                _collider = value;
+                _collider?.OnAdded(this);
+            }
+        }
 
         public Vector2 Position
         {
@@ -123,6 +136,7 @@ namespace FrogWorks
 
         public virtual void OnTranslated(Vector2 position, Vector2 lastPosition)
         {
+            _collider?.OnTranslated(position, lastPosition);
         }
 
         public void Destroy()

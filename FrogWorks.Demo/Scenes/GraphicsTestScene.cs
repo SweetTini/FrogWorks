@@ -13,7 +13,7 @@ namespace FrogWorks.Demo.Scenes
             var textEntity = new TextEntity()
             {
                 Y = 8,
-                Text = "Click Apple to shake it!\nArrow Keys - Scroll Camera\nWASD - Rotate/Scale Camera",
+                Text = "Click Apple to wiggle it!\nArrow Keys - Scroll Camera\nWASD - Rotate/Scale Camera",
                 HorizontalAlignment = HorizontalAlignment.Center,
                 Depth = 100
             };
@@ -27,9 +27,9 @@ namespace FrogWorks.Demo.Scenes
             AddEntitiesToLayer("Sprites", textEntity);
             AddEntities(backgroundEntity);
 
-            CreateApple(Engine.FrameWidth / 2f, Engine.FrameHeight / 2f);
-            CreateApple(Engine.FrameWidth / 2f - 80f, Engine.FrameHeight / 2f);
-            CreateApple(Engine.FrameWidth / 2f + 80f, Engine.FrameHeight / 2f);
+            CreateApple(Engine.Width / 2f, Engine.Height / 2f);
+            CreateApple(Engine.Width / 2f - 80f, Engine.Height / 2f);
+            CreateApple(Engine.Width / 2f + 80f, Engine.Height / 2f);
         }
 
         public override void Update(float deltaTime)
@@ -40,6 +40,16 @@ namespace FrogWorks.Demo.Scenes
             camera.Y += Input.Keyboard.GetAxis(Keys.DownArrow, Keys.UpArrow) * 2f;
             camera.Zoom += Input.Keyboard.GetAxis(Keys.W, Keys.S) * .005f;
             camera.AngleInDegrees += Input.Keyboard.GetAxis(Keys.D, Keys.A) * .5f;
+
+            var cursor = GetLayer("Sprites").Camera.ViewToWorld(Input.Mouse.Position);
+
+            foreach (var apple in GetEntitiesOfType<AppleEntity>())
+            {
+                if (Input.Mouse.IsClicked(MouseButton.Left) && apple.IsClicked(cursor))
+                {
+                    apple.Wiggle();
+                }
+            }
 
             base.Update(deltaTime);
         }
