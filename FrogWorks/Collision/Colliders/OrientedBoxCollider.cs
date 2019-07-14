@@ -2,16 +2,16 @@
 
 namespace FrogWorks
 {
-    public class OrientedRectangleCollider : PolygonCollider
+    public class OrientedBoxCollider : PolygonCollider
     {
-        public OrientedRectangleCollider(float width, float height, float offsetX = 0f, float offsetY = 0f)
+        public OrientedBoxCollider(float width, float height, float offsetX = 0f, float offsetY = 0f)
             : base(new RectangleF(0f, 0f, Math.Abs(width), Math.Abs(height)).ToVertices(), offsetX, offsetY)
         {
         }
 
         public override Collider Clone()
         {
-            return new OrientedRectangleCollider(Width, Height, X, Y)
+            return new OrientedBoxCollider(Width, Height, X, Y)
             {
                 Origin = Origin,
                 Scale = Scale,

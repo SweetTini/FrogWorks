@@ -44,9 +44,9 @@
     <Compile Include="Collision\Broad\AABBTree.cs" />
     <Compile Include="Collision\Collider.cs" />
     <Compile Include="Collision\Colliders\CircleCollider.cs" />
-    <Compile Include="Collision\Colliders\OrientedRectangleCollider.cs" />
+    <Compile Include="Collision\Colliders\OrientedBoxCollider.cs" />
     <Compile Include="Collision\Colliders\PolygonCollider.cs" />
-    <Compile Include="Collision\Colliders\RectangleCollider.cs" />
+    <Compile Include="Collision\Colliders\BoxCollider.cs" />
     <Compile Include="Collision\Colliders\ShapeCollider.cs" />
     <Compile Include="Collision\Collision.cs" />
     <Compile Include="Collision\Geometry\Circle.cs" />

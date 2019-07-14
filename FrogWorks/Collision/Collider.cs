@@ -66,7 +66,6 @@ namespace FrogWorks
 
         public abstract float Height { get; set; }
 
-
         protected Collider()
         {
         }

@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace FrogWorks
 {
-    public class RectangleCollider : ShapeCollider<RectangleF>
+    public class BoxCollider : ShapeCollider<RectangleF>
     {
         public override float Width
         {
@@ -29,7 +29,7 @@ namespace FrogWorks
             }
         }
 
-        public RectangleCollider(float width, float height, float offsetX = 0f, float offsetY = 0f)
+        public BoxCollider(float width, float height, float offsetX = 0f, float offsetY = 0f)
             : base()
         {
             Shape = new RectangleF(0f, 0f, Math.Abs(width), Math.Abs(height));
@@ -43,7 +43,7 @@ namespace FrogWorks
 
         public override Collider Clone()
         {
-            return new RectangleCollider(Width, Height, X, Y);
+            return new BoxCollider(Width, Height, X, Y);
         }
     }
 }

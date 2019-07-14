@@ -14,7 +14,7 @@ namespace FrogWorks.Demo.Entities
         public AppleEntity()
             : base()
         {
-            Collider = new RectangleCollider(40f, 48f, -20f, -20f);
+            Collider = new BoxCollider(40f, 48f, -20f, -20f);
             Image = new Image(Texture, true);
             Image.CenterOrigin();
             AddComponents(Image);
