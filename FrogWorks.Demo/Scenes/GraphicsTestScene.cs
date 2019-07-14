@@ -45,7 +45,7 @@ namespace FrogWorks.Demo.Scenes
 
             foreach (var apple in GetEntitiesOfType<AppleEntity>())
             {
-                if (Input.Mouse.IsClicked(MouseButton.Left) && apple.IsClicked(cursor))
+                if (apple.IsOverlapped(cursor) && Input.Mouse.IsClicked(MouseButton.Left))
                 {
                     apple.Wiggle();
                 }

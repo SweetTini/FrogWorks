@@ -8,9 +8,7 @@ namespace FrogWorks.Demo.Entities
 
         protected Image Image { get; set; }
 
-        protected Wiggler Wiggler { get; private set; }
-
-        public bool IsWiggling => Wiggler != null && Wiggler.IsEnabled;
+        public bool IsWiggling { get; private set; }
         
 
         public AppleEntity()
@@ -22,7 +20,7 @@ namespace FrogWorks.Demo.Entities
             AddComponents(Image);
         }
 
-        public bool IsClicked(Vector2 point)
+        public bool IsOverlapped(Vector2 point)
         {
             return Collider?.Contains(point) ?? false;
         }
@@ -31,13 +29,19 @@ namespace FrogWorks.Demo.Entities
         {
             if (!IsWiggling)
             {
-                Wiggler = Wiggler.CreateAndApply(this, .5f, 5f, WigglerMode.EaseOut, OnWiggle);
+                Wiggler.CreateAndApply(this, .5f, 5f, WigglerMode.EaseOut, OnWiggle, ResetWiggle);
+                IsWiggling = true;
             }
         }
 
         private void OnWiggle(float offset)
         {
             Image.X = offset * 4f;
+        }
+
+        private void ResetWiggle()
+        {
+            IsWiggling = false;
         }
     }
 }

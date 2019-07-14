@@ -22,14 +22,14 @@ namespace FrogWorks
 
         public Action<float> OnUpdate { get; set; }
 
-        public Action<float> OnFinished { get; set; }
+        public Action OnFinished { get; set; }
 
         private Wiggler()
             : base(true, false)
         {
         }
 
-        private void Initialize(float duration, float frequency, WigglerMode mode, Action<float> onUpdate, Action<float> onFinished, bool removeOnCompletion, bool canStart = false)
+        private void Initialize(float duration, float frequency, WigglerMode mode, Action<float> onUpdate, Action onFinished, bool removeOnCompletion, bool canStart = false)
         {
             _wavelength = MathHelper.TwoPi * frequency;
             _increment = 1f / Math.Max(Math.Abs(duration), float.Epsilon);
@@ -71,7 +71,7 @@ namespace FrogWorks
             if (Counter <= 0f)
             {
                 Counter = 0f;
-                OnFinished?.Invoke(Counter);
+                OnFinished?.Invoke();
                 IsEnabled = false;
                 if (RemoveOnCompletion)
                     Destroy();
@@ -108,19 +108,19 @@ namespace FrogWorks
         }
 
         #region Static Methods
-        public static Wiggler Create(float duration, float frequency, WigglerMode mode, Action<float> onUpdate, Action<float> onFinished, bool removeOnCompletion, bool canStart = false)
+        public static Wiggler Create(float duration, float frequency, WigglerMode mode, Action<float> onUpdate, Action onFinished, bool removeOnCompletion, bool canStart = false)
         {
             var wiggler = Cache.Count > 0 ? Cache.Pop() : new Wiggler();
             wiggler.Initialize(duration, frequency, mode, onUpdate, onFinished, removeOnCompletion, canStart);
             return wiggler;
         }
 
-        public static Wiggler CreateAndApply(Entity entity, float duration, float frequency, Action<float> onUpdate, Action<float> onFinished = null, bool removeOnCompletion = true)
+        public static Wiggler CreateAndApply(Entity entity, float duration, float frequency, Action<float> onUpdate, Action onFinished = null, bool removeOnCompletion = true)
         {
             return CreateAndApply(entity, duration, frequency, WigglerMode.Linear, onUpdate, onFinished, removeOnCompletion);
         }
 
-        public static Wiggler CreateAndApply(Entity entity, float duration, float frequency, WigglerMode mode, Action<float> onUpdate, Action<float> onFinished = null, bool removeOnCompletion = true)
+        public static Wiggler CreateAndApply(Entity entity, float duration, float frequency, WigglerMode mode, Action<float> onUpdate, Action onFinished = null, bool removeOnCompletion = true)
         {
             var wiggler = Create(duration, frequency, mode, onUpdate, onFinished, removeOnCompletion, true);
             if (entity != null)
