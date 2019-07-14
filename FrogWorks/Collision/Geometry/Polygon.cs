@@ -1,16 +1,17 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 
 namespace FrogWorks
 {
     public class Polygon : Shape
     {
         private Vector2[] _vertices, _transform, _normals;
-        private Vector2 _position, _origin, _scale;
+        private Vector2 _position, _size, _origin, _scale;
         private float _angle;
         private bool _isDirty;
 
-        public Vector2[] Vertices
+        public Vector2[] Vertices => _vertices;
+
+        public Vector2[] Transform
         {
             get
             {
@@ -80,7 +81,29 @@ namespace FrogWorks
             set { Angle = MathHelper.ToRadians(value); }
         }
 
-        public override Rectangle Bounds => Vertices.ToRectangle();
+        public Vector2 Size
+        {
+            get { return (_size * Scale.Abs()).Round(); }
+            set
+            {
+                value = value.Abs();
+                Scale = _size.Divide(value);
+            }
+        }
+
+        public float Width
+        {
+            get { return Size.X; }
+            set { Size = new Vector2(value, Size.Y); }
+        }
+
+        public float Height
+        {
+            get { return Size.Y; }
+            set { Size = new Vector2(Size.X, value); }
+        }
+
+        public override Rectangle Bounds => Transform.ToRectangle();
 
         public Polygon(Vector2[] vertices)
             : this(vertices.Min(), vertices)
@@ -91,7 +114,8 @@ namespace FrogWorks
         {
             _vertices = vertices.ToConvexHull();
             _position = position;
-            _origin = (vertices.Max() - vertices.Min()) / 2f;
+            _size = vertices.Max() - vertices.Min();
+            _origin = _size / 2f;
             _scale = Vector2.One;
             Count = _vertices.Length;
 
@@ -102,8 +126,8 @@ namespace FrogWorks
         {
             batch.DrawPrimitives((primitive) =>
             {
-                if (fill) primitive.FillPolygon(Vertices, color);
-                else primitive.DrawPolygon(Vertices, color);
+                if (fill) primitive.FillPolygon(Transform, color);
+                else primitive.DrawPolygon(Transform, color);
             });
         }
 
@@ -137,7 +161,7 @@ namespace FrogWorks
 
         public override Proxy ToProxy()
         {
-            return new Proxy(Vertices);
+            return new Proxy(Transform);
         }
 
         internal Line GetLine(int index)
@@ -180,7 +204,7 @@ namespace FrogWorks
             {
                 var plane = GetPlane(i);
                 var supportIndex = GetSupport(-plane.Normal);
-                var depth = plane.Distance(other.Vertices[supportIndex]);
+                var depth = plane.Distance(other.Transform[supportIndex]);
 
                 if (depth > minDepth)
                 {

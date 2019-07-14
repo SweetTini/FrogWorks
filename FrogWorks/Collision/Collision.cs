@@ -77,7 +77,7 @@ namespace FrogWorks
 
             for (int i = 0; i < other.Count; i++)
             {
-                var numerator = Vector2.Dot(other.Normals[i], other.Vertices[i] - ray.Position);
+                var numerator = Vector2.Dot(other.Normals[i], other.Transform[i] - ray.Position);
                 var denominator = Vector2.Dot(other.Normals[i], ray.Normal);
                 if (denominator == 0f && numerator < 0f) return false;
 

@@ -10,7 +10,7 @@ namespace FrogWorks.Demo.Entities
 
         protected Wiggler Wiggler { get; private set; }
 
-        public bool IsWiggling => Wiggler != null && Wiggler.Counter > 0f;
+        public bool IsWiggling => Wiggler != null && Wiggler.IsEnabled;
         
 
         public AppleEntity()
@@ -37,7 +37,7 @@ namespace FrogWorks.Demo.Entities
 
         private void OnWiggle(float offset)
         {
-            X += offset * 2f;
+            Image.X = offset * 4f;
         }
     }
 }

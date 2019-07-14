@@ -149,6 +149,18 @@ namespace FrogWorks
             return new Vector2(scale * vector.Y, -scale * vector.X);
         }
 
+        public static Vector2 Divide(this Vector2 vector, Vector2 divider)
+        {
+            return new Vector2(
+                divider.X != 0f ? vector.X / divider.X : 0f,
+                divider.Y != 0f ? vector.Y / divider.Y : 0f);
+        }
+
+        public static Vector2 Divide(this Vector2 vector, float divider)
+        {
+            return divider != 0f ? vector / divider : Vector2.Zero;
+        }
+
         public static Vector2 Inverse(this Vector2 vector)
         {
             return new Vector2(
@@ -173,7 +185,7 @@ namespace FrogWorks
 
         public static Vector2 SafeNormalize(this Vector2 vector)
         {
-            return vector == Vector2.Zero ? vector : Vector2.Normalize(vector);
+            return vector != Vector2.Zero ? Vector2.Normalize(vector) : vector;
         }
 
         public static Vector2 Sign(this Vector2 vector)
