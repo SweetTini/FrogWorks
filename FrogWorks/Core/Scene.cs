@@ -11,8 +11,6 @@ namespace FrogWorks
 
         protected Layer MainLayer { get; private set; }
 
-        protected int FramesPerSecond => Engine.Instance.FramesPerSecond;
-
         public Color BackgroundColor { get; set; } = Color.CornflowerBlue;
 
         public bool IsEnabled { get; private set; }
@@ -71,23 +69,6 @@ namespace FrogWorks
         {
             Layers.Draw(batch);
         }
-
-        #region Display
-        protected void SetFixedScale(int scale = 1)
-        {
-            Engine.Instance.Display.SetFixedScale(scale);
-        }
-
-        protected void SetFullScreen()
-        {
-            Engine.Instance.Display.SetFullScreen();
-        }
-
-        protected void SetDisplayScaling(Scaling scaling)
-        {
-            Engine.Instance.Display.Scaling = scaling;
-        }
-        #endregion
 
         #region Scene
         protected void SetNextScene<T>() where T : Scene, new()

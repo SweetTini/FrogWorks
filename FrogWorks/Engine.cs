@@ -15,9 +15,7 @@ namespace FrogWorks
 
         internal static Engine Instance { get; private set; }
 
-        public static int Width { get; private set; }
-
-        public static int Height { get; private set; }
+        public static Display Display { get; private set; }
 
         public static string AssemblyDirectory
         {
@@ -29,11 +27,11 @@ namespace FrogWorks
             get { return Path.Combine(AssemblyDirectory, Instance.Content.RootDirectory); }
         }
 
+        public static int FramesPerSecond { get; private set; }
+
         protected GraphicsDeviceManager Graphics { get; private set; }
 
         protected RendererBatch RendererBatch { get; private set; }
-
-        public Display Display { get; private set; }
 
         public string Title
         {
@@ -71,8 +69,6 @@ namespace FrogWorks
             }
         }
 
-        public int FramesPerSecond { get; private set; }
-
         public float DeltaTime { get; private set; }
 
         public Engine(int width, int height)
@@ -80,8 +76,6 @@ namespace FrogWorks
             _sceneCache = new Cache<Scene>();
 
             Instance = this;
-            Width = width;
-            Height = height;
             Graphics = new GraphicsDeviceManager(this);
             Display = new Display(Graphics, Window, width, height);
             RendererBatch = new RendererBatch(GraphicsDevice);

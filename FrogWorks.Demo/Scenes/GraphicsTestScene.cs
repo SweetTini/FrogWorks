@@ -27,9 +27,9 @@ namespace FrogWorks.Demo.Scenes
             AddEntitiesToLayer("Sprites", textEntity);
             AddEntities(backgroundEntity);
 
-            CreateApple(Engine.Width / 2f, Engine.Height / 2f);
-            CreateApple(Engine.Width / 2f - 80f, Engine.Height / 2f);
-            CreateApple(Engine.Width / 2f + 80f, Engine.Height / 2f);
+            CreateApple(Engine.Display.Width / 2f, Engine.Display.Height / 2f);
+            CreateApple(Engine.Display.Width / 2f - 80f, Engine.Display.Height / 2f);
+            CreateApple(Engine.Display.Width / 2f + 80f, Engine.Display.Height / 2f);
         }
 
         public override void Update(float deltaTime)

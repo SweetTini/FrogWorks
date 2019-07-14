@@ -135,9 +135,9 @@ namespace FrogWorks
         }
 
         public Camera()
-            : this(Engine.Width, Engine.Height)
+            : this(Engine.Display.Width, Engine.Display.Height)
         {
-            Engine.Instance.Display.OnBackBufferChanged += OnScreenChanged;
+            Engine.Display.OnBackBufferChanged += OnScreenChanged;
         }
 
         public Camera(int width, int height)

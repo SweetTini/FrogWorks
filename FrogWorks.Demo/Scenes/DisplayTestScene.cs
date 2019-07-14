@@ -10,7 +10,7 @@ namespace FrogWorks.Demo.Scenes
         {
             var textEntity = new TextEntity()
             {
-                Y = Engine.Height / 2f,
+                Y = Engine.Display.Height / 2f,
                 Text = "Press 1-6 to change scaling.",
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center
@@ -30,17 +30,17 @@ namespace FrogWorks.Demo.Scenes
         public override void Update(float deltaTime)
         {
             if (Input.Keyboard.IsPressed(Keys.Alpha1))
-                SetDisplayScaling(Scaling.None);
+                Engine.Display.Scaling = Scaling.None;
             else if (Input.Keyboard.IsPressed(Keys.Alpha2))
-                SetDisplayScaling(Scaling.Fit);
+                Engine.Display.Scaling = Scaling.Fit;
             else if (Input.Keyboard.IsPressed(Keys.Alpha3))
-                SetDisplayScaling(Scaling.PixelPerfect);
+                Engine.Display.Scaling = Scaling.PixelPerfect;
             else if (Input.Keyboard.IsPressed(Keys.Alpha4))
-                SetDisplayScaling(Scaling.Stretch);
+                Engine.Display.Scaling = Scaling.Stretch;
             else if (Input.Keyboard.IsPressed(Keys.Alpha5))
-                SetDisplayScaling(Scaling.Extend);
+                Engine.Display.Scaling = Scaling.Extend;
             else if (Input.Keyboard.IsPressed(Keys.Alpha6))
-                SetDisplayScaling(Scaling.Crop);
+                Engine.Display.Scaling = Scaling.Crop;
 
             base.Update(deltaTime);
         }
