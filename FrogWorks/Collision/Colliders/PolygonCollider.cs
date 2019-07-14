@@ -76,6 +76,7 @@ namespace FrogWorks
         }
 
         public PolygonCollider(Vector2[] vertices, float offsetX, float offsetY)
+            : base()
         {
             Shape = new Polygon(vertices);
             Position = new Vector2(offsetX, offsetY);

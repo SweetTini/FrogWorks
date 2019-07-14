@@ -27,11 +27,14 @@ namespace FrogWorks
             return Shape.Collide(shape, out hit);
         }
 
+        protected ShapeCollider()
+            : base()
+        {
+        }
+
         internal override void OnTranslated(Vector2 position, Vector2 lastPosition)
         {
-            if (Shape != null)
-                Shape.Position = AbsolutePosition;
-
+            if (Shape != null) Shape.Position = AbsolutePosition;
             base.OnTranslated(position, lastPosition);
         }
     }

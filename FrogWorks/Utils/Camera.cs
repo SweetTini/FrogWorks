@@ -183,7 +183,7 @@ namespace FrogWorks
 
         internal void OnScreenChanged()
         {
-            var display = Engine.Instance.Display;
+            var display = Engine.Display;
             _padding = new Vector2(display.ExtendedWidth, display.ExtendedHeight) * .5f;
             _viewport = new Viewport(0, 0, display.Width + display.ExtendedWidth, display.Height + display.ExtendedHeight);
             _isDirty = true;

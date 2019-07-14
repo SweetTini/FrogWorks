@@ -30,6 +30,7 @@ namespace FrogWorks
         }
 
         public CircleCollider(float radius, float offsetX = 0f, float offsetY = 0f)
+            : base()
         {
             Shape = new Circle(Vector2.Zero, Math.Abs(Radius));
             Position = new Vector2(offsetX, offsetY);

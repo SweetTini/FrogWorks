@@ -14,7 +14,7 @@ namespace FrogWorks
         {
             get
             {
-                var display = Engine.Instance.Display;
+                var display = Engine.Display;
                 var padding = new Vector2(display.HorizontalPadding, display.VerticalPadding);
                 var position = CurrentState.Position.ToVector2() - padding;
 
@@ -22,7 +22,7 @@ namespace FrogWorks
             }
             set
             {
-                var display = Engine.Instance.Display;
+                var display = Engine.Display;
                 var padding = new Vector2(display.HorizontalPadding, display.VerticalPadding);
                 var position = (Vector2.Transform(value, display.ScaleMatrix) + padding).Round().ToPoint();
 

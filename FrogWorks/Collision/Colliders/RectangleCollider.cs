@@ -30,6 +30,7 @@ namespace FrogWorks
         }
 
         public RectangleCollider(float width, float height, float offsetX = 0f, float offsetY = 0f)
+            : base()
         {
             Shape = new RectangleF(0f, 0f, Math.Abs(width), Math.Abs(height));
             Position = new Vector2(offsetX, offsetY);
