@@ -84,11 +84,7 @@ namespace FrogWorks
         public Vector2 Size
         {
             get { return (_size * Scale.Abs()).Round(); }
-            set
-            {
-                value = value.Abs();
-                Scale = _size.Divide(value);
-            }
+            set { Scale = _size.Divide(value.Abs()); }
         }
 
         public float Width
