@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.IO;
 using System.Reflection;
@@ -11,7 +12,7 @@ namespace FrogWorks
         private Cache<Scene> _sceneCache;
         private string _title = "New Game";
         private Version _version = new Version(0, 0, 1, 0);
-        private bool _displayVersionOnTitle;
+        private bool _displayVersionOnHeader;
 
         internal static Engine Instance { get; private set; }
 
@@ -58,18 +59,41 @@ namespace FrogWorks
             }
         }
 
-        public bool DisplayVersionOnTitle
+        public bool DisplayVersionOnHeader
         {
-            get { return _displayVersionOnTitle; }
+            get { return _displayVersionOnHeader; }
             set
             {
-                if (value == _displayVersionOnTitle) return;
-                _displayVersionOnTitle = value;
+                if (value == _displayVersionOnHeader) return;
+                _displayVersionOnHeader = value;
                 OnTitleChanged();
             }
         }
 
         public float DeltaTime { get; private set; }
+
+        public bool UseVSync
+        {
+            get { return Graphics.SynchronizeWithVerticalRetrace; }
+            set
+            {
+                if (value == Graphics.SynchronizeWithVerticalRetrace) return;
+                Graphics.SynchronizeWithVerticalRetrace = value;
+                Graphics.ApplyChanges();
+            }
+        }
+
+        public bool UseHiDef
+        {
+            get { return Graphics.GraphicsProfile == GraphicsProfile.HiDef; }
+            set
+            {
+                var graphicsProfile = value ? GraphicsProfile.HiDef : GraphicsProfile.Reach;
+                if (graphicsProfile == Graphics.GraphicsProfile) return;
+                Graphics.GraphicsProfile = graphicsProfile;
+                Graphics.ApplyChanges();
+            }
+        }
 
         public Engine(int width, int height)
         {
@@ -77,6 +101,8 @@ namespace FrogWorks
 
             Instance = this;
             Graphics = new GraphicsDeviceManager(this);
+            Graphics.SynchronizeWithVerticalRetrace = true;
+            Graphics.GraphicsProfile = GraphicsProfile.Reach;
             Display = new Display(Graphics, Window, width, height);
             RendererBatch = new RendererBatch(GraphicsDevice);
             Content.RootDirectory = "Content";
@@ -136,7 +162,7 @@ namespace FrogWorks
 
         private void OnTitleChanged()
         {
-            var version = _displayVersionOnTitle ? $"(ver. {_version.ToString()})" : "";
+            var version = _displayVersionOnHeader ? $"(ver. {_version.ToString()})" : "";
             Window.Title = $"{_title} {version}".Trim();
         }
     }

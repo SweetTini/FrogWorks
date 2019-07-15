@@ -80,6 +80,10 @@ namespace FrogWorks
         {
         }
 
+        public virtual void Draw(RendererBatch batch, Color color)
+        {
+        }
+
         public abstract bool Contains(Vector2 point);
 
         public bool Contains(float x, float y)
@@ -89,13 +93,9 @@ namespace FrogWorks
 
         public abstract bool CastRay(Ray ray, out Raycast hit);
 
-        public abstract bool Collide(Shape shape);
+        public abstract bool Collide(Shape other);
 
-        public abstract bool Collide(Shape shape, out Manifold hit);
-
-        public virtual void Draw(RendererBatch batch, Color color)
-        {
-        }
+        public abstract bool Collide(Shape other, out Manifold hit);
 
         public abstract Collider Clone();
 
