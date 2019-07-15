@@ -41,7 +41,7 @@ namespace FrogWorks
                 if (value == _position) return;
                 var lastPosition = _position;
                 _position = value;
-                OnTranslated(_position, lastPosition);
+                OnTranslated(_position - lastPosition);
             }
         }
 
@@ -53,7 +53,7 @@ namespace FrogWorks
                 if (value == _position.X) return;
                 var lastPosition = _position;
                 _position.X = value;
-                OnTranslated(_position, lastPosition);
+                OnTranslated(_position - lastPosition);
             }
         }
 
@@ -65,7 +65,7 @@ namespace FrogWorks
                 if (value == _position.Y) return;
                 var lastPosition = _position;
                 _position.Y = value;
-                OnTranslated(_position, lastPosition);
+                OnTranslated(_position - lastPosition);
             }
         }
 
@@ -83,6 +83,8 @@ namespace FrogWorks
         public bool IsEnabled { get; set; } = true;
 
         public bool IsVisible { get; set; } = true;
+
+        public bool IsCollidable { get; set; } = true;
 
         public bool IsDestroyed { get; internal set; }
 
@@ -134,9 +136,9 @@ namespace FrogWorks
         {
         }
 
-        public virtual void OnTranslated(Vector2 position, Vector2 lastPosition)
+        public virtual void OnTranslated(Vector2 offset)
         {
-            _collider?.OnTranslated(position, lastPosition);
+            _collider?.OnTranslated(offset);
         }
 
         public void Destroy()

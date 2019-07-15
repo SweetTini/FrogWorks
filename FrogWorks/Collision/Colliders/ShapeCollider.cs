@@ -7,6 +7,11 @@ namespace FrogWorks
     {
         protected internal T Shape { get; protected set; }
 
+        protected ShapeCollider()
+            : base()
+        {
+        }
+
         public override bool Contains(Vector2 point)
         {
             return Shape.Contains(point);
@@ -27,15 +32,16 @@ namespace FrogWorks
             return Shape.Collide(shape, out hit);
         }
 
-        protected ShapeCollider()
-            : base()
+        public override void Draw(RendererBatch batch, Color color)
         {
+            Shape.Draw(batch, color);
         }
 
-        internal override void OnTranslated(Vector2 position, Vector2 lastPosition)
+        internal override void OnTranslated(Vector2 offset)
         {
-            if (Shape != null) Shape.Position = AbsolutePosition;
-            base.OnTranslated(position, lastPosition);
+            if (Shape != null)
+                Shape.Position = AbsolutePosition;
+            base.OnTranslated(offset);
         }
     }
 }

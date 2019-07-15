@@ -1,5 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 
 namespace FrogWorks
 {
@@ -17,28 +17,22 @@ namespace FrogWorks
             }
         }
 
-        public override float Width
+        public override Vector2 Size
         {
-            get { return Radius * 2f; }
-            set { Radius = value / 2f; }
-        }
-
-        public override float Height
-        {
-            get { return Radius * 2f; }
-            set { Radius = value / 2f; }
+            get { return Vector2.One * 2f * Shape.Radius; }
+            set
+            {
+                value = value.Abs();
+                var average = (value.X + value.Y) / 2f;
+                Radius = average / 2f;
+            }
         }
 
         public CircleCollider(float radius, float offsetX = 0f, float offsetY = 0f)
             : base()
         {
-            Shape = new Circle(Vector2.Zero, Math.Abs(Radius));
+            Shape = new Circle(Vector2.Zero, Math.Abs(radius));
             Position = new Vector2(offsetX, offsetY);
-        }
-
-        public override void Draw(RendererBatch batch, Color color)
-        {
-            batch.DrawPrimitives((primitive) => primitive.DrawCircle(Position + Vector2.One * Radius, Radius, color));
         }
 
         public override Collider Clone()

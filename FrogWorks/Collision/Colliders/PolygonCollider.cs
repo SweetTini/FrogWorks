@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
 
 namespace FrogWorks
 {
@@ -51,40 +50,23 @@ namespace FrogWorks
             }
         }
 
-        public override float Width
+        public override Vector2 Size
         {
-            get { return Shape.Width; }
+            get { return Shape.Size; }
             set
             {
-                value = Math.Abs(value);
-                if (value == Shape.Width) return;
-                Shape.Width = value;
+                value = value.Abs();
+                if (value == Shape.Size) return;
+                Shape.Size = value;
                 OnTransformed();
             }
         }
 
-        public override float Height
-        {
-            get { return Shape.Height; }
-            set
-            {
-                value = Math.Abs(value);
-                if (value == Shape.Height) return;
-                Shape.Height = value;
-                OnTransformed();
-            }
-        }
-
-        public PolygonCollider(Vector2[] vertices, float offsetX, float offsetY)
+        public PolygonCollider(Vector2[] vertices, float offsetX = 0f, float offsetY = 0f)
             : base()
         {
             Shape = new Polygon(vertices);
             Position = new Vector2(offsetX, offsetY);
-        }
-
-        public override void Draw(RendererBatch batch, Color color)
-        {
-            batch.DrawPrimitives((primitive) => primitive.DrawPolygon(Vertices, color));
         }
 
         public override Collider Clone()

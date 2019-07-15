@@ -16,7 +16,7 @@ namespace FrogWorks
                 if (value == _position) return;
                 var lastPosition = _position;
                 _position = value;
-                OnTranslated(_position, lastPosition);
+                OnTranslated(_position - lastPosition);
             }
         }
 
@@ -28,7 +28,7 @@ namespace FrogWorks
                 if (value == _position.X) return;
                 var lastPosition = _position;
                 _position.X = value;
-                OnTranslated(_position, lastPosition);
+                OnTranslated(_position - lastPosition);
             }
         }
 
@@ -40,7 +40,7 @@ namespace FrogWorks
                 if (value == _position.Y) return;
                 var lastPosition = _position;
                 _position.Y = value;
-                OnTranslated(_position, lastPosition);
+                OnTranslated(_position - lastPosition);
             }
         }
 
@@ -62,9 +62,19 @@ namespace FrogWorks
             set { Y = value - (Entity?.Y ?? 0f); }
         }
 
-        public abstract float Width { get; set; }
+        public abstract Vector2 Size { get; set; }
 
-        public abstract float Height { get; set; }
+        public float Width
+        {
+            get { return Size.X; }
+            set { Size = new Vector2(value, Size.Y); }
+        }
+
+        public float Height
+        {
+            get { return Size.Y; }
+            set { Size = new Vector2(Size.X, value); }
+        }
 
         protected Collider()
         {
@@ -99,7 +109,7 @@ namespace FrogWorks
             Entity = null;
         }
 
-        internal virtual void OnTranslated(Vector2 position, Vector2 lastPosition)
+        internal virtual void OnTranslated(Vector2 offset)
         {
         }
 
