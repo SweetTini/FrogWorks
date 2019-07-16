@@ -9,7 +9,9 @@ namespace FrogWorks
 
         internal EntityManager Entities { get; private set; }
 
-        protected Layer MainLayer { get; private set; }
+        internal AABBTree ColliderBvhTree { get; private set; }
+
+        protected Layer MainLayer { get; private set; }        
 
         public Color BackgroundColor { get; set; } = Color.CornflowerBlue;
 
@@ -21,6 +23,7 @@ namespace FrogWorks
         {
             Layers = new LayerManager(this);
             Entities = new EntityManager(this);
+            ColliderBvhTree = new AABBTree(8f);
             MainLayer = Layers.Add("Main");
             MainLayer.IsDefault = true;
         }

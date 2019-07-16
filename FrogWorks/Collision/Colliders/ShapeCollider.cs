@@ -47,11 +47,30 @@ namespace FrogWorks
             return Shape.Collide(other, out hit);
         }
 
+        internal override void OnAdded(Entity entity)
+        {
+            base.OnAdded(entity);
+            Entity?.Scene?.ColliderBvhTree.Insert(this);
+        }
+
+        internal override void OnRemoved()
+        {
+            Entity?.Scene?.ColliderBvhTree.Remove(this);
+            base.OnRemoved();
+        }
+
         internal override void OnTranslated(Vector2 offset)
         {
             if (Shape != null)
                 Shape.Position = AbsolutePosition;
+            Entity?.Scene?.ColliderBvhTree.Update(this);
             base.OnTranslated(offset);
+        }
+
+        internal override void OnTransformed()
+        {
+            Entity?.Scene?.ColliderBvhTree.Update(this);
+            base.OnTransformed();
         }
     }
 }
