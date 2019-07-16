@@ -17,6 +17,18 @@ namespace FrogWorks
             }
         }
 
+        public override Vector2 Upper
+        {
+            get { return Shape.Bounds.Location.ToVector2(); }
+            set { AbsolutePosition = value - Shape.Bounds.Location.ToVector2(); }
+        }
+
+        public override Vector2 Lower
+        {
+            get { return (Shape.Bounds.Location + Shape.Bounds.Size).ToVector2(); }
+            set { AbsolutePosition = value - (Shape.Bounds.Location + Shape.Bounds.Size).ToVector2(); }
+        }
+
         protected ShapeCollider()
             : base()
         {
@@ -29,22 +41,26 @@ namespace FrogWorks
 
         public override bool Contains(Vector2 point)
         {
-            return Shape.Contains(point);
+            return IsCollidable && Shape.Contains(point);
         }
 
         public override bool CastRay(Ray ray, out Raycast hit)
         {
-            return ray.Cast(Shape, out hit);
+            hit = new Raycast(ray);
+
+            return IsCollidable && ray.Cast(Shape, out hit);
         }
 
         public override bool Collide(Shape other)
         {
-            return Shape.Collide(other);
+            return IsCollidable && Shape.Collide(other);
         }
 
         public override bool Collide(Shape other, out Manifold hit)
         {
-            return Shape.Collide(other, out hit);
+            hit = new Manifold();
+
+            return IsCollidable && Shape.Collide(other, out hit);
         }
 
         internal override void OnAdded(Entity entity)

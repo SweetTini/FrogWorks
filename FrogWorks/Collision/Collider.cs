@@ -8,6 +8,8 @@ namespace FrogWorks
 
         protected internal Entity Entity { get; private set; }
 
+        internal bool IsCollidable => Entity?.IsCollidable ?? true;
+
         public Vector2 Position
         {
             get { return _position; }
@@ -74,6 +76,34 @@ namespace FrogWorks
         {
             get { return Size.Y; }
             set { Size = new Vector2(Size.X, value); }
+        }
+
+        public abstract Vector2 Upper { get; set; }
+
+        public abstract Vector2 Lower { get; set; }
+
+        public float Left
+        {
+            get { return Upper.X; }
+            set { Upper = new Vector2(value, Upper.Y); }
+        }
+
+        public float Right
+        {
+            get { return Lower.X; }
+            set { Lower = new Vector2(value, Lower.Y); }
+        }
+
+        public float Top
+        {
+            get { return Upper.Y; }
+            set { Upper = new Vector2(Upper.X, value); }
+        }
+
+        public float Bottom
+        {
+            get { return Lower.Y; }
+            set { Lower = new Vector2(Lower.X, value); }
         }
 
         protected Collider()
