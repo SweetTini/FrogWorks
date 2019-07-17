@@ -12,7 +12,7 @@ namespace FrogWorks.Demo
             {
                 game.Window.AllowUserResizing = true;
                 game.IsMouseVisible = true;
-                game.SetScene<GraphicsTestScene>();
+                game.SetScene<BvhTreeTestScene>();
                 game.Run();
             }
         }

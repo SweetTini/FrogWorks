@@ -9,7 +9,7 @@ namespace FrogWorks
 
         internal EntityManager Entities { get; private set; }
 
-        internal AABBTree ColliderBvhTree { get; private set; }
+        internal AABBTree ColliderTree { get; private set; }
 
         protected Layer MainLayer { get; private set; }        
 
@@ -23,7 +23,7 @@ namespace FrogWorks
         {
             Layers = new LayerManager(this);
             Entities = new EntityManager(this);
-            ColliderBvhTree = new AABBTree(8f);
+            ColliderTree = new AABBTree(8f);
             MainLayer = Layers.Add("Main");
             MainLayer.IsDefault = true;
         }
@@ -216,6 +216,29 @@ namespace FrogWorks
         public int CountEntities()
         {
             return Entities.Count;
+        }
+        #endregion
+
+        #region Debugging
+        public void DrawColliderTree(RendererBatch batch, Color leafColor, Color treeColor)
+        {
+            DrawColliderTree(batch, leafColor, treeColor, MainLayer);
+        }
+
+        public void DrawColliderTree(RendererBatch batch, Color leafColor, Color treeColor, string layerName)
+        {
+            GetLayer(layerName).ConfigureBatch(batch);
+            batch.Begin();
+            ColliderTree.Draw(batch, leafColor, treeColor);
+            batch.End();
+        }
+
+        public void DrawColliderTree(RendererBatch batch, Color leafColor, Color treeColor, Layer layer)
+        {
+            layer.ConfigureBatch(batch);
+            batch.Begin();
+            ColliderTree.Draw(batch, leafColor, treeColor);
+            batch.End();
         }
         #endregion
     }

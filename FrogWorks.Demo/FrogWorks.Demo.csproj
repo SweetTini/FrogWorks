@@ -45,9 +45,11 @@
     <Compile Include="DefaultFont.cs" />
     <Compile Include="Entities\AppleEntity.cs" />
     <Compile Include="Entities\BackgroundEntity.cs" />
+    <Compile Include="Entities\MiniAppleEntity.cs" />
     <Compile Include="Entities\TextEntity.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scenes\BvhTreeTestScene.cs" />
     <Compile Include="Scenes\DisplayTestScene.cs" />
     <Compile Include="Scenes\GraphicsTestScene.cs" />
   </ItemGroup>
@@ -121,6 +123,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Images\Checker.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Images\MiniApple.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Images\MonoFont.png">

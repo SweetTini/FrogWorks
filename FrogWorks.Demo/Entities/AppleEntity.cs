@@ -20,9 +20,9 @@ namespace FrogWorks.Demo.Entities
             AddComponents(Image);
         }
 
-        public bool IsOverlapped(Vector2 point)
+        public bool Contains(Vector2 point)
         {
-            return Collider?.Contains(point) ?? false;
+            return Collider.Contains(point);
         }
 
         public void Wiggle()
