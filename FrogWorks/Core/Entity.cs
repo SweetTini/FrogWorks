@@ -107,6 +107,7 @@ namespace FrogWorks
         public virtual void OnAdded(Layer layer)
         {
             Layer = layer;
+            Collider?.OnEntityAdded(this);
 
             for (int i = 0; i < Components.Count; i++)
                 Components[i].OnEntityAdded(this);
@@ -119,6 +120,7 @@ namespace FrogWorks
             for (int i = 0; i < Components.Count; i++)
                 Components[i].OnEntityRemoved(this);
 
+            Collider?.OnEntityRemoved(this);
             Layer = null;
         }
 

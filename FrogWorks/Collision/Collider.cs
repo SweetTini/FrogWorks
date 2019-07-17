@@ -139,6 +139,14 @@ namespace FrogWorks
             Entity = null;
         }
 
+        internal virtual void OnEntityAdded(Entity entity)
+        {
+        }
+
+        internal virtual void OnEntityRemoved(Entity entity)
+        {
+        }
+
         internal virtual void OnTranslated(Vector2 offset)
         {
         }
