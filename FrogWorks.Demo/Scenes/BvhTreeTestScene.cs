@@ -21,7 +21,7 @@ namespace FrogWorks.Demo.Scenes
 
             if (Input.Mouse.IsClicked(MouseButton.Left))
             {
-                var appleClicked = apples.Where(x => x.Contains(cursor)).FirstOrDefault();
+                var appleClicked = apples.FirstOrDefault(apple => apple.Contains(cursor));
 
                 if (appleClicked != null)
                 {
