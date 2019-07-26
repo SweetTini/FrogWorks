@@ -4,19 +4,19 @@ namespace FrogWorks
 {
     public class Polygon : Shape
     {
-        private Vector2[] _vertices, _transform, _normals;
+        private Vector2[] _originalVertices, _vertices, _normals;
         private Vector2 _position, _size, _origin, _scale;
         private float _angle;
         private bool _isDirty;
 
-        public Vector2[] Vertices => _vertices;
+        public Vector2[] Original => _originalVertices;
 
-        public Vector2[] Transform
+        public Vector2[] Vertices
         {
             get
             {
                 UpdateVertices();
-                return _transform;
+                return _vertices;
             }
         }
 
@@ -99,7 +99,7 @@ namespace FrogWorks
             set { Size = new Vector2(Size.X, value); }
         }
 
-        public override Rectangle Bounds => Transform.ToRectangle();
+        public override Rectangle Bounds => Vertices.ToRectangle();
 
         public Polygon(Vector2[] vertices)
             : this(vertices.Min(), vertices)
@@ -108,12 +108,12 @@ namespace FrogWorks
 
         public Polygon(Vector2 position, Vector2[] vertices)
         {
-            _vertices = vertices.ToConvexHull();
+            _originalVertices = vertices.ToConvexHull();
             _position = position;
             _size = vertices.Max() - vertices.Min();
             _origin = _size / 2f;
             _scale = Vector2.One;
-            Count = _vertices.Length;
+            Count = _originalVertices.Length;
 
             UpdateVertices(true);
         }
@@ -122,8 +122,8 @@ namespace FrogWorks
         {
             batch.DrawPrimitives((primitive) =>
             {
-                if (fill) primitive.FillPolygon(Transform, color);
-                else primitive.DrawPolygon(Transform, color);
+                if (fill) primitive.FillPolygon(Vertices, color);
+                else primitive.DrawPolygon(Vertices, color);
             });
         }
 
@@ -147,7 +147,7 @@ namespace FrogWorks
 
         public override Shape Clone()
         {
-            return new Polygon(Position, _vertices)
+            return new Polygon(Position, _originalVertices)
             {
                 Origin = Origin,
                 Scale = Scale,
@@ -157,12 +157,12 @@ namespace FrogWorks
 
         public override Proxy ToProxy()
         {
-            return new Proxy(Transform);
+            return new Proxy(Vertices);
         }
 
         internal Line GetLine(int index)
         {
-            return new Line(_transform[index], _transform[(index + 1) % Count]);
+            return new Line(_vertices[index], _vertices[(index + 1) % Count]);
         }
 
         internal Line GetClosestLine(Polygon other, int otherIndex)
@@ -187,7 +187,7 @@ namespace FrogWorks
 
         internal Plane GetPlane(int index)
         {
-            return new Plane(_normals[index], Vector2.Dot(_normals[index], _transform[index]));
+            return new Plane(_normals[index], Vector2.Dot(_normals[index], _vertices[index]));
         }
 
         internal float GetMinIntersectionDepth(Polygon other, out int index)
@@ -200,7 +200,7 @@ namespace FrogWorks
             {
                 var plane = GetPlane(i);
                 var supportIndex = GetSupport(-plane.Normal);
-                var depth = plane.Distance(other.Transform[supportIndex]);
+                var depth = plane.Distance(other.Vertices[supportIndex]);
 
                 if (depth > minDepth)
                 {
@@ -215,11 +215,11 @@ namespace FrogWorks
         private int GetSupport(Vector2 direction)
         {
             var index = 0;
-            var dotProd = Vector2.Dot(_transform[0], direction);
+            var dotProd = Vector2.Dot(_vertices[0], direction);
 
             for (int i = 1; i < Count; i++)
             {
-                var dp = Vector2.Dot(_transform[i], direction);
+                var dp = Vector2.Dot(_vertices[i], direction);
 
                 if (dp > dotProd)
                 {
@@ -235,8 +235,8 @@ namespace FrogWorks
         {
             if (_isDirty || forceUpdate)
             {
-                _transform = _vertices.Transform(_position, _origin, _scale, _angle);
-                _normals = _transform.Normalize();
+                _vertices = _originalVertices.Transform(_position, _origin, _scale, _angle);
+                _normals = _vertices.Normalize();
                 _isDirty = false;
             }
         }

@@ -4,7 +4,7 @@ namespace FrogWorks
 {
     public class PolygonCollider : ShapeCollider<Polygon>
     {
-        public Vector2[] Vertices => Shape.Transform;
+        public Vector2[] Vertices => Shape.Vertices;
 
         public Vector2 Origin
         {
@@ -71,7 +71,7 @@ namespace FrogWorks
 
         public override Collider Clone()
         {
-            return new PolygonCollider(Shape.Vertices, X, Y)
+            return new PolygonCollider(Shape.Original, X, Y)
             {
                 Origin = Origin,
                 Scale = Scale,
