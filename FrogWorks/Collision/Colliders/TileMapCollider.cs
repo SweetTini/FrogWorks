@@ -269,11 +269,11 @@ namespace FrogWorks
             return GetTileShape(cell.X, cell.Y);
         }
 
-        public IEnumerable<CollidableTileShape> GetCollidedRegion(Ray ray)
+        public IEnumerable<CollidableTileShape> GetCollidedRegion(Vector2 lineFrom, Vector2 lineTo)
         {
             var tileSize = new Vector2(_tileWidth, _tileHeight);
-            var start = ray.Position.SnapToGrid(tileSize, AbsolutePosition).ToPoint();
-            var end = ray.Endpoint.SnapToGrid(tileSize, AbsolutePosition).ToPoint();
+            var start = lineFrom.SnapToGrid(tileSize, AbsolutePosition).ToPoint();
+            var end = lineTo.SnapToGrid(tileSize, AbsolutePosition).ToPoint();
             var edge = end - start;
             var isSteep = Math.Abs(edge.Y) > Math.Abs(edge.X);
 
@@ -309,20 +309,30 @@ namespace FrogWorks
             }
         }
 
-        public IEnumerable<CollidableTileShape> GetCollidedRegion(Shape shape)
+        public IEnumerable<CollidableTileShape> GetCollidedRegion(Ray ray)
+        {
+            return GetCollidedRegion(ray.Position, ray.Endpoint);
+        }
+
+        public IEnumerable<CollidableTileShape> GetCollidedRegion(Rectangle bounds)
         {
             var tileSize = new Vector2(_tileWidth, _tileHeight);
-            var bounds = shape.Bounds.SnapToGrid(tileSize, AbsolutePosition);
+            var gridBounds = bounds.SnapToGrid(tileSize, AbsolutePosition);
 
-            for (int i = 0; i < bounds.Width * bounds.Height; i++)
+            for (int i = 0; i < gridBounds.Width * gridBounds.Height; i++)
             {
-                var x = bounds.Left + (i % bounds.Width);
-                var y = bounds.Top + (i / bounds.Width);
+                var x = gridBounds.Left + (i % gridBounds.Width);
+                var y = gridBounds.Top + (i / gridBounds.Width);
                 var tileShape = GetTileShape(x, y);
 
                 if (tileShape != null)
                     yield return tileShape;
             }
+        }
+
+        public IEnumerable<CollidableTileShape> GetCollidedRegion(Shape shape)
+        {
+            return GetCollidedRegion(shape.Bounds);
         }
 
         protected CollidableTile CreateTile(Shape shape, CollisionType collisionType)
