@@ -126,6 +126,8 @@ namespace FrogWorks
 
         public virtual void OnLayerChanged(Layer layer, Layer lastLayer)
         {
+            Collider?.OnLayerChanged(layer, lastLayer);
+
             for (int i = 0; i < Components.Count; i++)
                 Components[i].OnLayerChanged(layer, lastLayer);
         }

@@ -12,6 +12,8 @@ namespace FrogWorks
 
         protected Map<int> Map { get; private set; }
 
+        protected Rectangle DrawableRegion { get; private set; }
+
         public int Columns => Map.Columns;
 
         public int Rows => Map.Rows;
@@ -83,6 +85,16 @@ namespace FrogWorks
             Position = new Vector2(offsetX, offsetY);
         }
 
+        public override void Draw(RendererBatch batch, Color color)
+        {
+            for (int i = 0; i < DrawableRegion.Width * DrawableRegion.Height; i++)
+            {
+                var x = DrawableRegion.Left + (i % DrawableRegion.Width);
+                var y = DrawableRegion.Top + (i / DrawableRegion.Width);
+                GetTileShape(x, y)?.Shape.Draw(batch, color);
+            }
+        }
+
         public override bool Contains(Vector2 point)
         {
             return IsCollidable && (GetCollidedRegion(point)?.Shape.Contains(point) ?? false);
@@ -129,6 +141,31 @@ namespace FrogWorks
                 Tiles = new Dictionary<int, CollidableTile>(Tiles),
                 Map = new Map<int>(Map.ToArray(), Map.Empty)
             };
+        }
+
+        internal override void OnEntityAdded(Entity entity)
+        {
+            var camera = entity.Layer.Camera;
+            camera.OnCameraUpdated += UpdateDrawableRegion;
+            UpdateDrawableRegion(camera);
+        }
+
+        internal override void OnEntityRemoved(Entity entity)
+        {
+            entity.Layer.Camera.OnCameraUpdated -= UpdateDrawableRegion;
+        }
+
+        internal override void OnLayerChanged(Layer layer, Layer lastLayer)
+        {
+            lastLayer.Camera.OnCameraUpdated -= UpdateDrawableRegion;
+            layer.Camera.OnCameraUpdated += UpdateDrawableRegion;
+            UpdateDrawableRegion(layer.Camera);
+        }
+
+        internal override void OnTransformed()
+        {
+            var camera = Entity.Layer?.Camera;
+            if (camera != null) UpdateDrawableRegion(camera);
         }
 
         #region Define Tiles
@@ -325,6 +362,16 @@ namespace FrogWorks
             }
 
             return null;
+        }
+
+        private void UpdateDrawableRegion(Camera camera)
+        {
+            var x1 = (int)Math.Max(Math.Floor((camera.Bounds.Left - AbsoluteX) / _tileWidth), 0);
+            var y1 = (int)Math.Max(Math.Floor((camera.Bounds.Top - AbsoluteY) / _tileHeight), 0);
+            var x2 = (int)Math.Min(Math.Ceiling((camera.Bounds.Right + AbsoluteX) / _tileWidth), Columns);
+            var y2 = (int)Math.Min(Math.Ceiling((camera.Bounds.Bottom + AbsoluteY) / _tileHeight), Rows);
+
+            DrawableRegion = new Rectangle(x1, y1, x2 - x1, y2 - y1);
         }
         #endregion
     }

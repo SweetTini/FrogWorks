@@ -147,6 +147,10 @@ namespace FrogWorks
         {
         }
 
+        internal virtual void OnLayerChanged(Layer layer, Layer lastLayer)
+        {
+        }
+
         internal virtual void OnTranslated(Vector2 offset)
         {
         }

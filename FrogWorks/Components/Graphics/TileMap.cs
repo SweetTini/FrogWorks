@@ -196,10 +196,10 @@ namespace FrogWorks
 
         private void UpdateDrawableRegion(Camera camera)
         {
-            var x1 = (int)Math.Max(Math.Floor((camera.Bounds.Left - DrawPosition.X) / Bounds.Width), 0);
-            var y1 = (int)Math.Max(Math.Floor((camera.Bounds.Top - DrawPosition.Y) / Bounds.Height), 0);
-            var x2 = (int)Math.Min(Math.Ceiling((camera.Bounds.Right + DrawPosition.X) / Bounds.Width), Columns);
-            var y2 = (int)Math.Min(Math.Ceiling((camera.Bounds.Bottom + DrawPosition.Y) / Bounds.Height), Rows);
+            var x1 = (int)Math.Max(Math.Floor((camera.Bounds.Left - DrawPosition.X) / TileWidth), 0);
+            var y1 = (int)Math.Max(Math.Floor((camera.Bounds.Top - DrawPosition.Y) / TileHeight), 0);
+            var x2 = (int)Math.Min(Math.Ceiling((camera.Bounds.Right + DrawPosition.X) / TileWidth), Columns);
+            var y2 = (int)Math.Min(Math.Ceiling((camera.Bounds.Bottom + DrawPosition.Y) / TileHeight), Rows);
 
             DrawableRegion = new Rectangle(x1, y1, x2 - x1, y2 - y1);
         }
