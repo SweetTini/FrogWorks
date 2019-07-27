@@ -236,10 +236,10 @@ namespace FrogWorks
             var deltaX = edge.X;
             var deltaY = Math.Abs(edge.Y);
             var stepY = start.Y < end.Y ? 1 : -1;
-            var error = 0;
             var y = start.Y;
+            var error = 0;
 
-            for (int x = start.X; x < end.X; x++)
+            for (int x = start.X; x <= end.X; x++)
             {
                 yield return isSteep ? GetTileShape(y, x) : GetTileShape(x, y);
                 error += deltaY;
