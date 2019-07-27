@@ -8,13 +8,13 @@ namespace FrogWorks
     {
         private int _tileWidth, _tileHeight;
 
-        protected Dictionary<int, TileCollisionInfo> CollisionInfos { get; private set; }
+        protected Dictionary<int, CollidableTile> Tiles { get; private set; }
 
-        protected Map<int> CollisionMap { get; private set; }
+        protected Map<int> Map { get; private set; }
 
-        public int Columns => CollisionMap.Columns;
+        public int Columns => Map.Columns;
 
-        public int Rows => CollisionMap.Rows;
+        public int Rows => Map.Rows;
 
         public int TileWidth
         {
@@ -45,18 +45,18 @@ namespace FrogWorks
             get
             {
                 var tileSize = new Vector2(_tileWidth, _tileHeight);
-                var mapSize = new Vector2(CollisionMap.Columns, CollisionMap.Rows);
+                var mapSize = new Vector2(Map.Columns, Map.Rows);
                 return mapSize * tileSize;
             }
 
             set
             {
                 var tileSize = new Vector2(_tileWidth, _tileHeight);
-                var mapSize = new Vector2(CollisionMap.Columns, CollisionMap.Rows).ToPoint();
+                var mapSize = new Vector2(Map.Columns, Map.Rows).ToPoint();
                 var newMapSize = value.Abs().Divide(tileSize).Round().ToPoint();
 
                 if (newMapSize == mapSize) return;
-                CollisionMap.Resize(newMapSize.X, newMapSize.Y);
+                Map.Resize(newMapSize.X, newMapSize.Y);
                 OnTransformed();
             }
         }
@@ -76,8 +76,8 @@ namespace FrogWorks
         public TileMapCollider(int columns, int rows, int tileWidth, int tileHeight, float offsetX = 0f, float offsetY = 0f)
             : base()
         {
-            CollisionInfos = new Dictionary<int, TileCollisionInfo>();
-            CollisionMap = new Map<int>(Math.Abs(columns), Math.Abs(rows));
+            Tiles = new Dictionary<int, CollidableTile>();
+            Map = new Map<int>(Math.Abs(columns), Math.Abs(rows));
             TileWidth = Math.Abs(tileWidth);
             TileHeight = Math.Abs(tileHeight);
             Position = new Vector2(offsetX, offsetY);
@@ -85,51 +85,74 @@ namespace FrogWorks
 
         public override bool Contains(Vector2 point)
         {
-            throw new NotImplementedException();
+            return IsCollidable && (GetCollidedRegion(point)?.Shape.Contains(point) ?? false);
         }
 
         public override bool CastRay(Ray ray, out Raycast hit)
         {
-            throw new NotImplementedException();
+            hit = new Raycast(ray);
+
+            if (IsCollidable)
+                foreach (var tile in GetCollidedRegion(ray))
+                    if (ray.Cast(tile.Shape, out hit))
+                        return true;
+
+            return false;
         }
 
         public override bool Collide(Shape other)
         {
-            throw new NotImplementedException();
+            if (IsCollidable)
+                foreach (var tile in GetCollidedRegion(other))
+                    if (tile.Shape.Collide(other))
+                        return true;
+
+            return false;
         }
 
         public override bool Collide(Shape other, out Manifold hit)
         {
-            throw new NotImplementedException();
+            hit = new Manifold();
+
+            if (IsCollidable)
+                foreach (var tile in GetCollidedRegion(other))
+                    if (tile.Shape.Collide(other, out hit))
+                        return true;
+
+            return false;
         }
 
         public override Collider Clone()
         {
-            throw new NotImplementedException();
+            return new TileMapCollider(Columns, Rows, TileWidth, TileHeight, X, Y)
+            {
+                Tiles = new Dictionary<int, CollidableTile>(Tiles),
+                Map = new Map<int>(Map.ToArray(), Map.Empty)
+            };
         }
 
-        #region Define Collisions
-        public void AddOrUpdateInfo(int index, Shape shape, CollisionType type = CollisionType.Solid)
+        #region Define Tiles
+        public void AddOrUpdate(int index, Shape shape, CollisionType type = CollisionType.Solid)
         {
-            if (CollisionInfos.ContainsKey(index))
-                CollisionInfos[index] = CreateCollisionInfo(index, shape, type);
-            else CollisionInfos.Add(index, CreateCollisionInfo(index, shape, type));
+            if (Tiles.ContainsKey(index))
+                Tiles[index] = CreateTile(shape, type);
+            else Tiles.Add(index, CreateTile(shape, type));
         }
 
-        public void RemoveInfo(int index)
+        public void Remove(int index)
         {
-            if (CollisionInfos.ContainsKey(index))
-                CollisionInfos.Remove(index);
+            if (Tiles.ContainsKey(index))
+                Tiles.Remove(index);
         }
 
-        public void ClearInfos()
+        public void RemoveAll()
         {
-            CollisionInfos.Clear();
+            Tiles.Clear();
         }
         #endregion
 
         #region Define Map
-        public void Populate(int[,] tiles, int offsetX = 0, int offsetY = 0)
+        public void PopulateMap(int[,] tiles, int offsetX = 0, int offsetY = 0)
         {
             var tileColumns = tiles.GetLength(0);
             var tileRows = tiles.GetLength(1);
@@ -138,11 +161,11 @@ namespace FrogWorks
             {
                 var x = i % tileColumns;
                 var y = i / tileColumns;
-                CollisionMap[x + offsetX, y + offsetY] = tiles[x, y];
+                Map[x + offsetX, y + offsetY] = tiles[x, y];
             }
         }
 
-        public void Overlay(int[,] tiles, int offsetX = 0, int offsetY = 0)
+        public void OverlayMap(int[,] tiles, int offsetX = 0, int offsetY = 0)
         {
             var tileColumns = tiles.GetLength(0);
             var tileRows = tiles.GetLength(1);
@@ -153,12 +176,12 @@ namespace FrogWorks
                 var y = i / tileColumns;
                 var index = tiles[x, y];
 
-                if (index != CollisionMap.Empty)
-                    CollisionMap[x + offsetX, y + offsetY] = index;
+                if (index != Map.Empty)
+                    Map[x + offsetX, y + offsetY] = index;
             }
         }
 
-        public void Fill(int index, int x, int y, int columns, int rows)
+        public void FillMap(int index, int x, int y, int columns, int rows)
         {
             var x1 = Math.Max(x, 0);
             var y1 = Math.Max(y, 0);
@@ -172,81 +195,172 @@ namespace FrogWorks
             {
                 var tx = i % tileColumns;
                 var ty = i / tileColumns;
-                CollisionMap[tx, ty] = index;
+                Map[tx, ty] = index;
             }
         }
 
-        public void Clear()
+        public void ClearMap()
         {
-            CollisionMap.Clear();
+            Map.Clear();
         }
         #endregion
 
         #region Helper Methods
-        protected TileCollisionInfo CreateCollisionInfo(int index, Shape shape, CollisionType type)
+        public CollidableTileShape GetCollidedRegion(Vector2 point)
         {
-            var info = default(TileCollisionInfo);
+            var cell = point.SnapToGrid(new Vector2(_tileWidth, _tileHeight), AbsolutePosition).ToPoint();
+            return GetTileShape(cell.X, cell.Y);
+        }
+
+        public IEnumerable<CollidableTileShape> GetCollidedRegion(Ray ray)
+        {
+            var tileSize = new Vector2(_tileWidth, _tileHeight);
+            var start = ray.Position.SnapToGrid(tileSize, AbsolutePosition).ToPoint();
+            var end = ray.Endpoint.SnapToGrid(tileSize, AbsolutePosition).ToPoint();
+            var edge = end - start;
+            var isSteep = Math.Abs(edge.Y) > Math.Abs(edge.X);
+
+            if (isSteep)
+            {
+                start = new Point(start.Y, start.X);
+                end = new Point(end.Y, end.X);
+            }
+
+            if (start.X > end.X)
+            {
+                var temp = end;
+                start = end;
+                end = temp;
+            }
+
+            var deltaX = edge.X;
+            var deltaY = Math.Abs(edge.Y);
+            var stepY = start.Y < end.Y ? 1 : -1;
+            var error = 0;
+            var y = start.Y;
+
+            for (int x = start.X; x < end.X; x++)
+            {
+                yield return isSteep ? GetTileShape(y, x) : GetTileShape(x, y);
+                error += deltaY;
+
+                if (deltaX <= error * 2)
+                {
+                    y += stepY;
+                    error -= deltaX;
+                }
+            }
+        }
+
+        public IEnumerable<CollidableTileShape> GetCollidedRegion(Shape shape)
+        {
+            var tileSize = new Vector2(_tileWidth, _tileHeight);
+            var bounds = shape.Bounds.SnapToGrid(tileSize, AbsolutePosition);
+
+            for (int i = 0; i < bounds.Width * bounds.Height; i++)
+            {
+                var x = bounds.Left + (i % bounds.Width);
+                var y = bounds.Top + (i / bounds.Width);
+                var tileShape = GetTileShape(x, y);
+
+                if (tileShape != null)
+                    yield return tileShape;
+            }
+        }
+
+        protected CollidableTile CreateTile(Shape shape, CollisionType collisionType)
+        {
+            var info = default(CollidableTile);
 
             if (shape is RectangleF)
             {
                 var rectangle = shape as RectangleF;
                 var scale = Math.Max(rectangle.Width, rectangle.Height).Inverse() * Vector2.One;
                 var vertices = rectangle.ToVertices().Transform(scale: scale);
-                info = new TileCollisionInfo(index, vertices, ShapeType.Rectangle, type);
+                info = new CollidableTile(vertices, TileShapeType.Rectangle, collisionType);
             }
             else if (shape is Circle)
             {
                 var circle = shape as Circle;
-                info = new TileCollisionInfo(index, new[] { circle.Center }, ShapeType.Circle, type);
+                info = new CollidableTile(null, TileShapeType.Circle, collisionType);
             }
             else if (shape is Polygon)
             {
                 var polygon = shape as Polygon;
                 var scale = Math.Max(polygon.Width, polygon.Height).Inverse() * Vector2.One;
                 var vertices = polygon.Vertices.Transform(scale: scale);
-                info = new TileCollisionInfo(index, vertices, ShapeType.Polygon, type);
+                info = new CollidableTile(vertices, TileShapeType.Polygon, collisionType);
             }
 
             return info;
         }
 
-        protected Shape GetCollidedArea(Vector2 point)
+        protected CollidableTileShape GetTileShape(int x, int y)
         {
-            throw new NotImplementedException();
-        }
+            CollidableTile info;
 
-        protected IEnumerable<Shape> GetCollidedArea(Vector2 lineFrom, Vector2 lineTo)
-        {
-            throw new NotImplementedException();
-        }
+            if (Tiles.TryGetValue(Map[x, y], out info))
+            {
+                var tileSize = new Vector2(_tileWidth, _tileHeight);
+                var position = new Vector2(x, y) * tileSize + AbsolutePosition;
 
-        protected IEnumerable<Shape> GetCollidedArea(Rectangle bounds)
-        {
-            throw new NotImplementedException();
+                if (info.ShapeType == TileShapeType.Rectangle)
+                {
+                    var vertices = info.Vertices.Transform(position, scale: tileSize);
+                    var rectangle = new RectangleF(vertices[0], vertices[2] - vertices[0]);
+                    return new CollidableTileShape(rectangle, info.CollisionType);
+                }
+                else if (info.ShapeType == TileShapeType.Circle)
+                {
+                    var radius = Math.Min(tileSize.X, tileSize.Y) / 2f;
+                    var circle = new Circle(position + Vector2.One * radius, radius);
+                    return new CollidableTileShape(circle, info.CollisionType);
+                }
+                else if (info.ShapeType == TileShapeType.Polygon)
+                {
+                    var vertices = info.Vertices.Transform(position, scale: tileSize);
+                    var polygon = new Polygon(vertices);
+                    return new CollidableTileShape(polygon, info.CollisionType);
+                }
+            }
+
+            return null;
         }
         #endregion
     }
 
-    public struct TileCollisionInfo
+    public class CollidableTile
     {
-        public int Index { get; private set; }
-
         public Vector2[] Vertices { get; private set; }
 
-        public ShapeType ShapeType { get; private set; }
+        public TileShapeType ShapeType { get; private set; }
 
         public CollisionType CollisionType { get; private set; }
 
-        internal TileCollisionInfo(int index, Vector2[] vertices, ShapeType shapeType, CollisionType collisionType)
+        internal CollidableTile(Vector2[] vertices, TileShapeType shapeType, CollisionType collisionType)
+            : base()
         {
-            Index = index;
             ShapeType = shapeType;
             CollisionType = collisionType;
             Vertices = vertices;
         }
     }
 
-    public enum ShapeType
+    public class CollidableTileShape
+    {
+        public Shape Shape { get; private set; }
+
+        public CollisionType CollisionType { get; private set; }
+
+        internal CollidableTileShape(Shape shape, CollisionType collisionType)
+            : base()
+        {
+            Shape = shape;
+            CollisionType = collisionType;
+        }
+    }
+
+    public enum TileShapeType
     {
         None,
         Rectangle,

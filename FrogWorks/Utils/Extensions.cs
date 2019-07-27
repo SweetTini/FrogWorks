@@ -95,6 +95,13 @@ namespace FrogWorks
             return new Rectangle(x, y, width, height);
         }
 
+        public static Rectangle SnapToGrid(this Rectangle rect, Vector2 gridSize, Vector2 offset = default(Vector2))
+        {
+            var upper = rect.Location.ToVector2().SnapToGrid(gridSize, offset);
+            var lower = (rect.Location + rect.Size).ToVector2().SnapToGrid(gridSize, offset);
+            return new Rectangle(upper.ToPoint(), (lower - upper).ToPoint());
+        }
+
         public static Rectangle Transform(this Rectangle rect, Vector2? position = null, Vector2? origin = null, Vector2? scale = null, float angle = 0f)
         {
             var result = rect.ToVertices().Transform(position, origin, scale, angle);
@@ -181,6 +188,11 @@ namespace FrogWorks
         public static Vector2 Round(this Vector2 vector, int digits)
         {
             return new Vector2((float)Math.Round(vector.X, digits), (float)Math.Round(vector.Y, digits));
+        }
+
+        public static Vector2 SnapToGrid(this Vector2 vector, Vector2 gridSize, Vector2 offset = default(Vector2))
+        {
+            return (vector - offset).Divide(gridSize).Round();
         }
 
         public static Vector2 SafeNormalize(this Vector2 vector)
