@@ -127,6 +127,22 @@ namespace FrogWorks
 
         public abstract bool Collide(Shape other, out Manifold hit);
 
+        public abstract bool Collide(Collider other);
+
+        public abstract bool Collide(Collider other, out Manifold hit);
+
+        public bool Collide(Entity entity)
+        {
+            return entity?.Collider != null && Collide(entity.Collider);
+        }
+
+        public bool Collide(Entity entity, out Manifold hit)
+        {
+            hit = new Manifold();
+
+            return entity?.Collider != null && Collide(entity.Collider, out hit);
+        }
+
         public abstract Collider Clone();
 
         internal virtual void OnAdded(Entity entity)

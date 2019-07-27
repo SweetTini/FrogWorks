@@ -21,7 +21,7 @@ namespace FrogWorks
 
         protected internal Scene Scene => Layer?.Scene;
 
-        protected Collider Collider
+        protected internal Collider Collider
         {
             get { return _collider; }
             set

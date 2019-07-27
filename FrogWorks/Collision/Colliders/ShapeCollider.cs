@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 
 namespace FrogWorks
 {
@@ -61,6 +62,34 @@ namespace FrogWorks
             hit = new Manifold();
 
             return IsCollidable && Shape.Collide(other, out hit);
+        }
+
+        public override bool Collide(Collider other)
+        {
+            if (!Equals(other) && IsCollidable && other.IsCollidable)
+            {
+                if (other is ShapeCollider<Shape>)
+                    return Collide((other as ShapeCollider<Shape>).Shape);
+                else if (other is TileMapCollider)
+                    return (other as TileMapCollider).Collide(Shape);
+            }
+
+            return false;
+        }
+
+        public override bool Collide(Collider other, out Manifold hit)
+        {
+            hit = new Manifold();
+
+            if (!Equals(other) && IsCollidable && other.IsCollidable)
+            {
+                if (other is ShapeCollider<Shape>)
+                    return Collide((other as ShapeCollider<Shape>).Shape, out hit);
+                else if (other is TileMapCollider)
+                    return (other as TileMapCollider).Collide(Shape, out hit);
+            }
+
+            return false;
         }
 
         internal override void OnAdded(Entity entity)

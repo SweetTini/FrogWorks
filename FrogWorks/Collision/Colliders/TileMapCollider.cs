@@ -134,6 +134,26 @@ namespace FrogWorks
             return false;
         }
 
+        public override bool Collide(Collider other)
+        {
+            if (!Equals(other) && IsCollidable && other.IsCollidable)
+                if (other is ShapeCollider<Shape>)
+                    return Collide((other as ShapeCollider<Shape>).Shape);
+
+            return false;
+        }
+
+        public override bool Collide(Collider other, out Manifold hit)
+        {
+            hit = new Manifold();
+
+            if (!Equals(other) && IsCollidable && other.IsCollidable)
+                if (other is ShapeCollider<Shape>)
+                    return Collide((other as ShapeCollider<Shape>).Shape, out hit);
+
+            return false;
+        }
+
         public override Collider Clone()
         {
             return new TileMapCollider(Columns, Rows, TileWidth, TileHeight, X, Y)
@@ -309,17 +329,16 @@ namespace FrogWorks
         {
             var info = default(CollidableTile);
 
-            if (shape is RectangleF)
+            if (shape is Circle)
+            {
+                info = new CollidableTile(null, TileShapeType.Circle, collisionType);
+            }
+            else if (shape is RectangleF)
             {
                 var rectangle = shape as RectangleF;
                 var scale = Math.Max(rectangle.Width, rectangle.Height).Inverse() * Vector2.One;
                 var vertices = rectangle.ToVertices().Transform(scale: scale);
                 info = new CollidableTile(vertices, TileShapeType.Rectangle, collisionType);
-            }
-            else if (shape is Circle)
-            {
-                var circle = shape as Circle;
-                info = new CollidableTile(null, TileShapeType.Circle, collisionType);
             }
             else if (shape is Polygon)
             {
@@ -341,17 +360,17 @@ namespace FrogWorks
                 var tileSize = new Vector2(_tileWidth, _tileHeight);
                 var position = new Vector2(x, y) * tileSize + AbsolutePosition;
 
-                if (info.ShapeType == TileShapeType.Rectangle)
-                {
-                    var vertices = info.Vertices.Transform(position, scale: tileSize);
-                    var rectangle = new RectangleF(vertices[0], vertices[2] - vertices[0]);
-                    return new CollidableTileShape(rectangle, info.CollisionType);
-                }
-                else if (info.ShapeType == TileShapeType.Circle)
+                if (info.ShapeType == TileShapeType.Circle)
                 {
                     var radius = Math.Min(tileSize.X, tileSize.Y) / 2f;
                     var circle = new Circle(position + Vector2.One * radius, radius);
                     return new CollidableTileShape(circle, info.CollisionType);
+                }
+                else if (info.ShapeType == TileShapeType.Rectangle)
+                {
+                    var vertices = info.Vertices.Transform(position, scale: tileSize);
+                    var rectangle = new RectangleF(vertices[0], vertices[2] - vertices[0]);
+                    return new CollidableTileShape(rectangle, info.CollisionType);
                 }
                 else if (info.ShapeType == TileShapeType.Polygon)
                 {
@@ -410,8 +429,8 @@ namespace FrogWorks
     public enum TileShapeType
     {
         None,
-        Rectangle,
         Circle,
+        Rectangle,
         Polygon
     }
 
