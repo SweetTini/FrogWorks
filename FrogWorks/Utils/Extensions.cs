@@ -123,6 +123,25 @@ namespace FrogWorks
         }
         #endregion
 
+        #region Point
+        public static Point Abs(this Point point)
+        {
+            return new Point(Math.Abs(point.X), Math.Abs(point.Y));
+        }
+
+        public static Point Clamp(this Point point, Point lowest, Point highest)
+        {
+            return new Point(
+                MathHelper.Clamp(point.X, lowest.X, highest.X),
+                MathHelper.Clamp(point.Y, lowest.Y, highest.Y));
+        }
+
+        public static Point Sign(this Point point)
+        {
+            return new Point(Math.Sign(point.X), Math.Sign(point.Y));
+        }
+        #endregion
+
         #region Vector
         public static Vector2 AngleToVector(this float angle, float length)
         {

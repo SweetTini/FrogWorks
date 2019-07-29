@@ -6,7 +6,7 @@ namespace FrogWorks
 {
     public class TileMapCollider : Collider
     {
-        private int _tileWidth, _tileHeight;
+        private Point _tileSize;
 
         protected Dictionary<int, CollidableTile> Tiles { get; private set; }
 
@@ -14,51 +14,45 @@ namespace FrogWorks
 
         protected Rectangle DrawableRegion { get; private set; }
 
+        public Point Area => new Point(Map.Columns, Map.Rows);
+
         public int Columns => Map.Columns;
 
         public int Rows => Map.Rows;
 
-        public int TileWidth
+        public Point TileSize
         {
-            get { return _tileWidth; }
+            get { return _tileSize; }
             set
             {
-                value = Math.Abs(value);
-                if (value == _tileWidth) return;
-                _tileWidth = value;
+                value = value.Abs();
+                if (value == _tileSize) return;
+                _tileSize = value;
                 OnTransformed();
             }
+        }
+
+        public int TileWidth
+        {
+            get { return TileSize.X; }
+            set { TileSize = new Point(value, TileSize.Y); }
         }
 
         public int TileHeight
         {
-            get { return _tileHeight; }
-            set
-            {
-                value = Math.Abs(value);
-                if (value == _tileHeight) return;
-                _tileHeight = value;
-                OnTransformed();
-            }
+            get { return TileSize.Y; }
+            set { TileSize = new Point(TileSize.X, value); }
         }
 
         public override Vector2 Size
         {
-            get
-            {
-                var tileSize = new Vector2(_tileWidth, _tileHeight);
-                var mapSize = new Vector2(Map.Columns, Map.Rows);
-                return mapSize * tileSize;
-            }
+            get { return (Area * TileSize).ToVector2(); }
 
             set
             {
-                var tileSize = new Vector2(_tileWidth, _tileHeight);
-                var mapSize = new Vector2(Map.Columns, Map.Rows).ToPoint();
-                var newMapSize = value.Abs().Divide(tileSize).Round().ToPoint();
-
-                if (newMapSize == mapSize) return;
-                Map.Resize(newMapSize.X, newMapSize.Y);
+                var newArea = value.Abs().SnapToGrid(TileSize.ToVector2()).ToPoint();
+                if (newArea == Area) return;
+                Map.Resize(newArea.X, newArea.Y);
                 OnTransformed();
             }
         }
@@ -265,15 +259,14 @@ namespace FrogWorks
         #region Helper Methods
         public CollidableTileShape GetCollidedRegion(Vector2 point)
         {
-            var cell = point.SnapToGrid(new Vector2(_tileWidth, _tileHeight), AbsolutePosition).ToPoint();
+            var cell = point.SnapToGrid(TileSize.ToVector2(), AbsolutePosition).ToPoint();
             return GetTileShape(cell.X, cell.Y);
         }
 
         public IEnumerable<CollidableTileShape> GetCollidedRegion(Vector2 lineFrom, Vector2 lineTo)
         {
-            var tileSize = new Vector2(_tileWidth, _tileHeight);
-            var start = lineFrom.SnapToGrid(tileSize, AbsolutePosition).ToPoint();
-            var end = lineTo.SnapToGrid(tileSize, AbsolutePosition).ToPoint();
+            var start = lineFrom.SnapToGrid(TileSize.ToVector2(), AbsolutePosition).ToPoint();
+            var end = lineTo.SnapToGrid(TileSize.ToVector2(), AbsolutePosition).ToPoint();
             var edge = end - start;
             var isSteep = Math.Abs(edge.Y) > Math.Abs(edge.X);
 
@@ -301,7 +294,7 @@ namespace FrogWorks
                 yield return isSteep ? GetTileShape(y, x) : GetTileShape(x, y);
                 error += deltaY;
 
-                if (deltaX <= error * 2)
+                if (error * 2 >= deltaX)
                 {
                     y += stepY;
                     error -= deltaX;
@@ -316,8 +309,7 @@ namespace FrogWorks
 
         public IEnumerable<CollidableTileShape> GetCollidedRegion(Rectangle bounds)
         {
-            var tileSize = new Vector2(_tileWidth, _tileHeight);
-            var gridBounds = bounds.SnapToGrid(tileSize, AbsolutePosition);
+            var gridBounds = bounds.SnapToGrid(TileSize.ToVector2(), AbsolutePosition);
 
             for (int i = 0; i < gridBounds.Width * gridBounds.Height; i++)
             {
@@ -367,7 +359,7 @@ namespace FrogWorks
 
             if (Tiles.TryGetValue(Map[x, y], out info))
             {
-                var tileSize = new Vector2(_tileWidth, _tileHeight);
+                var tileSize = TileSize.ToVector2();
                 var position = new Vector2(x, y) * tileSize + AbsolutePosition;
 
                 if (info.ShapeType == TileShapeType.Circle)
@@ -395,10 +387,10 @@ namespace FrogWorks
 
         private void UpdateDrawableRegion(Camera camera)
         {
-            var x1 = (int)Math.Max(Math.Floor((camera.Bounds.Left - AbsoluteX) / _tileWidth), 0);
-            var y1 = (int)Math.Max(Math.Floor((camera.Bounds.Top - AbsoluteY) / _tileHeight), 0);
-            var x2 = (int)Math.Min(Math.Ceiling((camera.Bounds.Right + AbsoluteX) / _tileWidth), Columns);
-            var y2 = (int)Math.Min(Math.Ceiling((camera.Bounds.Bottom + AbsoluteY) / _tileHeight), Rows);
+            var x1 = (int)Math.Max(Math.Floor((camera.Bounds.Left - AbsoluteX) / TileWidth), 0);
+            var y1 = (int)Math.Max(Math.Floor((camera.Bounds.Top - AbsoluteY) / TileHeight), 0);
+            var x2 = (int)Math.Min(Math.Ceiling((camera.Bounds.Right + AbsoluteX) / TileWidth), Columns);
+            var y2 = (int)Math.Min(Math.Ceiling((camera.Bounds.Bottom + AbsoluteY) / TileHeight), Rows);
 
             DrawableRegion = new Rectangle(x1, y1, x2 - x1, y2 - y1);
         }
