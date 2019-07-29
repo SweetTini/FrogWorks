@@ -94,6 +94,7 @@ namespace FrogWorks
         internal override void OnAdded(Entity entity)
         {
             base.OnAdded(entity);
+            UpdateShapePosition();
             Entity?.Scene?.ColliderTree.Insert(this);
         }
 
@@ -101,11 +102,13 @@ namespace FrogWorks
         {
             Entity?.Scene?.ColliderTree.Remove(this);
             base.OnRemoved();
+            UpdateShapePosition();
         }
 
         internal override void OnEntityAdded(Entity entity)
         {
             base.OnEntityAdded(entity);
+            UpdateShapePosition();
             Entity?.Scene?.ColliderTree.Insert(this);
         }
 
@@ -113,20 +116,20 @@ namespace FrogWorks
         {
             Entity?.Scene?.ColliderTree.Remove(this);
             base.OnEntityRemoved(entity);
-        }
-
-        internal override void OnTranslated(Vector2 offset)
-        {
-            if (Shape != null)
-                Shape.Position = AbsolutePosition;
-            Entity?.Scene?.ColliderTree.Update(this);
-            base.OnTranslated(offset);
+            UpdateShapePosition();
         }
 
         internal override void OnTransformed()
         {
+            UpdateShapePosition();
             Entity?.Scene?.ColliderTree.Update(this);
             base.OnTransformed();
+        }
+
+        private void UpdateShapePosition()
+        {
+            if (Shape != null)
+                Shape.Position = AbsolutePosition;
         }
     }
 }

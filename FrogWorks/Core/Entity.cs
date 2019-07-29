@@ -39,34 +39,21 @@ namespace FrogWorks
             set
             {
                 if (value == _position) return;
-                var lastPosition = _position;
                 _position = value;
-                OnTranslated(_position - lastPosition);
+                _collider?.OnTransformed();
             }
         }
 
         public float X
         {
-            get { return _position.X; }
-            set
-            {
-                if (value == _position.X) return;
-                var lastPosition = _position;
-                _position.X = value;
-                OnTranslated(_position - lastPosition);
-            }
+            get { return Position.X; }
+            set { Position = new Vector2(value, Position.Y); }
         }
 
         public float Y
         {
-            get { return _position.Y; }
-            set
-            {
-                if (value == _position.Y) return;
-                var lastPosition = _position;
-                _position.Y = value;
-                OnTranslated(_position - lastPosition);
-            }
+            get { return Position.Y; }
+            set { Position = new Vector2(Position.X, value); }
         }
 
         public int Depth
@@ -138,11 +125,6 @@ namespace FrogWorks
 
         public virtual void OnSceneEnded(Scene scene)
         {
-        }
-
-        public virtual void OnTranslated(Vector2 offset)
-        {
-            _collider?.OnTranslated(offset);
         }
 
         public void Destroy()

@@ -16,34 +16,21 @@ namespace FrogWorks
             set
             {
                 if (value == _position) return;
-                var lastPosition = _position;
                 _position = value;
-                OnTranslated(_position - lastPosition);
+                OnTransformed();
             }
         }
 
         public float X
         {
-            get { return _position.X; }
-            set
-            {
-                if (value == _position.X) return;
-                var lastPosition = _position;
-                _position.X = value;
-                OnTranslated(_position - lastPosition);
-            }
+            get { return Position.X; }
+            set { Position = new Vector2(value, Position.Y); }
         }
 
         public float Y
         {
-            get { return _position.Y; }
-            set
-            {
-                if (value == _position.Y) return;
-                var lastPosition = _position;
-                _position.Y = value;
-                OnTranslated(_position - lastPosition);
-            }
+            get { return Position.Y; }
+            set { Position = new Vector2(Position.X, value); }
         }
 
         public Vector2 AbsolutePosition
@@ -54,14 +41,14 @@ namespace FrogWorks
 
         public float AbsoluteX
         {
-            get { return X + (Entity?.X ?? 0f); }
-            set { X = value - (Entity?.X ?? 0f); }
+            get { return AbsolutePosition.X; }
+            set { AbsolutePosition = new Vector2(value, AbsolutePosition.Y); }
         }
 
         public float AbsoluteY
         {
-            get { return Y + (Entity?.Y ?? 0f); }
-            set { Y = value - (Entity?.Y ?? 0f); }
+            get { return AbsolutePosition.Y; }
+            set { AbsolutePosition = new Vector2(AbsolutePosition.X, value); }
         }
 
         public abstract Vector2 Size { get; set; }
@@ -164,10 +151,6 @@ namespace FrogWorks
         }
 
         internal virtual void OnLayerChanged(Layer layer, Layer lastLayer)
-        {
-        }
-
-        internal virtual void OnTranslated(Vector2 offset)
         {
         }
 
