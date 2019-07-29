@@ -93,17 +93,6 @@ namespace FrogWorks
             }
         }
 
-        public Vector2 Origin
-        {
-            get { return _origin; }
-            set
-            {
-                if (value == _origin) return;
-                _origin = value;
-                _isDirty = true;
-            }
-        }
-
         public float Zoom
         {
             get { return _zoom; }
@@ -135,26 +124,15 @@ namespace FrogWorks
         }
 
         public Camera()
-            : this(Engine.Display.Width, Engine.Display.Height)
         {
-            Engine.Display.OnBackBufferChanged += OnScreenChanged;
-        }
+            UpdateViewport();
 
-        public Camera(int width, int height)
-        {
-            _viewport = new Viewport(0, 0, width, height);
-            CenterOrigin();
-            UpdateMatrices();
+            Engine.Display.OnBackBufferChanged += UpdateViewport;
         }
 
         public void RoundPosition()
         {
             Position = new Vector2((float)Math.Round(Position.X), (float)Math.Round(Position.Y));
-        }
-
-        public void CenterOrigin()
-        {
-            Origin = new Vector2(_viewport.Width, _viewport.Height) * .5f;
         }
 
         public Vector2 ViewToWorld(Vector2 position)
@@ -181,28 +159,35 @@ namespace FrogWorks
                 : distanceToMove;
         }
 
-        internal void OnScreenChanged()
+        protected void UpdateViewport()
         {
             var display = Engine.Display;
+            var width = display.Width + display.ExtendedWidth;
+            var height = display.Height + display.ExtendedHeight;
+
             _padding = new Vector2(display.ExtendedWidth, display.ExtendedHeight) * .5f;
-            _viewport = new Viewport(0, 0, display.Width + display.ExtendedWidth, display.Height + display.ExtendedHeight);
+            _viewport = new Viewport(0, 0, width, height);
+            _origin = new Vector2(_viewport.Width, _viewport.Height) * .5f;
             _isDirty = true;
+
+            UpdateMatrices();
         }
 
         protected void UpdateMatrices()
         {
             if (_isDirty)
             {
-                var position = _position - _padding;
+                var absolute = _position - _padding;
 
-                _transformMatrix = Matrix.CreateTranslation(new Vector3(-position - _origin, 0f)) 
+                _transformMatrix = Matrix.CreateTranslation(new Vector3(-absolute - _origin, 0f)) 
                     * Matrix.CreateRotationZ(_angle) 
                     * Matrix.CreateScale(new Vector3(_zoom * Vector2.One, 1f)) 
                     * Matrix.CreateTranslation(new Vector3(_origin, 0f));
+
                 _inverseMatrix = Matrix.Invert(_transformMatrix);
                 _isDirty = false;
 
-                Bounds = _viewport.Bounds.Transform(position + _origin, _origin, Vector2.One / _zoom, _angle);
+                Bounds = _viewport.Bounds.Transform(absolute + _origin, _origin, Vector2.One / _zoom, _angle);
                 OnCameraUpdated?.Invoke(this);
             }
         }
