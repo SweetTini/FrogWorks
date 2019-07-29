@@ -17,8 +17,6 @@ namespace FrogWorks
 
         public bool IsEnabled { get; private set; }
 
-        protected bool IsInitialized { get; private set; }
-
         protected Scene()
         {
             Layers = new LayerManager(this);
@@ -28,18 +26,10 @@ namespace FrogWorks
             MainLayer.IsDefault = true;
         }
 
-        public virtual void Initialize()
-        {
-            if (!IsInitialized)
-            {
-                Entities.ProcessQueues();
-                IsInitialized = true;
-            }
-        }
-
         public virtual void Begin()
         {
             IsEnabled = true;
+            Entities.ProcessQueues();
 
             for (int i = 0; i < Entities.Count; i++)
                 Entities[i].OnSceneBegan(this);

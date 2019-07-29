@@ -9,7 +9,6 @@ namespace FrogWorks
     public class Engine : Game
     {
         private Scene _currentScene, _nextScene;
-        private Cache<Scene> _sceneCache;
         private string _title = "New Game";
         private Version _version = new Version(0, 0, 1, 0);
         private bool _displayVersionOnHeader;
@@ -97,8 +96,6 @@ namespace FrogWorks
 
         public Engine(int width, int height)
         {
-            _sceneCache = new Cache<Scene>();
-
             Instance = this;
             Graphics = new GraphicsDeviceManager(this);
             Graphics.SynchronizeWithVerticalRetrace = true;
@@ -113,7 +110,7 @@ namespace FrogWorks
 
         public void SetScene<T>() where T : Scene, new()
         {
-            _nextScene = _sceneCache.Create<T>();
+            _nextScene = new T();
         }
 
         protected override void Update(GameTime gameTime)
@@ -132,10 +129,7 @@ namespace FrogWorks
             if (_nextScene != _currentScene)
             {
                 _currentScene?.End();
-                var lastScene = _currentScene;
                 _currentScene = _nextScene;
-                OnSceneChanged(_currentScene, lastScene);
-                _currentScene?.Initialize();
                 _currentScene?.Begin();
             }
 
@@ -153,11 +147,6 @@ namespace FrogWorks
             RendererBatch.Dispose();
             Input.Close();
             base.EndRun();
-        }
-
-        private void OnSceneChanged(Scene currentScene, Scene lastScene)
-        {
-            _sceneCache.Store(lastScene);
         }
 
         private void OnTitleChanged()
