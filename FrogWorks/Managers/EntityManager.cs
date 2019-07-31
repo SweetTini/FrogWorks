@@ -8,6 +8,7 @@ namespace FrogWorks
     {
         private Scene _scene;
         private List<Entity> _entities, _entitiesToAdd, _entitiesToRemove;
+        private Dictionary<int, double> _absoluteDepthLookup;
         private bool _isUnsorted;
 
         public Entity this[int index]
@@ -29,6 +30,7 @@ namespace FrogWorks
             _entities = new List<Entity>();
             _entitiesToAdd = new List<Entity>();
             _entitiesToRemove = new List<Entity>();
+            _absoluteDepthLookup = new Dictionary<int, double>();
         }
 
         internal void ProcessQueues()
@@ -47,7 +49,10 @@ namespace FrogWorks
             if (_entitiesToAdd.Count > 0)
             {
                 for (int i = 0; i < _entitiesToAdd.Count; i++)
+                {
                     _entities.Add(_entitiesToAdd[i]);
+                    CorrectAbsoluteDepth(_entitiesToAdd[i]);
+                }
 
                 _entitiesToAdd.Clear();
             }
@@ -57,6 +62,19 @@ namespace FrogWorks
                 _entities.Sort(Entity.CompareDepth);
                 _isUnsorted = false;
             }
+        }
+
+        internal void CorrectAbsoluteDepth(Entity entity)
+        {
+            const double theta = .000001;
+            double increment;
+
+            if (_absoluteDepthLookup.TryGetValue(entity.Depth, out increment))
+                _absoluteDepthLookup[entity.Depth] += theta;
+            else _absoluteDepthLookup.Add(entity.Depth, theta);
+            entity.AbsoluteDepth = entity.Depth + increment;
+
+            _isUnsorted = true;
         }
 
         internal void MarkUnsorted()

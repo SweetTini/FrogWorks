@@ -12,7 +12,7 @@ namespace FrogWorks
 
         internal static Comparison<Entity> CompareDepth
         {
-            get { return (entity, other) => Math.Sign(entity.Depth - other.Depth); }
+            get { return (entity, other) => Math.Sign(entity.AbsoluteDepth - other.AbsoluteDepth); }
         }
 
         internal ComponentManager Components { get; private set; }
@@ -61,11 +61,12 @@ namespace FrogWorks
             get { return _depth; }
             set
             {
-                if (value == _depth) return;
                 _depth = value;
-                Scene?.Entities.MarkUnsorted();
+                Scene?.Entities.CorrectAbsoluteDepth(this);
             }
         }
+
+        internal double AbsoluteDepth { get; set; }
 
         public bool IsEnabled { get; set; } = true;
 
