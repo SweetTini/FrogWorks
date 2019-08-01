@@ -3,22 +3,22 @@ using Microsoft.Xna.Framework;
 
 namespace FrogWorks.Demo.Scenes
 {
-    public class GraphicsTestScene : Scene
+    public class GraphicsTest : Scene
     {
-        public GraphicsTestScene()
+        public GraphicsTest()
             : base()
         {
             AddLayer("Sprites");
 
-            var textEntity = new TextEntity()
+            var textEntity = new Text()
             {
                 Y = 8,
-                Text = "Click Apple to wiggle it!\nArrow Keys - Scroll Camera\nWASD - Rotate/Scale Camera",
+                TextToDisplay = "Click Apple to wiggle it!\nArrow Keys - Scroll Camera\nWASD - Rotate/Scale Camera",
                 HorizontalAlignment = HorizontalAlignment.Center,
                 Depth = 100
             };
 
-            var backgroundEntity = new BackgroundEntity()
+            var backgroundEntity = new Background()
             {
                 Color = Color.LightSalmon,
                 Depth = -100
@@ -34,6 +34,12 @@ namespace FrogWorks.Demo.Scenes
 
         public override void Update(float deltaTime)
         {
+            if (Input.Keyboard.IsPressed(Keys.Escape))
+            {
+                SetNextScene<TestMenu>();
+                return;
+            }
+
             var camera = MainLayer.Camera;
 
             camera.X += Input.Keyboard.GetAxis(Keys.RightArrow, Keys.LeftArrow) * 2f;
@@ -43,7 +49,7 @@ namespace FrogWorks.Demo.Scenes
 
             var cursor = GetLayer("Sprites").Camera.ViewToWorld(Input.Mouse.Position);
 
-            foreach (var apple in GetEntitiesOfType<AppleEntity>())
+            foreach (var apple in GetEntitiesOfType<Apple>())
             {
                 if (apple.Contains(cursor) && Input.Mouse.IsClicked(MouseButton.Left))
                 {
@@ -54,9 +60,9 @@ namespace FrogWorks.Demo.Scenes
             base.Update(deltaTime);
         }
 
-        private AppleEntity CreateApple(float x, float y, int depth = 0)
+        private Apple CreateApple(float x, float y, int depth = 0)
         {
-            var apple = new AppleEntity()
+            var apple = new Apple()
             {
                 Position = new Vector2(x, y),
                 Depth = depth

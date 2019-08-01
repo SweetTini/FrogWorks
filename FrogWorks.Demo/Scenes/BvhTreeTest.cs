@@ -4,11 +4,11 @@ using System.Linq;
 
 namespace FrogWorks.Demo.Scenes
 {
-    public class BvhTreeTestScene : Scene
+    public class BvhTreeTest : Scene
     {
         private const int MaxApples = 20;
 
-        public BvhTreeTestScene()
+        public BvhTreeTest()
             : base()
         {
             BackgroundColor = Color.Gray;
@@ -16,8 +16,14 @@ namespace FrogWorks.Demo.Scenes
 
         public override void Update(float deltaTime)
         {
+            if (Input.Keyboard.IsPressed(Keys.Escape))
+            {
+                SetNextScene<TestMenu>();
+                return;
+            }
+
             var cursor = MainLayer.Camera.ViewToWorld(Input.Mouse.Position);
-            var apples = GetEntitiesOfType<MiniAppleEntity>().ToList();
+            var apples = GetEntitiesOfType<MiniApple>().ToList();
 
             if (Input.Mouse.IsClicked(MouseButton.Left))
             {
@@ -46,9 +52,9 @@ namespace FrogWorks.Demo.Scenes
             base.Draw(batch);
         }
 
-        private MiniAppleEntity CreateApple(float x, float y, int depth = 0)
+        private MiniApple CreateApple(float x, float y, int depth = 0)
         {
-            var apple = new MiniAppleEntity()
+            var apple = new MiniApple()
             {
                 Position = new Vector2(x, y),
                 Depth = depth

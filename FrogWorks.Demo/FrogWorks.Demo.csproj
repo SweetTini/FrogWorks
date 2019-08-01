@@ -43,15 +43,19 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="DefaultFont.cs" />
-    <Compile Include="Entities\AppleEntity.cs" />
-    <Compile Include="Entities\BackgroundEntity.cs" />
-    <Compile Include="Entities\MiniAppleEntity.cs" />
-    <Compile Include="Entities\TextEntity.cs" />
+    <Compile Include="Entities\Apple.cs" />
+    <Compile Include="Entities\Background.cs" />
+    <Compile Include="Entities\MenuItem.cs" />
+    <Compile Include="Entities\MiniApple.cs" />
+    <Compile Include="Entities\Text.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Scenes\BvhTreeTestScene.cs" />
-    <Compile Include="Scenes\DisplayTestScene.cs" />
-    <Compile Include="Scenes\GraphicsTestScene.cs" />
+    <Compile Include="Scenes\BvhTreeTest.cs" />
+    <Compile Include="Scenes\DisplayTest.cs" />
+    <Compile Include="Scenes\GraphicsTest.cs" />
+    <Compile Include="Scenes\ShapeCollisionTest.cs" />
+    <Compile Include="Scenes\BasicPlatformerTest.cs" />
+    <Compile Include="Scenes\TestMenu.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">

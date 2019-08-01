@@ -3,20 +3,20 @@ using Microsoft.Xna.Framework;
 
 namespace FrogWorks.Demo.Scenes
 {
-    public class DisplayTestScene : Scene
+    public class DisplayTest : Scene
     {
-        public DisplayTestScene()
+        public DisplayTest()
             : base()
         {
-            var textEntity = new TextEntity()
+            var textEntity = new Text()
             {
                 Y = Engine.Display.Height / 2f,
-                Text = "Press 1-6 to change scaling.",
+                TextToDisplay = "Press 1-6 to change scaling.",
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center
             };
 
-            var backgroundEntity = new BackgroundEntity()
+            var backgroundEntity = new Background()
             {
                 Color = Color.DarkCyan,
                 Coefficient = Vector2.One * .5f,
@@ -29,6 +29,12 @@ namespace FrogWorks.Demo.Scenes
 
         public override void Update(float deltaTime)
         {
+            if (Input.Keyboard.IsPressed(Keys.Escape))
+            {
+                SetNextScene<TestMenu>();
+                return;
+            }
+
             if (Input.Keyboard.IsPressed(Keys.Alpha1))
                 Engine.Display.Scaling = Scaling.None;
             else if (Input.Keyboard.IsPressed(Keys.Alpha2))

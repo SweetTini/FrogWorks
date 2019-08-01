@@ -2,11 +2,11 @@
 
 namespace FrogWorks.Demo.Entities
 {
-    public class TextEntity : Entity
+    public class Text : Entity
     {
         protected SpriteText SpriteText { get; private set; }
 
-        public string Text
+        public string TextToDisplay
         {
             get { return SpriteText.Text; }
             set { SpriteText.Text = value; }
@@ -30,7 +30,7 @@ namespace FrogWorks.Demo.Entities
             set { SpriteText.VerticalAlignment = value; }
         }
 
-        public TextEntity()
+        public Text()
             : base()
         {
             SpriteText = new SpriteText(DefaultFont.Font, string.Empty, Engine.Display.Width);

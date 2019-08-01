@@ -2,13 +2,13 @@
 
 namespace FrogWorks.Demo.Entities
 {
-    public class MiniAppleEntity : Entity
+    public class MiniApple : Entity
     {
         protected static Texture Texture { get; } = Texture.Load(@"Images\MiniApple.png");
 
         protected Image Image { get; set; }
 
-        public MiniAppleEntity()
+        public MiniApple()
             : base()
         {
             Collider = new CircleCollider(12f, -13f, -10f);
@@ -20,8 +20,6 @@ namespace FrogWorks.Demo.Entities
         public override void Draw(RendererBatch batch)
         {
             base.Draw(batch);
-
-            Collider.Draw(batch, Color.Yellow);
         }
 
         public bool Contains(Vector2 point)

@@ -2,7 +2,7 @@
 
 namespace FrogWorks.Demo.Entities
 {
-    public class AppleEntity : Entity
+    public class Apple : Entity
     {
         protected static Texture Texture { get; } = Texture.Load(@"Images\Apple.png");
 
@@ -11,7 +11,7 @@ namespace FrogWorks.Demo.Entities
         public bool IsWiggling { get; private set; }
         
 
-        public AppleEntity()
+        public Apple()
             : base()
         {
             Collider = new RectangleCollider(40f, 48f, -20f, -20f);
