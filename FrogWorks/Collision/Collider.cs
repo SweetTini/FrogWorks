@@ -69,6 +69,24 @@ namespace FrogWorks
 
         public abstract Vector2 Lower { get; set; }
 
+        public Vector2 Center
+        {
+            get { return Upper + (Lower - Upper) / 2f; }
+            set { Upper = value - (Lower - Upper) / 2f; }
+        }
+
+        public float CenterX
+        {
+            get { return Center.X; }
+            set { Center = new Vector2(value, Center.Y); }
+        }
+
+        public float CenterY
+        {
+            get { return Center.Y; }
+            set { Center = new Vector2(Center.X, value); }
+        }
+
         public float Left
         {
             get { return Upper.X; }
