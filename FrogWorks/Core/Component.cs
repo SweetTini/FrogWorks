@@ -2,9 +2,9 @@
 {
     public abstract class Component : AbstractManageable<Entity>
     {
-        protected internal Layer ParentLayer => Parent.Parent;
+        protected internal Layer ParentLayer => Parent?.Parent;
 
-        protected internal Scene ParentScene => Parent.ParentScene;
+        protected internal Scene ParentScene => Parent?.ParentScene;
 
         protected Component(bool isEnabled, bool isVisible)
         {

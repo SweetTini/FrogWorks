@@ -4,7 +4,7 @@ namespace FrogWorks
 {
     public sealed class Layer : AbstractManageable<Scene>
     {
-        internal EntityManager Entities { get; set; }
+        public EntityManager Entities { get; set; }
 
         public Camera Camera { get; private set; }
 
@@ -20,7 +20,11 @@ namespace FrogWorks
             Camera = new Camera();
         }
 
-        protected override void Update(float deltaTime) => Entities.Update(deltaTime);
+        protected override void Update(float deltaTime)
+        {
+            Entities.ProcessQueues();
+            Entities.Update(deltaTime);
+        }
 
         protected override void Draw(RendererBatch batch)
         {

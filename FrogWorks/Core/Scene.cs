@@ -4,13 +4,13 @@ namespace FrogWorks
 {
     public abstract class Scene
     {
-        protected internal LayerManager Layers { get; private set; }
+        public LayerManager Layers { get; private set; }
 
-        protected internal Color BackgroundColor { get; set; } = Color.White;
+        public Color BackgroundColor { get; set; } = Color.White;
 
-        protected float TimeActive { get; private set; }
+        public float TimeActive { get; private set; }
 
-        protected bool IsEnabled { get; set; } = true;
+        public bool IsEnabled { get; set; } = true;
 
         protected Scene()
         {

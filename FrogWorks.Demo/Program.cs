@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FrogWorks.Demo.Scenes;
+using System;
 
 namespace FrogWorks.Demo
 {
@@ -11,6 +12,7 @@ namespace FrogWorks.Demo
             {
                 game.Window.AllowUserResizing = true;
                 game.IsMouseVisible = true;
+                game.SetScene<TestScene>();
                 game.Run();
             }
         }

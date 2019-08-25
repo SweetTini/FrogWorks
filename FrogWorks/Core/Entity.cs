@@ -6,9 +6,9 @@ namespace FrogWorks
     {
         private Collider _collider;
 
-        protected internal Scene ParentScene => Parent.Parent;
+        protected internal Scene ParentScene => Parent?.Parent;
 
-        protected internal ComponentManager Components { get; private set; }
+        public ComponentManager Components { get; private set; }
 
         protected internal Collider Collider
         {
@@ -43,7 +43,11 @@ namespace FrogWorks
             Components = new ComponentManager(this);
         }
 
-        protected sealed override void Update(float deltaTime) => Components.Update(deltaTime);
+        protected sealed override void Update(float deltaTime)
+        {
+            Components.ProcessQueues();
+            Components.Update(deltaTime);
+        }
 
         protected sealed override void Draw(RendererBatch batch) => Components.Draw(batch);
 
