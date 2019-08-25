@@ -8,7 +8,7 @@ namespace FrogWorks
 
         protected internal Color BackgroundColor { get; set; } = Color.White;
 
-        protected float TimeActived { get; private set; }
+        protected float TimeActive { get; private set; }
 
         protected bool IsEnabled { get; set; } = true;
 
@@ -20,10 +20,16 @@ namespace FrogWorks
         internal void InternalBegin()
         {
             Begin();
+
+            foreach (var layer in Layers)
+                layer.OnInternalSceneBegan();
         }
 
         internal void InternalEnd()
         {
+            foreach (var layer in Layers)
+                layer.OnInternalSceneEnded();
+
             End();
         }
 
@@ -39,7 +45,7 @@ namespace FrogWorks
             if (!IsEnabled)
             {
                 Layers.Update(deltaTime);
-                TimeActived += deltaTime;
+                TimeActive += deltaTime;
             }
 
             AfterUpdate();

@@ -1,10 +1,8 @@
 ﻿namespace FrogWorks
 {
-    public sealed class LayerManager : AbstractManager<Layer, Scene>
+    public sealed class LayerManager : AbstractSortingManager<Layer, Scene>
     {
         internal LayerManager(Scene scene)
             : base(scene) { }
-
-        protected override void PostProcessQueues() { }
     }
 }

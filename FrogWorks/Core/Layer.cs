@@ -30,6 +30,18 @@ namespace FrogWorks
             batch.End();
         }
 
+        internal void OnInternalSceneBegan()
+        {
+            foreach (var entity in Entities)
+                entity.OnInternalSceneBegan();
+        }
+
+        internal void OnInternalSceneEnded()
+        {
+            foreach (var entity in Entities)
+                entity.OnInternalSceneEnded();
+        }
+
         public override void Destroy() => Parent?.Layers.Remove(this);
     }
 }

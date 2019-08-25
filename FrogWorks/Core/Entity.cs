@@ -59,6 +59,14 @@ namespace FrogWorks
                 component.OnInternalEntityRemoved();
         }
 
+        internal void OnInternalSceneBegan() => OnSceneBegan();
+
+        internal void OnInternalSceneEnded() => OnSceneEnded();
+
+        protected virtual void OnSceneBegan() { }
+
+        protected virtual void OnSceneEnded() { }
+
         public override void Destroy() => Parent?.Entities.Remove(this);
     }
 }

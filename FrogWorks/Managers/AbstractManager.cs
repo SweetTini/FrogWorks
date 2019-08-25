@@ -98,13 +98,13 @@ namespace FrogWorks
                 Remove(item);
         }
 
-        protected virtual void TryAdd(TItem item)
+        protected void TryAdd(TItem item)
         {
             Items.Add(item);
             item.OnInternalAdded(Container);
         }
 
-        protected virtual void TryRemove(TItem item)
+        protected void TryRemove(TItem item)
         {
             Items.Remove(item);
             item.OnInternalRemoved();
