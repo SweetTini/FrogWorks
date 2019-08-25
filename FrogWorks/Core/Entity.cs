@@ -7,7 +7,7 @@ namespace FrogWorks
     {
         private Collider _collider;
 
-        protected internal Scene ParentScene => Parent?.Parent;
+        protected internal Scene Scene => Parent?.Parent;
 
         public ComponentManager Components { get; private set; }
 

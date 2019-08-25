@@ -5,7 +5,7 @@ namespace FrogWorks
 {
     public sealed class EntityManager : AbstractDepthManager<Entity, Layer>
     {
-        private Scene ContainerScene => Container.Parent;
+        private Scene Scene => Container.Parent;
 
         private Queue<SwitchLayerCommand> ToSwitchLayer { get; set; }
 
@@ -25,7 +25,7 @@ namespace FrogWorks
 
         public void SwitchToLayer(Entity item, Layer layer)
         {
-            if (!Items.Contains(item) || item.Parent == null || !ContainerScene.Layers.Contains(layer))
+            if (!Items.Contains(item) || item.Parent == null || !Scene.Layers.Contains(layer))
                 return;
 
             var command = new SwitchLayerCommand(item, layer);
@@ -38,7 +38,7 @@ namespace FrogWorks
 
         private void TrySwitchToLayer(SwitchLayerCommand command)
         {
-            if (!Items.Contains(command.Entity) || !ContainerScene.Layers.Contains(command.Layer))
+            if (!Items.Contains(command.Entity) || !Scene.Layers.Contains(command.Layer))
                 return;
 
             TryRemove(command.Entity);

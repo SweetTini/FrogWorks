@@ -11,7 +11,7 @@
         {
             Image = new Image(Texture, true);
             Image.CenterOrigin();
-            Components.Add(Image);
+            Components.Add(Image);            
         }
     }
 }

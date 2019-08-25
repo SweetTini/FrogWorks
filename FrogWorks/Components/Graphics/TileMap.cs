@@ -29,8 +29,8 @@ namespace FrogWorks
             {
                 if (value == _position) return;
                 _position = value;
-                if (ParentLayer?.Camera != null)
-                    UpdateDrawableRegion(ParentLayer.Camera);
+                if (Layer?.Camera != null)
+                    UpdateDrawableRegion(Layer.Camera);
             }
         }
 
@@ -41,8 +41,8 @@ namespace FrogWorks
             {
                 if (value == _position.X) return;
                 _position.X = value;
-                if (ParentLayer?.Camera != null)
-                    UpdateDrawableRegion(ParentLayer.Camera);
+                if (Layer?.Camera != null)
+                    UpdateDrawableRegion(Layer.Camera);
             }
         }
 
@@ -53,8 +53,8 @@ namespace FrogWorks
             {
                 if (value == _position.Y) return;
                 _position.Y = value;
-                if (ParentLayer?.Camera != null)
-                    UpdateDrawableRegion(ParentLayer.Camera);
+                if (Layer?.Camera != null)
+                    UpdateDrawableRegion(Layer.Camera);
             }
         }
 
@@ -114,13 +114,13 @@ namespace FrogWorks
 
         protected override void OnEntityAdded()
         {
-            ParentLayer.Camera.OnCameraUpdated += UpdateDrawableRegion;
-            UpdateDrawableRegion(ParentLayer.Camera);
+            Layer.Camera.OnCameraUpdated += UpdateDrawableRegion;
+            UpdateDrawableRegion(Layer.Camera);
         }
 
         protected override void OnEntityRemoved()
         {
-            ParentLayer.Camera.OnCameraUpdated -= UpdateDrawableRegion;
+            Layer.Camera.OnCameraUpdated -= UpdateDrawableRegion;
         }
 
         public void Populate(TileSet tileSet, int[,] tiles, int offsetX = 0, int offsetY = 0)

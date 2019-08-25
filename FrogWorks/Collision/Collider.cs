@@ -8,7 +8,7 @@ namespace FrogWorks
 
         protected internal Layer Layer => Parent?.Parent;
 
-        protected internal Scene Scene => Parent?.ParentScene;
+        protected internal Scene Scene => Parent?.Scene;
 
         protected internal bool IsCollidable => Parent?.IsCollidable ?? true;
 
