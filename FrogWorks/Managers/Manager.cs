@@ -3,8 +3,8 @@ using System.Collections.Generic;
 
 namespace FrogWorks
 {
-    public abstract class AbstractManager<TItem, TContainer> : IManager<TItem>
-        where TItem : AbstractManageable<TContainer>
+    public abstract class Manager<TItem, TContainer> : IManager<TItem>
+        where TItem : Managable<TContainer>
         where TContainer : class
     {
         protected TContainer Container { get; private set; }
@@ -21,7 +21,7 @@ namespace FrogWorks
 
         public int Count => Items.Count;
 
-        protected AbstractManager(TContainer container)
+        protected Manager(TContainer container)
         {
             Container = container;
             Items = new List<TItem>();

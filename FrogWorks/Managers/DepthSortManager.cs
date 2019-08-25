@@ -2,13 +2,13 @@
 
 namespace FrogWorks
 {
-    public abstract class AbstractDepthManager<TItem, TContainer> : AbstractManager<TItem, TContainer>
-        where TItem : AbstractManageable<TContainer>
+    public abstract class DepthSortManager<TItem, TContainer> : Manager<TItem, TContainer>
+        where TItem : Managable<TContainer>
         where TContainer : class
     {
         protected Queue<MoveItemCommand> ToMove { get; private set; }
 
-        protected AbstractDepthManager(TContainer container)
+        protected DepthSortManager(TContainer container)
             : base(container)
         {
             ToMove = new Queue<MoveItemCommand>();

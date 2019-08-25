@@ -1,6 +1,6 @@
 ﻿namespace FrogWorks
 {
-    public abstract class Component : AbstractManageable<Entity>
+    public abstract class Component : Managable<Entity>
     {
         protected internal Layer Layer => Parent?.Parent;
 

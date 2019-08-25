@@ -10,7 +10,7 @@ namespace FrogWorks.Demo
         {
             using (var game = new Engine(320, 240))
             {
-                game.Window.AllowUserResizing = true;
+                game.Window.AllowUserResizing = true;                
                 game.IsMouseVisible = true;
                 game.SetScene<TestScene>();
                 game.Run();
