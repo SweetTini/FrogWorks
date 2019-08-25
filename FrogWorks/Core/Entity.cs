@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
 
 namespace FrogWorks
 {
@@ -15,10 +16,15 @@ namespace FrogWorks
             get { return _collider; }
             set
             {
-                if (value == _collider || value.Parent != null) return;
-                _collider?.OnRemoved();
+                if (value == _collider)
+                    return;
+
+                if (value?.Parent != null)
+                    throw new Exception($"{value.GetType().Name} is already assigned to an instance of {GetType().Name}.");
+
+                _collider?.OnInternalRemoved();
                 _collider = value;
-                _collider?.OnAdded(this);
+                _collider?.OnInternalAdded(this);
             }
         }
 
@@ -55,10 +61,14 @@ namespace FrogWorks
         {
             foreach (var component in Components)
                 component.OnInternalEntityAdded();
+
+            Collider?.OnInternalEntityAdded();
         }
 
         protected override void OnRemoved()
         {
+            Collider?.OnInternalEntityRemoved();
+
             foreach (var component in Components)
                 component.OnInternalEntityRemoved();
         }

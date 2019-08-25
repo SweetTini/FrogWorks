@@ -20,10 +20,10 @@ namespace FrogWorks
             base.PostProcessQueues();
 
             while (ToSwitchLayer.Count > 0)
-                TrySwitchLayer(ToSwitchLayer.Dequeue());
+                TrySwitchToLayer(ToSwitchLayer.Dequeue());
         }
 
-        public void SwitchLayer(Entity item, Layer layer)
+        public void SwitchToLayer(Entity item, Layer layer)
         {
             if (!Items.Contains(item) || item.Parent == null || !ContainerScene.Layers.Contains(layer))
                 return;
@@ -33,10 +33,10 @@ namespace FrogWorks
             if (IsBusy && !ToSwitchLayer.Contains(command))
                 ToSwitchLayer.Enqueue(command);
             else if (!IsBusy)
-                TrySwitchLayer(command);
+                TrySwitchToLayer(command);
         }
 
-        private void TrySwitchLayer(SwitchLayerCommand command)
+        private void TrySwitchToLayer(SwitchLayerCommand command)
         {
             if (!Items.Contains(command.Entity) || !ContainerScene.Layers.Contains(command.Layer))
                 return;

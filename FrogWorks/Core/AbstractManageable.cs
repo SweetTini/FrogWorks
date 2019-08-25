@@ -40,7 +40,7 @@ namespace FrogWorks
         internal void OnInternalAdded(T parent)
         {
             if (Parent != null)
-                throw new Exception($"{GetType().Name} already has a {nameof(T)} assigned.");
+                throw new Exception($"{GetType().Name} is already assigned to an instance of {typeof(T).Name}.");
 
             Parent = parent;
             OnAdded();
