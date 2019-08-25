@@ -4,7 +4,7 @@ namespace FrogWorks
 {
     public sealed class Layer : AbstractManageable<Scene>
     {
-        public EntityManager Entities { get; set; }
+        public EntityManager Entities { get; private set; }
 
         public Camera Camera { get; private set; }
 
