@@ -55,7 +55,7 @@ namespace FrogWorks
             Height = height;
         }
 
-        public override void Draw(RendererBatch batch)
+        protected override void Draw(RendererBatch batch)
         {
             for (int i = 0; i < Columns * Rows; i++)
             {

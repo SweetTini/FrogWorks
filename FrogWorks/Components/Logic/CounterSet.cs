@@ -21,7 +21,7 @@ namespace FrogWorks
             _counters = new Dictionary<T, float>();
         }
 
-        public override void Update(float deltaTime)
+        protected override void Update(float deltaTime)
         {
             _timer += deltaTime;
         }

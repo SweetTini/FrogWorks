@@ -124,7 +124,7 @@ namespace FrogWorks
             Height = height;
         }
 
-        public override void Draw(RendererBatch batch)
+        protected override void Draw(RendererBatch batch)
         {
             if (IsDirty) Refresh();
 

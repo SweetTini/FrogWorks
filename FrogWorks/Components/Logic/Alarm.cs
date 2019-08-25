@@ -27,12 +27,11 @@ namespace FrogWorks
             TimeLeft = 0f;
             Mode = mode;
             OnFinished = onFinished;
-            IsDestroyed = false;
 
             if (canStart) Start();
         }
 
-        public override void Update(float deltaTime)
+        protected override void Update(float deltaTime)
         {
             TimeLeft -= deltaTime;
 
@@ -50,9 +49,8 @@ namespace FrogWorks
             }
         }
 
-        public override void OnRemoved()
+        protected override void OnRemoved()
         {
-            base.OnRemoved();
             Cache.Push(this);
         }
 
@@ -102,7 +100,7 @@ namespace FrogWorks
         {
             var alarm = Create(duration, mode, onFinished, true);
             if (entity != null)
-                entity.AddComponents(alarm);
+                entity.Components.Add(alarm);
             return alarm;
         }
         #endregion

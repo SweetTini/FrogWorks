@@ -43,12 +43,11 @@ namespace FrogWorks
             TimeLeft = Percent = Value = 0f;
             Mode = mode;
             IsEnabled = false;
-            IsDestroyed = false;
 
             if (canStart) Start();
         }
 
-        public override void Update(float deltaTime)
+        protected override void Update(float deltaTime)
         {
             TimeLeft -= deltaTime;
             Percent = MathHelper.Clamp(TimeLeft / Duration, 0f, 1f);
@@ -92,11 +91,7 @@ namespace FrogWorks
             }
         }
 
-        public override void OnRemoved()
-        {
-            base.OnRemoved();
-            Cache.Push(this);
-        }
+        protected override void OnRemoved() => Cache.Push(this);
 
         public void Start()
         {
@@ -150,7 +145,7 @@ namespace FrogWorks
             tween.OnBegin += onBegin;
             tween.OnEnd += onEnd;
             if (entity != null)
-                entity.AddComponents(tween);
+                entity.Components.Add(tween);
             return tween;
         }
 
@@ -162,7 +157,7 @@ namespace FrogWorks
             {
                 var position = entity.Position;
                 tween.OnUpdate = (t) => entity.Position = Vector2.Lerp(position, target, t.Value);
-                entity.AddComponents(tween);
+                entity.Components.Add(tween);
             }
 
             return tween;

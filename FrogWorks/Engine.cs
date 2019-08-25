@@ -121,16 +121,13 @@ namespace FrogWorks
                 FramesPerSecond = (int)Math.Round(1f / DeltaTime);
 
             Input.Update(IsActive, DeltaTime);
-
-            _currentScene?.BeginUpdate();
             _currentScene?.Update(DeltaTime);
-            _currentScene?.EndUpdate();
 
             if (_nextScene != _currentScene)
             {
-                _currentScene?.End();
+                _currentScene?.InternalEnd();
                 _currentScene = _nextScene;
-                _currentScene?.Begin();
+                _currentScene?.InternalBegin();
             }
 
             base.Update(gameTime);

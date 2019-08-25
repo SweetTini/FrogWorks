@@ -50,13 +50,12 @@ namespace FrogWorks
             TimeLeft = 0f;
             OnShake = onShake;
             RemoveOnCompletion = removeOnCompletion;
-            IsDestroyed = false;
             _isActive = false;
 
             if (canActivate) Activate();
         }
 
-        public override void Update(float deltaTime)
+        protected override void Update(float deltaTime)
         {
             if (!_isActive) return;
 
@@ -77,11 +76,7 @@ namespace FrogWorks
             OnShake?.Invoke(Values);
         }
 
-        public override void OnRemoved()
-        {
-            base.OnRemoved();
-            Cache.Push(this);
-        }
+        protected override void OnRemoved() => Cache.Push(this);
 
         public void Activate()
         {
@@ -114,7 +109,7 @@ namespace FrogWorks
         {
             var shaker = Create(length, duration, onShake, removeOnCompletion, true);
             if (entity != null)
-                entity.AddComponents(shaker);
+                entity.Components.Add(shaker);
             return shaker;
         }
         #endregion

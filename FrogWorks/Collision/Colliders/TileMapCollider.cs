@@ -159,14 +159,13 @@ namespace FrogWorks
 
         internal override void OnEntityAdded(Entity entity)
         {
-            var camera = entity.Layer.Camera;
-            camera.OnCameraUpdated += UpdateDrawableRegion;
-            UpdateDrawableRegion(camera);
+            Parent.Parent.Camera.OnCameraUpdated += UpdateDrawableRegion;
+            UpdateDrawableRegion(Parent.Parent.Camera);
         }
 
         internal override void OnEntityRemoved(Entity entity)
         {
-            entity.Layer.Camera.OnCameraUpdated -= UpdateDrawableRegion;
+            Parent.Parent.Camera.OnCameraUpdated -= UpdateDrawableRegion;
         }
 
         internal override void OnLayerChanged(Layer layer, Layer lastLayer)
@@ -178,7 +177,7 @@ namespace FrogWorks
 
         internal override void OnTransformed()
         {
-            var camera = Entity.Layer?.Camera;
+            var camera = Parent.Parent?.Camera;
             if (camera != null) UpdateDrawableRegion(camera);
         }
 

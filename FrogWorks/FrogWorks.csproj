@@ -76,6 +76,7 @@
     <Compile Include="Components\Logic\StateMachine.cs" />
     <Compile Include="Components\Logic\Tween.cs" />
     <Compile Include="Components\Logic\Wiggler.cs" />
+    <Compile Include="Core\AbstractManageable.cs" />
     <Compile Include="Core\Component.cs" />
     <Compile Include="Core\Entity.cs" />
     <Compile Include="Engine.cs" />
@@ -117,8 +118,10 @@
     <Compile Include="Inputs\Virtualization\VirtualAxis.cs" />
     <Compile Include="Inputs\Virtualization\VirtualButton.cs" />
     <Compile Include="Inputs\Virtualization\VirtualHardAxis.cs" />
+    <Compile Include="Managers\AbstractManager.cs" />
     <Compile Include="Managers\ComponentManager.cs" />
     <Compile Include="Managers\EntityManager.cs" />
+    <Compile Include="Managers\IManager.cs" />
     <Compile Include="Managers\LayerManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\Scene.cs" />

@@ -6,9 +6,9 @@ namespace FrogWorks
     {
         private Vector2 _position;
 
-        protected internal Entity Entity { get; private set; }
+        protected internal Entity Parent { get; private set; }
 
-        internal bool IsCollidable => Entity?.IsCollidable ?? true;
+        internal bool IsCollidable => Parent?.IsCollidable ?? true;
 
         public Vector2 Position
         {
@@ -35,8 +35,8 @@ namespace FrogWorks
 
         public Vector2 AbsolutePosition
         {
-            get { return Position + (Entity?.Position ?? Vector2.Zero); }
-            set { Position = value - (Entity?.Position ?? Vector2.Zero); }
+            get { return Position + (Parent?.Position ?? Vector2.Zero); }
+            set { Position = value - (Parent?.Position ?? Vector2.Zero); }
         }
 
         public float AbsoluteX
@@ -152,12 +152,12 @@ namespace FrogWorks
 
         internal virtual void OnAdded(Entity entity)
         {
-            Entity = entity;
+            Parent = entity;
         }
 
         internal virtual void OnRemoved()
         {
-            Entity = null;
+            Parent = null;
         }
 
         internal virtual void OnEntityAdded(Entity entity)

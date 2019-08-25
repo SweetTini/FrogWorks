@@ -15,7 +15,7 @@ namespace FrogWorks
             _coroutinesToRemove = new List<CoroutineItem>();
         }
 
-        public override void Update(float deltaTime)
+        protected override void Update(float deltaTime)
         {
             if (_coroutinesToRemove.Count > 0)
             {

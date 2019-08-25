@@ -21,8 +21,8 @@ namespace FrogWorks
             {
                 if (value == _position) return;
                 _position = value;
-                if (Entity?.Layer?.Camera != null)
-                    UpdateDrawableRegion(Entity.Layer.Camera);
+                if (ParentLayer?.Camera != null)
+                    UpdateDrawableRegion(ParentLayer.Camera);
             }
         }
 
@@ -33,8 +33,8 @@ namespace FrogWorks
             {
                 if (value == _position.X) return;
                 _position.X = value;
-                if (Entity?.Layer?.Camera != null)
-                    UpdateDrawableRegion(Entity.Layer.Camera);
+                if (ParentLayer?.Camera != null)
+                    UpdateDrawableRegion(ParentLayer.Camera);
             }
         }
 
@@ -45,15 +45,15 @@ namespace FrogWorks
             {
                 if (value == _position.Y) return;
                 _position.Y = value;
-                if (Entity?.Layer?.Camera != null)
-                    UpdateDrawableRegion(Entity.Layer.Camera);
+                if (ParentLayer?.Camera != null)
+                    UpdateDrawableRegion(ParentLayer.Camera);
             }
         }
 
         public Vector2 DrawPosition
         {
-            get { return Position + (Entity?.Position ?? Vector2.Zero); }
-            set { Position = value - (Entity?.Position ?? Vector2.Zero); }
+            get { return Position + (Parent?.Position ?? Vector2.Zero); }
+            set { Position = value - (Parent?.Position ?? Vector2.Zero); }
         }
 
         public Color Color { get; set; } = Color.White;
@@ -94,7 +94,7 @@ namespace FrogWorks
             Texture = texture;
         }
 
-        public override void Draw(RendererBatch batch)
+        protected override void Draw(RendererBatch batch)
         {
             for (int i = 0; i < DrawableRegion.Width * DrawableRegion.Height; i++)
             {
@@ -106,23 +106,15 @@ namespace FrogWorks
             }
         }
 
-        public override void OnEntityAdded(Entity entity)
+        protected override void OnEntityAdded()
         {
-            var camera = entity.Layer.Camera;
-            camera.OnCameraUpdated += UpdateDrawableRegion;
-            UpdateDrawableRegion(camera);
+            ParentLayer.Camera.OnCameraUpdated += UpdateDrawableRegion;
+            UpdateDrawableRegion(ParentLayer.Camera);
         }
 
-        public override void OnEntityRemoved(Entity entity)
+        protected override void OnEntityRemoved()
         {
-            entity.Layer.Camera.OnCameraUpdated -= UpdateDrawableRegion;
-        }
-
-        public override void OnLayerChanged(Layer layer, Layer lastLayer)
-        {
-            lastLayer.Camera.OnCameraUpdated -= UpdateDrawableRegion;
-            layer.Camera.OnCameraUpdated += UpdateDrawableRegion;
-            UpdateDrawableRegion(layer.Camera);
+            ParentLayer.Camera.OnCameraUpdated -= UpdateDrawableRegion;
         }
 
         private void UpdateDrawableRegion(Camera camera)

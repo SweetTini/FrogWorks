@@ -16,7 +16,7 @@ namespace FrogWorks
             Texture = texture;
         }
 
-        public override void Draw(RendererBatch batch)
+        protected override void Draw(RendererBatch batch)
         {
             Texture.Draw(batch, DrawPosition, Origin, Scale, Angle, Color * MathHelper.Clamp(Opacity, 0f, 1f), SpriteEffects);
         }

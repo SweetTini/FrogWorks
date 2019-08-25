@@ -1,23 +1,10 @@
 ﻿namespace FrogWorks
 {
-    public abstract class Component
+    public abstract class Component : AbstractManageable<Entity>
     {
-        protected internal Entity Entity { get; private set; }
+        protected internal Layer ParentLayer => Parent.Parent;
 
-        protected internal Layer Layer => Entity?.Layer;
-
-        protected internal Scene Scene => Entity?.Layer?.Scene;
-
-        public bool IsEnabled { get; set; }
-
-        public bool IsVisible { get; set; }
-
-        public bool IsDestroyed { get; internal set; }
-
-        protected Component()
-            : this(true, true)
-        {
-        }
+        protected internal Scene ParentScene => Parent.ParentScene;
 
         protected Component(bool isEnabled, bool isVisible)
         {
@@ -25,40 +12,14 @@
             IsVisible = isVisible;
         }
 
-        public virtual void Update(float deltaTime)
-        {
-        }
+        internal void OnInternalEntityAdded() => OnEntityAdded();
 
-        public virtual void Draw(RendererBatch batch)
-        {
-        }
+        internal void OnInternalEntityRemoved() => OnEntityRemoved();
 
-        public virtual void OnAdded(Entity entity)
-        {
-            Entity = entity;
-        }
+        protected virtual void OnEntityAdded() { }
 
-        public virtual void OnRemoved()
-        {
-            Entity = null;
-        }
+        protected virtual void OnEntityRemoved() { }
 
-        public virtual void OnEntityAdded(Entity entity)
-        {
-        }
-
-        public virtual void OnEntityRemoved(Entity entity)
-        {
-        }
-
-        public virtual void OnLayerChanged(Layer layer, Layer lastLayer)
-        {
-        }
-
-        public void Destroy()
-        {
-            Entity?.Components.Remove(this);
-            IsDestroyed = true;
-        }
+        public override void Destroy() => Parent?.Components.Remove(this);
     }
 }

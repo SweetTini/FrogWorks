@@ -38,12 +38,12 @@ namespace FrogWorks
             OnUpdate = onUpdate;
             OnFinished = onFinished;
             RemoveOnCompletion = removeOnCompletion;
-            IsDestroyed = IsEnabled = false;
+            IsEnabled = false;
 
             if (canStart) Start();
         }
 
-        public override void Update(float deltaTime)
+        protected override void Update(float deltaTime)
         {
             _sineCounter += _wavelength * deltaTime;
             Counter -= _increment * deltaTime;
@@ -78,11 +78,7 @@ namespace FrogWorks
             }
         }
 
-        public override void OnRemoved()
-        {
-            base.OnRemoved();
-            Cache.Push(this);
-        }
+        protected override void OnRemoved() => Cache.Push(this);
 
         public void Start()
         {
@@ -124,7 +120,7 @@ namespace FrogWorks
         {
             var wiggler = Create(duration, frequency, mode, onUpdate, onFinished, removeOnCompletion, true);
             if (entity != null)
-                entity.AddComponents(wiggler);
+                entity.Components.Add(wiggler);
             return wiggler;
         }
         #endregion

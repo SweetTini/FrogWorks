@@ -49,7 +49,7 @@ namespace FrogWorks
                 Frames[i] = i;
         }
 
-        public override void Update(float deltaTime)
+        protected override void Update(float deltaTime)
         {
             if (_duration == 0f) return;
 
@@ -62,7 +62,7 @@ namespace FrogWorks
             }
         }
 
-        public override void Draw(RendererBatch batch)
+        protected override void Draw(RendererBatch batch)
         {
             var index = Frames[_index];
             Texture = Textures[index];

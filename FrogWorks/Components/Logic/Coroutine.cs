@@ -29,7 +29,7 @@ namespace FrogWorks
             RemoveOnCompletion = removeOnCompletion;
         }
 
-        public override void Update(float deltaTime)
+        protected override void Update(float deltaTime)
         {
             _hasEnded = false;
             _timer -= deltaTime;
@@ -66,6 +66,8 @@ namespace FrogWorks
                 }
             }
         }
+
+        public void ForceUpdate(float deltaTime) => Update(deltaTime);
 
         public void Replace(IEnumerator callback)
         {

@@ -1,48 +1,30 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 
 namespace FrogWorks
 {
-    public abstract class Entity
+    public abstract class Entity : AbstractManageable<Layer>
     {
         private Collider _collider;
-        private Vector2 _position;
-        private int _depth;
 
-        internal static Comparison<Entity> CompareDepth
-        {
-            get { return (entity, other) => Math.Sign(entity.AbsoluteDepth - other.AbsoluteDepth); }
-        }
+        protected internal Scene ParentScene => Parent.Parent;
 
-        internal ComponentManager Components { get; private set; }
-
-        protected internal Layer Layer { get; private set; }
-
-        protected internal Scene Scene => Layer?.Scene;
+        protected internal ComponentManager Components { get; private set; }
 
         protected internal Collider Collider
         {
             get { return _collider; }
             set
             {
-                if (value == _collider || value.Entity != null) return;
+                if (value == _collider || value.Parent != null) return;
                 _collider?.OnRemoved();
                 _collider = value;
                 _collider?.OnAdded(this);
             }
         }
 
-        public Vector2 Position
-        {
-            get { return _position; }
-            set
-            {
-                if (value == _position) return;
-                _position = value;
-                _collider?.OnTransformed();
-            }
-        }
+        public bool IsCollidable { get; set; } = true;
+
+        public Vector2 Position { get; set; }
 
         public float X
         {
@@ -56,181 +38,27 @@ namespace FrogWorks
             set { Position = new Vector2(Position.X, value); }
         }
 
-        public int Depth
-        {
-            get { return _depth; }
-            set
-            {
-                _depth = value;
-                Scene?.Entities.CorrectAbsoluteDepth(this);
-            }
-        }
-
-        internal double AbsoluteDepth { get; set; }
-
-        public bool IsEnabled { get; set; } = true;
-
-        public bool IsVisible { get; set; } = true;
-
-        public bool IsCollidable { get; set; } = true;
-
-        public bool IsDestroyed { get; internal set; }
-
         protected Entity()
         {
             Components = new ComponentManager(this);
         }
 
-        public virtual void Update(float deltaTime)
+        protected sealed override void Update(float deltaTime) => Components.Update(deltaTime);
+
+        protected sealed override void Draw(RendererBatch batch) => Components.Draw(batch);
+
+        protected override void OnAdded()
         {
-            Components.ProcessQueues();
-            Components.Update(deltaTime);
+            foreach (var component in Components)
+                component.OnInternalEntityAdded();
         }
 
-        public virtual void Draw(RendererBatch batch)
+        protected override void OnRemoved()
         {
-            Components.Draw(batch);
+            foreach (var component in Components)
+                component.OnInternalEntityRemoved();
         }
 
-        public virtual void OnAdded(Layer layer)
-        {
-            Layer = layer;
-            Collider?.OnEntityAdded(this);
-
-            for (int i = 0; i < Components.Count; i++)
-                Components[i].OnEntityAdded(this);
-
-            Scene?.Entities.MarkUnsorted();
-        }
-
-        public virtual void OnRemoved()
-        {
-            for (int i = 0; i < Components.Count; i++)
-                Components[i].OnEntityRemoved(this);
-
-            Collider?.OnEntityRemoved(this);
-            Layer = null;
-        }
-
-        public virtual void OnLayerChanged(Layer layer, Layer lastLayer)
-        {
-            Collider?.OnLayerChanged(layer, lastLayer);
-
-            for (int i = 0; i < Components.Count; i++)
-                Components[i].OnLayerChanged(layer, lastLayer);
-        }
-
-        public virtual void OnSceneBegan(Scene scene)
-        {
-        }
-
-        public virtual void OnSceneEnded(Scene scene)
-        {
-        }
-
-        public void Destroy()
-        {
-            Scene?.Entities.Remove(this);
-            IsDestroyed = true;
-        }
-
-        #region Components
-        public void AddComponents(params Component[] components)
-        {
-            Components.Add(components);
-        }
-
-        public void AddComponents(IEnumerable<Component> components)
-        {
-            Components.Add(components);
-        }
-
-        public void RemoveComponents(params Component[] components)
-        {
-            Components.Remove(components);
-        }
-
-        public void RemoveComponents(IEnumerable<Component> components)
-        {
-            Components.Remove(components);
-        }
-
-        public IEnumerable<T> GetComponentsOfType<T>() where T : Component
-        {
-            for (int i = 0; i < Components.Count; i++)
-                if (Components[i] is T)
-                    yield return Components[i] as T;
-        }
-
-        public int CountComponentsOfType<T>() where T : Component
-        {
-            var count = 0;
-
-            for (int i = 0; i < Components.Count; i++)
-                if (Components[i] is T)
-                    count++;
-
-            return count;
-        }
-
-        public T FindComponentOfType<T>() where T : Component
-        {
-            for (int i = 0; i < Components.Count; i++)
-                if (Components[i] is T)
-                    return Components[i] as T;
-
-            return null;
-        }
-
-        public bool HasComponentOfType<T>() where T : Component
-        {
-            for (int i = 0; i < Components.Count; i++)
-                if (Components[i] is T)
-                    return true;
-
-            return false;
-        }
-
-        public IEnumerable<Component> GetComponents()
-        {
-            for (int i = 0; i < Components.Count; i++)
-                yield return Components[i];
-        }
-
-        public int CountComponents()
-        {
-            return Components.Count;
-        }
-        #endregion
-
-        #region Layers
-        public void MoveToLayer(string name)
-        {
-            if (Scene == null) return;
-
-            var index = Scene.Layers.IndexOf(name);
-
-            if (index > -1)
-            {
-                var lastLayer = Layer;
-                Layer = Scene.Layers[index];
-                OnLayerChanged(Layer, lastLayer);
-            }
-        }
-
-        public void MoveToLayer(Layer layer)
-        {
-            if (layer == null || Scene == null) return;
-
-            var index = Scene.Layers.IndexOf(layer.Name);
-
-            if (index > -1)
-            {
-                var lastLayer = Layer;
-                Layer = layer;
-                OnLayerChanged(Layer, lastLayer);
-            }
-        }
-        #endregion
+        public override void Destroy() => Parent?.Entities.Remove(this);
     }
 }

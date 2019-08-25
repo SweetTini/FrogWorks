@@ -1,235 +1,63 @@
 ﻿using Microsoft.Xna.Framework;
-using System.Collections.Generic;
 
 namespace FrogWorks
 {
     public abstract class Scene
     {
-        internal LayerManager Layers { get; private set; }
+        protected internal LayerManager Layers { get; private set; }
 
-        internal EntityManager Entities { get; private set; }
+        protected internal Color BackgroundColor { get; set; } = Color.White;
 
-        internal AABBTree ColliderTree { get; private set; }
+        protected float TimeActived { get; private set; }
 
-        protected Layer MainLayer { get; private set; }        
-
-        public Color BackgroundColor { get; set; } = Color.CornflowerBlue;
-
-        public bool IsEnabled { get; private set; }
+        protected bool IsEnabled { get; set; } = true;
 
         protected Scene()
         {
             Layers = new LayerManager(this);
-            Entities = new EntityManager(this);
-            ColliderTree = new AABBTree(8f);
-            MainLayer = Layers.Add("Main");
-            MainLayer.IsDefault = true;
         }
 
-        public virtual void Begin()
+        internal void InternalBegin()
         {
-            IsEnabled = true;
-            Entities.ProcessQueues();
-
-            for (int i = 0; i < Entities.Count; i++)
-                Entities[i].OnSceneBegan(this);
+            Begin();
         }
 
-        public virtual void End()
+        internal void InternalEnd()
         {
-            for (int i = 0; i < Entities.Count; i++)
-                Entities[i].OnSceneEnded(this);
-
-            IsEnabled = false;
+            End();
         }
 
-        public virtual void BeginUpdate()
+        protected virtual void Begin() { }
+
+        protected virtual void End() { }
+
+        internal void Update(float deltaTime)
         {
-            Entities.ProcessQueues();
+            BeforeUpdate();
             Layers.ProcessQueues();
+
+            if (!IsEnabled)
+            {
+                Layers.Update(deltaTime);
+                TimeActived += deltaTime;
+            }
+
+            AfterUpdate();
         }
 
-        public virtual void Update(float deltaTime)
-        {
-            Layers.Update(deltaTime);
-        }
+        protected virtual void BeforeUpdate() { }
 
-        public virtual void EndUpdate()
-        {
-        }
+        protected virtual void AfterUpdate() { }
 
-        public virtual void Draw(RendererBatch batch)
+        internal void Draw(RendererBatch batch)
         {
+            BeforeDraw(batch);
             Layers.Draw(batch);
+            AfterDraw(batch);
         }
 
-        #region Scene
-        protected void SetNextScene<T>() where T : Scene, new()
-        {
-            Engine.Instance.SetScene<T>();
-        }
-        #endregion
+        protected virtual void BeforeDraw(RendererBatch batch) { }
 
-        #region Layers
-        public Layer AddLayer(string name)
-        {
-            return Layers.Add(name);
-        }
-
-        public void RemoveLayer(string name)
-        {
-            Layers.Remove(name);
-        }
-
-        public bool HasLayer(string name)
-        {
-            return Layers.IndexOf(name) > -1;
-        }
-
-        public Layer GetLayer(string name)
-        {
-            var index = Layers.IndexOf(name);
-            return index > -1 ? Layers[index] : null;
-        }
-        #endregion
-
-        #region Entities
-        public void AddEntities(params Entity[] entities)
-        {
-            Entities.Add(MainLayer, entities);
-        }
-
-        public void AddEntities(IEnumerable<Entity> entities)
-        {
-            Entities.Add(MainLayer, entities);
-        }
-
-        public void AddEntitiesToLayer(string name, params Entity[] entities)
-        {
-            AddEntitiesToLayer(GetLayer(name), entities);
-        }
-
-        public void AddEntitiesToLayer(string name, IEnumerable<Entity> entities)
-        {
-            AddEntitiesToLayer(GetLayer(name), entities);
-        }
-
-        public void AddEntitiesToLayer(Layer layer, params Entity[] entities)
-        {
-            Entities.Add(layer ?? MainLayer, entities);
-        }
-
-        public void AddEntitiesToLayer(Layer layer, IEnumerable<Entity> entities)
-        {
-            Entities.Add(layer ?? MainLayer, entities);
-        }
-
-        public void RemoveEntities(params Entity[] entities)
-        {
-            Entities.Remove(entities);
-        }
-
-        public void RemoveEntities(IEnumerable<Entity> entities)
-        {
-            Entities.Remove(entities);
-        }
-
-        public IEnumerable<T> GetEntitiesOfType<T>() where T : Entity
-        {
-            for (int i = 0; i < Entities.Count; i++)
-                if (Entities[i] is T)
-                    yield return Entities[i] as T;
-        }
-
-        public int CountEntitiesOfType<T>() where T : Entity
-        {
-            var count = 0;
-
-            for (int i = 0; i < Entities.Count; i++)
-                if (Entities[i] is T)
-                    count++;
-
-            return count;
-        }
-
-        public T FindEntityOfType<T>() where T : Entity
-        {
-            for (int i = 0; i < Entities.Count; i++)
-                if (Entities[i] is T)
-                    return Entities[i] as T;
-
-            return null;
-        }
-
-        public bool HasEntityOfType<T>() where T : Entity
-        {
-            for (int i = 0; i < Entities.Count; i++)
-                if (Entities[i] is T)
-                    return true;
-
-            return false;
-        }
-
-        public IEnumerable<Entity> GetEntitiesByComponent<T>() where T : Component
-        {
-            for (int i = 0; i < Entities.Count; i++)
-                if (Entities[i].HasComponentOfType<T>())
-                    yield return Entities[i];
-        }
-
-        public int CountEntitiesByComponent<T>() where T : Component
-        {
-            var count = 0;
-
-            for (int i = 0; i < Entities.Count; i++)
-                if (Entities[i].HasComponentOfType<T>())
-                    count++;
-
-            return count;
-        }
-
-        public Entity FindEntityByComponent<T>() where T : Component
-        {
-            for (int i = 0; i < Entities.Count; i++)
-                if (Entities[i].HasComponentOfType<T>())
-                    return Entities[i];
-
-            return null;
-        }
-
-        public IEnumerable<Entity> GetEntities()
-        {
-            for (int i = 0; i < Entities.Count; i++)
-                yield return Entities[i];
-        }
-
-        public int CountEntities()
-        {
-            return Entities.Count;
-        }
-        #endregion
-
-        #region Debugging
-        public void DrawColliderTree(RendererBatch batch, Color leafColor, Color treeColor)
-        {
-            DrawColliderTree(batch, leafColor, treeColor, MainLayer);
-        }
-
-        public void DrawColliderTree(RendererBatch batch, Color leafColor, Color treeColor, string layerName)
-        {
-            GetLayer(layerName).ConfigureBatch(batch);
-            batch.Begin();
-            ColliderTree.Draw(batch, leafColor, treeColor);
-            batch.End();
-        }
-
-        public void DrawColliderTree(RendererBatch batch, Color leafColor, Color treeColor, Layer layer)
-        {
-            layer.ConfigureBatch(batch);
-            batch.Begin();
-            ColliderTree.Draw(batch, leafColor, treeColor);
-            batch.End();
-        }
-        #endregion
+        protected virtual void AfterDraw(RendererBatch batch) { }
     }
 }

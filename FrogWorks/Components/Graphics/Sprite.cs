@@ -54,7 +54,7 @@ namespace FrogWorks
             Texture = Textures[0];
         }
 
-        public override void Update(float deltaTime)
+        protected override void Update(float deltaTime)
         {
             Animation animation;
 
@@ -86,7 +86,7 @@ namespace FrogWorks
             }
         }
 
-        public override void Draw(RendererBatch batch)
+        protected override void Draw(RendererBatch batch)
         {
             Animation animation;
             var index = 0;

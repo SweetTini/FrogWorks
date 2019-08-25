@@ -33,7 +33,7 @@ namespace FrogWorks
             _key = default(T);
         }
 
-        public override void Update(float deltaTime)
+        protected override void Update(float deltaTime)
         {
             State<T> state;
 
@@ -42,11 +42,11 @@ namespace FrogWorks
                 CurrentState = state.Update?.Invoke() ?? _key;
 
                 if (_coroutine.IsEnabled)
-                    _coroutine.Update(deltaTime);
+                    _coroutine.ForceUpdate(deltaTime);
             }
         }
 
-        public void AddOrUpdate(T key, Func<T> update = null, Func<IEnumerator> coroutine = null, Action begin = null, Action end = null)
+        protected void AddOrUpdate(T key, Func<T> update = null, Func<IEnumerator> coroutine = null, Action begin = null, Action end = null)
         {
             if (_states.ContainsKey(key))
             {
@@ -99,12 +99,12 @@ namespace FrogWorks
         {
             State<T> state;
 
-            if (Entity != null && _states.TryGetValue(_key, out state))
+            if (Parent != null && _states.TryGetValue(_key, out state))
             {
-                state.Update += (Func<T>)Extensions.GetMethod<Func<T>>(Entity, $"Update{name}");
-                state.Coroutine += (Func<IEnumerator>)Extensions.GetMethod<Func<IEnumerator>>(Entity, $"Coroutine{name}");
-                state.Begin += (Action)Extensions.GetMethod<Action>(Entity, $"Begin{name}");
-                state.End += (Action)Extensions.GetMethod<Action>(Entity, $"End{name}");
+                state.Update += (Func<T>)Extensions.GetMethod<Func<T>>(Parent, $"Update{name}");
+                state.Coroutine += (Func<IEnumerator>)Extensions.GetMethod<Func<IEnumerator>>(Parent, $"Coroutine{name}");
+                state.Begin += (Action)Extensions.GetMethod<Action>(Parent, $"Begin{name}");
+                state.End += (Action)Extensions.GetMethod<Action>(Parent, $"End{name}");
             }
         }
 
