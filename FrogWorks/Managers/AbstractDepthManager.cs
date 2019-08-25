@@ -2,13 +2,13 @@
 
 namespace FrogWorks
 {
-    public abstract class AbstractSortingManager<TItem, TContainer> : AbstractManager<TItem, TContainer>
+    public abstract class AbstractDepthManager<TItem, TContainer> : AbstractManager<TItem, TContainer>
         where TItem : AbstractManageable<TContainer>
         where TContainer : class
     {
         protected Queue<MoveItemCommand> ToMove { get; private set; }
 
-        protected AbstractSortingManager(TContainer container)
+        protected AbstractDepthManager(TContainer container)
             : base(container)
         {
             ToMove = new Queue<MoveItemCommand>();
@@ -25,7 +25,7 @@ namespace FrogWorks
             if (!Items.Contains(item))
                 return;
 
-            var command = new MoveItemCommand(item, null, MoveOperation.ToTop);
+            var command = new MoveItemCommand(item, MoveOperation.ToTop);
 
             if (IsBusy && !ToMove.Contains(command))
                 ToMove.Enqueue(command);
@@ -38,7 +38,7 @@ namespace FrogWorks
             if (!Items.Contains(item))
                 return;
 
-            var command = new MoveItemCommand(item, null, MoveOperation.ToBottom);
+            var command = new MoveItemCommand(item, MoveOperation.ToBottom);
 
             if (IsBusy && !ToMove.Contains(command))
                 ToMove.Enqueue(command);
@@ -114,6 +114,9 @@ namespace FrogWorks
             public TItem Target { get; set; }
 
             public MoveOperation Operation { get; set; }
+
+            public MoveItemCommand(TItem item, MoveOperation operation)
+                : this(item, null, operation) { }
 
             public MoveItemCommand(TItem item, TItem target, MoveOperation operation)
             {

@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace FrogWorks
 {
-    public sealed class EntityManager : AbstractSortingManager<Entity, Layer>
+    public sealed class EntityManager : AbstractDepthManager<Entity, Layer>
     {
         private Scene ContainerScene => Container.Parent;
 

@@ -119,7 +119,7 @@
     <Compile Include="Inputs\Virtualization\VirtualButton.cs" />
     <Compile Include="Inputs\Virtualization\VirtualHardAxis.cs" />
     <Compile Include="Managers\AbstractManager.cs" />
-    <Compile Include="Managers\AbstractSortingManager.cs" />
+    <Compile Include="Managers\AbstractDepthManager.cs" />
     <Compile Include="Managers\ComponentManager.cs" />
     <Compile Include="Managers\EntityManager.cs" />
     <Compile Include="Managers\IManager.cs" />
