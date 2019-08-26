@@ -4,15 +4,28 @@ namespace FrogWorks
 {
     public abstract class Collider
     {
+        private Vector2 _position;
+
         protected internal Entity Parent { get; private set; }
+
+        internal CollidableComponent Component { get; private set; }
 
         protected internal Layer Layer => Parent?.Parent;
 
         protected internal Scene Scene => Parent?.Scene;
 
-        protected internal bool IsCollidable => Parent?.IsCollidable ?? true;
+        protected internal bool IsCollidable => Component?.IsCollidable ?? Parent?.IsCollidable ?? true;
 
-        public Vector2 Position { get; set; }
+        public Vector2 Position
+        {
+            get { return _position; }
+            set
+            {
+                if (value == _position) return;
+                _position = value;
+                OnInternalTransformed();
+            }
+        }
 
         public float X
         {
@@ -34,6 +47,20 @@ namespace FrogWorks
 
         public virtual void DebugDraw(RendererBatch batch, Color color, bool fill = false) { }
 
+        public abstract bool Contains(Vector2 point);
+
+        public bool Contains(float x, float y) => Contains(new Vector2(x, y));
+
+        public abstract bool Collide(Ray ray);
+
+        public abstract bool Collide(Shape shape);
+
+        public abstract bool Collide(Collider other);
+
+        public bool Collide(Entity entity) => Collide(entity?.Collider);
+
+        public abstract Collider Clone();
+
         internal void OnInternalAdded(Entity parent)
         {
             Parent = parent;
@@ -50,6 +77,16 @@ namespace FrogWorks
 
         protected virtual void OnRemoved() { }
 
+        internal void OnAddedAsComponent(CollidableComponent component)
+        {
+            Component = component;
+        }
+
+        internal void OnRemovedAsComponent()
+        {
+            Component = null;
+        }
+
         internal void OnInternalEntityAdded() => OnEntityAdded();
 
         internal void OnInternalEntityRemoved() => OnEntityRemoved();
@@ -57,5 +94,9 @@ namespace FrogWorks
         protected virtual void OnEntityAdded() { }
 
         protected virtual void OnEntityRemoved() { }
+
+        internal void OnInternalTransformed() => OnTransformed();
+
+        protected virtual void OnTransformed() { }
     }
 }

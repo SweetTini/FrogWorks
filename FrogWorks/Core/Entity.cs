@@ -5,16 +5,17 @@ namespace FrogWorks
 {
     public abstract class Entity : Managable<Layer>
     {
+        private Vector2 _position;
         private Collider _collider;
 
         protected internal Scene Scene => Parent?.Parent;
 
         public ComponentManager Components { get; private set; }
 
-        protected internal Collider Collider
+        public Collider Collider
         {
             get { return _collider; }
-            set
+            protected set
             {
                 if (value == _collider)
                     return;
@@ -30,7 +31,16 @@ namespace FrogWorks
 
         public bool IsCollidable { get; set; } = true;
 
-        public Vector2 Position { get; set; }
+        public Vector2 Position
+        {
+            get { return _position; }
+            set
+            {
+                if (value == _position) return;
+                _position = value;
+                OnInternalTransformed();
+            }
+        }
 
         public float X
         {
@@ -80,6 +90,14 @@ namespace FrogWorks
         protected virtual void OnSceneBegan() { }
 
         protected virtual void OnSceneEnded() { }
+
+        internal void OnInternalTransformed()
+        {
+            OnTransformed();
+            Collider?.OnInternalTransformed();
+        }
+
+        protected virtual void OnTransformed() { }
 
         public override void Destroy() => Parent?.Entities.Remove(this);
     }

@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Collision\Broad\AABB.cs" />
     <Compile Include="Collision\Broad\AABBTree.cs" />
+    <Compile Include="Components\CollidableComponent.cs" />
     <Compile Include="Core\Collider.cs" />
     <Compile Include="Collision\Collision.cs" />
     <Compile Include="Collision\Geometry\Circle.cs" />
