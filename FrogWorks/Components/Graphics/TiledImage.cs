@@ -67,7 +67,7 @@ namespace FrogWorks
                 var height = y < Rows - 1 || RemainingHeight == 0 ? Texture.Height : RemainingHeight;
                 var bounds = new Rectangle(Texture.Bounds.X, Texture.Bounds.Y, width, height);
 
-                Texture.Draw(batch, DrawPosition, bounds, origin, Scale, Angle, Color, SpriteEffects); 
+                Texture.Draw(batch, DrawPosition, bounds, origin, Scale, Angle, Color * Opacity.Clamp(0f, 1f), SpriteEffects); 
             }
         }
 

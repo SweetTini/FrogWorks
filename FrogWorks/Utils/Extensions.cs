@@ -11,6 +11,11 @@ namespace FrogWorks
     public static class Extensions
     {
         #region Numeric
+        public static byte HexToByte(char hexValue)
+        {
+            return (byte)"0123456789ABCDEF".IndexOf(char.ToUpper(hexValue));
+        }
+
         public static int Mod(this int number, int divisor)
         {
             return (number % divisor + divisor) % divisor;
@@ -19,6 +24,16 @@ namespace FrogWorks
         public static float Mod(this float number, float divisor)
         {
             return (number % divisor + divisor) % divisor;
+        }
+
+        public static int Clamp(this int number, int lowest, int highest)
+        {
+            return MathHelper.Clamp(number, lowest, highest);
+        }
+
+        public static float Clamp(this float number, float lowest, float highest)
+        {
+            return MathHelper.Clamp(number, lowest, highest);
         }
 
         public static float Inverse(this float number)

@@ -22,6 +22,8 @@ namespace FrogWorks
 
         public Rectangle DrawableRegion { get; private set; }
 
+        public Camera Camera => Layer?.Camera;
+
         public Vector2 Position
         {
             get { return _position; }
@@ -30,7 +32,7 @@ namespace FrogWorks
                 if (value == _position) return;
                 _position = value;
                 if (Layer?.Camera != null)
-                    UpdateDrawableRegion(Layer.Camera);
+                    UpdateDrawableRegion(Camera);
             }
         }
 
@@ -42,7 +44,7 @@ namespace FrogWorks
                 if (value == _position.X) return;
                 _position.X = value;
                 if (Layer?.Camera != null)
-                    UpdateDrawableRegion(Layer.Camera);
+                    UpdateDrawableRegion(Camera);
             }
         }
 
@@ -54,7 +56,7 @@ namespace FrogWorks
                 if (value == _position.Y) return;
                 _position.Y = value;
                 if (Layer?.Camera != null)
-                    UpdateDrawableRegion(Layer.Camera);
+                    UpdateDrawableRegion(Camera);
             }
         }
 
@@ -108,19 +110,19 @@ namespace FrogWorks
                 var y = DrawableRegion.Top + (i / DrawableRegion.Width);
                 var position = DrawPosition + new Vector2(x * TileWidth, y * TileHeight);
 
-                TextureMap[x, y]?.Draw(batch, position, Vector2.Zero, Vector2.One, 0f, Color * MathHelper.Clamp(Opacity, 0f, 1f), SpriteEffects);
+                TextureMap[x, y]?.Draw(batch, position, Vector2.Zero, Vector2.One, 0f, Color * Opacity.Clamp(0f, 1f), SpriteEffects);
             }
         }
 
         protected override void OnEntityAdded()
         {
-            Layer.Camera.OnCameraUpdated += UpdateDrawableRegion;
-            UpdateDrawableRegion(Layer.Camera);
+            Camera.OnCameraUpdated += UpdateDrawableRegion;
+            UpdateDrawableRegion(Camera);
         }
 
         protected override void OnEntityRemoved()
         {
-            Layer.Camera.OnCameraUpdated -= UpdateDrawableRegion;
+            Camera.OnCameraUpdated -= UpdateDrawableRegion;
         }
 
         public void Populate(TileSet tileSet, int[,] tiles, int offsetX = 0, int offsetY = 0)
@@ -188,6 +190,8 @@ namespace FrogWorks
 
         private void UpdateDrawableRegion(Camera camera)
         {
+            if (camera == null) return;
+
             var x1 = (int)Math.Max(Math.Floor((camera.Bounds.Left - DrawPosition.X) / TileWidth), 0);
             var y1 = (int)Math.Max(Math.Floor((camera.Bounds.Top - DrawPosition.Y) / TileHeight), 0);
             var x2 = (int)Math.Min(Math.Ceiling((camera.Bounds.Right + DrawPosition.X) / TileWidth), Columns);

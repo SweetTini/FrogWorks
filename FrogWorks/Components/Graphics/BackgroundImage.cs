@@ -14,6 +14,8 @@ namespace FrogWorks
 
         public Rectangle DrawableRegion { get; private set; }
 
+        public Camera Camera => Layer?.Camera;
+
         public Vector2 Position
         {
             get { return _position; }
@@ -22,7 +24,7 @@ namespace FrogWorks
                 if (value == _position) return;
                 _position = value;
                 if (Layer?.Camera != null)
-                    UpdateDrawableRegion(Layer.Camera);
+                    UpdateDrawableRegion(Camera);
             }
         }
 
@@ -34,7 +36,7 @@ namespace FrogWorks
                 if (value == _position.X) return;
                 _position.X = value;
                 if (Layer?.Camera != null)
-                    UpdateDrawableRegion(Layer.Camera);
+                    UpdateDrawableRegion(Camera);
             }
         }
 
@@ -46,7 +48,7 @@ namespace FrogWorks
                 if (value == _position.Y) return;
                 _position.Y = value;
                 if (Layer?.Camera != null)
-                    UpdateDrawableRegion(Layer.Camera);
+                    UpdateDrawableRegion(Camera);
             }
         }
 
@@ -102,23 +104,25 @@ namespace FrogWorks
                 var y = (!WrapHorizontally ? DrawableRegion.Y : 0f) + (i / DrawableRegion.Width);
                 var position = DrawPosition + new Vector2(x * Bounds.Width, y * Bounds.Height);
 
-                Texture.Draw(batch, position, Vector2.Zero, Vector2.One, 0f, Color * MathHelper.Clamp(Opacity, 0f, 1f), SpriteEffects);
+                Texture.Draw(batch, position, Vector2.Zero, Vector2.One, 0f, Color * Opacity.Clamp(0f, 1f), SpriteEffects);
             }
         }
 
         protected override void OnEntityAdded()
         {
-            Layer.Camera.OnCameraUpdated += UpdateDrawableRegion;
-            UpdateDrawableRegion(Layer.Camera);
+            Camera.OnCameraUpdated += UpdateDrawableRegion;
+            UpdateDrawableRegion(Camera);
         }
 
         protected override void OnEntityRemoved()
         {
-            Layer.Camera.OnCameraUpdated -= UpdateDrawableRegion;
+            Camera.OnCameraUpdated -= UpdateDrawableRegion;
         }
 
         private void UpdateDrawableRegion(Camera camera)
         {
+            if (camera == null) return;
+
             var x1 = (int)Math.Floor((camera.Bounds.Left - DrawPosition.X) / Bounds.Width);
             var y1 = (int)Math.Floor((camera.Bounds.Top - DrawPosition.Y) / Bounds.Height);
             var x2 = (int)Math.Ceiling((camera.Bounds.Right + DrawPosition.X) / Bounds.Width);
