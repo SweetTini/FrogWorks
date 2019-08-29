@@ -6,15 +6,15 @@ namespace FrogWorks
     {
         private Vector2 _position;
 
-        protected internal Entity Parent { get; private set; }
+        internal CollidableComponent ParentComponent { get; private set; }
 
-        internal CollidableComponent Component { get; private set; }
+        protected internal Entity Parent { get; private set; }
 
         protected internal Layer Layer => Parent?.Parent;
 
         protected internal Scene Scene => Parent?.Scene;
 
-        protected internal bool IsCollidable => Component?.IsCollidable ?? Parent?.IsCollidable ?? true;
+        protected internal bool IsCollidable => ParentComponent?.IsCollidable ?? Parent?.IsCollidable ?? true;
 
         public Vector2 Position
         {
@@ -79,12 +79,12 @@ namespace FrogWorks
 
         internal void OnAddedAsComponent(CollidableComponent component)
         {
-            Component = component;
+            ParentComponent = component;
         }
 
         internal void OnRemovedAsComponent()
         {
-            Component = null;
+            ParentComponent = null;
         }
 
         internal void OnInternalEntityAdded() => OnEntityAdded();

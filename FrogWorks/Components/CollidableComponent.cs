@@ -14,7 +14,7 @@ namespace FrogWorks
                 if (value == _collider)
                     return;
 
-                if (value?.Component != null)
+                if (value?.ParentComponent != null)
                     throw new Exception($"{value.GetType().Name} is already assigned to an instance of {GetType().Name}.");
 
                 _collider?.OnRemovedAsComponent();
