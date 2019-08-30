@@ -77,7 +77,7 @@ namespace FrogWorks
 
             for (int i = 0; i < other.Count; i++)
             {
-                var numerator = Vector2.Dot(other.Normals[i], other.Vertices[i] - ray.Position);
+                var numerator = Vector2.Dot(other.Normals[i], other.Transformed[i] - ray.Position);
                 var denominator = Vector2.Dot(other.Normals[i], ray.Normal);
                 if (denominator == 0f && numerator < 0f) return false;
 
@@ -336,8 +336,8 @@ namespace FrogWorks
 
         public static bool Collide(this RectangleF rect, RectangleF other)
         {
-            return other.Right > rect.Left && rect.Right > other.Left 
-                && other.Bottom > rect.Top && rect.Bottom > other.Top;
+            return other.Lower.X > rect.Upper.X && rect.Lower.X > other.Upper.X 
+                && other.Lower.X > rect.Upper.Y && rect.Lower.Y > other.Upper.Y;
         }
 
         public static bool Collide(this RectangleF rect, RectangleF other, out Manifold hit)

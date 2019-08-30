@@ -32,14 +32,7 @@ namespace FrogWorks
         }
 
         public override Rectangle Bounds
-        {
-            get
-            {
-                var location = Position.Round().ToPoint();
-                var size = (Vector2.One * _radius * 2f).Round().ToPoint();
-                return new Rectangle(location, size);
-            }
-        }
+            => new Rectangle(Position.Round().ToPoint(), (Vector2.One * _radius * 2f).Round().ToPoint());
 
         public Circle(Vector2 center, float radius)
         {
@@ -48,9 +41,7 @@ namespace FrogWorks
         }
 
         public Circle(float centerX, float centerY, float radius)
-            : this(new Vector2(centerX, centerY), radius)
-        {
-        }
+            : this(new Vector2(centerX, centerY), radius) { }
 
         public override void Draw(RendererBatch batch, Color color, bool fill = false)
         {
@@ -61,19 +52,10 @@ namespace FrogWorks
             });
         }
 
-        public override bool Contains(Vector2 point)
-        {
-            return (point - Center).LengthSquared() < Radius * Radius;
-        }
+        public override bool Contains(Vector2 point) => (point - Center).LengthSquared() < Radius * Radius;
 
-        public override Shape Clone()
-        {
-            return new Circle(Center, Radius);
-        }
+        public override Shape Clone() => new Circle(Center, Radius);
 
-        public override Proxy ToProxy()
-        {
-            return new Proxy(new[] { Center }, Radius);
-        }
+        public override Proxy ToProxy() => new Proxy(new[] { Center }, Radius);
     }
 }

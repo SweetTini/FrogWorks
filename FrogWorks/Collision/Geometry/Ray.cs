@@ -12,9 +12,6 @@ namespace FrogWorks
 
         public Vector2 Endpoint => Position + Normal * Distance;
 
-        public Vector2 ApplyImpact(float distance)
-        {
-            return Position + Normal * distance;
-        }
+        public Vector2 ApplyImpact(float distance) => Position + Normal * distance;
     }
 }

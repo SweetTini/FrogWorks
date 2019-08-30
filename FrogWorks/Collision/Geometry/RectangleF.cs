@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 
 namespace FrogWorks
 {
@@ -25,15 +24,12 @@ namespace FrogWorks
             set { Size = new Vector2(Size.X, value); }
         }
 
-        public float Left => Position.X;
+        public Vector2 Upper => Position;
 
-        public float Right => Position.X + Size.X;
+        public Vector2 Lower => Position + Size;
 
-        public float Top => Position.Y;
-
-        public float Bottom => Position.Y + Size.Y;
-
-        public override Rectangle Bounds => new Rectangle(Position.Round().ToPoint(), Size.Round().ToPoint());
+        public override Rectangle Bounds 
+            => new Rectangle(Position.Round().ToPoint(), Size.Round().ToPoint());
 
         public RectangleF(Vector2 position, Vector2 size)
         {
@@ -42,9 +38,7 @@ namespace FrogWorks
         }
 
         public RectangleF(float x, float y, float width, float height)
-            : this(new Vector2(x, y), new Vector2(width, height))
-        {
-        }
+            : this(new Vector2(x, y), new Vector2(width, height)) { }
 
         public override void Draw(RendererBatch batch, Color color, bool fill = false)
         {
@@ -57,25 +51,20 @@ namespace FrogWorks
 
         public override bool Contains(Vector2 point)
         {
-            return Left <= point.X && point.X < Right && Top <= point.Y && point.Y < Bottom;
+            return Upper.X <= point.X && point.X < Lower.X 
+                && Upper.Y <= point.Y && point.Y < Lower.Y;
         }
 
-        public override Shape Clone()
-        {
-            return new RectangleF(Position, Size);
-        }
+        public override Shape Clone() => new RectangleF(Position, Size);
 
-        public override Proxy ToProxy()
-        {
-            return new Proxy(ToVertices());
-        }
+        public override Proxy ToProxy() => new Proxy(ToVertices());
 
         public Vector2[] ToVertices()
         {
             return new[]
             {
-                Position, new Vector2(Position.X + Size.X, Position.Y),
-                Position + Size, new Vector2(Position.X, Position.Y + Size.Y),
+                Upper, new Vector2(Lower.X, Upper.Y),
+                Lower, new Vector2(Upper.X, Lower.Y),
             };
         }
     }

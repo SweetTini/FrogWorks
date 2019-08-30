@@ -69,6 +69,11 @@ namespace FrogWorks
             set { Upper = value - (Upper - Lower) / 2f; }
         }
 
+        protected Collider(Vector2 position)
+        {
+            _position = position;
+        }
+
         public virtual void DebugDraw(RendererBatch batch, Color color, bool fill = false) { }
 
         public abstract bool Contains(Vector2 point);

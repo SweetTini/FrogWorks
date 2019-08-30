@@ -16,7 +16,7 @@ namespace FrogWorks
             }
         }
 
-        public override Vector2 Upper
+        public sealed override Vector2 Upper
         {
             get { return Shape.Bounds.Location.ToVector2(); }
             set
@@ -26,7 +26,7 @@ namespace FrogWorks
             }
         }
 
-        public override Vector2 Lower
+        public sealed override Vector2 Lower
         {
             get { return (Shape.Bounds.Location + Shape.Bounds.Size).ToVector2(); }
             set
@@ -36,20 +36,23 @@ namespace FrogWorks
             }
         }
 
-        public override void DebugDraw(RendererBatch batch, Color color, bool fill = false)
+        protected ShapeCollider(Vector2 position)
+            : base(position) { }
+
+        public sealed override void DebugDraw(RendererBatch batch, Color color, bool fill = false)
             => Shape.Draw(batch, color, fill);
 
-        public override bool Contains(Vector2 point) => IsCollidable && Shape.Contains(point);
+        public sealed override bool Contains(Vector2 point) => IsCollidable && Shape.Contains(point);
 
-        public override bool Collide(Ray ray)
+        public sealed override bool Collide(Ray ray)
         {
             Raycast hit;
             return IsCollidable && ray.Cast(Shape, out hit);
         }
 
-        public override bool Collide(Shape shape) => IsCollidable && Shape.Collide(shape);
+        public sealed override bool Collide(Shape shape) => IsCollidable && Shape.Collide(shape);
 
-        public override bool Collide(Collider other)
+        public sealed override bool Collide(Collider other)
         {
             if (IsCollidable)
             {
@@ -60,24 +63,22 @@ namespace FrogWorks
             return false;
         }
 
-        protected override void OnAdded() => IncludeIntoTree();
+        protected sealed override void OnAdded() => IncludeIntoTree();
 
-        protected override void OnRemoved() => ExcludeFromTree();
+        protected sealed override void OnRemoved() => ExcludeFromTree();
 
-        protected override void OnEntityAdded() => IncludeIntoTree();
+        protected sealed override void OnEntityAdded() => IncludeIntoTree();
 
-        protected override void OnEntityRemoved() => ExcludeFromTree();
+        protected sealed override void OnEntityRemoved() => ExcludeFromTree();
 
-        protected override void OnLayerAdded() => IncludeIntoTree();
+        protected sealed override void OnLayerAdded() => IncludeIntoTree();
 
-        protected override void OnLayerRemoved() => ExcludeFromTree();
+        protected sealed override void OnLayerRemoved() => ExcludeFromTree();
 
-        protected override void OnTransformed() => UpdateTree();
+        protected sealed override void OnTransformed() => Scene?.ColliderTree.Update(this);
 
         private void IncludeIntoTree() => Scene?.ColliderTree.Insert(this);
 
         private void ExcludeFromTree() => Scene?.ColliderTree.Remove(this);
-
-        private void UpdateTree() => Scene?.ColliderTree.Update(this);
     }
 }

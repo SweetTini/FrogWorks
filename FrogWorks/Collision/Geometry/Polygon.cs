@@ -4,19 +4,19 @@ namespace FrogWorks
 {
     public class Polygon : Shape
     {
-        private Vector2[] _originalVertices, _vertices, _normals;
+        private Vector2[] _vertices, transformed, _normals;
         private Vector2 _position, _size, _origin, _scale;
         private float _angle;
         private bool _isDirty;
 
-        public Vector2[] Original => _originalVertices;
+        public Vector2[] Vertices => _vertices;
 
-        public Vector2[] Vertices
+        public Vector2[] Transformed
         {
             get
             {
                 UpdateVertices();
-                return _vertices;
+                return transformed;
             }
         }
 
@@ -29,7 +29,7 @@ namespace FrogWorks
             }
         }
 
-        public int Count { get; private set; }
+        public int Count => _vertices.Length;
 
         public override Vector2 Position
         {
@@ -83,8 +83,8 @@ namespace FrogWorks
 
         public Vector2 Size
         {
-            get { return (_size * Scale.Abs()).Round(); }
-            set { Scale = _size.Divide(value.Abs()); }
+            get { return (_size * Scale).Round(); }
+            set { Scale = _size.Divide(value); }
         }
 
         public float Width
@@ -99,21 +99,18 @@ namespace FrogWorks
             set { Size = new Vector2(Size.X, value); }
         }
 
-        public override Rectangle Bounds => Vertices.ToRectangle();
+        public override Rectangle Bounds => Transformed.ToRectangle();
 
         public Polygon(Vector2[] vertices)
-            : this(vertices.Min(), vertices)
-        {
-        }
+            : this(vertices.Min(), vertices) { }
 
         public Polygon(Vector2 position, Vector2[] vertices)
         {
-            _originalVertices = vertices.ToConvexHull();
+            _vertices = vertices.ToConvexHull();
             _position = position;
             _size = vertices.Max() - vertices.Min();
             _origin = _size / 2f;
             _scale = Vector2.One;
-            Count = _originalVertices.Length;
 
             UpdateVertices(true);
         }
@@ -122,8 +119,8 @@ namespace FrogWorks
         {
             batch.DrawPrimitives((primitive) =>
             {
-                if (fill) primitive.FillPolygon(Vertices, color);
-                else primitive.DrawPolygon(Vertices, color);
+                if (fill) primitive.FillPolygon(Transformed, color);
+                else primitive.DrawPolygon(Transformed, color);
             });
         }
 
@@ -147,7 +144,7 @@ namespace FrogWorks
 
         public override Shape Clone()
         {
-            return new Polygon(Position, _originalVertices)
+            return new Polygon(Position, _vertices)
             {
                 Origin = Origin,
                 Scale = Scale,
@@ -155,15 +152,9 @@ namespace FrogWorks
             };
         }
 
-        public override Proxy ToProxy()
-        {
-            return new Proxy(Vertices);
-        }
+        public override Proxy ToProxy() => new Proxy(Transformed);
 
-        internal Line GetLine(int index)
-        {
-            return new Line(_vertices[index], _vertices[(index + 1) % Count]);
-        }
+        internal Line GetLine(int index) => new Line(transformed[index], transformed[(index + 1) % Count]);
 
         internal Line GetClosestLine(Polygon other, int otherIndex)
         {
@@ -185,10 +176,8 @@ namespace FrogWorks
             return GetLine(index);
         }
 
-        internal Plane GetPlane(int index)
-        {
-            return new Plane(_normals[index], Vector2.Dot(_normals[index], _vertices[index]));
-        }
+        internal Plane GetPlane(int index) 
+            => new Plane(_normals[index], Vector2.Dot(_normals[index], transformed[index]));
 
         internal float GetMinIntersectionDepth(Polygon other, out int index)
         {
@@ -200,7 +189,7 @@ namespace FrogWorks
             {
                 var plane = GetPlane(i);
                 var supportIndex = GetSupport(-plane.Normal);
-                var depth = plane.Distance(other.Vertices[supportIndex]);
+                var depth = plane.Distance(other.Transformed[supportIndex]);
 
                 if (depth > minDepth)
                 {
@@ -215,11 +204,11 @@ namespace FrogWorks
         private int GetSupport(Vector2 direction)
         {
             var index = 0;
-            var dotProd = Vector2.Dot(_vertices[0], direction);
+            var dotProd = Vector2.Dot(transformed[0], direction);
 
             for (int i = 1; i < Count; i++)
             {
-                var dp = Vector2.Dot(_vertices[i], direction);
+                var dp = Vector2.Dot(transformed[i], direction);
 
                 if (dp > dotProd)
                 {
@@ -235,8 +224,8 @@ namespace FrogWorks
         {
             if (_isDirty || forceUpdate)
             {
-                _vertices = _originalVertices.Transform(_position, _origin, _scale, _angle);
-                _normals = _vertices.Normalize();
+                transformed = _vertices.Transform(_position, _origin, _scale, _angle);
+                _normals = transformed.Normalize();
                 _isDirty = false;
             }
         }
@@ -322,14 +311,8 @@ namespace FrogWorks
             Depth = depth;
         }
 
-        public float Distance(Vector2 point)
-        {
-            return Vector2.Dot(Normal, point) - Depth;
-        }
+        public float Distance(Vector2 point) => Vector2.Dot(Normal, point) - Depth;
 
-        public Vector2 Project(Vector2 point)
-        {
-            return point - Normal * Distance(point);
-        }
+        public Vector2 Project(Vector2 point) => point - Normal * Distance(point);
     }
 }
