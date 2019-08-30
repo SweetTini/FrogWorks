@@ -83,6 +83,30 @@ namespace FrogWorks
                 component.OnInternalEntityRemoved();
         }
 
+        internal void OnInternalLayerAdded()
+        {
+            OnLayerAdded();
+
+            Collider?.OnInternalLayerAdded();
+
+            foreach (var component in Components)
+                component.OnInternalLayerAdded();
+        }
+
+        internal void OnInternalLayerRemoved()
+        {
+            foreach (var component in Components)
+                component.OnInternalLayerRemoved();
+
+            Collider?.OnInternalLayerRemoved();
+
+            OnLayerRemoved();
+        }
+
+        protected virtual void OnLayerAdded() { }
+
+        protected virtual void OnLayerRemoved() { }
+
         internal void OnInternalSceneBegan() => OnSceneBegan();
 
         internal void OnInternalSceneEnded() => OnSceneEnded();

@@ -4,6 +4,8 @@ namespace FrogWorks
 {
     public abstract class Scene
     {
+        protected internal AABBTree ColliderTree { get; private set; }
+
         public LayerManager Layers { get; private set; }
 
         public Color BackgroundColor { get; set; } = Color.White;
@@ -14,6 +16,7 @@ namespace FrogWorks
 
         protected Scene()
         {
+            ColliderTree = new AABBTree(4f);
             Layers = new LayerManager(this);
         }
 

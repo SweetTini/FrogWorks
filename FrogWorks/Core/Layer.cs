@@ -34,6 +34,18 @@ namespace FrogWorks
             batch.End();
         }
 
+        protected override void OnAdded()
+        {
+            foreach (var entity in Entities)
+                entity.OnInternalLayerAdded();
+        }
+
+        protected override void OnRemoved()
+        {
+            foreach (var entity in Entities)
+                entity.OnInternalLayerRemoved();
+        }
+
         internal void OnInternalSceneBegan()
         {
             foreach (var entity in Entities)

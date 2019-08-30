@@ -20,6 +20,14 @@
 
         protected virtual void OnEntityRemoved() { }
 
+        internal void OnInternalLayerAdded() => OnLayerAdded();
+
+        internal void OnInternalLayerRemoved() => OnLayerRemoved();
+
+        protected virtual void OnLayerAdded() { }
+
+        protected virtual void OnLayerRemoved() { }
+
         public override void Destroy() => Parent?.Components.Remove(this);
     }
 }

@@ -45,6 +45,30 @@ namespace FrogWorks
             set { Position = value - (Parent?.Position ?? Vector2.Zero); }
         }
 
+        public abstract Vector2 Size { get; set; }
+
+        public float Width
+        {
+            get { return Size.X; }
+            set { Size = new Vector2(value, Size.Y); }
+        }
+
+        public float Height
+        {
+            get { return Size.Y; }
+            set { Size = new Vector2(Size.X, value); }
+        }
+
+        public abstract Vector2 Upper { get; set; }
+
+        public abstract Vector2 Lower { get; set; }
+
+        public Vector2 Center
+        {
+            get { return (Upper + Lower) / 2f; }
+            set { Upper = value - (Upper - Lower) / 2f; }
+        }
+
         public virtual void DebugDraw(RendererBatch batch, Color color, bool fill = false) { }
 
         public abstract bool Contains(Vector2 point);
@@ -94,6 +118,14 @@ namespace FrogWorks
         protected virtual void OnEntityAdded() { }
 
         protected virtual void OnEntityRemoved() { }
+
+        internal void OnInternalLayerAdded() => OnLayerAdded();
+
+        internal void OnInternalLayerRemoved() => OnLayerRemoved();
+
+        protected virtual void OnLayerAdded() { }
+
+        protected virtual void OnLayerRemoved() { }
 
         internal void OnInternalTransformed() => OnTransformed();
 
