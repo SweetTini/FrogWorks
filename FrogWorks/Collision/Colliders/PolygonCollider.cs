@@ -2,7 +2,7 @@
 
 namespace FrogWorks
 {
-    public class PolygonCollider : ShapeCollider
+    public sealed class PolygonCollider : ShapeCollider
     {
         private Vector2[] _vertices;
         private Vector2 _size, _origin, _scale;

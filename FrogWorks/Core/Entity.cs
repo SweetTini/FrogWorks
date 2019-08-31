@@ -54,6 +54,78 @@ namespace FrogWorks
             set { Position = new Vector2(Position.X, value); }
         }
 
+        public Vector2 Size
+        {
+            get { return Collider?.Size ?? Vector2.Zero; }
+            set { if (Collider != null) Collider.Size = value; }
+        }
+
+        public float Width
+        {
+            get { return Size.X; }
+            set { Size = new Vector2(value, Size.Y); }
+        }
+
+        public float Height
+        {
+            get { return Size.Y; }
+            set { Size = new Vector2(Size.X, value); }
+        }
+
+        public Vector2 Upper
+        {
+            get { return Collider?.Upper ?? Position; }
+            set { Position = value - ((Collider?.Upper ?? Position) - Position); }
+        }
+
+        public float Left
+        {
+            get { return Upper.X; }
+            set { Upper = new Vector2(value, Upper.Y); }
+        }
+
+        public float Top
+        {
+            get { return Upper.Y; }
+            set { Upper = new Vector2(Upper.X, value); }
+        }
+
+        public Vector2 Lower
+        {
+            get { return Collider?.Lower ?? Position; }
+            set { Position = value - ((Collider?.Lower ?? Position) - Position); }
+        }
+
+        public float Right
+        {
+            get { return Lower.X; }
+            set { Lower = new Vector2(value, Lower.Y); }
+        }       
+
+        public float Bottom
+        {
+            get { return Lower.Y; }
+            set { Lower = new Vector2(Lower.X, value); }
+        }
+
+        public Vector2 Center
+        {
+            get { return Collider?.Center ?? Position; }
+            set { Position = value - ((Collider?.Center ?? Position) - Position); }
+        }
+
+        public float CenterX
+        {
+            get { return Center.X; }
+            set { Center = new Vector2(value, Center.Y); }
+        }
+
+        public float CenterY
+        {
+            get { return Center.Y; }
+            set { Center = new Vector2(Center.X, value); }
+        }
+
         protected Entity()
         {
             Components = new ComponentManager(this);
