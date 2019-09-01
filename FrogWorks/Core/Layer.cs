@@ -28,7 +28,7 @@ namespace FrogWorks
 
         protected override void Draw(RendererBatch batch)
         {
-            batch.Configure(BlendState, DepthStencilState, ShaderEffect, Camera.TransformMatrix);
+            batch.Configure(BlendState, DepthStencilState, ShaderEffect, null, Camera.TransformMatrix);
             batch.Begin();
             Entities.Draw(batch);
             batch.End();

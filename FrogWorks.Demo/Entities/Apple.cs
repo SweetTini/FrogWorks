@@ -1,4 +1,6 @@
-﻿namespace FrogWorks.Demo.Entities
+﻿using Microsoft.Xna.Framework;
+
+namespace FrogWorks.Demo.Entities
 {
     public class Apple : Entity
     {
@@ -11,7 +13,13 @@
         {
             Image = new Image(Texture, true);
             Image.CenterOrigin();
-            Components.Add(Image);            
+            Components.Add(Image);
+            Collider = new RectangleCollider(48f, 40f, -24f, -16f);
+        }
+
+        protected override void AfterDraw(RendererBatch batch)
+        {
+            Collider.DebugDraw(batch, Color.Yellow, false);
         }
     }
 }

@@ -45,7 +45,7 @@ namespace FrogWorks
             BeforeUpdate();
             Layers.ProcessQueues();
 
-            if (!IsEnabled)
+            if (IsEnabled)
             {
                 Layers.Update(deltaTime);
                 TimeActive += deltaTime;

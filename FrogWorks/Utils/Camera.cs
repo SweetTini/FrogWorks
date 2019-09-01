@@ -41,6 +41,10 @@ namespace FrogWorks
             }
         }
 
+        public float Left => Upper.X;
+
+        public float Top => Upper.Y;
+
         public Vector2 Lower
         {
             get
@@ -50,11 +54,7 @@ namespace FrogWorks
             }
         }
 
-        public float Left => Upper.X;
-
         public float Right => Lower.X;
-
-        public float Top => Upper.Y;
 
         public float Bottom => Lower.Y;
 

@@ -337,7 +337,7 @@ namespace FrogWorks
         public static bool Collide(this RectangleF rect, RectangleF other)
         {
             return other.Lower.X > rect.Upper.X && rect.Lower.X > other.Upper.X 
-                && other.Lower.X > rect.Upper.Y && rect.Lower.Y > other.Upper.Y;
+                && other.Lower.Y > rect.Upper.Y && rect.Lower.Y > other.Upper.Y;
         }
 
         public static bool Collide(this RectangleF rect, RectangleF other, out Manifold hit)
