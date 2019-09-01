@@ -1,6 +1,5 @@
 ﻿using FrogWorks.Demo.Entities;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace FrogWorks.Demo.Scenes
@@ -40,9 +39,9 @@ namespace FrogWorks.Demo.Scenes
             Apple.X += Input.Keyboard.GetAxis(Keys.RightArrow, Keys.LeftArrow) * 2f;
             Apple.Y += Input.Keyboard.GetAxis(Keys.DownArrow, Keys.UpArrow) * 2f;
 
-            var apples = Layers.WithType<Apple>()
-                .SelectMany(x => x.Entities.OfType<Apple>())
-                .Except(new List<Apple>() { Apple })
+            var apples = Layers
+                .SelectMany(l => l.Entities.OfType<Apple>())
+                .Except(Extensions.AsEnumerable(Apple))
                 .ToList();
 
             foreach (var apple in apples)

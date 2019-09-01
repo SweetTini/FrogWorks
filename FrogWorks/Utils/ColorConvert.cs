@@ -81,5 +81,19 @@ namespace FrogWorks
 
             return new Color(r, g, b);
         }
+
+        public static Color FromHex(string hex)
+        {
+            if (hex.Length >= 6)
+            {
+                var r = hex[0].HexToByte() * 16 + hex[1].HexToByte();
+                var g = hex[2].HexToByte() * 16 + hex[3].HexToByte();
+                var b = hex[4].HexToByte() * 16 + hex[5].HexToByte();
+
+                return new Color(r, g, b);
+            }
+
+            return Color.Black;
+        }
     }
 }

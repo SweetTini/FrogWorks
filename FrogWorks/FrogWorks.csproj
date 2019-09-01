@@ -75,6 +75,7 @@
     <Compile Include="Components\Logic\StateMachine.cs" />
     <Compile Include="Components\Logic\Tween.cs" />
     <Compile Include="Components\Logic\Wiggler.cs" />
+    <Compile Include="Core\ManagableExtensions.cs" />
     <Compile Include="Core\Manageable.cs" />
     <Compile Include="Core\Component.cs" />
     <Compile Include="Core\Entity.cs" />

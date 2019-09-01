@@ -11,9 +11,9 @@ namespace FrogWorks
     public static class Extensions
     {
         #region Numeric
-        public static byte HexToByte(char hexValue)
+        public static byte HexToByte(this char hex)
         {
-            return (byte)"0123456789ABCDEF".IndexOf(char.ToUpper(hexValue));
+            return (byte)Math.Max("0123456789ABCDEF".IndexOf(char.ToUpper(hex)), 0);
         }
 
         public static int Mod(this int number, int divisor)
@@ -45,10 +45,7 @@ namespace FrogWorks
         #region String
         public static string PadWithZeros(this int number, int digits)
         {
-            var result = number.ToString();
-            while (result.Length < digits)
-                result = "0" + result;
-            return result;
+            return number.ToString().PadLeft(digits, '0');
         }
 
         public static string ReadNullTerminatedString(this BinaryReader reader)
@@ -86,6 +83,11 @@ namespace FrogWorks
         public static bool WithinRange<T>(this IEnumerable<T> list, int index)
         {
             return 0 <= index && index < list.Count();
+        }
+
+        public static IEnumerable<T> AsEnumerable<T>(params T[] items)
+        {
+            return items.AsEnumerable();
         }
         #endregion
 
