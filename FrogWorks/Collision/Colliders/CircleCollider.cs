@@ -3,7 +3,7 @@ using System;
 
 namespace FrogWorks
 {
-    public sealed class CircleCollider : ShapeCollider
+    public class CircleCollider : ShapeCollider
     {
         private float _radius;
 

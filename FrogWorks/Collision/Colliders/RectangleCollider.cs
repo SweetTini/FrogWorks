@@ -2,7 +2,7 @@
 
 namespace FrogWorks
 {
-    public sealed class RectangleCollider : ShapeCollider
+    public class RectangleCollider : ShapeCollider
     {
         private Vector2 _size;
 
