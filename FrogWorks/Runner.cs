@@ -11,6 +11,8 @@ namespace FrogWorks
 
         protected internal GameAdapter Game { get; private set; }
 
+        protected internal DisplayAdapter Display { get; private set; }
+
         public Version Version { get; set; } = new Version(0, 0, 1);
 
         public virtual string AssemblyDirectory
@@ -24,8 +26,8 @@ namespace FrogWorks
 
         public Color ClearColor
         {
-            get { return Game.Display.ClearColor; }
-            set { Game.Display.ClearColor = value; }
+            get { return Display.ClearColor; }
+            set { Display.ClearColor = value; }
         }
 
         public int Width { get; private set; }
@@ -42,6 +44,7 @@ namespace FrogWorks
             Width = width;
             Height = height;
             Game = new GameAdapter(this, width, height);
+            Display = new DisplayAdapter(Game, width, height);
         }
 
         public virtual void Run() => Game.Run();
@@ -61,6 +64,7 @@ namespace FrogWorks
         {
             if (disposing && !IsDisposed)
             {
+                Display.Dispose();
                 Game.Dispose();
                 IsDisposed = true;
             }

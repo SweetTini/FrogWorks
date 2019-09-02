@@ -12,8 +12,6 @@ namespace FrogWorks
 
         public GraphicsDeviceManager Graphics { get; private set; }
 
-        public DisplayAdapter Display { get; private set; }
-
         public int FramesPerSecond { get; private set; }
 
         public float DeltaTime { get; private set; }
@@ -25,7 +23,6 @@ namespace FrogWorks
             Graphics = new GraphicsDeviceManager(this);
             Graphics.SynchronizeWithVerticalRetrace = true;
             Graphics.GraphicsProfile = GraphicsProfile.Reach;
-            Display = new DisplayAdapter(this, width, height);
             Input.Initialize();
 
             Content.RootDirectory = "Content";
@@ -55,18 +52,13 @@ namespace FrogWorks
         protected override void Draw(GameTime gameTime)
         {
             ApplyChanges();
-            Display.Draw(_scene);
+            _runner.Display.Draw(_scene);
             base.Draw(gameTime);
         }
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                Input.Dispose();
-                Display.Dispose();
-            }
-
+            if (disposing) Input.Dispose();
             base.Dispose(disposing);
         }
 

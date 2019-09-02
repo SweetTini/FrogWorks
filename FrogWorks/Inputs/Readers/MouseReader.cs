@@ -12,10 +12,10 @@ namespace FrogWorks
         #region Cursor
         public Vector2 Position
         {
-            get { return Runner.Application.Game.Display.ToView(CurrentState.Position.ToVector2()); }
+            get { return Runner.Application.Display.ToView(CurrentState.Position.ToVector2()); }
             set
             {
-                var position = Runner.Application.Game.Display.FromView(value).ToPoint();
+                var position = Runner.Application.Display.FromView(value).ToPoint();
                 Mouse.SetPosition(position.X, position.Y);
             }
         }

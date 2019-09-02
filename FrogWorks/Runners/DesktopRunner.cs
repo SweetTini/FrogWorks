@@ -32,8 +32,8 @@
             Title = "New Game";
         }
 
-        public void ToFixedSize(int scale = 1) => Game.Display.ToFixedScale(scale);
+        public void ToFixedSize(int scale = 1) => Display.ToFixedScale(scale);
 
-        public void ToFullscreen() => Game.Display.ToFullscreen(); 
+        public void ToFullscreen() => Display.ToFullscreen(); 
     }
 }

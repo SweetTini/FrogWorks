@@ -126,7 +126,7 @@ namespace FrogWorks
         public Camera()
         {
             UpdateViewport();
-            Runner.Application.Game.Display.OnBufferChanged += UpdateViewport;
+            Runner.Application.Display.OnBufferChanged += UpdateViewport;
         }
 
         public void RoundPosition()
@@ -160,7 +160,7 @@ namespace FrogWorks
 
         protected void UpdateViewport()
         {
-            var display = Runner.Application.Game.Display;
+            var display = Runner.Application.Display;
 
             _padding = display.Extended.ToVector2() * .5f;
             _viewport = new Viewport(0, 0, display.Width, display.Height);
