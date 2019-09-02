@@ -54,7 +54,7 @@ namespace FrogWorks
 
         public sealed override bool Collide(Collider other)
         {
-            if (IsCollidable)
+            if (!Equals(other) && IsCollidable && other.IsCollidable)
             {
                 if (other is ShapeCollider)
                     return Shape.Collide((other as ShapeCollider).Shape);
