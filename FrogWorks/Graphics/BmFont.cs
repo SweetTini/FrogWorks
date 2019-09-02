@@ -11,7 +11,7 @@ namespace FrogWorks
         public static BitmapFont Load(BmFontFileType fileType, string filePath, string rootDirectory = "")
         {
             if (string.IsNullOrWhiteSpace(rootDirectory))
-                rootDirectory = Engine.ContentDirectory;
+                rootDirectory = Runner.Application.ContentDirectory;
 
             using (var stream = File.OpenRead(filePath))
             {

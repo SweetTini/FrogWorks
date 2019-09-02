@@ -26,7 +26,7 @@ namespace FrogWorks
                 GamePads[i] = new GamePadReader(i);
         }
 
-        internal static void Close()
+        internal static void Dispose()
         {
         }
 

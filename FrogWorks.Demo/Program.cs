@@ -8,12 +8,11 @@ namespace FrogWorks.Demo
         [STAThread]
         static void Main()
         {
-            using (var game = new Engine(320, 240))
+            using (var runner = new DesktopRunner(320, 240))
             {
-                game.Window.AllowUserResizing = true;                
-                game.IsMouseVisible = true;
-                game.SetScene<TestScene>();
-                game.Run();
+                runner.GoTo<TestScene>();
+                runner.AllowUserResizing = true;
+                runner.Run();
             }
         }
     }

@@ -4,7 +4,7 @@ namespace FrogWorks
 {
     public abstract class Scene
     {
-        protected internal AABBTree ColliderTree { get; private set; }
+        protected internal AABBTree Colliders { get; private set; }
 
         public LayerManager Layers { get; private set; }
 
@@ -16,7 +16,7 @@ namespace FrogWorks
 
         protected Scene()
         {
-            ColliderTree = new AABBTree(4f);
+            Colliders = new AABBTree(4f);
             Layers = new LayerManager(this);
         }
 

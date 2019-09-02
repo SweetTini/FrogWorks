@@ -75,10 +75,10 @@ namespace FrogWorks
 
         protected sealed override void OnLayerRemoved() => ExcludeFromTree();
 
-        protected sealed override void OnTransformed() => Scene?.ColliderTree.Update(this);
+        protected sealed override void OnTransformed() => Scene?.Colliders.Update(this);
 
-        private void IncludeIntoTree() => Scene?.ColliderTree.Insert(this);
+        private void IncludeIntoTree() => Scene?.Colliders.Insert(this);
 
-        private void ExcludeFromTree() => Scene?.ColliderTree.Remove(this);
+        private void ExcludeFromTree() => Scene?.Colliders.Remove(this);
     }
 }

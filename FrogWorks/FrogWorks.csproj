@@ -80,8 +80,10 @@
     <Compile Include="Core\Manageable.cs" />
     <Compile Include="Core\Component.cs" />
     <Compile Include="Core\Entity.cs" />
-    <Compile Include="Engine.cs" />
+    <Compile Include="DisplayAdapter.cs" />
+    <Compile Include="Runners\DesktopRunner.cs" />
     <Compile Include="Core\Layer.cs" />
+    <Compile Include="GameAdapter.cs" />
     <Compile Include="Graphics\Animation.cs" />
     <Compile Include="Graphics\BitmapCharacter.cs" />
     <Compile Include="Graphics\BitmapFont.cs" />
@@ -119,6 +121,7 @@
     <Compile Include="Inputs\Virtualization\VirtualAxis.cs" />
     <Compile Include="Inputs\Virtualization\VirtualButton.cs" />
     <Compile Include="Inputs\Virtualization\VirtualHardAxis.cs" />
+    <Compile Include="IRunner.cs" />
     <Compile Include="Managers\Manager.cs" />
     <Compile Include="Managers\DepthSortManager.cs" />
     <Compile Include="Managers\ComponentManager.cs" />
@@ -128,6 +131,7 @@
     <Compile Include="Managers\ManagerExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\Scene.cs" />
+    <Compile Include="Runner.cs" />
     <Compile Include="Utils\Cache.cs" />
     <Compile Include="Utils\Camera.cs" />
     <Compile Include="Utils\ColorConvert.cs" />
@@ -137,7 +141,6 @@
     <Compile Include="Utils\PrimitiveBatch.cs" />
     <Compile Include="Utils\Randomizer.cs" />
     <Compile Include="Utils\RendererBatch.cs" />
-    <Compile Include="Utils\Display.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

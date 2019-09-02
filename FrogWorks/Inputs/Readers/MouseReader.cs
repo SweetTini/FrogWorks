@@ -12,20 +12,10 @@ namespace FrogWorks
         #region Cursor
         public Vector2 Position
         {
-            get
-            {
-                var display = Engine.Display;
-                var padding = new Vector2(display.HorizontalPadding, display.VerticalPadding);
-                var position = CurrentState.Position.ToVector2() - padding;
-
-                return Vector2.Transform(position, Matrix.Invert(display.ScaleMatrix)).Round();
-            }
+            get { return Runner.Application.Game.Display.ToView(CurrentState.Position.ToVector2()); }
             set
             {
-                var display = Engine.Display;
-                var padding = new Vector2(display.HorizontalPadding, display.VerticalPadding);
-                var position = (Vector2.Transform(value, display.ScaleMatrix) + padding).Round().ToPoint();
-
+                var position = Runner.Application.Game.Display.FromView(value).ToPoint();
                 Mouse.SetPosition(position.X, position.Y);
             }
         }

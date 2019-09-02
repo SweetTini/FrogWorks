@@ -126,13 +126,12 @@ namespace FrogWorks
         public Camera()
         {
             UpdateViewport();
-
-            Engine.Display.OnBackBufferChanged += UpdateViewport;
+            Runner.Application.Game.Display.OnBufferChanged += UpdateViewport;
         }
 
         public void RoundPosition()
         {
-            Position = new Vector2((float)Math.Round(Position.X), (float)Math.Round(Position.Y));
+            Position = Position.Round();
         }
 
         public Vector2 ViewToWorld(Vector2 position)
@@ -161,13 +160,11 @@ namespace FrogWorks
 
         protected void UpdateViewport()
         {
-            var display = Engine.Display;
-            var width = display.Width + display.ExtendedWidth;
-            var height = display.Height + display.ExtendedHeight;
+            var display = Runner.Application.Game.Display;
 
-            _padding = new Vector2(display.ExtendedWidth, display.ExtendedHeight) * .5f;
-            _viewport = new Viewport(0, 0, width, height);
-            _origin = new Vector2(_viewport.Width, _viewport.Height) * .5f;
+            _padding = display.Extended.ToVector2() * .5f;
+            _viewport = new Viewport(0, 0, display.Width, display.Height);
+            _origin = _viewport.Bounds.Size.ToVector2() * .5f;
             _isDirty = true;
 
             UpdateMatrices();

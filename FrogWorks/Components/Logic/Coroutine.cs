@@ -99,7 +99,7 @@ namespace FrogWorks
 
             while (timer < seconds)
             {
-                timer += Engine.Instance.DeltaTime;
+                timer += Runner.Application.Game.DeltaTime;
                 yield return 0;
             }
         }
