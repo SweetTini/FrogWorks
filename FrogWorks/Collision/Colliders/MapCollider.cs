@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
-namespace FrogWorks.Collision.Colliders
+namespace FrogWorks
 {
     public abstract class MapCollider<T> : Collider
     {
