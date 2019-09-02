@@ -43,7 +43,7 @@ namespace FrogWorks
                 var index = AllocateNode();
                 var node = _nodes[index];
 
-                node.Bounds = container.Bounds;
+                node.Bounds = container.AabbBounds;
                 node.Entity = container;
                 _nodes[index] = node;
 
@@ -67,7 +67,7 @@ namespace FrogWorks
             int index;
 
             if (Exists(container, out index))
-                UpdateLeaf(index, container.Bounds);
+                UpdateLeaf(index, container.AabbBounds);
         }
 
         public void Clear()
@@ -81,7 +81,7 @@ namespace FrogWorks
         {
             var containers = new List<IAABBContainer>();
             var stack = new Stack<int>();
-            var target = container.Bounds;
+            var target = container.AabbBounds;
 
             stack.Push(_rootIndex);
 

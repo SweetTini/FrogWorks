@@ -58,6 +58,6 @@ namespace FrogWorks
 
     public interface IAABBContainer
     {
-        AABB Bounds { get; }
+        AABB AabbBounds { get; }
     }
 }

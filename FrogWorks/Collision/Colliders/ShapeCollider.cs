@@ -6,16 +6,6 @@ namespace FrogWorks
     {
         protected internal abstract Shape Shape { get; }
 
-        public AABB Bounds
-        {
-            get
-            {
-                var upper = Shape.Bounds.Location.ToVector2();
-                var lower = upper + Shape.Bounds.Size.ToVector2();
-                return new AABB(upper, lower);
-            }
-        }
-
         public sealed override Vector2 Upper
         {
             get { return Shape.Bounds.Location.ToVector2(); }
@@ -35,6 +25,8 @@ namespace FrogWorks
                 AbsolutePosition = value - offset;
             }
         }
+
+        public AABB AabbBounds => new AABB(Upper, Lower);
 
         protected ShapeCollider(Vector2 position)
             : base(position) { }

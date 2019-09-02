@@ -118,6 +118,9 @@ namespace FrogWorks
             set { Center = new Vector2(Center.X, value); }
         }
 
+        public Rectangle Bounds
+            => new Rectangle(Upper.ToPoint(), (Lower - Upper).ToPoint());
+
         protected Collider(Vector2 position)
         {
             _position = position;
