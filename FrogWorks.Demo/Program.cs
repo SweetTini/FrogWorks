@@ -11,7 +11,7 @@ namespace FrogWorks.Demo
             using (var runner = new DesktopRunner(320, 240))
             {
                 runner.GoTo<TestScene>();
-                runner.AllowUserResizing = true;
+                runner.ToFixedSize(2);
                 runner.Run();
             }
         }

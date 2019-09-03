@@ -42,14 +42,16 @@ namespace FrogWorks
             return IsCollidable && ray.Cast(Shape, out hit);
         }
 
-        public sealed override bool Collide(Shape shape) => IsCollidable && Shape.Collide(shape);
+        public sealed override bool Collide(Shape shape) => IsCollidable && shape.Collide(Shape);
 
         public sealed override bool Collide(Collider other)
         {
             if (!Equals(other) && IsCollidable && other.IsCollidable)
             {
                 if (other is ShapeCollider)
-                    return Shape.Collide((other as ShapeCollider).Shape);
+                    return (other as ShapeCollider).Collide(Shape);
+                else if (other is SimpleMapCollider)
+                    return (other as SimpleMapCollider).Collide(Shape);
             }
 
             return false;

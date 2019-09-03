@@ -8,7 +8,7 @@ namespace FrogWorks
     {
         private Point _cellSize;
 
-        public Map<T> Map { get; private set; }
+        public Map<T> Map { get; protected set; }
 
         public Point MapSize => new Point(Map.Columns, Map.Rows);
 
@@ -24,7 +24,7 @@ namespace FrogWorks
                 value = value.Abs();
                 if (_cellSize == value) return;
                 _cellSize = value;
-                OnTransformed();
+                OnInternalTransformed();
             }
         }
 
@@ -127,6 +127,34 @@ namespace FrogWorks
                     bounds.Left + (i % bounds.Width),
                     bounds.Top + (i / bounds.Width));
             }
+        }
+
+        protected virtual Shape GetCellShape(Point cell)
+        {
+            if (!Map.IsEmpty(cell.X, cell.Y))
+            {
+                return new RectangleF(
+                    AbsolutePosition + (cell * CellSize).ToVector2(),
+                    CellSize.ToVector2());
+            }
+
+            return null;
+        }
+
+        protected bool CheckCells(IEnumerable<Point> cells, Func<Shape, bool> predicate)
+        {
+            if (IsCollidable)
+            {
+                foreach (var cell in cells)
+                {
+                    var shape = GetCellShape(cell);
+
+                    if (shape != null && predicate(shape))
+                        return true;
+                }
+            }
+
+            return false;
         }
     }
 }

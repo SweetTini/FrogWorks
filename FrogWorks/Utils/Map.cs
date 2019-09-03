@@ -85,6 +85,8 @@ namespace FrogWorks
             Rows = rows;
         }
 
+        public bool IsEmpty(int x, int y) => _area[x, y].Equals(Empty);
+
         public Map<T> Clone()
         {
             return new Map<T>(_area, Empty);

@@ -38,15 +38,6 @@ namespace FrogWorks.Demo.Scenes
         {
             Apple.X += Input.Keyboard.GetAxis(Keys.RightArrow, Keys.LeftArrow) * 2f;
             Apple.Y += Input.Keyboard.GetAxis(Keys.DownArrow, Keys.UpArrow) * 2f;
-
-            var apples = Layers
-                .SelectMany(l => l.Entities.OfType<Apple>())
-                .Except(Extensions.AsEnumerable(Apple))
-                .ToList();
-
-            foreach (var apple in apples)
-                if (Apple.Collider.Collide(apple))
-                    apple.Destroy();
         }
     }
 }

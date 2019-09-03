@@ -19,7 +19,7 @@ namespace FrogWorks.Demo.Entities
 
         protected override void AfterDraw(RendererBatch batch)
         {
-            Collider.DebugDraw(batch, Color.Yellow, false);
+            //Collider.DebugDraw(batch, Color.Yellow, false);
         }
     }
 }
