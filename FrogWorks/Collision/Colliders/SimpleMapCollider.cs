@@ -37,10 +37,9 @@ namespace FrogWorks
 
         public override Collider Clone()
         {
-            return new SimpleMapCollider(Columns, Rows, CellWidth, CellHeight, X, Y)
-            {
-                Map = new Map<bool>(Map.ToArray(), Map.Empty)
-            };
+            var collider = new SimpleMapCollider(Columns, Rows, CellWidth, CellHeight, X, Y);
+            collider.Populate(Map.ToArray());
+            return collider;
         }
     }
 }

@@ -8,7 +8,7 @@ namespace FrogWorks
     {
         private Point _cellSize;
 
-        public Map<T> Map { get; protected set; }
+        protected Map<T> Map { get; private set; }
 
         public Point MapSize => new Point(Map.Columns, Map.Rows);
 
@@ -70,6 +70,56 @@ namespace FrogWorks
             _cellSize = new Point(cellWidth, cellHeight).Abs();
             Map = new Map<T>(Math.Abs(columns), Math.Abs(rows));
         }
+
+        public void Populate(T[,] data, int offsetX = 0, int offsetY = 0)
+        {
+            var columns = data.GetLength(0);
+            var rows = data.GetLength(1);
+
+            for (int i = 0; i < columns * rows; i++)
+            {
+                var x = i % columns;
+                var y = i / columns;
+
+                Map[x + offsetX, y + offsetY] = data[x, y];
+            }
+        }
+
+        public void Overlay(T[,] data, int offsetX = 0, int offsetY = 0)
+        {
+            var columns = data.GetLength(0);
+            var rows = data.GetLength(1);
+
+            for (int i = 0; i < columns * rows; i++)
+            {
+                var x = i % columns;
+                var y = i / columns;
+
+                if (!data[x, y].Equals(Map.Empty))
+                    Map[x + offsetX, y + offsetY] = data[x, y];
+            }
+        }
+
+        public void Fill(T data, int x, int y, int columns, int rows)
+        {
+            var x1 = Math.Max(x, 0);
+            var y1 = Math.Max(y, 0);
+            var x2 = Math.Min(x + columns, Columns);
+            var y2 = Math.Min(y + rows, Rows);
+
+            var cellColumns = x2 - x1;
+            var cellRows = y2 - y1;
+
+            for (int i = 0; i < cellColumns * cellRows; i++)
+            {
+                var tx = i % cellColumns;
+                var ty = i / cellColumns;
+
+                Map[tx, ty] = data;
+            }
+        }
+
+        public void Clear() => Map.Clear();
 
         protected IEnumerable<Point> GetCells(Vector2 point)
             => Extensions.AsEnumerable(point.SnapToGrid(CellSize.ToVector2(), AbsolutePosition).ToPoint());
@@ -148,7 +198,6 @@ namespace FrogWorks
                 foreach (var cell in cells)
                 {
                     var shape = GetCellShape(cell);
-
                     if (shape != null && predicate(shape))
                         return true;
                 }
