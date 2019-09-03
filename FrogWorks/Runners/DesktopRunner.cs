@@ -37,9 +37,5 @@
         {
             Title = "New Game";
         }
-
-        public void ToFixedSize(int scale = 1) => Display.ToFixedScale(scale);
-
-        public void ToFullscreen() => Display.ToFullscreen(); 
     }
 }
