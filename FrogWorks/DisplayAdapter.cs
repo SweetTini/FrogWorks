@@ -196,6 +196,7 @@ namespace FrogWorks
 
             View = (Size.ToVector2() * Scale).Round().ToPoint();
             Padding = ((Client - View).ToVector2() / 2f).Round().ToPoint();
+
             _viewport = new Viewport(Padding.X, Padding.Y, View.X, View.Y, 0f, 1f);
             _matrix = Matrix.CreateScale(new Vector3(Scale, 1f));
             _isDirty = _isDirty || lastExtended != Extended;
