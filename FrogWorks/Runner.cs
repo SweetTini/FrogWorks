@@ -38,13 +38,13 @@ namespace FrogWorks
 
         public bool IsDisposed { get; protected set; }
 
-        protected Runner(int width, int height)
+        protected Runner(int width, int height, int scale, bool fullscreen)
         {
             Application = this;
             Width = width;
             Height = height;
             Game = new GameAdapter(this, width, height);
-            Display = new DisplayAdapter(Game, width, height);
+            Display = new DisplayAdapter(Game, width, height, scale, fullscreen);
         }
 
         public virtual void Run() => Game.Run();

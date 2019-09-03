@@ -26,8 +26,14 @@
             set { Game.Window.IsBorderless = value; }
         }
 
-        public DesktopRunner(int width, int height) 
-            : base(width, height)
+        public DesktopRunner(int width, int height, bool fullscreen = false) 
+            : base(width, height, 1, fullscreen)
+        {
+            Title = "New Game";
+        }
+
+        public DesktopRunner(int width, int height, int scale)
+            : base(width, height, scale, false)
         {
             Title = "New Game";
         }

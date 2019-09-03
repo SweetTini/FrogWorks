@@ -12,15 +12,17 @@ namespace FrogWorks
         private Viewport _viewport;
         private Matrix _matrix;
 
-        private int _width, _height;
+        private Point _size;
         private Scaling _scaling = Scaling.Fit;
         private bool _isDirty;
 
         public Color ClearColor { get; set; } = Color.Black;
 
-        public int Width => _width + Extended.X;
+        public Point Size => _size + Extended;
 
-        public int Height => _height + Extended.Y;
+        public int Width => Size.X;
+
+        public int Height => Size.Y;
 
         public Point Extended { get; private set; }
 
@@ -48,20 +50,21 @@ namespace FrogWorks
 
         public Action OnBufferChanged { get; set; }
 
-        internal DisplayAdapter(GameAdapter game, int width, int height)
+        internal DisplayAdapter(GameAdapter game, int width, int height, int scale, bool fullscreen)
         {
             _game = game;
-            _width = width;
-            _height = height;
+            _size = new Point(width, height).Abs();
             _game.Graphics.DeviceCreated += OnDeviceChanged;
             _game.Graphics.DeviceReset += OnDeviceChanged;
             _game.Window.ClientSizeChanged += OnDeviceChanged;
 
-            ToFixedScale();
+            if (fullscreen) ToFullscreen();
+            else ToFixedScale(scale);
+            
             _game.ApplyChanges();
 
             _batch = new RendererBatch(_game.GraphicsDevice);
-            _buffer = new RenderTarget2D(_game.GraphicsDevice, _width, _height);
+            _buffer = new RenderTarget2D(_game.GraphicsDevice, _size.X, _size.Y);
         }
 
         public void Draw(Scene scene)
@@ -84,8 +87,8 @@ namespace FrogWorks
         public void ToFixedScale(int scale = 1)
         {
             scale = Math.Max(scale, 1);
-            _game.Graphics.PreferredBackBufferWidth = _width * scale;
-            _game.Graphics.PreferredBackBufferHeight = _height * scale;
+            _game.Graphics.PreferredBackBufferWidth = _size.X * scale;
+            _game.Graphics.PreferredBackBufferHeight = _size.Y * scale;
             _game.Graphics.IsFullScreen = false;
             _game.MarkAsDirty();
         }
@@ -129,13 +132,13 @@ namespace FrogWorks
 
         private void ApplyScaling()
         {
-            var lastExtend = Extended;
+            var lastExtended = Extended;
             var parameters = _game.GraphicsDevice.PresentationParameters;
             Client = new Point(parameters.BackBufferWidth, parameters.BackBufferHeight);
             Extended = Point.Zero;
 
             var source = 1f * Client.Y / Client.X;
-            var target = 1f * _height / _width;
+            var target = 1f * _size.Y / _size.X;
 
             switch (Scaling)
             {
@@ -145,38 +148,38 @@ namespace FrogWorks
                 case Scaling.Fit:
                     {
                         var ratio = source < target
-                            ? 1f * Client.Y / _height
-                            : 1f * Client.X / _width;
+                            ? 1f * Client.Y / _size.Y
+                            : 1f * Client.X / _size.X;
                         Scale = Vector2.One * ratio;
                     }
                     break;
                 case Scaling.PixelPerfect:
                     {
                         var ratio = source < target
-                            ? Client.Y / _height
-                            : Client.X / _width;
+                            ? Client.Y / _size.Y
+                            : Client.X / _size.X;
                         Scale = Vector2.One * ratio;
                     }
                     break;
                 case Scaling.Stretch:
                     Scale = new Vector2(
-                        1f * Client.X / _width, 
-                        1f * Client.Y / _height);
+                        1f * Client.X / _size.X, 
+                        1f * Client.Y / _size.Y);
                     break;
                 case Scaling.Extend:
                     if (source < target)
                     {
-                        var viewScale = 1f * Client.Y / _height;
-                        var worldScale = 1f * _height / Client.Y;
-                        var amount = (int)Math.Round((Client.X - _width * viewScale) * worldScale);
+                        var viewScale = 1f * Client.Y / _size.Y;
+                        var worldScale = 1f * _size.Y / Client.Y;
+                        var amount = (int)Math.Round((Client.X - _size.X * viewScale) * worldScale);
                         Extended = new Point(amount, Extended.Y);
                         Scale = Vector2.One * viewScale;
                     }
                     else
                     {
-                        var viewScale = 1f * Client.X / _width;
-                        var worldScale = 1f * _width / Client.X;
-                        var amount = (int)Math.Round((Client.Y - _height * viewScale) * worldScale);
+                        var viewScale = 1f * Client.X / _size.X;
+                        var worldScale = 1f * _size.X / Client.X;
+                        var amount = (int)Math.Round((Client.Y - _size.Y * viewScale) * worldScale);
                         Extended = new Point(Extended.X, amount);
                         Scale = Vector2.One * viewScale;
                     }
@@ -184,22 +187,18 @@ namespace FrogWorks
                 case Scaling.Crop:
                     {
                         var ratio = source > target
-                            ? 1f * Client.Y / _height
-                            : 1f * Client.X / _width;
+                            ? 1f * Client.Y / _size.Y
+                            : 1f * Client.X / _size.X;
                         Scale = Vector2.One * ratio;
                     }
                     break;
             }
 
-            View = new Point(
-                (int)Math.Round(Width * Scale.X),
-                (int)Math.Round(Height * Scale.Y));
-            Padding = new Point(
-                (Client.X - View.X) / 2,
-                (Client.Y - View.Y) / 2);
+            View = (Size.ToVector2() * Scale).Round().ToPoint();
+            Padding = ((Client - View).ToVector2() / 2f).Round().ToPoint();
             _viewport = new Viewport(Padding.X, Padding.Y, View.X, View.Y, 0f, 1f);
             _matrix = Matrix.CreateScale(new Vector3(Scale, 1f));
-            if (!_isDirty) _isDirty = lastExtend != Extended;
+            _isDirty = _isDirty || lastExtended != Extended;
         }
 
         private void Reset()

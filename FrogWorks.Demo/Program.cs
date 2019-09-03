@@ -8,10 +8,10 @@ namespace FrogWorks.Demo
         [STAThread]
         static void Main()
         {
-            using (var runner = new DesktopRunner(320, 240))
+            using (var runner = new DesktopRunner(320, 240, 2))
             {
                 runner.GoTo<TestScene>();
-                runner.ToFixedSize(2);
+                runner.AllowUserResizing = true;
                 runner.Run();
             }
         }
