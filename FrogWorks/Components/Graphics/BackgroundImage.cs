@@ -7,14 +7,11 @@ namespace FrogWorks
     public class BackgroundImage : Component
     {
         private Vector2 _position;
+        private Rectangle _drawableRegion;
 
         public Texture Texture { get; protected set; }
 
         public Rectangle Bounds => new Rectangle(0, 0, Texture.Width, Texture.Height);
-
-        public Rectangle DrawableRegion { get; private set; }
-
-        public Camera Camera => Layer?.Camera;
 
         public Vector2 Position
         {
@@ -23,33 +20,20 @@ namespace FrogWorks
             {
                 if (value == _position) return;
                 _position = value;
-                if (Layer?.Camera != null)
-                    UpdateDrawableRegion(Camera);
+                UpdateDrawableRegion(Layer?.Camera);
             }
         }
 
         public float X
         {
-            get { return _position.X; }
-            set
-            {
-                if (value == _position.X) return;
-                _position.X = value;
-                if (Layer?.Camera != null)
-                    UpdateDrawableRegion(Camera);
-            }
+            get { return Position.X; }
+            set { Position = new Vector2(value, Position.Y); }
         }
 
         public float Y
         {
-            get { return _position.Y; }
-            set
-            {
-                if (value == _position.Y) return;
-                _position.Y = value;
-                if (Layer?.Camera != null)
-                    UpdateDrawableRegion(Camera);
-            }
+            get { return Position.Y; }
+            set { Position = new Vector2(Position.X, value); }
         }
 
         public Vector2 DrawPosition
@@ -98,25 +82,25 @@ namespace FrogWorks
 
         protected override void Draw(RendererBatch batch)
         {
-            for (int i = 0; i < DrawableRegion.Width * DrawableRegion.Height; i++)
+            for (int i = 0; i < _drawableRegion.Width * _drawableRegion.Height; i++)
             {
-                var x = (!WrapVertically ? DrawableRegion.X : 0f) + (i % DrawableRegion.Width);
-                var y = (!WrapHorizontally ? DrawableRegion.Y : 0f) + (i / DrawableRegion.Width);
+                var x = (!WrapVertically ? _drawableRegion.X : 0f) + (i % _drawableRegion.Width);
+                var y = (!WrapHorizontally ? _drawableRegion.Y : 0f) + (i / _drawableRegion.Width);
                 var position = DrawPosition + new Vector2(x * Bounds.Width, y * Bounds.Height);
 
                 Texture.Draw(batch, position, Vector2.Zero, Vector2.One, 0f, Color * Opacity.Clamp(0f, 1f), SpriteEffects);
             }
         }
 
-        protected override void OnEntityAdded()
+        protected override void OnLayerAdded()
         {
-            Camera.OnCameraUpdated += UpdateDrawableRegion;
-            UpdateDrawableRegion(Camera);
+            Layer.Camera.OnCameraUpdated += UpdateDrawableRegion;
+            UpdateDrawableRegion(Layer.Camera);
         }
 
-        protected override void OnEntityRemoved()
+        protected override void OnLayerRemoved()
         {
-            Camera.OnCameraUpdated -= UpdateDrawableRegion;
+            Layer.Camera.OnCameraUpdated -= UpdateDrawableRegion;
         }
 
         private void UpdateDrawableRegion(Camera camera)
@@ -131,7 +115,7 @@ namespace FrogWorks
             var width = !WrapVertically ? x2 - x1 : 1;
             var height = !WrapHorizontally ? y2 - y1 : 1;
 
-            DrawableRegion = new Rectangle(x1, y1, width, height);
+            _drawableRegion = new Rectangle(x1, y1, width, height);
         }
     }
 }

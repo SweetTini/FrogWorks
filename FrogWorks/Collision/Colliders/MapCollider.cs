@@ -7,6 +7,7 @@ namespace FrogWorks
     public abstract class MapCollider<T> : Collider
     {
         private Point _cellSize;
+        private Rectangle _drawableRegion;
 
         protected Map<T> Map { get; private set; }
 
@@ -40,7 +41,7 @@ namespace FrogWorks
             set { CellSize = new Point(CellSize.X, value); }
         }
 
-        public override Vector2 Size
+        public sealed override Vector2 Size
         {
             get { return (MapSize * CellSize).ToVector2(); }
             set
@@ -52,13 +53,13 @@ namespace FrogWorks
             }
         }
 
-        public override Vector2 Upper
+        public sealed override Vector2 Upper
         {
             get { return AbsolutePosition; }
             set { AbsolutePosition = value; }
         }
 
-        public override Vector2 Lower
+        public sealed override Vector2 Lower
         {
             get { return AbsolutePosition + Size; }
             set { AbsolutePosition = value - Size; }
@@ -67,8 +68,49 @@ namespace FrogWorks
         protected MapCollider(int columns, int rows, int cellWidth, int cellHeight, float x = 0f, float y = 0f) 
             : base(new Vector2(x, y))
         {
-            _cellSize = new Point(cellWidth, cellHeight).Abs();
             Map = new Map<T>(Math.Abs(columns), Math.Abs(rows));
+
+            _cellSize = new Point(cellWidth, cellHeight).Abs();
+        }
+
+        public sealed override void DebugDraw(RendererBatch batch, Color color, bool fill = false)
+        {
+            for (int i = 0; i < _drawableRegion.Width * _drawableRegion.Height; i++)
+            {
+                var x = _drawableRegion.Left + (i % _drawableRegion.Width);
+                var y = _drawableRegion.Top + (i / _drawableRegion.Width);
+                var shape = GetCellShape(new Point(x, y));
+
+                shape.Draw(batch, color, fill);
+            }
+        }
+
+        public sealed override bool Contains(Vector2 point)
+        {
+            return CheckCells(GetCells(point), cs => cs.Contains(point));
+        }
+
+        public sealed override bool Collide(Ray ray)
+        {
+            Raycast hit;
+            return CheckCells(GetCells(ray.Position, ray.Endpoint), cs => ray.Cast(cs, out hit));
+        }
+
+        public sealed override bool Collide(Shape shape)
+        {
+            return CheckCells(GetCells(shape.Bounds), cs => shape.Collide(cs));
+        }
+
+        public sealed override bool Collide(Collider other)
+        {
+            return CheckCells(GetCells(other.Bounds), (cs) =>
+            {
+                if (!Equals(other) && other.IsCollidable)
+                    if (other is ShapeCollider)
+                        return (other as ShapeCollider).Collide(cs);
+
+                return false;
+            });
         }
 
         public void Populate(T[,] data, int offsetX = 0, int offsetY = 0)
@@ -120,6 +162,19 @@ namespace FrogWorks
         }
 
         public void Clear() => Map.Clear();
+
+        protected sealed override void OnLayerAdded()
+        {
+            Layer.Camera.OnCameraUpdated += UpdateDrawableRegion;
+            UpdateDrawableRegion(Layer.Camera);
+        }
+
+        protected sealed override void OnLayerRemoved()
+        {
+            Layer.Camera.OnCameraUpdated -= UpdateDrawableRegion;
+        }
+
+        protected sealed override void OnTransformed() => UpdateDrawableRegion(Layer?.Camera);
 
         protected IEnumerable<Point> GetCells(Vector2 point)
             => Extensions.AsEnumerable(point.SnapToGrid(CellSize.ToVector2(), AbsolutePosition).ToPoint());
@@ -204,6 +259,18 @@ namespace FrogWorks
             }
 
             return false;
+        }
+
+        private void UpdateDrawableRegion(Camera camera)
+        {
+            if (camera == null) return;
+
+            var x1 = (int)Math.Max(Math.Floor((camera.Bounds.Left - AbsoluteX) / CellWidth), 0);
+            var y1 = (int)Math.Max(Math.Floor((camera.Bounds.Top - AbsoluteY) / CellHeight), 0);
+            var x2 = (int)Math.Min(Math.Ceiling((camera.Bounds.Right + AbsoluteX) / CellWidth), Columns);
+            var y2 = (int)Math.Min(Math.Ceiling((camera.Bounds.Bottom + AbsoluteY) / CellHeight), Rows);
+
+            _drawableRegion = new Rectangle(x1, y1, x2 - x1, y2 - y1);
         }
     }
 }

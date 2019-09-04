@@ -48,10 +48,9 @@ namespace FrogWorks
         {
             if (!Equals(other) && IsCollidable && other.IsCollidable)
             {
-                if (other is ShapeCollider)
-                    return (other as ShapeCollider).Collide(Shape);
-                else if (other is SimpleMapCollider)
-                    return (other as SimpleMapCollider).Collide(Shape);
+                if (other is ShapeCollider) return (other as ShapeCollider).Collide(Shape);
+                if (other is SimpleMapCollider) return (other as SimpleMapCollider).Collide(Shape);
+                if (other is IndexMapCollider) return (other as IndexMapCollider).Collide(Shape);
             }
 
             return false;

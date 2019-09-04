@@ -7,6 +7,7 @@ namespace FrogWorks
     public class TileMap : Component
     {
         private Vector2 _position;
+        private Rectangle _drawableRegion;
 
         protected Map<Texture> TextureMap { get; private set; }
 
@@ -20,10 +21,6 @@ namespace FrogWorks
 
         public Rectangle Bounds => new Rectangle(0, 0, Columns * TileWidth, Rows * TileHeight);
 
-        public Rectangle DrawableRegion { get; private set; }
-
-        public Camera Camera => Layer?.Camera;
-
         public Vector2 Position
         {
             get { return _position; }
@@ -31,33 +28,20 @@ namespace FrogWorks
             {
                 if (value == _position) return;
                 _position = value;
-                if (Layer?.Camera != null)
-                    UpdateDrawableRegion(Camera);
+                UpdateDrawableRegion(Layer?.Camera);
             }
         }
 
         public float X
         {
-            get { return _position.X; }
-            set
-            {
-                if (value == _position.X) return;
-                _position.X = value;
-                if (Layer?.Camera != null)
-                    UpdateDrawableRegion(Camera);
-            }
+            get { return Position.X; }
+            set { Position = new Vector2(value, Position.Y); }
         }
 
         public float Y
         {
-            get { return _position.Y; }
-            set
-            {
-                if (value == _position.Y) return;
-                _position.Y = value;
-                if (Layer?.Camera != null)
-                    UpdateDrawableRegion(Camera);
-            }
+            get { return Position.Y; }
+            set { Position = new Vector2(Position.X, value); }
         }
 
         public Vector2 DrawPosition
@@ -104,25 +88,25 @@ namespace FrogWorks
 
         protected override void Draw(RendererBatch batch)
         {
-            for (int i = 0; i < DrawableRegion.Width * DrawableRegion.Height; i++)
+            for (int i = 0; i < _drawableRegion.Width * _drawableRegion.Height; i++)
             {
-                var x = DrawableRegion.Left + (i % DrawableRegion.Width);
-                var y = DrawableRegion.Top + (i / DrawableRegion.Width);
+                var x = _drawableRegion.Left + (i % _drawableRegion.Width);
+                var y = _drawableRegion.Top + (i / _drawableRegion.Width);
                 var position = DrawPosition + new Vector2(x * TileWidth, y * TileHeight);
 
                 TextureMap[x, y]?.Draw(batch, position, Vector2.Zero, Vector2.One, 0f, Color * Opacity.Clamp(0f, 1f), SpriteEffects);
             }
         }
 
-        protected override void OnEntityAdded()
+        protected override void OnLayerAdded()
         {
-            Camera.OnCameraUpdated += UpdateDrawableRegion;
-            UpdateDrawableRegion(Camera);
+            Layer.Camera.OnCameraUpdated += UpdateDrawableRegion;
+            UpdateDrawableRegion(Layer.Camera);
         }
 
-        protected override void OnEntityRemoved()
+        protected override void OnLayerRemoved()
         {
-            Camera.OnCameraUpdated -= UpdateDrawableRegion;
+            Layer.Camera.OnCameraUpdated -= UpdateDrawableRegion;
         }
 
         public void Populate(TileSet tileSet, int[,] tiles, int offsetX = 0, int offsetY = 0)
@@ -197,7 +181,7 @@ namespace FrogWorks
             var x2 = (int)Math.Min(Math.Ceiling((camera.Bounds.Right + DrawPosition.X) / TileWidth), Columns);
             var y2 = (int)Math.Min(Math.Ceiling((camera.Bounds.Bottom + DrawPosition.Y) / TileHeight), Rows);
 
-            DrawableRegion = new Rectangle(x1, y1, x2 - x1, y2 - y1);
+            _drawableRegion = new Rectangle(x1, y1, x2 - x1, y2 - y1);
         }
     }
 }
