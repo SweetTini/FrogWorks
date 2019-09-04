@@ -136,9 +136,9 @@ namespace FrogWorks
             {
                 var x = i % columns;
                 var y = i / columns;
+                if (data[x, y].Equals(Map.Empty)) continue;
 
-                if (!data[x, y].Equals(Map.Empty))
-                    Map[x + offsetX, y + offsetY] = data[x, y];
+                Map[x + offsetX, y + offsetY] = data[x, y];
             }
         }
 
