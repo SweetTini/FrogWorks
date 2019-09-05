@@ -31,10 +31,10 @@ namespace FrogWorks
         protected ShapeCollider(Vector2 position)
             : base(position) { }
 
-        public sealed override void DebugDraw(RendererBatch batch, Color color, bool fill = false)
+        public sealed override void Draw(RendererBatch batch, Color color, bool fill = false)
             => Shape.Draw(batch, color, fill);
 
-        public sealed override bool Contains(Vector2 point) => IsCollidable && Shape.Contains(point);
+        public sealed override bool Collide(Vector2 point) => IsCollidable && Shape.Contains(point);
 
         public sealed override bool Collide(Ray ray)
         {

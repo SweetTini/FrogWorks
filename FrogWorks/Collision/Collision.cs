@@ -6,6 +6,12 @@ namespace FrogWorks
     public static class Collision
     {
         #region Raycasting
+        public static bool Cast(this Ray ray, Shape other)
+        {
+            Raycast hit;
+            return ray.Cast(other, out hit);
+        }
+
         public static bool Cast(this Ray ray, Shape other, out Raycast hit)
         {
             hit = new Raycast(ray);
@@ -18,6 +24,12 @@ namespace FrogWorks
                 return ray.Cast(other as Polygon, out hit);
 
             return false;
+        }
+
+        public static bool Cast(this Ray ray, Circle other)
+        {
+            Raycast hit;
+            return ray.Cast(other, out hit);
         }
 
         public static bool Cast(this Ray ray, Circle other, out Raycast hit)
@@ -43,6 +55,12 @@ namespace FrogWorks
             return false;
         }
 
+        public static bool Cast(this Ray ray, RectangleF other)
+        {
+            Raycast hit;
+            return ray.Cast(other, out hit);
+        }
+
         public static bool Cast(this Ray ray, RectangleF other, out Raycast hit)
         {
             hit = new Raycast(ray);
@@ -65,6 +83,12 @@ namespace FrogWorks
             }
 
             return false;
+        }
+
+        public static bool Cast(this Ray ray, Polygon other)
+        {
+            Raycast hit;
+            return ray.Cast(other, out hit);
         }
 
         public static bool Cast(this Ray ray, Polygon other, out Raycast hit)

@@ -126,11 +126,11 @@ namespace FrogWorks
             _position = position;
         }
 
-        public virtual void DebugDraw(RendererBatch batch, Color color, bool fill = false) { }
+        public virtual void Draw(RendererBatch batch, Color color, bool fill = false) { }
 
-        public abstract bool Contains(Vector2 point);
+        public abstract bool Collide(Vector2 point);
 
-        public bool Contains(float x, float y) => Contains(new Vector2(x, y));
+        public bool Collide(float x, float y) => Collide(new Vector2(x, y));
 
         public abstract bool Collide(Ray ray);
 

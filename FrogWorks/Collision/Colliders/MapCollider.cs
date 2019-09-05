@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using System.Linq;
 
 namespace FrogWorks
 {
@@ -73,76 +74,64 @@ namespace FrogWorks
             _cellSize = new Point(cellWidth, cellHeight).Abs();
         }
 
-        public sealed override void DebugDraw(RendererBatch batch, Color color, bool fill = false)
+        public sealed override void Draw(RendererBatch batch, Color color, bool fill = false)
         {
             for (int i = 0; i < _drawableRegion.Width * _drawableRegion.Height; i++)
             {
                 var x = _drawableRegion.Left + (i % _drawableRegion.Width);
                 var y = _drawableRegion.Top + (i / _drawableRegion.Width);
-                var shape = GetCellShape(new Point(x, y));
 
-                shape.Draw(batch, color, fill);
+                ShapeOf(x, y)?.Draw(batch, color, fill);
             }
         }
 
-        public sealed override bool Contains(Vector2 point)
+        public override bool Collide(Vector2 point)
+            => Validate(At(point), (p, i) => CheckShape(p, s => s.Contains(point)));
+
+        public override bool Collide(Ray ray)
+            => Validate(At(ray.Position, ray.Endpoint), (p, i) => CheckShape(p, s => ray.Cast(s)));
+
+        public override bool Collide(Shape shape)
+            => Validate(At(shape.Bounds), (p, i) => CheckShape(p, s => shape.Collide(s)));
+
+        public override bool Collide(Collider other)
         {
-            return CheckCells(GetCells(point), cs => cs.Contains(point));
+            if (Equals(other) || !other.IsCollidable) return false;
+
+            return Validate(At(other.Bounds), (p, i) 
+                => CheckShape(p, s => other is ShapeCollider && (other as ShapeCollider).Collide(s)));
         }
 
-        public sealed override bool Collide(Ray ray)
+        public void Populate(T[,] items, int offsetX = 0, int offsetY = 0)
         {
-            Raycast hit;
-            return CheckCells(GetCells(ray.Position, ray.Endpoint), cs => ray.Cast(cs, out hit));
-        }
-
-        public sealed override bool Collide(Shape shape)
-        {
-            return CheckCells(GetCells(shape.Bounds), cs => shape.Collide(cs));
-        }
-
-        public sealed override bool Collide(Collider other)
-        {
-            return CheckCells(GetCells(other.Bounds), (cs) =>
-            {
-                if (!Equals(other) && other.IsCollidable)
-                    if (other is ShapeCollider)
-                        return (other as ShapeCollider).Collide(cs);
-
-                return false;
-            });
-        }
-
-        public void Populate(T[,] data, int offsetX = 0, int offsetY = 0)
-        {
-            var columns = data.GetLength(0);
-            var rows = data.GetLength(1);
+            var columns = items.GetLength(0);
+            var rows = items.GetLength(1);
 
             for (int i = 0; i < columns * rows; i++)
             {
                 var x = i % columns;
                 var y = i / columns;
 
-                Map[x + offsetX, y + offsetY] = data[x, y];
+                Map[x + offsetX, y + offsetY] = items[x, y];
             }
         }
 
-        public void Overlay(T[,] data, int offsetX = 0, int offsetY = 0)
+        public void Overlay(T[,] items, int offsetX = 0, int offsetY = 0)
         {
-            var columns = data.GetLength(0);
-            var rows = data.GetLength(1);
+            var columns = items.GetLength(0);
+            var rows = items.GetLength(1);
 
             for (int i = 0; i < columns * rows; i++)
             {
                 var x = i % columns;
                 var y = i / columns;
-                if (data[x, y].Equals(Map.Empty)) continue;
+                if (items[x, y].Equals(Map.Empty)) continue;
 
-                Map[x + offsetX, y + offsetY] = data[x, y];
+                Map[x + offsetX, y + offsetY] = items[x, y];
             }
         }
 
-        public void Fill(T data, int x, int y, int columns, int rows)
+        public void Fill(T item, int x, int y, int columns, int rows)
         {
             var x1 = Math.Max(x, 0);
             var y1 = Math.Max(y, 0);
@@ -157,7 +146,7 @@ namespace FrogWorks
                 var tx = i % cellColumns;
                 var ty = i / cellColumns;
 
-                Map[tx, ty] = data;
+                Map[tx, ty] = item;
             }
         }
 
@@ -176,10 +165,10 @@ namespace FrogWorks
 
         protected sealed override void OnTransformed() => UpdateDrawableRegion(Layer?.Camera);
 
-        protected IEnumerable<Point> GetCells(Vector2 point)
+        protected IEnumerable<Point> At(Vector2 point) 
             => Extensions.AsEnumerable(point.SnapToGrid(CellSize.ToVector2(), AbsolutePosition).ToPoint());
 
-        protected IEnumerable<Point> GetCells(Vector2 from, Vector2 to)
+        protected IEnumerable<Point> At(Vector2 from, Vector2 to)
         {
             var cellFrom = from.SnapToGrid(CellSize.ToVector2(), AbsolutePosition).ToPoint();
             var cellTo = to.SnapToGrid(CellSize.ToVector2(), AbsolutePosition).ToPoint();
@@ -222,7 +211,7 @@ namespace FrogWorks
             }
         }
 
-        protected IEnumerable<Point> GetCells(Rectangle area)
+        protected IEnumerable<Point> At(Rectangle area)
         {
             var bounds = area.SnapToGrid(CellSize.ToVector2(), AbsolutePosition);
 
@@ -234,31 +223,48 @@ namespace FrogWorks
             }
         }
 
-        protected virtual Shape GetCellShape(Point cell)
-        {
-            if (!Map.IsEmpty(cell.X, cell.Y))
-            {
-                return new RectangleF(
-                    AbsolutePosition + (cell * CellSize).ToVector2(),
-                    CellSize.ToVector2());
-            }
+        protected abstract Shape ShapeOf(Point point);
 
-            return null;
-        }
+        protected Shape ShapeOf(int x, int y) => ShapeOf(new Point(x, y));
 
-        protected bool CheckCells(IEnumerable<Point> cells, Func<Shape, bool> predicate)
+        protected bool Validate(IEnumerable<Point> points, Func<Point, T, bool> predicate)
         {
             if (IsCollidable)
             {
-                foreach (var cell in cells)
+                foreach (var point in points)
                 {
-                    var shape = GetCellShape(cell);
-                    if (shape != null && predicate(shape))
-                        return true;
+                    var item = Map[point.X, point.Y];
+                    if (item.Equals(Map.Empty)) continue;
+                    if (predicate(point, item)) return true;
                 }
             }
 
             return false;
+        }
+
+        protected bool Validate(IEnumerable<Point> points, T item, Func<Point, T, bool> predicate)
+            => Validate(points, Extensions.AsEnumerable(item), predicate);
+
+        protected bool Validate(IEnumerable<Point> points, IEnumerable<T> items, Func<Point, T, bool> predicate)
+        {
+            if (IsCollidable)
+            {
+                foreach (var point in points)
+                {
+                    var item = Map[point.X, point.Y];
+                    if (item.Equals(Map.Empty) || items.All(i => !item.Equals(i))) continue;
+                    if (predicate(point, item)) return true;
+                }
+            }
+
+            return false;
+        }
+
+        protected bool CheckShape(Point point, Func<Shape, bool> predicate)
+        {
+            var shape = ShapeOf(point);
+
+            return shape != null && predicate(shape);
         }
 
         private void UpdateDrawableRegion(Camera camera)

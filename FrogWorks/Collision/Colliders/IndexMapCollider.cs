@@ -1,4 +1,6 @@
-﻿namespace FrogWorks
+﻿using Microsoft.Xna.Framework;
+
+namespace FrogWorks
 {
     public class IndexMapCollider : MapCollider<int>
     {
@@ -10,6 +12,14 @@
             var collider = new IndexMapCollider(Columns, Rows, CellWidth, CellHeight, X, Y);
             collider.Populate(Map.ToArray());
             return collider;
+        }
+
+        protected override Shape ShapeOf(Point point)
+        {
+            if (!Map.IsEmpty(point.X, point.Y))
+                return new RectangleF(AbsolutePosition + (point * CellSize).ToVector2(), CellSize.ToVector2());
+
+            return null;
         }
     }
 }
