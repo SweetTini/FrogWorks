@@ -5,7 +5,7 @@ namespace FrogWorks
     public class SimpleMapCollider : MapCollider<bool>
     {
         public SimpleMapCollider(int columns, int rows, int cellWidth, int cellHeight, float x = 0, float y = 0)
-            : base(columns, rows, cellWidth, cellHeight, x, y) { }     
+            : base(columns, rows, cellWidth, cellHeight, x, y) { }
 
         public override Collider Clone()
         {
@@ -16,10 +16,11 @@ namespace FrogWorks
 
         protected override Shape ShapeOf(Point point)
         {
-            if (!Map.IsEmpty(point.X, point.Y))
-                return new RectangleF(AbsolutePosition + (point * CellSize).ToVector2(), CellSize.ToVector2());
-
-            return null;
+            return !Map.IsEmpty(point.X, point.Y)
+                ? new RectangleF(
+                    AbsolutePosition + (point * CellSize).ToVector2(),
+                    CellSize.ToVector2())
+                : null;
         }
     }
 }

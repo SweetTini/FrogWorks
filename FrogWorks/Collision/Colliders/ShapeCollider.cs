@@ -50,7 +50,7 @@ namespace FrogWorks
             {
                 if (collider is ShapeCollider) return (collider as ShapeCollider).Collide(Shape);
                 if (collider is SimpleMapCollider) return (collider as SimpleMapCollider).Collide(Shape);
-                if (collider is IndexMapCollider) return (collider as IndexMapCollider).Collide(Shape);
+                if (collider is BitFlagMapCollider) return (collider as BitFlagMapCollider).Collide(Shape);
             }
 
             return false;

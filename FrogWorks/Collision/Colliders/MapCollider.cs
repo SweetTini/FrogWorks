@@ -242,24 +242,6 @@ namespace FrogWorks
             return false;
         }
 
-        protected bool Validate(IEnumerable<Point> points, T item, Func<Point, T, bool> predicate)
-            => Validate(points, Extensions.AsEnumerable(item), predicate);
-
-        protected bool Validate(IEnumerable<Point> points, IEnumerable<T> items, Func<Point, T, bool> predicate)
-        {
-            if (IsCollidable)
-            {
-                foreach (var point in points)
-                {
-                    var item = Map[point.X, point.Y];
-                    if (item.Equals(Map.Empty) || items.All(i => !item.Equals(i))) continue;
-                    if (predicate(point, item)) return true;
-                }
-            }
-
-            return false;
-        }
-
         protected bool CheckShape(Point point, Func<Shape, bool> predicate)
         {
             var shape = ShapeOf(point);

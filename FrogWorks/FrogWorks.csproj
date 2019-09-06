@@ -42,9 +42,8 @@
   <ItemGroup>
     <Compile Include="Collision\Broad\AABB.cs" />
     <Compile Include="Collision\Broad\AABBTree.cs" />
+    <Compile Include="Collision\Colliders\BitFlagMapCollider.cs" />
     <Compile Include="Collision\Colliders\CircleCollider.cs" />
-    <Compile Include="Collision\Colliders\ComplexMapCollider.cs" />
-    <Compile Include="Collision\Colliders\IndexMapCollider.cs" />
     <Compile Include="Collision\Colliders\MapCollider.cs" />
     <Compile Include="Collision\Colliders\OrientedRectangleCollider.cs" />
     <Compile Include="Collision\Colliders\PolygonCollider.cs" />
