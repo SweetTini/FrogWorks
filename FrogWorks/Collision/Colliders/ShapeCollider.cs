@@ -44,13 +44,13 @@ namespace FrogWorks
 
         public sealed override bool Collide(Shape shape) => IsCollidable && shape.Collide(Shape);
 
-        public sealed override bool Collide(Collider other)
+        public sealed override bool Collide(Collider collider)
         {
-            if (!Equals(other) && IsCollidable && other.IsCollidable)
+            if (!Equals(collider) && IsCollidable && collider.IsCollidable)
             {
-                if (other is ShapeCollider) return (other as ShapeCollider).Collide(Shape);
-                if (other is SimpleMapCollider) return (other as SimpleMapCollider).Collide(Shape);
-                if (other is IndexMapCollider) return (other as IndexMapCollider).Collide(Shape);
+                if (collider is ShapeCollider) return (collider as ShapeCollider).Collide(Shape);
+                if (collider is SimpleMapCollider) return (collider as SimpleMapCollider).Collide(Shape);
+                if (collider is IndexMapCollider) return (collider as IndexMapCollider).Collide(Shape);
             }
 
             return false;

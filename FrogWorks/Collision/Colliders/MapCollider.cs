@@ -94,12 +94,12 @@ namespace FrogWorks
         public override bool Collide(Shape shape)
             => Validate(At(shape.Bounds), (p, i) => CheckShape(p, s => shape.Collide(s)));
 
-        public override bool Collide(Collider other)
+        public override bool Collide(Collider collider)
         {
-            if (Equals(other) || !other.IsCollidable) return false;
+            if (collider == null || Equals(collider) || !collider.IsCollidable) return false;
 
-            return Validate(At(other.Bounds), (p, i) 
-                => CheckShape(p, s => other is ShapeCollider && (other as ShapeCollider).Collide(s)));
+            return Validate(At(collider.Bounds), (p, i) 
+                => CheckShape(p, s => collider is ShapeCollider && (collider as ShapeCollider).Collide(s)));
         }
 
         public void Populate(T[,] items, int offsetX = 0, int offsetY = 0)

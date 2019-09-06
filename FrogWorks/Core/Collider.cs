@@ -136,7 +136,7 @@ namespace FrogWorks
 
         public abstract bool Collide(Shape shape);
 
-        public abstract bool Collide(Collider other);
+        public abstract bool Collide(Collider collider);
 
         public bool Collide(Entity entity) => Collide(entity?.Collider);
 
