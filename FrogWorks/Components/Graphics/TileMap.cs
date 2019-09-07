@@ -8,6 +8,7 @@ namespace FrogWorks
     {
         private Vector2 _position;
         private Rectangle _drawableRegion;
+        private bool _isRegistered;
 
         protected Map<Texture> TextureMap { get; private set; }
 
@@ -98,16 +99,17 @@ namespace FrogWorks
             }
         }
 
-        protected override void OnLayerAdded()
-        {
-            Layer.Camera.OnCameraUpdated += UpdateDrawableRegion;
-            UpdateDrawableRegion(Layer.Camera);
-        }
+        protected override void OnAdded() => AddCameraUpdateEvent();
 
-        protected override void OnLayerRemoved()
-        {
-            Layer.Camera.OnCameraUpdated -= UpdateDrawableRegion;
-        }
+        protected override void OnRemoved() => RemoveCameraUpdateEvent();
+
+        protected override void OnEntityAdded() => AddCameraUpdateEvent();
+
+        protected override void OnEntityRemoved() => RemoveCameraUpdateEvent();
+
+        protected override void OnLayerAdded() => AddCameraUpdateEvent();
+
+        protected override void OnLayerRemoved() => RemoveCameraUpdateEvent();
 
         public void Populate(TileSet tileSet, int[,] tiles, int offsetX = 0, int offsetY = 0)
         {
@@ -151,8 +153,9 @@ namespace FrogWorks
 
             for (int i = 0; i < tileColumns * tileRows; i++)
             {
-                var tx = i % tileColumns;
-                var ty = i / tileColumns;
+                var tx = x1 + (i % tileColumns);
+                var ty = y1 + (i / tileColumns);
+
                 TextureMap[tx, ty] = tile;
             }
         }
@@ -170,6 +173,25 @@ namespace FrogWorks
         public void Resize(int x1, int y1, int x2, int y2)
         {
             TextureMap.Resize(x1, y1, x2, y2);
+        }
+
+        private void AddCameraUpdateEvent()
+        {
+            if (!_isRegistered && Layer != null)
+            {
+                Layer.Camera.OnCameraUpdated += UpdateDrawableRegion;
+                UpdateDrawableRegion(Layer.Camera);
+                _isRegistered = true;
+            }
+        }
+
+        private void RemoveCameraUpdateEvent()
+        {
+            if (_isRegistered && Layer != null)
+            {
+                Layer.Camera.OnCameraUpdated -= UpdateDrawableRegion;
+                _isRegistered = false;
+            }
         }
 
         private void UpdateDrawableRegion(Camera camera)

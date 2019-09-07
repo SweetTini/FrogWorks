@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using System.Linq;
 
 namespace FrogWorks
 {
@@ -9,6 +8,7 @@ namespace FrogWorks
     {
         private Point _cellSize;
         private Rectangle _drawableRegion;
+        private bool _isRegistered;
 
         protected Map<T> Map { get; private set; }
 
@@ -143,8 +143,8 @@ namespace FrogWorks
 
             for (int i = 0; i < cellColumns * cellRows; i++)
             {
-                var tx = i % cellColumns;
-                var ty = i / cellColumns;
+                var tx = x1 + (i % cellColumns);
+                var ty = y1 + (i / cellColumns);
 
                 Map[tx, ty] = item;
             }
@@ -152,16 +152,17 @@ namespace FrogWorks
 
         public void Clear() => Map.Clear();
 
-        protected sealed override void OnLayerAdded()
-        {
-            Layer.Camera.OnCameraUpdated += UpdateDrawableRegion;
-            UpdateDrawableRegion(Layer.Camera);
-        }
+        protected sealed override void OnAdded() => AddCameraUpdateEvent();
 
-        protected sealed override void OnLayerRemoved()
-        {
-            Layer.Camera.OnCameraUpdated -= UpdateDrawableRegion;
-        }
+        protected sealed override void OnRemoved() => RemoveCameraUpdateEvent();
+
+        protected sealed override void OnEntityAdded() => AddCameraUpdateEvent();
+
+        protected sealed override void OnEntityRemoved() => RemoveCameraUpdateEvent();
+
+        protected sealed override void OnLayerAdded() => AddCameraUpdateEvent();
+
+        protected sealed override void OnLayerRemoved() => RemoveCameraUpdateEvent();
 
         protected sealed override void OnTransformed() => UpdateDrawableRegion(Layer?.Camera);
 
@@ -247,6 +248,25 @@ namespace FrogWorks
             var shape = ShapeOf(point);
 
             return shape != null && predicate(shape);
+        }
+
+        private void AddCameraUpdateEvent()
+        {
+            if (!_isRegistered && Layer != null)
+            {
+                Layer.Camera.OnCameraUpdated += UpdateDrawableRegion;
+                UpdateDrawableRegion(Layer.Camera);
+                _isRegistered = true;
+            }
+        }
+
+        private void RemoveCameraUpdateEvent()
+        {
+            if (_isRegistered && Layer != null)
+            {
+                Layer.Camera.OnCameraUpdated -= UpdateDrawableRegion;
+                _isRegistered = false;
+            }
         }
 
         private void UpdateDrawableRegion(Camera camera)

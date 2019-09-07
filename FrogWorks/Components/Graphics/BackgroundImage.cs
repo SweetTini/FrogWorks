@@ -8,6 +8,7 @@ namespace FrogWorks
     {
         private Vector2 _position;
         private Rectangle _drawableRegion;
+        private bool _isRegistered;
 
         public Texture Texture { get; protected set; }
 
@@ -92,15 +93,35 @@ namespace FrogWorks
             }
         }
 
-        protected override void OnLayerAdded()
+        protected override void OnAdded() => AddCameraUpdateEvent();
+
+        protected override void OnRemoved() => RemoveCameraUpdateEvent();
+
+        protected override void OnEntityAdded() => AddCameraUpdateEvent();
+
+        protected override void OnEntityRemoved() => RemoveCameraUpdateEvent();
+
+        protected override void OnLayerAdded() => AddCameraUpdateEvent();
+
+        protected override void OnLayerRemoved() => RemoveCameraUpdateEvent();
+
+        private void AddCameraUpdateEvent()
         {
-            Layer.Camera.OnCameraUpdated += UpdateDrawableRegion;
-            UpdateDrawableRegion(Layer.Camera);
+            if (!_isRegistered && Layer != null)
+            {
+                Layer.Camera.OnCameraUpdated += UpdateDrawableRegion;
+                UpdateDrawableRegion(Layer.Camera);
+                _isRegistered = true;
+            }
         }
 
-        protected override void OnLayerRemoved()
+        private void RemoveCameraUpdateEvent()
         {
-            Layer.Camera.OnCameraUpdated -= UpdateDrawableRegion;
+            if (_isRegistered && Layer != null)
+            {
+                Layer.Camera.OnCameraUpdated -= UpdateDrawableRegion;
+                _isRegistered = false;
+            }
         }
 
         private void UpdateDrawableRegion(Camera camera)
