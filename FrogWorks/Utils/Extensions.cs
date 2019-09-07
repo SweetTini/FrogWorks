@@ -112,10 +112,10 @@ namespace FrogWorks
             return new Rectangle(x, y, width, height);
         }
 
-        public static Rectangle SnapToGrid(this Rectangle rect, Vector2 gridSize, Vector2 offset = default(Vector2))
+        public static Rectangle SnapToGrid(this Rectangle rect, Vector2 size, Vector2 offset = default(Vector2))
         {
-            var upper = rect.Location.ToVector2().SnapToGrid(gridSize, offset);
-            var lower = (rect.Location + rect.Size).ToVector2().SnapToGrid(gridSize, offset);
+            var upper = (rect.Location.ToVector2() - offset).Divide(size).Floor();
+            var lower = ((rect.Location + rect.Size).ToVector2() - offset).Divide(size).Ceiling();
             return new Rectangle(upper.ToPoint(), (lower - upper).ToPoint());
         }
 
@@ -182,6 +182,11 @@ namespace FrogWorks
                 MathHelper.Clamp(vector.Y, lowest.Y, highest.Y));
         }
 
+        public static Vector2 Ceiling(this Vector2 vector)
+        {
+            return new Vector2((float)Math.Ceiling(vector.X), (float)Math.Ceiling(vector.Y));
+        }
+
         public static float Cross(this Vector2 vector, Vector2 other)
         {
             return vector.X * other.Y - vector.Y * other.X;
@@ -202,6 +207,11 @@ namespace FrogWorks
         public static Vector2 Divide(this Vector2 vector, float divider)
         {
             return divider != 0f ? vector / divider : Vector2.Zero;
+        }
+
+        public static Vector2 Floor(this Vector2 vector)
+        {
+            return new Vector2((float)Math.Floor(vector.X), (float)Math.Floor(vector.Y));
         }
 
         public static Vector2 Inverse(this Vector2 vector)
@@ -226,9 +236,9 @@ namespace FrogWorks
             return new Vector2((float)Math.Round(vector.X, digits), (float)Math.Round(vector.Y, digits));
         }
 
-        public static Vector2 SnapToGrid(this Vector2 vector, Vector2 gridSize, Vector2 offset = default(Vector2))
+        public static Vector2 SnapToGrid(this Vector2 vector, Vector2 size, Vector2 offset = default(Vector2))
         {
-            return (vector - offset).Divide(gridSize).Round();
+            return (vector - offset).Divide(size).Floor();
         }
 
         public static Vector2 SafeNormalize(this Vector2 vector)
