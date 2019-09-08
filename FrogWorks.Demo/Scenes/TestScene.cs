@@ -31,6 +31,8 @@ namespace FrogWorks.Demo.Scenes
 
             layer.Entities.Add(Extensions.AsEnumerable<Entity>(World, Player));
             hudLayer.Entities.Add(Extensions.AsEnumerable<Entity>(Font, FpsFont));
+
+            layer.Camera.SetZone(World.Collider.Size.ToPoint());
         }
 
         protected override void AfterUpdate()

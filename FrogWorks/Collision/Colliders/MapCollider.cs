@@ -273,10 +273,10 @@ namespace FrogWorks
         {
             if (camera == null) return;
 
-            var x1 = (int)Math.Max(Math.Floor((camera.Bounds.Left - AbsoluteX) / CellWidth), 0);
-            var y1 = (int)Math.Max(Math.Floor((camera.Bounds.Top - AbsoluteY) / CellHeight), 0);
-            var x2 = (int)Math.Min(Math.Ceiling((camera.Bounds.Right + AbsoluteX) / CellWidth), Columns);
-            var y2 = (int)Math.Min(Math.Ceiling((camera.Bounds.Bottom + AbsoluteY) / CellHeight), Rows);
+            var x1 = (int)Math.Max(Math.Floor((camera.View.Left - AbsoluteX) / CellWidth), 0);
+            var y1 = (int)Math.Max(Math.Floor((camera.View.Top - AbsoluteY) / CellHeight), 0);
+            var x2 = (int)Math.Min(Math.Ceiling((camera.View.Right + AbsoluteX) / CellWidth), Columns);
+            var y2 = (int)Math.Min(Math.Ceiling((camera.View.Bottom + AbsoluteY) / CellHeight), Rows);
 
             _drawableRegion = new Rectangle(x1, y1, x2 - x1, y2 - y1);
         }

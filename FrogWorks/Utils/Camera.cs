@@ -8,6 +8,7 @@ namespace FrogWorks
     {
         private Matrix _transformMatrix, _inverseMatrix;
         private Viewport _viewport;
+        private Rectangle? _zone;
         private Vector2 _position, _origin;
         private float _zoom = 1f, _angle;
         private bool _isDirty = true;
@@ -58,13 +59,19 @@ namespace FrogWorks
 
         public float Bottom => Lower.Y;
 
-        public Rectangle Bounds { get; private set; }
+        public Rectangle View { get; private set; }
 
         public Vector2 Position
         {
             get { return _position; }
             set
             {
+                if (_zone.HasValue)
+                {
+                    var center = Runner.Application.Size.ToVector2() * .5f;
+                    value = value.Clamp(center, _zone.Value.Size.ToVector2() - center);
+                }
+
                 if (value == _position) return;
                 _position = value;
                 _isDirty = true;
@@ -73,24 +80,14 @@ namespace FrogWorks
 
         public float X
         {
-            get { return _position.X; }
-            set
-            {
-                if (value == _position.X) return;
-                _position.X = value;
-                _isDirty = true;
-            }
+            get { return Position.X; }
+            set { Position = new Vector2(value, Position.Y); }
         }
 
         public float Y
         {
-            get { return _position.Y; }
-            set
-            {
-                if (value == _position.Y) return;
-                _position.Y = value;
-                _isDirty = true;
-            }
+            get { return Position.Y; }
+            set { Position = new Vector2(Position.X, value); }
         }
 
         public float Zoom
@@ -125,31 +122,19 @@ namespace FrogWorks
 
         public Camera()
         {
-            var display = Runner.Application.Display;
-            Position = display.Size.ToVector2() * .5f;
-            display.OnBufferChanged += UpdateViewport;
+            var application = Runner.Application;
+            Position = application.Size.ToVector2() * .5f;
+            application.Display.OnBufferChanged += UpdateViewport;
             UpdateViewport();
         }
 
-        public void RoundPosition()
-        {
-            Position = Position.Round();
-        }
+        public void RoundPosition() => Position = Position.Round();
 
-        public Vector2 ViewToWorld(Vector2 position)
-        {
-            return Vector2.Transform(position, InverseMatrix);
-        }
+        public Vector2 ViewToWorld(Vector2 position) => Vector2.Transform(position, InverseMatrix);
 
-        public Vector2 WorldToView(Vector2 position)
-        {
-            return Vector2.Transform(position, TransformMatrix);
-        }
+        public Vector2 WorldToView(Vector2 position) => Vector2.Transform(position, TransformMatrix);
 
-        public void Approach(Vector2 position, float rate)
-        {
-            Position += (position - Position) * rate;
-        }
+        public void Approach(Vector2 position, float rate) => Position += (position - Position) * rate;
 
         public void Approach(Vector2 position, float rate, float maxDistance)
         {
@@ -159,6 +144,17 @@ namespace FrogWorks
                 ? Vector2.Normalize(distanceToMove) * maxDistance
                 : distanceToMove;
         }
+
+        public void SetZone(Point size)
+        {
+            var application = Runner.Application;
+            size = size.Abs().Max(application.Size);
+            _zone = new Rectangle(Point.Zero, size);
+        }
+
+        public void SetZone(int width, int height) => SetZone(new Point(width, height));
+
+        public void ResetZone() => _zone = null;
 
         protected void UpdateViewport()
         {
@@ -183,7 +179,7 @@ namespace FrogWorks
                 _inverseMatrix = Matrix.Invert(_transformMatrix);
                 _isDirty = false;
 
-                Bounds = _viewport.Bounds.Transform(_position, _origin, Vector2.One / _zoom, _angle);
+                View = _viewport.Bounds.Transform(_position, _origin, Vector2.One / _zoom, _angle);
                 OnCameraUpdated?.Invoke(this);
             }
         }

@@ -128,10 +128,10 @@ namespace FrogWorks
         {
             if (camera == null) return;
 
-            var x1 = (int)Math.Floor((camera.Bounds.Left - DrawPosition.X) / Bounds.Width);
-            var y1 = (int)Math.Floor((camera.Bounds.Top - DrawPosition.Y) / Bounds.Height);
-            var x2 = (int)Math.Ceiling((camera.Bounds.Right + DrawPosition.X) / Bounds.Width);
-            var y2 = (int)Math.Ceiling((camera.Bounds.Bottom + DrawPosition.Y) / Bounds.Height);
+            var x1 = (int)Math.Floor((camera.View.Left - DrawPosition.X) / Bounds.Width);
+            var y1 = (int)Math.Floor((camera.View.Top - DrawPosition.Y) / Bounds.Height);
+            var x2 = (int)Math.Ceiling((camera.View.Right + DrawPosition.X) / Bounds.Width);
+            var y2 = (int)Math.Ceiling((camera.View.Bottom + DrawPosition.Y) / Bounds.Height);
 
             var width = !WrapVertically ? x2 - x1 : 1;
             var height = !WrapHorizontally ? y2 - y1 : 1;

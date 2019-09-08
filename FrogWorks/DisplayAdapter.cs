@@ -13,7 +13,7 @@ namespace FrogWorks
         private Matrix _matrix;
 
         private Point _size;
-        private Scaling _scaling = Scaling.Fit;
+        private ScalingType _scaling = ScalingType.Fit;
         private bool _isDirty;
 
         public Color ClearColor { get; set; } = Color.Black;
@@ -34,7 +34,7 @@ namespace FrogWorks
 
         public Vector2 Scale { get; private set; }
 
-        public Scaling Scaling
+        public ScalingType Scaling
         {
             get { return _scaling; }
             set
@@ -50,10 +50,10 @@ namespace FrogWorks
 
         public Action OnBufferChanged { get; set; }
 
-        internal DisplayAdapter(GameAdapter game, int width, int height, int scale, bool fullscreen)
+        internal DisplayAdapter(GameAdapter game, Point size, int scale, bool fullscreen)
         {
             _game = game;
-            _size = new Point(width, height).Abs();
+            _size = size;
             _game.Graphics.DeviceCreated += OnDeviceChanged;
             _game.Graphics.DeviceReset += OnDeviceChanged;
             _game.Window.ClientSizeChanged += OnDeviceChanged;
@@ -142,10 +142,10 @@ namespace FrogWorks
 
             switch (Scaling)
             {
-                case Scaling.None:
+                case ScalingType.None:
                     Scale = Vector2.One;
                     break;
-                case Scaling.Fit:
+                case ScalingType.Fit:
                     {
                         var ratio = source < target
                             ? 1f * Client.Y / _size.Y
@@ -153,7 +153,7 @@ namespace FrogWorks
                         Scale = Vector2.One * ratio;
                     }
                     break;
-                case Scaling.PixelPerfect:
+                case ScalingType.PixelPerfect:
                     {
                         var ratio = source < target
                             ? Client.Y / _size.Y
@@ -161,12 +161,12 @@ namespace FrogWorks
                         Scale = Vector2.One * ratio;
                     }
                     break;
-                case Scaling.Stretch:
+                case ScalingType.Stretch:
                     Scale = new Vector2(
                         1f * Client.X / _size.X, 
                         1f * Client.Y / _size.Y);
                     break;
-                case Scaling.Extend:
+                case ScalingType.Extend:
                     if (source < target)
                     {
                         var viewScale = 1f * Client.Y / _size.Y;
@@ -184,7 +184,7 @@ namespace FrogWorks
                         Scale = Vector2.One * viewScale;
                     }
                     break;
-                case Scaling.Crop:
+                case ScalingType.Crop:
                     {
                         var ratio = source > target
                             ? 1f * Client.Y / _size.Y
@@ -215,7 +215,7 @@ namespace FrogWorks
         }
     }
 
-    public enum Scaling
+    public enum ScalingType
     {
         None,
         Fit,

@@ -16,7 +16,7 @@ namespace FrogWorks
 
         public float DeltaTime { get; private set; }
 
-        internal GameAdapter(Runner runner, int width, int height)
+        internal GameAdapter(Runner runner)
         {
             _runner = runner;
 

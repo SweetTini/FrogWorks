@@ -30,9 +30,11 @@ namespace FrogWorks
             set { Display.ClearColor = value; }
         }
 
-        public int Width { get; private set; }
+        public Point Size { get; private set; }
 
-        public int Height { get; private set; }
+        public int Width => Size.X;
+
+        public int Height => Size.Y;
 
         public int FramesPerSecond => Game.FramesPerSecond;
 
@@ -41,10 +43,9 @@ namespace FrogWorks
         protected Runner(int width, int height, int scale, bool fullscreen)
         {
             Application = this;
-            Width = width;
-            Height = height;
-            Game = new GameAdapter(this, width, height);
-            Display = new DisplayAdapter(Game, width, height, scale, fullscreen);
+            Size = new Point(width, height).Abs();
+            Game = new GameAdapter(this);
+            Display = new DisplayAdapter(Game, Size, scale, fullscreen);
         }
 
         public virtual void Run() => Game.Run();
@@ -54,7 +55,7 @@ namespace FrogWorks
         public void GoTo<T>()
             where T : Scene, new() => Game.GoTo<T>();
 
-        public void SetDisplay(Scaling scaling) => Display.Scaling = scaling; 
+        public void SetDisplay(ScalingType scaling) => Display.Scaling = scaling; 
 
         public void Dispose()
         {
