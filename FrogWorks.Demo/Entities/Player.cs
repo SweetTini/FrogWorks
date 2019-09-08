@@ -83,6 +83,9 @@ namespace FrogWorks.Demo.Entities
         }
 
         protected override void BeforeDraw(RendererBatch batch)
-            => Collider.Draw(batch, Color.Yellow);
+        {
+            Collider.Draw(batch, Color.IndianRed, true);
+            Collider.Draw(batch, Color.Maroon);
+        }
     }
 }

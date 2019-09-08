@@ -8,25 +8,42 @@ namespace FrogWorks
 {
     public class PrimitiveBatch : IDisposable
     {
-        const int VertsPerLine = 2, VertsPerTriangle = 3;
+        private const int VertsPerLine = 2, VertsPerTriangle = 3;
 
         private GraphicsDevice _graphicsDevice;
         private BasicEffect _basicEffect;
-        private VertexPositionColor[] _lineVertices, _triangleVertices;
-        private int _lineBufferIndex, _triangleBufferIndex;
+        private VertexPositionColor[] _vertices;
+        private PrimitiveType _type;
+        private int _bufferIndex;
         private bool _hasBegun;
+
+        public PrimitiveType PrimitiveType
+        {
+            get { return _type; }
+            private set
+            {
+                if (value == _type) return;
+                Flush();
+                _type = value;
+                _bufferIndex = 0;
+            }
+        }
 
         public bool IsDisposed { get; private set; }
 
         public PrimitiveBatch(GraphicsDevice graphicsDevice, int bufferSize = 512)
         {
+            var fixedSize = bufferSize
+                   - (bufferSize % VertsPerLine)
+                   - (bufferSize % VertsPerTriangle);
+
             _graphicsDevice = graphicsDevice;
             _basicEffect = new BasicEffect(_graphicsDevice);
-            _lineVertices = new VertexPositionColor[bufferSize - bufferSize % VertsPerLine];
-            _triangleVertices = new VertexPositionColor[bufferSize - bufferSize % VertsPerTriangle];
+            _vertices = new VertexPositionColor[fixedSize];
         }
 
-        public void Begin(BlendState blendState = null, SamplerState samplerState = null, DepthStencilState depthStencilState = null, Matrix? projectionMatrix = null, Matrix? viewMatrix = null)
+        public void Begin(BlendState blendState = null, SamplerState samplerState = null, 
+            DepthStencilState depthStencilState = null, Matrix? projectionMatrix = null, Matrix? viewMatrix = null)
         {
             ValidateAfterDraw();
 
@@ -35,7 +52,8 @@ namespace FrogWorks
             _graphicsDevice.DepthStencilState = depthStencilState ?? DepthStencilState.None;
 
             var viewport = _graphicsDevice.Viewport;
-            _basicEffect.Projection = projectionMatrix ?? Matrix.CreateOrthographicOffCenter(0f, viewport.Width, viewport.Height, 0f, -1000f, 1000f);
+            _basicEffect.Projection = projectionMatrix 
+                ?? Matrix.CreateOrthographicOffCenter(0f, viewport.Width, viewport.Height, 0f, -1000f, 1000f);
             _basicEffect.View = viewMatrix ?? Matrix.Identity;
             _basicEffect.VertexColorEnabled = true;
             _basicEffect.CurrentTechnique.Passes[0].Apply();
@@ -46,8 +64,7 @@ namespace FrogWorks
         public void End()
         {
             ValidateBeforeDraw();
-            FlushLines();
-            FlushTriangles();
+            Flush();
 
             _hasBegun = false;
         }
@@ -66,22 +83,10 @@ namespace FrogWorks
         public void AddVertex(Vector3 position, Color color, PrimitiveType type)
         {
             ValidateBeforeDraw();
+            PrimitiveType = type;
 
-            if (type == PrimitiveType.Line)
-            {
-                if (_lineBufferIndex >= _lineVertices.Length)
-                    FlushLines();
-
-                _lineVertices[_lineBufferIndex++] = new VertexPositionColor(position, color);
-            }
-
-            if (type == PrimitiveType.Triangle)
-            {
-                if (_triangleBufferIndex >= _triangleVertices.Length)
-                    FlushTriangles();
-
-                _triangleVertices[_triangleBufferIndex++] = new VertexPositionColor(position, color);
-            }
+            if (_bufferIndex >= _vertices.Length) Flush();
+            _vertices[_bufferIndex++] = new VertexPositionColor(position, color);
         }
 
         public void AddVertex(float x, float y, float z, Color color, PrimitiveType type)
@@ -351,33 +356,29 @@ namespace FrogWorks
             }
         }
 
-        private void FlushLines()
+        private void Flush()
         {
             ValidateBeforeDraw();
 
-            if (_lineBufferIndex >= VertsPerLine)
-            {
-                var count = _lineBufferIndex / VertsPerLine;
-                _graphicsDevice.DrawUserPrimitives(XnaPrimitiveType.LineList, _lineVertices, 0, count);
-                _lineBufferIndex -= count * VertsPerLine;
-            }
-        }
+            var perAmount = _type == PrimitiveType.Line 
+                ? VertsPerLine 
+                : VertsPerTriangle;
 
-        private void FlushTriangles()
-        {
-            ValidateBeforeDraw();
+            var primitiveType = _type == PrimitiveType.Line
+                ? XnaPrimitiveType.LineList
+                : XnaPrimitiveType.TriangleList;
 
-            if (_triangleBufferIndex >= VertsPerTriangle)
+            if (_bufferIndex >= perAmount)
             {
-                var count = _triangleBufferIndex / VertsPerTriangle;
-                _graphicsDevice.DrawUserPrimitives(XnaPrimitiveType.TriangleList, _triangleVertices, 0, count);
-                _triangleBufferIndex -= count * VertsPerTriangle;
+                var count = _bufferIndex / perAmount;
+                _graphicsDevice.DrawUserPrimitives(primitiveType, _vertices, 0, count);
+                _bufferIndex -= count * perAmount;
             }
         }
 
         private void ValidateBeforeDraw()
         {
-            ValidateDisposure();
+            ValidateDisposed();
 
             if (!_hasBegun)
             {
@@ -389,13 +390,13 @@ namespace FrogWorks
 
         private void ValidateAfterDraw()
         {
-            ValidateDisposure();
+            ValidateDisposed();
 
             if (_hasBegun)
                 throw new Exception("End must be called before Begin.");
         }
 
-        private void ValidateDisposure()
+        private void ValidateDisposed()
         {
             if (IsDisposed)
                 throw new Exception("Cannot draw with disposed primitive batch.");
