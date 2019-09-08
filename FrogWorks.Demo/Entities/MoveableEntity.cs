@@ -126,8 +126,8 @@ namespace FrogWorks.Demo.Entities
 
         public override string ToString()
         {
-            return $"POS:{X},{Y}" + Environment.NewLine
-                + $"VEL:{XVelocity},{YVelocity}" + Environment.NewLine
+            return $"POS:{X.Round(3)},{Y.Round(3)}" + Environment.NewLine
+                + $"VEL:{XVelocity.Round(3)},{YVelocity.Round(3)}" + Environment.NewLine
                 + $"GR:{Convert.ToInt32(IsOnGround)},CL:{Convert.ToInt32(IsOnCeiling)}" + Environment.NewLine
                 + $"LW:{Convert.ToInt32(IsOnLeftWall)},RW:{Convert.ToInt32(IsOnRightWall)}";
         }

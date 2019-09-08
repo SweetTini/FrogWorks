@@ -54,6 +54,8 @@ namespace FrogWorks
         public void GoTo<T>()
             where T : Scene, new() => Game.GoTo<T>();
 
+        public void SetDisplay(Scaling scaling) => Display.Scaling = scaling; 
+
         public void Dispose()
         {
             Dispose(true);

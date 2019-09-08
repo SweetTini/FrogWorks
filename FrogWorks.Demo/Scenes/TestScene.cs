@@ -11,28 +11,32 @@ namespace FrogWorks.Demo.Scenes
 
         private MonoFont Font { get; set; }
 
+        private MonoFont FpsFont { get; set; }
+
         public TestScene() 
             : base() { }
 
         protected override void Begin()
         {
-            BackgroundColor = Color.Black;
+            BackgroundColor = Color.CornflowerBlue;
 
             var layer = new Layer();
             var hudLayer = new Layer();
             Layers.Add(Extensions.AsEnumerable(layer, hudLayer));
 
-            World = new World(10, 8, 32, 32);
+            World = new World(20, 15, 32, 32);
             Player = new Player(World) { X = 64f, Y = 64f };
             Font = new MonoFont(304, 224) { X = 8, Y = 8 };
+            FpsFont = new MonoFont(304, 224) { X = 8, Y = 8, HorizontalAlignment = HorizontalAlignment.Right };
 
             layer.Entities.Add(Extensions.AsEnumerable<Entity>(World, Player));
-            hudLayer.Entities.Add(Font);
+            hudLayer.Entities.Add(Extensions.AsEnumerable<Entity>(Font, FpsFont));
         }
 
         protected override void AfterUpdate()
         {
             Font.Text = Player.ToString();
+            FpsFont.Text = $"{Runner.Application.FramesPerSecond}fps";
         }
     }
 }

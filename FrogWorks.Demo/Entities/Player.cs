@@ -4,9 +4,9 @@ namespace FrogWorks.Demo.Entities
 {
     public class Player : MoveableEntity
     {
-        private const float MaxSpeed = 2f, MaxFallSpeed = 6f;
-        private const float Acceleration = .2f, Deceleration = .15f, Gravity = .15f;
-        private const float JumpStrength = 5f, JumpRelease = 2f;
+        private const float MaxSpeed = 3f, MaxFallSpeed = 6f;
+        private const float Acceleration = .3f, Deceleration = .15f, Gravity = .3f;
+        private const float JumpStrength = 6.5f, JumpRelease = 2f;
 
         public bool IsJumping { get; private set; }
 
@@ -68,6 +68,17 @@ namespace FrogWorks.Demo.Entities
                     YVelocity += Gravity;
                     YVelocity = YVelocity.Min(MaxFallSpeed);
                 }
+            }
+        }
+
+        protected override void AfterUpdate(float deltaTime)
+        {
+            var camera = Parent?.Camera;
+
+            if (camera != null)
+            {
+                var center = (camera.Lower - camera.Upper) * .5f;
+                camera.Approach(Center - center, .125f);
             }
         }
 
