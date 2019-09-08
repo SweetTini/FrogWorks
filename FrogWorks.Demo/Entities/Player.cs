@@ -72,15 +72,7 @@ namespace FrogWorks.Demo.Entities
         }
 
         protected override void AfterUpdate(float deltaTime)
-        {
-            var camera = Parent?.Camera;
-
-            if (camera != null)
-            {
-                var center = (camera.Lower - camera.Upper) * .5f;
-                camera.Approach(Center - center, .125f);
-            }
-        }
+            => Parent?.Camera.Approach(Center, .125f);
 
         protected override void BeforeDraw(RendererBatch batch)
         {

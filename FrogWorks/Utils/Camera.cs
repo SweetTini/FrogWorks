@@ -8,7 +8,7 @@ namespace FrogWorks
     {
         private Matrix _transformMatrix, _inverseMatrix;
         private Viewport _viewport;
-        private Vector2 _position, _origin, _padding;
+        private Vector2 _position, _origin;
         private float _zoom = 1f, _angle;
         private bool _isDirty = true;
 
@@ -125,8 +125,10 @@ namespace FrogWorks
 
         public Camera()
         {
+            var display = Runner.Application.Display;
+            Position = display.Size.ToVector2() * .5f;
+            display.OnBufferChanged += UpdateViewport;
             UpdateViewport();
-            Runner.Application.Display.OnBufferChanged += UpdateViewport;
         }
 
         public void RoundPosition()
@@ -162,7 +164,6 @@ namespace FrogWorks
         {
             var display = Runner.Application.Display;
 
-            _padding = display.Extended.ToVector2() * .5f;
             _viewport = new Viewport(0, 0, display.Width, display.Height);
             _origin = _viewport.Bounds.Size.ToVector2() * .5f;
             _isDirty = true;
@@ -174,9 +175,7 @@ namespace FrogWorks
         {
             if (_isDirty)
             {
-                var absolute = _position - _padding;
-
-                _transformMatrix = Matrix.CreateTranslation(new Vector3(-absolute - _origin, 0f)) 
+                _transformMatrix = Matrix.CreateTranslation(new Vector3(-_position, 0f)) 
                     * Matrix.CreateRotationZ(_angle) 
                     * Matrix.CreateScale(new Vector3(_zoom * Vector2.One, 1f)) 
                     * Matrix.CreateTranslation(new Vector3(_origin, 0f));
@@ -184,7 +183,7 @@ namespace FrogWorks
                 _inverseMatrix = Matrix.Invert(_transformMatrix);
                 _isDirty = false;
 
-                Bounds = _viewport.Bounds.Transform(absolute + _origin, _origin, Vector2.One / _zoom, _angle);
+                Bounds = _viewport.Bounds.Transform(_position, _origin, Vector2.One / _zoom, _angle);
                 OnCameraUpdated?.Invoke(this);
             }
         }
