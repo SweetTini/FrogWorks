@@ -11,19 +11,19 @@ namespace FrogWorks
     public static class Extensions
     {
         #region Numeric
-        public static byte HexToByte(this char hex)
+        public static int Abs(this int number)
         {
-            return (byte)Math.Max("0123456789ABCDEF".IndexOf(char.ToUpper(hex)), 0);
+            return Math.Abs(number);
         }
 
-        public static int Mod(this int number, int divisor)
+        public static float Abs(this float number)
         {
-            return (number % divisor + divisor) % divisor;
+            return Math.Abs(number);
         }
 
-        public static float Mod(this float number, float divisor)
+        public static float Ceiling(this float number)
         {
-            return (number % divisor + divisor) % divisor;
+            return (float)Math.Ceiling(number);
         }
 
         public static int Clamp(this int number, int lowest, int highest)
@@ -36,9 +36,133 @@ namespace FrogWorks
             return MathHelper.Clamp(number, lowest, highest);
         }
 
+        public static float Floor(this float number)
+        {
+            return (float)Math.Floor(number);
+        }
+
+        public static byte HexToByte(this char hex)
+        {
+            return (byte)Math.Max("0123456789ABCDEF".IndexOf(char.ToUpper(hex)), 0);
+        }
+
         public static float Inverse(this float number)
         {
             return number != 0f ? 1f / number : number;
+        }
+
+        public static int Max(this int number, int other)
+        {
+            return Math.Max(number, other);
+        }
+
+        public static int Max(this int number, params int[] numbers)
+        {
+            var result = number;
+            for (int i = 0; i < numbers.Length; i++)
+                result = Math.Max(result, numbers[i]);
+            return result;
+        }
+
+        public static int Max(this int number, IEnumerable<int> numbers)
+        {
+            var result = number;
+            foreach (var otherNumber in numbers)
+                result = Math.Max(result, otherNumber);
+            return result;
+        }
+
+        public static float Max(this float number, float other)
+        {
+            return Math.Max(number, other);
+        }
+
+        public static float Max(this float number, params float[] numbers)
+        {
+            var result = number;
+            for (int i = 0; i < numbers.Length; i++)
+                result = Math.Max(result, numbers[i]);
+            return result;
+        }
+
+        public static float Max(this float number, IEnumerable<float> numbers)
+        {
+            var result = number;
+            foreach (var otherNumber in numbers)
+                result = Math.Max(result, otherNumber);
+            return result;
+        }
+
+        public static int Min(this int number, int other)
+        {
+            return Math.Min(number, other);
+        }
+
+        public static int Min(this int number, params int[] numbers)
+        {
+            var result = number;
+            for (int i = 0; i < numbers.Length; i++)
+                result = Math.Min(result, numbers[i]);
+            return result;
+        }
+
+        public static int Min(this int number, IEnumerable<int> numbers)
+        {
+            var result = number;
+            foreach (var otherNumber in numbers)
+                result = Math.Min(result, otherNumber);
+            return result;
+        }
+
+        public static float Min(this float number, float other)
+        {
+            return Math.Min(number, other);
+        }
+
+        public static float Min(this float number, params float[] numbers)
+        {
+            var result = number;
+            for (int i = 0; i < numbers.Length; i++)
+                result = Math.Min(result, numbers[i]);
+            return result;
+        }
+
+        public static float Min(this float number, IEnumerable<float> numbers)
+        {
+            var result = number;
+            foreach (var otherNumber in numbers)
+                result = Math.Min(result, otherNumber);
+            return result;
+        }
+
+        public static int Mod(this int number, int divisor)
+        {
+            return (number % divisor + divisor) % divisor;
+        }
+
+        public static float Mod(this float number, float divisor)
+        {
+            return (number % divisor + divisor) % divisor;
+        }
+
+        public static float Round(this float number)
+        {
+            return (float)Math.Round(number);
+        }
+
+        public static float Round(this float number, int decimals)
+        {
+            return (float)Math.Round(number, decimals);
+        }
+
+        public static int Sign(this int number)
+        {
+            return Math.Sign(number);
+        }
+
+        public static float Sign(this float number)
+        {
+            return Math.Sign(number);
         }
         #endregion
 
@@ -153,6 +277,76 @@ namespace FrogWorks
                 MathHelper.Clamp(point.Y, lowest.Y, highest.Y));
         }
 
+        public static Point Max(this Point point, Point other)
+        {
+            return new Point(
+                Math.Max(point.X, other.X),
+                Math.Max(point.Y, other.Y));
+        }
+
+        public static Point Max(this Point point, params Point[] points)
+        {
+            var result = point;
+
+            for (int i = 0; i < points.Length; i++)
+            {
+                result = new Point(
+                    Math.Max(result.X, points[i].X),
+                    Math.Max(result.Y, points[i].Y));
+            }
+
+            return result;
+        }
+
+        public static Point Max(this Point point, IEnumerable<Point> points)
+        {
+            var result = point;
+
+            foreach (var otherPoint in points)
+            {
+                result = new Point(
+                    Math.Max(result.X, otherPoint.X),
+                    Math.Max(result.Y, otherPoint.Y));
+            }
+
+            return result;
+        }
+
+        public static Point Min(this Point point, Point other)
+        {
+            return new Point(
+                Math.Min(point.X, other.X),
+                Math.Min(point.Y, other.Y));
+        }
+
+        public static Point Min(this Point point, params Point[] points)
+        {
+            var result = point;
+
+            for (int i = 0; i < points.Length; i++)
+            {
+                result = new Point(
+                    Math.Min(result.X, points[i].X),
+                    Math.Min(result.Y, points[i].Y));
+            }
+
+            return result;
+        }
+
+        public static Point Min(this Point point, IEnumerable<Point> points)
+        {
+            var result = point;
+
+            foreach (var otherPoint in points)
+            {
+                result = new Point(
+                    Math.Min(result.X, otherPoint.X),
+                    Math.Min(result.Y, otherPoint.Y));
+            }
+
+            return result;
+        }
+
         public static Point Sign(this Point point)
         {
             return new Point(Math.Sign(point.X), Math.Sign(point.Y));
@@ -163,11 +357,6 @@ namespace FrogWorks
         public static Vector2 AngleToVector(this float angle, float length)
         {
             return new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle)) * length;
-        }
-
-        public static float VectorToAngle(this Vector2 vector)
-        {
-            return (float)Math.Atan2(vector.Y, vector.X);
         }
 
         public static Vector2 Abs(this Vector2 vector)
@@ -221,6 +410,48 @@ namespace FrogWorks
                 vector.Y != 0f ? 1f / vector.Y : 0f);
         }
 
+        public static Vector2 Max(this Vector2 vector, Vector2 other)
+        {
+            return Vector2.Max(vector, other);
+        }
+
+        public static Vector2 Max(this Vector2 vector, params Vector2[] vectors)
+        {
+            var result = vector;
+            for (int i = 0; i < vectors.Length; i++)
+                result = Vector2.Max(result, vectors[i]);
+            return result;
+        }
+
+        public static Vector2 Max(this Vector2 vector, IEnumerable<Vector2> vectors)
+        {
+            var result = vector;
+            foreach (var otherVector in vectors)
+                result = Vector2.Max(result, otherVector);
+            return result;
+        }
+
+        public static Vector2 Min(this Vector2 vector, Vector2 other)
+        {
+            return Vector2.Min(vector, other);
+        }
+
+        public static Vector2 Min(this Vector2 vector, params Vector2[] vectors)
+        {
+            var result = vector;
+            for (int i = 0; i < vectors.Length; i++)
+                result = Vector2.Min(result, vectors[i]);
+            return result;
+        }
+
+        public static Vector2 Min(this Vector2 vector, IEnumerable<Vector2> vectors)
+        {
+            var result = vector;
+            foreach (var otherVector in vectors)
+                result = Vector2.Min(result, otherVector);
+            return result;
+        }
+
         public static Vector2 Perpendicular(this Vector2 vector)
         {
             return new Vector2(vector.Y, -vector.X);
@@ -249,6 +480,11 @@ namespace FrogWorks
         public static Vector2 Sign(this Vector2 vector)
         {
             return new Vector2(Math.Sign(vector.X), Math.Sign(vector.Y));
+        }
+
+        public static float VectorToAngle(this Vector2 vector)
+        {
+            return (float)Math.Atan2(vector.Y, vector.X);
         }
         #endregion
 
@@ -423,48 +659,48 @@ namespace FrogWorks
                 : defaultValue;
         }
 
-        public static bool AttributeToBoolean(this XmlElement element, string name, bool defaultValue = false)
+        public static bool AttrToBoolean(this XmlElement element, string name, bool defaultValue = false)
         {
             return element.Attributes[name] != null 
                 ? Convert.ToBoolean(element.Attributes[name].InnerText)
                 : defaultValue;
         }
 
-        public static int AttributeToInteger(this XmlElement element, string name, int defaultValue = 0)
+        public static int AttrToInt32(this XmlElement element, string name, int defaultValue = 0)
         {
             return element.Attributes[name] != null
                 ? Convert.ToInt32(element.Attributes[name].InnerText)
                 : defaultValue;
         }
 
-        public static float AttributeToFloat(this XmlElement element, string name, float defaultValue = 0f)
+        public static float AttrToSingle(this XmlElement element, string name, float defaultValue = 0f)
         {
             return element.Attributes[name] != null
                 ? Convert.ToSingle(element.Attributes[name].InnerText)
                 : defaultValue;
         }
 
-        public static Point AttributeToPoint(this XmlElement element, string nameForX, string nameForY, Point defaultValue = default(Point))
+        public static Point AttrToPoint(this XmlElement element, string nameForX, string nameForY, Point defaultValue = default(Point))
         {
             return new Point(
-                element.AttributeToInteger(nameForX, defaultValue.X),
-                element.AttributeToInteger(nameForY, defaultValue.Y));
+                element.AttrToInt32(nameForX, defaultValue.X),
+                element.AttrToInt32(nameForY, defaultValue.Y));
         }
 
-        public static Vector2 AttributeToVector2(this XmlElement element, string nameForX, string nameForY, Vector2 defaultValue = default(Vector2))
+        public static Vector2 AttrToVector2(this XmlElement element, string nameForX, string nameForY, Vector2 defaultValue = default(Vector2))
         {
             return new Vector2(
-                element.AttributeToFloat(nameForX, defaultValue.X),
-                element.AttributeToFloat(nameForY, defaultValue.Y));
+                element.AttrToSingle(nameForX, defaultValue.X),
+                element.AttrToSingle(nameForY, defaultValue.Y));
         }
 
         public static Rectangle AttributeToRectangle(this XmlElement element, Rectangle defaultValue = default(Rectangle))
         {
             return new Rectangle(
-                element.AttributeToInteger("x", defaultValue.X),
-                element.AttributeToInteger("y", defaultValue.Y),
-                element.AttributeToInteger("width", defaultValue.Width),
-                element.AttributeToInteger("height", defaultValue.Height));
+                element.AttrToInt32("x", defaultValue.X),
+                element.AttrToInt32("y", defaultValue.Y),
+                element.AttrToInt32("width", defaultValue.Width),
+                element.AttrToInt32("height", defaultValue.Height));
         }
         #endregion
     }

@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
 
 namespace FrogWorks.Demo.Entities
 {
@@ -27,12 +26,12 @@ namespace FrogWorks.Demo.Entities
             {
                 if (XVelocity != 0f)
                 {
-                    var direction = Math.Sign(XVelocity);
+                    var direction = XVelocity.Sign();
 
                     XVelocity -= Deceleration * direction;
-                    XVelocity = direction > 0
-                        ? Math.Max(0f, XVelocity)
-                        : Math.Min(0f, XVelocity);
+                    XVelocity = direction > 0 
+                        ? XVelocity.Max(0f) 
+                        : XVelocity.Min(0f);
                 }
             }
 
@@ -67,7 +66,7 @@ namespace FrogWorks.Demo.Entities
                 if (YVelocity < MaxFallSpeed)
                 {
                     YVelocity += Gravity;
-                    YVelocity = Math.Min(YVelocity, MaxFallSpeed);
+                    YVelocity = YVelocity.Min(MaxFallSpeed);
                 }
             }
         }

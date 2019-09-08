@@ -157,7 +157,7 @@ namespace FrogWorks
             static void ReadCommon(XmlElement root, BitmapFont font)
             {
                 var common = root["common"];
-                font.LineHeight = common.AttributeToInteger("lineHeight");
+                font.LineHeight = common.AttrToInt32("lineHeight");
             }
 
             static void ReadPages(XmlElement root, BitmapFont font, List<Texture> textures, string directory)
@@ -178,11 +178,11 @@ namespace FrogWorks
 
                 foreach (XmlElement charInfo in chars)
                 {
-                    var ascii = charInfo.AttributeToInteger("id");
+                    var ascii = charInfo.AttrToInt32("id");
                     var bounds = charInfo.AttributeToRectangle();
-                    var offset = charInfo.AttributeToPoint("xoffset", "yoffset");
-                    var spacing = charInfo.AttributeToInteger("xadvance");
-                    var page = charInfo.AttributeToInteger("page");
+                    var offset = charInfo.AttrToPoint("xoffset", "yoffset");
+                    var spacing = charInfo.AttrToInt32("xadvance");
+                    var page = charInfo.AttrToInt32("page");
                     var texture = textures[page].ClipRegion(bounds);
 
                     var character = new BitmapCharacter(texture, ascii, offset, spacing);
@@ -196,9 +196,9 @@ namespace FrogWorks
 
                 foreach (XmlElement kerningInfo in kernings.ChildNodes)
                 {
-                    var ascii = kerningInfo.AttributeToInteger("first");
-                    var nextAscii = kerningInfo.AttributeToInteger("second");
-                    var kerning = kerningInfo.AttributeToInteger("amount");
+                    var ascii = kerningInfo.AttrToInt32("first");
+                    var nextAscii = kerningInfo.AttrToInt32("second");
+                    var kerning = kerningInfo.AttrToInt32("amount");
 
                     var character = font[ascii];
                     character?.AddOrUpdateKerning(nextAscii, kerning);

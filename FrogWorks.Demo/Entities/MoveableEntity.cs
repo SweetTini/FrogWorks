@@ -71,7 +71,7 @@ namespace FrogWorks.Demo.Entities
                 if (WorldCollider.Collide(edge, BitFlag.FlagA))
                 {
                     var offset = (WorldCollider.CellWidth - Width).Mod(WorldCollider.CellWidth);
-                    X = WorldCollider.AbsoluteX + (float)Math.Floor(X / WorldCollider.CellWidth) 
+                    X = WorldCollider.AbsoluteX + (X / WorldCollider.CellWidth).Floor()
                         * WorldCollider.CellWidth + offset;
                     XVelocity = 0f;
                 }
@@ -82,7 +82,7 @@ namespace FrogWorks.Demo.Entities
 
                 if (WorldCollider.Collide(edge, BitFlag.FlagA))
                 {
-                    X = WorldCollider.AbsoluteX + (float)Math.Ceiling(X / WorldCollider.CellWidth)
+                    X = WorldCollider.AbsoluteX + (X / WorldCollider.CellWidth).Ceiling()
                         * WorldCollider.CellWidth;
                     XVelocity = 0f;
                 }
@@ -103,7 +103,7 @@ namespace FrogWorks.Demo.Entities
                 if (WorldCollider.Collide(edge, BitFlag.FlagA))
                 {
                     var offset = (WorldCollider.CellHeight - Height).Mod(WorldCollider.CellHeight);
-                    Y = WorldCollider.AbsoluteY + (float)Math.Floor(Y / WorldCollider.CellHeight)
+                    Y = WorldCollider.AbsoluteY + (Y / WorldCollider.CellHeight).Floor()
                         * WorldCollider.CellHeight + offset;
                     YVelocity = 0f;
                 }
@@ -114,7 +114,7 @@ namespace FrogWorks.Demo.Entities
 
                 if (WorldCollider.Collide(edge, BitFlag.FlagA))
                 {
-                    Y = WorldCollider.AbsoluteY + (float)Math.Ceiling(Y / WorldCollider.CellHeight)
+                    Y = WorldCollider.AbsoluteY + (Y / WorldCollider.CellHeight).Ceiling()
                         * WorldCollider.CellHeight;
                     YVelocity = 0f;
                 }
