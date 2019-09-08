@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace FrogWorks
 {
-    public abstract class VirtualAnalog : VirtualInput
+    public class VirtualAnalog : VirtualInput
     {
         protected List<VirtualAnalogNode> Nodes { get; private set; }
 

@@ -5,7 +5,7 @@ namespace FrogWorks
 {
     public class Input
     {
-        internal static List<VirtualInput> VirtualInputs { get; private set; }
+        public static List<VirtualInput> VirtualInputs { get; private set; }
 
         public static KeyboardReader Keyboard { get; private set; }
 

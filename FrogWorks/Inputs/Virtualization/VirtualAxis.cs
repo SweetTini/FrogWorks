@@ -2,7 +2,7 @@
 
 namespace FrogWorks
 {
-    public abstract class VirtualAxis : VirtualInput
+    public class VirtualAxis : VirtualInput
     {
         protected List<VirtualAxisNode> Nodes { get; private set; }
 

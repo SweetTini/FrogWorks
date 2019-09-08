@@ -16,7 +16,7 @@ namespace FrogWorks.Demo.Entities
 
         protected override void BeforeUpdatePhysics()
         {
-            var movingDirection = Input.Keyboard.GetAxis(Keys.RightArrow, Keys.LeftArrow);
+            var movingDirection = UserInput.LeftRightAxis.CurrentValue;
 
             if (movingDirection != 0f)
             {
@@ -41,7 +41,7 @@ namespace FrogWorks.Demo.Entities
 
             if (IsJumping)
             {
-                if (!Input.Keyboard.IsDown(Keys.Z) && YVelocity < -JumpRelease)
+                if (!UserInput.JumpButton.IsDown && YVelocity < -JumpRelease)
                 {
                     YVelocity = -JumpRelease;
                     IsJumping = false;
@@ -56,7 +56,7 @@ namespace FrogWorks.Demo.Entities
             {
                 if (YVelocity > 0f) YVelocity = 0f;
 
-                if (Input.Keyboard.IsPressed(Keys.Z))
+                if (UserInput.JumpButton.IsPressed)
                 {
                     YVelocity = -JumpStrength;
                     IsJumping = true;

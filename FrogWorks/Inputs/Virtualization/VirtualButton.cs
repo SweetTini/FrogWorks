@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace FrogWorks
 {
-    public abstract class VirtualButton : VirtualInput
+    public class VirtualButton : VirtualInput
     {
         private float _timer, _repeatTimer;
         private float _bufferTime, _initialRepeatTime, _multiRepeatTime;
