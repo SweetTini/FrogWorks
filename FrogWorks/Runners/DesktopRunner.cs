@@ -26,6 +26,12 @@
             set { Game.Window.IsBorderless = value; }
         }
 
+        public bool IsMouseVisible
+        {
+            get { return Game.IsMouseVisible; }
+            set { Game.IsMouseVisible = value; }
+        }
+
         public DesktopRunner(int width, int height, bool fullscreen = false) 
             : base(width, height, 1, fullscreen)
         {

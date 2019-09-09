@@ -13,6 +13,7 @@ namespace FrogWorks.Demo
                 UserInput.Initialize();
                 runner.GoTo<TestScene>();
                 runner.AllowUserResizing = true;
+                runner.IsMouseVisible = true;
                 runner.Run();
             }
         }
