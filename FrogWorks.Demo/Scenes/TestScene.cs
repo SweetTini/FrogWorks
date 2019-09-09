@@ -35,6 +35,21 @@ namespace FrogWorks.Demo.Scenes
             layer.Camera.SetZone(World.Collider.Size.ToPoint());
         }
 
+        protected override void BeforeUpdate()
+        {
+            var collider = World.Collider.As<BitFlagMapCollider>();
+            var mouse = Layers[0].Camera.ViewToWorld(Input.Mouse.Position);
+
+            var mouseToGrid = mouse.SnapToGrid(
+                collider.CellSize.ToVector2(), 
+                collider.AbsolutePosition).ToPoint();
+
+            if (Input.Mouse.IsClicked(MouseButton.Left))
+                collider.Fill(BitFlag.FlagA, mouseToGrid.X, mouseToGrid.Y, 1, 1);
+            else if (Input.Mouse.IsClicked(MouseButton.Right))
+                collider.Fill(BitFlag.None, mouseToGrid.X, mouseToGrid.Y, 1, 1);
+        }
+
         protected override void AfterUpdate()
         {
             Font.Text = Player.ToString();
