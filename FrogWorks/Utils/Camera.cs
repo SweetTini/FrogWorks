@@ -51,7 +51,7 @@ namespace FrogWorks
             get
             {
                 UpdateMatrices();
-                return Vector2.Transform(new Vector2(_viewport.Width, _viewport.Height), _inverseMatrix).Round();
+                return Vector2.Transform(_viewport.Bounds.Size.ToVector2(), _inverseMatrix).Round();
             }
         }
 
