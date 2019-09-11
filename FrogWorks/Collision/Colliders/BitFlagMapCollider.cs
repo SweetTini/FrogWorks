@@ -10,20 +10,25 @@ namespace FrogWorks
             : base(columns, rows, cellWidth, cellHeight, x, y) { }
 
         public bool Collide(Vector2 point, BitFlag flags)
-            => Validate(At(point), flags, (p, f) => CheckShape(p, s => s.Contains(point)));
+            => Validate(Place(point), flags, (p, e) => Validate(p, s => s.Contains(point)));
+
+        public bool Collide(float x, float y, BitFlag flags) => Collide(new Vector2(x, y), flags);
 
         public bool Collide(Ray ray, BitFlag flags)
-            => Validate(At(ray.Position, ray.Endpoint), flags, (p, i) => CheckShape(p, s => ray.Cast(s)));
+            => Validate(Place(ray), flags, (p, e) => Validate(p, s => ray.Cast(s)));
 
         public bool Collide(Shape shape, BitFlag flags)
-            => Validate(At(shape.Bounds), flags, (p, i) => CheckShape(p, s => shape.Collide(s)));
+            => Validate(Place(shape), flags, (p, e) => Validate(p, s => shape.Collide(s)));
 
         public bool Collide(Collider collider, BitFlag flags)
         {
-            if (collider == null || Equals(collider) || !collider.IsCollidable) return false;
+            var isValid = collider != null
+                && !Equals(collider)
+                && collider.IsCollidable
+                && collider is ShapeCollider;
 
-            return Validate(At(collider.Bounds), flags, (p, i)
-                => CheckShape(p, s => collider is ShapeCollider && (collider as ShapeCollider).Collide(s)));
+            return isValid && Validate(Place(collider), flags, 
+                (p, e) => Validate(p, s => (collider as ShapeCollider).Collide(s)));
         }
 
         public bool Collide(Entity entity, BitFlag flags) => Collide(entity?.Collider, flags);
@@ -35,16 +40,10 @@ namespace FrogWorks
             return collider;
         }
 
-        protected override Shape ShapeOf(Point point)
-        {
-            return !Map.IsEmpty(point.X, point.Y)
-                ? new RectangleF(
-                    AbsolutePosition + (point * CellSize).ToVector2(),
-                    CellSize.ToVector2())
-                : null;
-        }
+        public bool Validate(Point point, BitFlag flags, Func<Point, BitFlag, bool> predicate)
+            => Validate(Extensions.AsEnumerable(point), flags, predicate);
 
-        protected bool Validate(IEnumerable<Point> points, BitFlag flags, Func<Point, BitFlag, bool> predicate)
+        public bool Validate(IEnumerable<Point> points, BitFlag flags, Func<Point, BitFlag, bool> predicate)
         {
             if (IsCollidable)
             {
@@ -57,6 +56,15 @@ namespace FrogWorks
             }
 
             return false;
+        }
+
+        public override Shape ShapeAt(Point point)
+        {
+            return !Map.IsEmpty(point.X, point.Y)
+                ? new RectangleF(
+                    AbsolutePosition + (point * CellSize).ToVector2(),
+                    CellSize.ToVector2())
+                : null;
         }
     }
 

@@ -126,7 +126,7 @@ namespace FrogWorks
             _position = position;
         }
 
-        public virtual void Draw(RendererBatch batch, Color color, bool fill = false) { }
+        public virtual void Draw(RendererBatch batch, Color stroke, Color? fill = null) { }
 
         public abstract bool Collide(Vector2 point);
 
@@ -138,7 +138,8 @@ namespace FrogWorks
 
         public abstract bool Collide(Collider collider);
 
-        public bool Collide(Entity entity) => Collide(entity?.Collider);
+        public bool Collide(Entity entity)
+            => entity?.Collider != null ? Collide(entity.Collider) : false;
 
         public abstract Collider Clone();
 

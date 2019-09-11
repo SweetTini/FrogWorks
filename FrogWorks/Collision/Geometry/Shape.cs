@@ -20,7 +20,7 @@ namespace FrogWorks
 
         public abstract Rectangle Bounds { get; }
 
-        public abstract void Draw(RendererBatch batch, Color color, bool fill = false);
+        public abstract void Draw(RendererBatch batch, Color stroke, Color? fill = null);
 
         public abstract bool Contains(Vector2 point);
 

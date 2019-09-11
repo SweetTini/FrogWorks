@@ -14,7 +14,7 @@ namespace FrogWorks
             return collider;
         }
 
-        protected override Shape ShapeOf(Point point)
+        public override Shape ShapeAt(Point point)
         {
             return !Map.IsEmpty(point.X, point.Y)
                 ? new RectangleF(

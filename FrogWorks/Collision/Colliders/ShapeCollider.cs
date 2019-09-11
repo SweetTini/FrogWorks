@@ -31,22 +31,23 @@ namespace FrogWorks
         protected ShapeCollider(Vector2 position)
             : base(position) { }
 
-        public sealed override void Draw(RendererBatch batch, Color color, bool fill = false)
-            => Shape.Draw(batch, color, fill);
+        public sealed override void Draw(RendererBatch batch, Color stroke, Color? fill = null)
+            => Shape.Draw(batch, stroke, fill);
 
         public sealed override bool Collide(Vector2 point) => IsCollidable && Shape.Contains(point);
 
-        public sealed override bool Collide(Ray ray)
-        {
-            Raycast hit;
-            return IsCollidable && ray.Cast(Shape, out hit);
-        }
+        public sealed override bool Collide(Ray ray) => IsCollidable && ray.Cast(Shape);
 
         public sealed override bool Collide(Shape shape) => IsCollidable && shape.Collide(Shape);
 
         public sealed override bool Collide(Collider collider)
         {
-            if (!Equals(collider) && IsCollidable && collider.IsCollidable)
+            var isValid = collider != null
+                && !Equals(collider)
+                && IsCollidable
+                && collider.IsCollidable;
+
+            if (isValid)
             {
                 if (collider is ShapeCollider) return (collider as ShapeCollider).Collide(Shape);
                 if (collider is SimpleMapCollider) return (collider as SimpleMapCollider).Collide(Shape);

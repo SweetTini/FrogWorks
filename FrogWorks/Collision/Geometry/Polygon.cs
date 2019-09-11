@@ -115,12 +115,13 @@ namespace FrogWorks
             UpdateVertices(true);
         }
 
-        public override void Draw(RendererBatch batch, Color color, bool fill = false)
+        public override void Draw(RendererBatch batch, Color stroke, Color? fill = null)
         {
             batch.DrawPrimitives((primitive) =>
             {
-                if (fill) primitive.FillPolygon(Transformed, color);
-                else primitive.DrawPolygon(Transformed, color);
+                if (fill.HasValue)
+                    primitive.FillPolygon(Transformed, fill.Value);
+                primitive.DrawPolygon(Transformed, stroke);
             });
         }
 

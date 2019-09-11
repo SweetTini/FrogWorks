@@ -74,32 +74,35 @@ namespace FrogWorks
             _cellSize = new Point(cellWidth, cellHeight).Abs();
         }
 
-        public sealed override void Draw(RendererBatch batch, Color color, bool fill = false)
+        public sealed override void Draw(RendererBatch batch, Color stroke, Color? fill = null)
         {
             for (int i = 0; i < _drawableRegion.Width * _drawableRegion.Height; i++)
             {
                 var x = _drawableRegion.Left + (i % _drawableRegion.Width);
                 var y = _drawableRegion.Top + (i / _drawableRegion.Width);
 
-                ShapeOf(x, y)?.Draw(batch, color, fill);
+                ShapeAt(x, y)?.Draw(batch, stroke, fill);
             }
         }
 
-        public override bool Collide(Vector2 point)
-            => Validate(At(point), (p, i) => CheckShape(p, s => s.Contains(point)));
+        public sealed override bool Collide(Vector2 point)
+            => Validate(Place(point), (p, e) => Validate(p, s => s.Contains(point)));
 
-        public override bool Collide(Ray ray)
-            => Validate(At(ray.Position, ray.Endpoint), (p, i) => CheckShape(p, s => ray.Cast(s)));
+        public sealed override bool Collide(Ray ray)
+            => Validate(Place(ray), (p, e) => Validate(p, s => ray.Cast(s)));
 
-        public override bool Collide(Shape shape)
-            => Validate(At(shape.Bounds), (p, i) => CheckShape(p, s => shape.Collide(s)));
+        public sealed override bool Collide(Shape shape)
+            => Validate(Place(shape), (p, e) => Validate(p, s => shape.Collide(s)));
 
-        public override bool Collide(Collider collider)
+        public sealed override bool Collide(Collider collider)
         {
-            if (collider == null || Equals(collider) || !collider.IsCollidable) return false;
+            var isValid = collider != null
+                && !Equals(collider)
+                && collider.IsCollidable
+                && collider is ShapeCollider;
 
-            return Validate(At(collider.Bounds), (p, i) 
-                => CheckShape(p, s => collider is ShapeCollider && (collider as ShapeCollider).Collide(s)));
+            return isValid && Validate(Place(collider), 
+                (p, e) => Validate(p, s => (collider as ShapeCollider).Collide(s)));
         }
 
         public void Populate(T[,] items, int offsetX = 0, int offsetY = 0)
@@ -152,24 +155,9 @@ namespace FrogWorks
 
         public void Clear() => Map.Clear();
 
-        protected sealed override void OnAdded() => AddCameraUpdateEvent();
+        public Point Place(Vector2 point) => point.SnapToGrid(CellSize.ToVector2(), AbsolutePosition).ToPoint();
 
-        protected sealed override void OnRemoved() => RemoveCameraUpdateEvent();
-
-        protected sealed override void OnEntityAdded() => AddCameraUpdateEvent();
-
-        protected sealed override void OnEntityRemoved() => RemoveCameraUpdateEvent();
-
-        protected sealed override void OnLayerAdded() => AddCameraUpdateEvent();
-
-        protected sealed override void OnLayerRemoved() => RemoveCameraUpdateEvent();
-
-        protected sealed override void OnTransformed() => UpdateDrawableRegion(Layer?.Camera);
-
-        protected IEnumerable<Point> At(Vector2 point) 
-            => Extensions.AsEnumerable(point.SnapToGrid(CellSize.ToVector2(), AbsolutePosition).ToPoint());
-
-        protected IEnumerable<Point> At(Vector2 from, Vector2 to)
+        public IEnumerable<Point> Place(Vector2 from, Vector2 to)
         {
             var cellFrom = from.SnapToGrid(CellSize.ToVector2(), AbsolutePosition).ToPoint();
             var cellTo = to.SnapToGrid(CellSize.ToVector2(), AbsolutePosition).ToPoint();
@@ -198,8 +186,8 @@ namespace FrogWorks
 
             for (int x = cellFrom.X; x < cellTo.X; x++)
             {
-                yield return isSteep 
-                    ? new Point(y, x) 
+                yield return isSteep
+                    ? new Point(y, x)
                     : new Point(x, y);
 
                 error += deltaY;
@@ -212,7 +200,7 @@ namespace FrogWorks
             }
         }
 
-        protected IEnumerable<Point> At(Rectangle area)
+        public IEnumerable<Point> Place(Rectangle area)
         {
             var bounds = area.SnapToGrid(CellSize.ToVector2(), AbsolutePosition);
 
@@ -224,31 +212,81 @@ namespace FrogWorks
             }
         }
 
-        protected abstract Shape ShapeOf(Point point);
+        public IEnumerable<Point> Place(Ray ray) => Place(ray.Position, ray.Endpoint);
 
-        protected Shape ShapeOf(int x, int y) => ShapeOf(new Point(x, y));
+        public IEnumerable<Point> Place(Shape shape) => Place(shape.Bounds);
 
-        protected bool Validate(IEnumerable<Point> points, Func<Point, T, bool> predicate)
+        public IEnumerable<Point> Place(Collider collider) => Place(collider?.Bounds ?? Rectangle.Empty);
+
+        public IEnumerable<Point> Place(Entity entity) => Place(entity?.Collider);
+
+        public T ElementAt(Point point) => Map[point.X, point.Y];
+
+        public T ElementAt(int x, int y) => ElementAt(new Point(x, y));
+
+        public IEnumerable<T> ElementAt(IEnumerable<Point> points)
+        {
+            foreach (var point in points)
+                yield return Map[point.X, point.Y];
+        }
+
+        public abstract Shape ShapeAt(Point point);
+
+        public Shape ShapeAt(int x, int y) => ShapeAt(new Point(x, y));
+
+        public bool IsEmpty(Point point) => Map[point.X, point.Y].Equals(Map.Empty);
+
+        public bool IsEmpty(int x, int y) => IsEmpty(new Point(x, y));
+
+        public bool IsEmpty(IEnumerable<Point> points)
+        {
+            foreach (var point in points)
+                if (Map[point.X, point.Y].Equals(Map.Empty))
+                    return true;
+
+            return false;
+        }
+
+        public bool Validate(Point point, Func<Point, T, bool> predicate)
+            => Validate(Extensions.AsEnumerable(point), predicate);
+
+        public bool Validate(IEnumerable<Point> points, Func<Point, T, bool> predicate)
         {
             if (IsCollidable)
             {
                 foreach (var point in points)
                 {
-                    var item = Map[point.X, point.Y];
-                    if (item.Equals(Map.Empty)) continue;
-                    if (predicate(point, item)) return true;
+                    var element = ElementAt(point);
+                    if (element.Equals(Map.Empty)) continue;
+                    if (predicate(point, element)) return true;
                 }
             }
 
             return false;
         }
 
-        protected bool CheckShape(Point point, Func<Shape, bool> predicate)
+        protected bool Validate(Point point, Func<Shape, bool> predicate)
         {
-            var shape = ShapeOf(point);
+            var shape = ShapeAt(point);
 
-            return shape != null && predicate(shape);
+            return shape != null
+                ? predicate(shape)
+                : false;
         }
+
+        protected sealed override void OnAdded() => AddCameraUpdateEvent();
+
+        protected sealed override void OnRemoved() => RemoveCameraUpdateEvent();
+
+        protected sealed override void OnEntityAdded() => AddCameraUpdateEvent();
+
+        protected sealed override void OnEntityRemoved() => RemoveCameraUpdateEvent();
+
+        protected sealed override void OnLayerAdded() => AddCameraUpdateEvent();
+
+        protected sealed override void OnLayerRemoved() => RemoveCameraUpdateEvent();
+
+        protected sealed override void OnTransformed() => UpdateDrawableRegion(Layer?.Camera);
 
         private void AddCameraUpdateEvent()
         {

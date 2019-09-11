@@ -43,12 +43,13 @@ namespace FrogWorks
         public Circle(float centerX, float centerY, float radius)
             : this(new Vector2(centerX, centerY), radius) { }
 
-        public override void Draw(RendererBatch batch, Color color, bool fill = false)
+        public override void Draw(RendererBatch batch, Color stroke, Color? fill = null)
         {
             batch.DrawPrimitives((primitive) =>
             {
-                if (fill) primitive.FillCircle(Center, Radius, color);
-                else primitive.DrawCircle(Center, Radius, color);
+                if (fill.HasValue)
+                    primitive.FillCircle(Center, Radius, fill.Value);
+                primitive.DrawCircle(Center, Radius, stroke);
             });
         }
 

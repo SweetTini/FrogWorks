@@ -40,12 +40,13 @@ namespace FrogWorks
         public RectangleF(float x, float y, float width, float height)
             : this(new Vector2(x, y), new Vector2(width, height)) { }
 
-        public override void Draw(RendererBatch batch, Color color, bool fill = false)
+        public override void Draw(RendererBatch batch, Color stroke, Color? fill = null)
         {
             batch.DrawPrimitives((primitive) =>
             {
-                if (fill) primitive.FillRectangle(Position, Size, color);
-                else primitive.DrawRectangle(Position, Size, color);
+                if (fill.HasValue)
+                    primitive.FillRectangle(Position, Size, fill.Value);
+                primitive.DrawRectangle(Position, Size, stroke);
             });
         }
 
