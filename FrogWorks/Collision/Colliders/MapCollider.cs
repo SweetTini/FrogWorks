@@ -81,7 +81,7 @@ namespace FrogWorks
                 var x = _drawableRegion.Left + (i % _drawableRegion.Width);
                 var y = _drawableRegion.Top + (i / _drawableRegion.Width);
 
-                ShapeAt(x, y)?.Draw(batch, stroke, fill);
+                DrawShapeAt(new Point(x, y), batch, stroke, fill);
             }
         }
 
@@ -273,6 +273,9 @@ namespace FrogWorks
                 ? predicate(shape)
                 : false;
         }
+
+        protected virtual void DrawShapeAt(Point point, RendererBatch batch, Color stroke, Color? fill = null)
+            => ShapeAt(point)?.Draw(batch, stroke, fill);
 
         protected sealed override void OnAdded() => AddCameraUpdateEvent();
 

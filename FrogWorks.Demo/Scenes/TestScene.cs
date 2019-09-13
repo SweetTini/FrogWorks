@@ -45,7 +45,7 @@ namespace FrogWorks.Demo.Scenes
                 collider.AbsolutePosition).ToPoint();
 
             if (Input.Mouse.IsClicked(MouseButton.Left))
-                collider.Fill(BitFlag.FlagA, mouseToGrid.X, mouseToGrid.Y, 1, 1);
+                collider.Fill(BitFlag.FlagB, mouseToGrid.X, mouseToGrid.Y, 1, 1);
             else if (Input.Mouse.IsClicked(MouseButton.Right))
                 collider.Fill(BitFlag.None, mouseToGrid.X, mouseToGrid.Y, 1, 1);
         }

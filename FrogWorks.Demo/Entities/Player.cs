@@ -51,7 +51,7 @@ namespace FrogWorks.Demo.Entities
                 }
             }
 
-            if (IsOnGround)
+            if (IsOnPlatform)
             {
                 if (YVelocity > 0f) YVelocity = 0f;
 

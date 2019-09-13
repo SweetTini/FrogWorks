@@ -312,6 +312,20 @@ namespace FrogWorks
             return result;
         }
 
+        public static Point Max(this IEnumerable<Point> points)
+        {
+            var result = new Point(int.MinValue, int.MinValue);
+
+            foreach (var point in points)
+            {
+                result = new Point(
+                    Math.Max(result.X, point.X),
+                    Math.Max(result.Y, point.Y));
+            }
+
+            return result;
+        }
+
         public static Point Min(this Point point, Point other)
         {
             return new Point(
@@ -342,6 +356,20 @@ namespace FrogWorks
                 result = new Point(
                     Math.Min(result.X, otherPoint.X),
                     Math.Min(result.Y, otherPoint.Y));
+            }
+
+            return result;
+        }
+
+        public static Point Min(this IEnumerable<Point> points)
+        {
+            var result = new Point(int.MaxValue, int.MaxValue);
+
+            foreach (var point in points)
+            {
+                result = new Point(
+                    Math.Min(result.X, point.X),
+                    Math.Min(result.Y, point.Y));
             }
 
             return result;
@@ -431,6 +459,14 @@ namespace FrogWorks
             return result;
         }
 
+        public static Vector2 Max(this IEnumerable<Vector2> vectors)
+        {
+            var result = Vector2.One * float.MinValue;
+            foreach (var vector in vectors)
+                result = Vector2.Max(result, vector);
+            return result;
+        }
+
         public static Vector2 Min(this Vector2 vector, Vector2 other)
         {
             return Vector2.Min(vector, other);
@@ -449,6 +485,14 @@ namespace FrogWorks
             var result = vector;
             foreach (var otherVector in vectors)
                 result = Vector2.Min(result, otherVector);
+            return result;
+        }
+
+        public static Vector2 Min(this IEnumerable<Vector2> vectors)
+        {
+            var result = Vector2.One * float.MaxValue;
+            foreach (var vector in vectors)
+                result = Vector2.Min(result, vector);
             return result;
         }
 
