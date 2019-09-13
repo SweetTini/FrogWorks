@@ -31,10 +31,6 @@ namespace FrogWorks.Demo.Entities
 
         public bool IsOnGround { get; private set; }
 
-        public bool IsOnJumpThru { get; private set; }
-
-        public bool IsOnPlatform => IsOnGround || IsOnJumpThru;
-
         protected MoveableEntity(World world, int width, int height)
             : base()
         {
@@ -112,8 +108,8 @@ namespace FrogWorks.Demo.Entities
                 }
             }
 
-            IsOnGround = World.IsSolid(Left, Bottom, Width, 1);
-            IsOnJumpThru = World.IsJumpThru(Left, Bottom, Width, 1);
+            IsOnGround = World.IsSolid(Left, Bottom, Width, 1) 
+                || (World.IsJumpThru(Left, Bottom, Width, 1) && YVelocity >= 0f);
             IsOnCeiling = World.IsSolid(Left, Top - 1, Width, 1);
         }
 
@@ -121,8 +117,7 @@ namespace FrogWorks.Demo.Entities
         {
             return $"POS:{X.Round()},{Y.Round()}" + Environment.NewLine
                 + $"VEL:{(XVelocity * 100f).Round()},{(YVelocity * 100f).Round()}" + Environment.NewLine
-                + $"GR:{Convert.ToInt32(IsOnGround)},CL:{Convert.ToInt32(IsOnCeiling)}," 
-                + $"JT:{Convert.ToInt32(IsOnJumpThru)}" + Environment.NewLine
+                + $"GR:{Convert.ToInt32(IsOnGround)},CL:{Convert.ToInt32(IsOnCeiling)}" + Environment.NewLine
                 + $"LW:{Convert.ToInt32(IsOnLeftWall)},RW:{Convert.ToInt32(IsOnRightWall)}";
         }
     }
