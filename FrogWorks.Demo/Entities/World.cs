@@ -54,7 +54,7 @@ namespace FrogWorks.Demo.Entities
             if (Map.Collide(hitbox, BitFlag.FlagB))
             {
                 var pA = Map.Place(hitbox).Max();
-                var pB = Map.Place(new RectangleF(x - xVel, y = yVel, width, height)).Max();
+                var pB = Map.Place(new RectangleF(x - xVel, y - yVel, width, height)).Max();
                 if (pB.Y < pA.Y) return true;
             }
 
