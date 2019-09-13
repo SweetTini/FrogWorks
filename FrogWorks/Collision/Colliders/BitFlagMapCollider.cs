@@ -6,8 +6,13 @@ namespace FrogWorks
 {
     public class BitFlagMapCollider : MapCollider<BitFlag>
     {
+        private Dictionary<BitFlag, MapColorDefinition> _colors;
+
         public BitFlagMapCollider(int columns, int rows, int cellWidth, int cellHeight, float x = 0, float y = 0) 
-            : base(columns, rows, cellWidth, cellHeight, x, y) { }
+            : base(columns, rows, cellWidth, cellHeight, x, y)
+        {
+            _colors = new Dictionary<BitFlag, MapColorDefinition>();
+        }
 
         public bool Collide(Vector2 point, BitFlag flags)
             => Validate(Place(point), flags, (p, e) => Validate(p, s => s.Contains(point)));
@@ -65,6 +70,32 @@ namespace FrogWorks
                     AbsolutePosition + (point * CellSize).ToVector2(),
                     CellSize.ToVector2())
                 : null;
+        }
+
+        public void DefineColors(BitFlag flags, Color stroke, Color? fill = null)
+            => _colors.Add(flags, new MapColorDefinition(stroke, fill));
+
+        public void ClearColors() => _colors.Clear();
+
+        protected override void DrawShapeAt(Point point, RendererBatch batch, Color stroke, Color? fill = null)
+        {
+            MapColorDefinition color;
+            if (!_colors.TryGetValue(ElementAt(point), out color))
+                color = new MapColorDefinition(stroke, fill);
+            base.DrawShapeAt(point, batch, color.Stroke, color.Fill);
+        }
+    }
+
+    internal struct MapColorDefinition
+    {
+        public Color Stroke { get; set; }
+
+        public Color? Fill { get; set; }
+
+        public MapColorDefinition(Color stroke, Color? fill = null)
+        {
+            Stroke = stroke;
+            Fill = fill;
         }
     }
 

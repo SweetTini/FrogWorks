@@ -21,6 +21,7 @@ namespace FrogWorks.Demo.Entities
             collider.Fill(BitFlag.FlagA, 0, 0, 1, rows);
             collider.Fill(BitFlag.FlagA, 0, rows - 1, columns, 1);
             collider.Fill(BitFlag.FlagA, columns - 1, 0, 1, rows);
+            collider.DefineColors(BitFlag.FlagB, Color.Olive, Color.Goldenrod);
 
             Collider = collider;
         }
