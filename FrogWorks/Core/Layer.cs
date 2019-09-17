@@ -2,25 +2,25 @@
 
 namespace FrogWorks
 {
-    public sealed class Layer : Managable<Scene>
+    public abstract class Layer : Managable<Scene>
     {
         public EntityManager Entities { get; private set; }
 
         public Camera Camera { get; private set; }
 
-        public BlendState BlendState { get; set; }
+        public BlendState BlendState { get; protected set; }
 
-        public DepthStencilState DepthStencilState { get; set; }
+        public DepthStencilState DepthStencilState { get; protected set; }
 
-        public Effect ShaderEffect { get; set; }
+        public Effect ShaderEffect { get; protected set; }
 
-        public Layer()
+        protected Layer()
         {
             Entities = new EntityManager(this);
             Camera = new Camera();
         }
 
-        protected override void Update(float deltaTime)
+        protected sealed override void Update(float deltaTime)
         {
             Entities.ProcessQueues();
             Entities.Update(deltaTime);
@@ -58,6 +58,6 @@ namespace FrogWorks
                 entity.OnInternalSceneEnded();
         }
 
-        public override void Destroy() => Parent?.Layers.Remove(this);
+        public sealed override void Destroy() => Parent?.Layers.Remove(this);
     }
 }

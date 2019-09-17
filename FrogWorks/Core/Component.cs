@@ -28,6 +28,6 @@
 
         protected virtual void OnLayerRemoved() { }
 
-        public override void Destroy() => Parent?.Components.Remove(this);
+        public sealed override void Destroy() => Parent?.Components.Remove(this);
     }
 }

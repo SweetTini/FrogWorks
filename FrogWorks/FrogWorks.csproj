@@ -84,6 +84,7 @@
     <Compile Include="Core\Component.cs" />
     <Compile Include="Core\Entity.cs" />
     <Compile Include="DisplayAdapter.cs" />
+    <Compile Include="Layers\BasicLayer.cs" />
     <Compile Include="Runners\DesktopRunner.cs" />
     <Compile Include="Core\Layer.cs" />
     <Compile Include="GameAdapter.cs" />

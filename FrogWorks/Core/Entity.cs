@@ -195,6 +195,6 @@ namespace FrogWorks
 
         protected virtual void OnTransformed() { }
 
-        public override void Destroy() => Parent?.Entities.Remove(this);
+        public sealed override void Destroy() => Parent?.Entities.Remove(this);
     }
 }
