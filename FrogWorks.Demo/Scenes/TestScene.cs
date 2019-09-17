@@ -20,8 +20,8 @@ namespace FrogWorks.Demo.Scenes
         {
             BackgroundColor = Color.CornflowerBlue;
 
-            var layer = new Layer();
-            var hudLayer = new Layer();
+            var layer = new BasicLayer();
+            var hudLayer = new BasicLayer();
             Layers.Add(Extensions.AsEnumerable(layer, hudLayer));
 
             World = new World(20, 15, 32, 32);
