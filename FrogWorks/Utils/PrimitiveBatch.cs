@@ -12,6 +12,7 @@ namespace FrogWorks
 
         private GraphicsDevice _graphicsDevice;
         private BasicEffect _basicEffect;
+        private Effect _effect;
         private VertexPositionColor[] _vertices;
         private PrimitiveType _type;
         private int _bufferIndex;
@@ -38,25 +39,32 @@ namespace FrogWorks
                    - (bufferSize % VertsPerTriangle);
 
             _graphicsDevice = graphicsDevice;
-            _basicEffect = new BasicEffect(_graphicsDevice);
+            _basicEffect = new BasicEffect(_graphicsDevice) { VertexColorEnabled = true };
             _vertices = new VertexPositionColor[fixedSize];
         }
 
-        public void Begin(BlendState blendState = null, SamplerState samplerState = null, 
-            DepthStencilState depthStencilState = null, Matrix? projectionMatrix = null, Matrix? viewMatrix = null)
+        public void Begin(BlendState blendState = null, 
+                          SamplerState samplerState = null, 
+                          DepthStencilState depthStencilState = null,
+                          RasterizerState rasterizerState = null,
+                          Effect effect = null,
+                          Matrix? projectionMatrix = null, 
+                          Matrix? viewMatrix = null)
         {
             ValidateAfterDraw();
 
             _graphicsDevice.BlendState = blendState ?? BlendState.AlphaBlend;
             _graphicsDevice.SamplerStates[0] = samplerState ?? SamplerState.PointClamp;
+            _graphicsDevice.RasterizerState = rasterizerState ?? RasterizerState.CullNone;
             _graphicsDevice.DepthStencilState = depthStencilState ?? DepthStencilState.None;
+            _effect = effect ?? _basicEffect;
 
-            var viewport = _graphicsDevice.Viewport;
-            _basicEffect.Projection = projectionMatrix 
-                ?? Matrix.CreateOrthographicOffCenter(0f, viewport.Width, viewport.Height, 0f, -1000f, 1000f);
-            _basicEffect.View = viewMatrix ?? Matrix.Identity;
-            _basicEffect.VertexColorEnabled = true;
-            _basicEffect.CurrentTechnique.Passes[0].Apply();
+            if (_effect is IEffectMatrices)
+            {
+                var effectMatrices = _effect as IEffectMatrices;
+                effectMatrices.Projection = projectionMatrix ?? Matrix.Identity;
+                effectMatrices.View = viewMatrix ?? Matrix.Identity;
+            }
 
             _hasBegun = true;
         }
@@ -371,7 +379,13 @@ namespace FrogWorks
             if (_bufferIndex >= perAmount)
             {
                 var count = _bufferIndex / perAmount;
-                _graphicsDevice.DrawUserPrimitives(primitiveType, _vertices, 0, count);
+
+                foreach (var pass in _effect.CurrentTechnique.Passes)
+                {
+                    pass.Apply();
+                    _graphicsDevice.DrawUserPrimitives(primitiveType, _vertices, 0, count);
+                }
+
                 _bufferIndex -= count * perAmount;
             }
         }

@@ -14,7 +14,7 @@ namespace FrogWorks
 
         protected DepthStencilState DepthStencilState { get; set; }
 
-        protected Effect ShaderEffect { get; set; }
+        protected Effect Effect { get; set; }
 
         protected Matrix? ProjectionMatrix { get; set; }
 
@@ -34,16 +34,19 @@ namespace FrogWorks
             Primitive = new PrimitiveBatch(graphicsDevice);
         }
 
-        public void Configure(BlendState blendState = null, DepthStencilState depthStencilState = null, Effect shaderEffect = null, Matrix? projectionMatrix = null, Matrix? transformMatrix = null)
+        public void Configure(BlendState blendState = null, 
+                              DepthStencilState depthStencilState = null, 
+                              Effect effect = null, 
+                              Camera camera = null)
         {
             if (IsDrawing)
                 throw new Exception("Cannot modify setting while the rendering process is active.");
 
             BlendState = blendState ?? BlendState.AlphaBlend;
             DepthStencilState = depthStencilState ?? DepthStencilState.None;
-            ShaderEffect = shaderEffect;
-            ProjectionMatrix = projectionMatrix;
-            TransformMatrix = transformMatrix;
+            Effect = effect;
+            ProjectionMatrix = camera?.ProjectionMatrix;
+            TransformMatrix = camera?.TransformMatrix;
         }
 
         public void Reset()
@@ -53,7 +56,7 @@ namespace FrogWorks
 
             BlendState = BlendState.AlphaBlend;
             DepthStencilState = DepthStencilState.None;
-            ShaderEffect = null;
+            Effect = null;
             ProjectionMatrix = null;
             TransformMatrix = null;
         }
@@ -63,7 +66,14 @@ namespace FrogWorks
             if (IsDrawing)
                 throw new Exception("End must be called before Begin.");
 
-            Sprite.Begin(SpriteSortMode.Deferred, BlendState, SamplerState.PointClamp, DepthStencilState, RasterizerState.CullCounterClockwise, ShaderEffect, TransformMatrix);
+            Sprite.Begin(
+                SpriteSortMode.Deferred, 
+                BlendState, 
+                SamplerState.PointClamp, 
+                DepthStencilState, 
+                RasterizerState.CullCounterClockwise, 
+                Effect, 
+                TransformMatrix);
             RenderingMode = RenderingMode.Sprites;
             IsDrawing = true;
         }
@@ -73,8 +83,7 @@ namespace FrogWorks
             if (!IsDrawing)
                 throw new Exception("End cannot be called before Begin.");
 
-            if (RenderingMode == RenderingMode.Sprites)
-                Sprite.End();
+            if (RenderingMode == RenderingMode.Sprites) Sprite.End();
             else Primitive.End();
 
             RenderingMode = RenderingMode.None;
@@ -89,14 +98,32 @@ namespace FrogWorks
             if (RenderingMode != RenderingMode.Sprites)
             {
                 Primitive.End();
-                Sprite.Begin(SpriteSortMode.Deferred, BlendState, wrapTexture ? SamplerState.PointWrap : SamplerState.PointClamp, DepthStencilState, RasterizerState.CullCounterClockwise, ShaderEffect, TransformMatrix);
+                Sprite.Begin(
+                    SpriteSortMode.Deferred, 
+                    BlendState, 
+                    wrapTexture 
+                        ? SamplerState.PointWrap 
+                        : SamplerState.PointClamp, 
+                    DepthStencilState, 
+                    RasterizerState.CullCounterClockwise, 
+                    Effect, 
+                    TransformMatrix);
                 RenderingMode = RenderingMode.Sprites;
                 WrapTexture = wrapTexture;
             }
             else if (WrapTexture != wrapTexture)
             {
                 Sprite.End();
-                Sprite.Begin(SpriteSortMode.Deferred, BlendState, wrapTexture ? SamplerState.PointWrap : SamplerState.PointClamp, DepthStencilState, RasterizerState.CullCounterClockwise, ShaderEffect, TransformMatrix);
+                Sprite.Begin(
+                    SpriteSortMode.Deferred, 
+                    BlendState, 
+                    wrapTexture 
+                        ? SamplerState.PointWrap 
+                        : SamplerState.PointClamp, 
+                    DepthStencilState, 
+                    RasterizerState.CullCounterClockwise, 
+                    Effect, 
+                    TransformMatrix);
                 WrapTexture = wrapTexture;
             }
 
@@ -111,7 +138,14 @@ namespace FrogWorks
             if (RenderingMode != RenderingMode.Primitives)
             {
                 Sprite.End();
-                Primitive.Begin(BlendState, SamplerState.PointClamp, DepthStencilState, ProjectionMatrix, TransformMatrix);
+                Primitive.Begin(
+                    BlendState, 
+                    SamplerState.PointClamp, 
+                    DepthStencilState,
+                    RasterizerState.CullNone,
+                    Effect,
+                    ProjectionMatrix, 
+                    TransformMatrix);
                 RenderingMode = RenderingMode.Primitives;
             }
 

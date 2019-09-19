@@ -22,15 +22,19 @@ namespace FrogWorks.Demo.Scenes
 
             var layer = new BasicLayer();
             var hudLayer = new BasicLayer();
-            Layers.Add(Extensions.AsEnumerable(layer, hudLayer));
+            var maskLayer = new AlphaMaskLayer();
+            Layers.Add(Extensions.AsEnumerable<Layer>(layer, maskLayer, hudLayer));
 
             World = new World(20, 15, 32, 32);
             Player = new Player(World) { X = 64f, Y = 64f };
             Font = new MonoFont(304, 224) { X = 8, Y = 8 };
             FpsFont = new MonoFont(304, 224) { X = 8, Y = 8, HorizontalAlignment = HorizontalAlignment.Right };
 
+            var transition = new Transition() { CenterX = 160f, CenterY = 120f };
+            
             layer.Entities.Add(Extensions.AsEnumerable<Entity>(World, Player));
             hudLayer.Entities.Add(Extensions.AsEnumerable<Entity>(Font, FpsFont));
+            maskLayer.Entities.Add(transition);
 
             layer.Camera.SetZone(World.Collider.Size.ToPoint());
         }

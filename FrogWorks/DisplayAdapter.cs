@@ -64,14 +64,16 @@ namespace FrogWorks
             _game.ApplyChanges();
 
             _batch = new RendererBatch(_game.GraphicsDevice);
-            _buffer = new RenderTarget2D(_game.GraphicsDevice, _size.X, _size.Y);
+            _buffer = new RenderTarget2D(_game.GraphicsDevice, _size.X, _size.Y, 
+                false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
         }
 
         public void Draw(Scene scene)
         {
             _game.GraphicsDevice.SetRenderTarget(_buffer);
             _game.GraphicsDevice.Viewport = new Viewport(0, 0, Width, Height);
-            _game.GraphicsDevice.Clear(scene?.BackgroundColor ?? ClearColor);
+            _game.GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.Stencil,
+                scene?.BackgroundColor ?? ClearColor, 0, 0);
 
             scene?.Draw(_batch);
 

@@ -4,6 +4,8 @@ namespace FrogWorks
 {
     public abstract class Layer : Managable<Scene>
     {
+        protected GraphicsDevice GraphicsDevice { get; private set; }
+
         public EntityManager Entities { get; private set; }
 
         public Camera Camera { get; private set; }
@@ -12,10 +14,11 @@ namespace FrogWorks
 
         public DepthStencilState DepthStencilState { get; protected set; }
 
-        public Effect ShaderEffect { get; protected set; }
+        public Effect Effect { get; protected set; }
 
         protected Layer()
         {
+            GraphicsDevice = Runner.Application.Game.GraphicsDevice;
             Entities = new EntityManager(this);
             Camera = new Camera();
         }
@@ -28,7 +31,7 @@ namespace FrogWorks
 
         protected override void Draw(RendererBatch batch)
         {
-            batch.Configure(BlendState, DepthStencilState, ShaderEffect, null, Camera.TransformMatrix);
+            batch.Configure(BlendState, DepthStencilState, Effect, Camera);
             batch.Begin();
             Entities.Draw(batch);
             batch.End();

@@ -6,7 +6,7 @@ namespace FrogWorks
 {
     public class Camera
     {
-        private Matrix _transformMatrix, _inverseMatrix;
+        private Matrix _projectionMatrix, _transformMatrix, _inverseMatrix;
         private Viewport _viewport;
         private Rectangle? _zone;
         private Vector2 _position, _origin;
@@ -14,6 +14,8 @@ namespace FrogWorks
         private bool _isDirty = true;
 
         public Action<Camera> OnCameraUpdated { get; set; }
+
+        public Matrix ProjectionMatrix => _projectionMatrix;
 
         public Matrix TransformMatrix
         {
@@ -124,6 +126,9 @@ namespace FrogWorks
         {
             var application = Runner.Application;
             Position = application.Size.ToVector2() * .5f;
+            _projectionMatrix = Matrix.CreateOrthographicOffCenter(
+                new Rectangle(Point.Zero, application.Size), -1000f, 1000f);
+
             application.Display.OnBufferChanged += UpdateViewport;
             UpdateViewport();
         }

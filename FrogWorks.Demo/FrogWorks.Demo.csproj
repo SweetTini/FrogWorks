@@ -46,6 +46,7 @@
     <Compile Include="Entities\MonoFont.cs" />
     <Compile Include="Entities\MoveableEntity.cs" />
     <Compile Include="Entities\Player.cs" />
+    <Compile Include="Entities\Transition.cs" />
     <Compile Include="Entities\World.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
