@@ -8,6 +8,6 @@ namespace FrogWorks.Demo.Entities
             : base() { }
 
         protected override void AfterDraw(RendererBatch batch)
-            => batch.DrawPrimitives(primitive => primitive.FillCircle(Center, 80f, Color.Transparent, 32));
+            => batch.DrawPrimitives(primitive => primitive.FillCircle(Center, 80f, Color.White, 32));
     }
 }

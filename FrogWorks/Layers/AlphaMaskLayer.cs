@@ -5,18 +5,21 @@ namespace FrogWorks
 {
     public sealed class AlphaMaskLayer : Layer
     {
-        private AlphaTestEffect _alphaTestEffect;
+        private BlendState _nonColorWriteBlend;
         private DepthStencilState _alwaysStencil, _keepIfZeroStencil;
+        private AlphaTestEffect _alphaTestEffect;
 
         public Color BackgroundColor { get; set; } = Color.Black;
 
         public AlphaMaskLayer()
             : base()
         {
+            _nonColorWriteBlend = new BlendState() { ColorWriteChannels = ColorWriteChannels.None };
+
             _alphaTestEffect = new AlphaTestEffect(GraphicsDevice)
             {
                 VertexColorEnabled = true,
-                AlphaFunction = CompareFunction.Equal,
+                AlphaFunction = CompareFunction.Greater,
                 ReferenceAlpha = 0
             };
 
@@ -41,12 +44,14 @@ namespace FrogWorks
 
         protected override void BeforeDraw(RendererBatch batch)
         {
+            BlendState = _nonColorWriteBlend;
             DepthStencilState = _alwaysStencil;
             Effect = _alphaTestEffect;
         }
 
         protected override void AfterDraw(RendererBatch batch)
         {
+            BlendState = null;
             DepthStencilState = _keepIfZeroStencil;
             Effect = null;
 
