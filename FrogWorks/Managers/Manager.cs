@@ -75,6 +75,12 @@ namespace FrogWorks
                 TryAdd(item);
         }
 
+        public void Add(params TItem[] items)
+        {
+            foreach (var item in items)
+                Add(item);
+        }
+
         public void Add(IEnumerable<TItem> items)
         {
             foreach (var item in items)
@@ -90,6 +96,12 @@ namespace FrogWorks
                 ToRemove.Enqueue(item);
             else if (!IsBusy)
                 TryRemove(item);
+        }
+
+        public void Remove(params TItem[] items)
+        {
+            foreach (var item in items)
+                Remove(item);
         }
 
         public void Remove(IEnumerable<TItem> items)
