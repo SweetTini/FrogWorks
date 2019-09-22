@@ -248,7 +248,7 @@ namespace FrogWorks
         }
 
         public bool Validate(Point point, Func<Point, T, bool> predicate)
-            => Validate(Extensions.AsEnumerable(point), predicate);
+            => Validate(Extensions.Enumerate(point), predicate);
 
         public bool Validate(IEnumerable<Point> points, Func<Point, T, bool> predicate)
         {

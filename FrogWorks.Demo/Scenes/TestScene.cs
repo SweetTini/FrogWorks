@@ -23,7 +23,7 @@ namespace FrogWorks.Demo.Scenes
             var layer = new BasicLayer();
             var hudLayer = new BasicLayer();
             var maskLayer = new AlphaMaskLayer();
-            Layers.Add(Extensions.AsEnumerable<Layer>(layer, maskLayer, hudLayer));
+            Layers.Add(layer, maskLayer, hudLayer);
 
             World = new World(20, 15, 32, 32);
             Player = new Player(World) { X = 64f, Y = 64f };
@@ -32,8 +32,8 @@ namespace FrogWorks.Demo.Scenes
 
             var transition = new Transition() { CenterX = 160f, CenterY = 120f };
             
-            layer.Entities.Add(Extensions.AsEnumerable<Entity>(World, Player));
-            hudLayer.Entities.Add(Extensions.AsEnumerable<Entity>(Font, FpsFont));
+            layer.Entities.Add(World, Player);
+            hudLayer.Entities.Add(Font, FpsFont);
             maskLayer.Entities.Add(transition);
 
             layer.Camera.SetZone(World.Collider.Size.ToPoint());

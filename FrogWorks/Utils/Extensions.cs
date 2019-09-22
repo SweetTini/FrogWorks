@@ -209,7 +209,7 @@ namespace FrogWorks
             return 0 <= index && index < list.Count();
         }
 
-        public static IEnumerable<T> AsEnumerable<T>(params T[] items)
+        public static IEnumerable<T> Enumerate<T>(params T[] items)
         {
             return items.AsEnumerable();
         }

@@ -46,7 +46,7 @@ namespace FrogWorks
         }
 
         public bool Validate(Point point, BitFlag flags, Func<Point, BitFlag, bool> predicate)
-            => Validate(Extensions.AsEnumerable(point), flags, predicate);
+            => Validate(Extensions.Enumerate(point), flags, predicate);
 
         public bool Validate(IEnumerable<Point> points, BitFlag flags, Func<Point, BitFlag, bool> predicate)
         {
