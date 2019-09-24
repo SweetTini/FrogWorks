@@ -84,7 +84,7 @@ namespace FrogWorks
         {
             TextureMap = new Map<Texture>(columns, rows);
             TileWidth = tileWidth;
-            TileHeight = TileHeight;
+            TileHeight = tileHeight;
         }
 
         protected override void Draw(RendererBatch batch)
