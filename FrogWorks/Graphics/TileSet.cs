@@ -21,6 +21,8 @@ namespace FrogWorks
             }
         }
 
+        public int Count => _tiles.GetLength(0) * _tiles.GetLength(1);
+
         public Texture Texture { get; private set; }
 
         public int TileWidth { get; private set; }

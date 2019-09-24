@@ -6,7 +6,7 @@ using System.Xml;
 
 namespace FrogWorks
 {
-    public class BmFont
+    public sealed class BmFontLoader
     {
         public static BitmapFont Load(BmFontFileType fileType, string filePath, string rootDirectory = "")
         {

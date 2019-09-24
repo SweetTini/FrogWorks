@@ -84,6 +84,8 @@
     <Compile Include="Core\Component.cs" />
     <Compile Include="Core\Entity.cs" />
     <Compile Include="DisplayAdapter.cs" />
+    <Compile Include="Graphics\Loaders\TiledLoader.cs" />
+    <Compile Include="Graphics\TileMapContainer.cs" />
     <Compile Include="Layers\AlphaMaskLayer.cs" />
     <Compile Include="Layers\BasicLayer.cs" />
     <Compile Include="Runners\DesktopRunner.cs" />
@@ -92,7 +94,7 @@
     <Compile Include="Graphics\Animation.cs" />
     <Compile Include="Graphics\BitmapCharacter.cs" />
     <Compile Include="Graphics\BitmapFont.cs" />
-    <Compile Include="Graphics\BmFont.cs" />
+    <Compile Include="Graphics\Loaders\BmFontLoader.cs" />
     <Compile Include="Graphics\Texture.cs" />
     <Compile Include="Graphics\TileSet.cs" />
     <Compile Include="Inputs\Input.cs" />
@@ -148,7 +150,9 @@
     <Compile Include="Utils\RendererBatch.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
