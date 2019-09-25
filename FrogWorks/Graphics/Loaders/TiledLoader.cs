@@ -178,7 +178,6 @@ namespace FrogWorks
         {
             var tileLayer = new TileMap(container.Columns, container.Rows,
                                       container.TileWidth, container.TileHeight);
-
             var tileLayerFilled = false;
 
             foreach (var info in infos)
@@ -217,7 +216,10 @@ namespace FrogWorks
                         .Replace("_", string.Empty)
                         .ToLower();
 
-                    container.DataLayers.Add($"{layerName}-{source}", dataLayer);
+                    if (source != layerName)
+                        source = $"{layerName}-{source}";
+
+                    container.DataLayers.Add(source, dataLayer);
                 }
             }
 
