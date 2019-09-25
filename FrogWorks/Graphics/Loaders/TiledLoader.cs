@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -31,72 +32,75 @@ namespace FrogWorks
             document.Load(stream);
 
             var xmlRoot = document["map"];
-            var tileSets = new Dictionary<int, TileSet>();
+            var infos = new List<TileSetInfo>();
 
             ReadMap(xmlRoot, container);
-            ReadTileSets(xmlRoot, container, tileSets, directory);
-            ReadLayers(xmlRoot, container, tileSets);
+            ReadTileSets(xmlRoot, container, infos, directory);
+            ReadLayers(xmlRoot, container, infos);
         }
 
         static void ReadMap(XmlElement xmlRoot, TileMapContainer container)
         {
-            container.Columns = xmlRoot.AttrToInt32("width");
-            container.Rows = xmlRoot.AttrToInt32("height");
-            container.TileWidth = xmlRoot.AttrToInt32("tilewidth");
-            container.TileHeight = xmlRoot.AttrToInt32("tileheight");
+            container.Size = new Point(xmlRoot.AttrToInt32("width"), 
+                                       xmlRoot.AttrToInt32("height"));
+            container.TileSize = new Point(xmlRoot.AttrToInt32("tilewidth"),
+                                           xmlRoot.AttrToInt32("tileheight"));
         }
 
         static void ReadTileSets(XmlElement xmlRoot, 
-                                 TileMapContainer container, 
-                                 Dictionary<int, TileSet> tileSets, 
+                                 TileMapContainer container,
+                                 List<TileSetInfo> infos, 
                                  string directory)
         {
-            var xmlTileSets = xmlRoot.GetElementsByTagName("tileset");
-
-            foreach (XmlElement xmlTileSet in xmlTileSets)
+            foreach (XmlElement xmlTileSet in xmlRoot.GetElementsByTagName("tileset"))
             {
-                var firstGid = xmlTileSet.AttrToInt32("firstgid"); 
-                var xmlImage = xmlTileSet["image"];
-                var imageSource = xmlImage.Attribute("source");
-                var texture = Texture.Load(Path.Combine(directory, imageSource));
-                var tileSet = new TileSet(texture, container.TileWidth, container.TileHeight);
+                var properties = ReadProperties(xmlTileSet);
 
-                tileSets.Add(firstGid, tileSet);
+                var info = new TileSetInfo()
+                {
+                    Offset = xmlTileSet.AttrToInt32("firstgid"),
+                    TileCount = xmlTileSet.AttrToInt32("tilecount"),
+                    Source = Path.Combine(directory, xmlTileSet["image"].Attribute("source"))
+                };
+
+                if (properties.ContainsKey("referenceonly"))
+                    info.ReferenceOnly = Convert.ToBoolean(properties["referenceonly"]);
+
+                if (!info.ReferenceOnly)
+                {
+                    var texture = Texture.Load(info.Source);
+                    info.TileSet = new TileSet(texture, container.TileWidth, container.TileHeight);
+                }
+
+                infos.Add(info);
             }
         }
 
         static void ReadLayers(XmlElement xmlRoot, 
                                TileMapContainer container, 
-                               Dictionary<int, TileSet> tileSets)
+                               List<TileSetInfo> infos)
         {
-            var xmlLayers = xmlRoot.GetElementsByTagName("layer");
-
-            foreach (XmlElement xmlLayer in xmlLayers)
+            foreach (XmlElement xmlLayer in xmlRoot.GetElementsByTagName("layer"))
             {
-                var name = xmlLayer.Attribute("name");
-                var xmlData = xmlLayer["data"];
-                var tileData = ReadLayerData(xmlData, container);
-                var tileMap = CreateTileMap(container, tileSets, tileData);
-
-                container.AddLayer(name, tileMap);
+                var layerName = xmlLayer.Attribute("name").ToLower();
+                var tileData = ReadLayerData(xmlLayer["data"], container);
+                CreateLayer(container, infos, tileData, layerName);
             }
         }
 
         static int[,] ReadLayerData(XmlElement xmlData, TileMapContainer container)
         {
             var tileData = new int[container.Columns, container.Rows];
-            var isEncoded = !string.IsNullOrEmpty(xmlData.Attribute("encoding"));
 
-            if (isEncoded)
+            if (!string.IsNullOrEmpty(xmlData.Attribute("encoding")))
             {
                 ReadEncodedLayerData(xmlData, tileData);
             }
             else
             {
-                var xmlTiles = xmlData.GetElementsByTagName("tile");
                 var index = 0;
 
-                foreach (XmlElement xmlTile in xmlTiles)
+                foreach (XmlElement xmlTile in xmlData.GetElementsByTagName("tile"))
                 {
                     var gid = xmlTile.AttrToInt32("gid");
                     var x = index % tileData.GetLength(0);
@@ -112,14 +116,13 @@ namespace FrogWorks
 
         static void ReadEncodedLayerData(XmlElement xmlData, int[,] tileData)
         {
-            var isBase64Encoded = xmlData.Attribute("encoding") == "base64";
-            if (!isBase64Encoded) throw new Exception("Tiled supports Base64 encoding only.");
+            if (xmlData.Attribute("encoding") != "base64")
+                throw new Exception("Tiled supports Base64 encoding only.");
 
             var rawData = Convert.FromBase64String(xmlData.InnerText);
             var stream = new MemoryStream(rawData, false) as Stream;
-            var compression = xmlData.Attribute("compression");
 
-            switch (compression)
+            switch (xmlData.Attribute("compression"))
             {
                 case "gzip":
                     stream = new GZipStream(stream, CompressionMode.Decompress);
@@ -142,9 +145,7 @@ namespace FrogWorks
             {
                 using (var reader = new BinaryReader(stream))
                 {
-                    var size = tileData.GetLength(0) * tileData.GetLength(1);
-
-                    for (int i = 0; i < size; i++)
+                    for (int i = 0; i < tileData.GetLength(0) * tileData.GetLength(1); i++)
                     {
                         var ugid = reader.ReadUInt32();
                         ugid &= ~(FlipHorizontally | FlipVertically | FlipDiagonally);
@@ -157,31 +158,83 @@ namespace FrogWorks
             }
         }
 
-        static TileMap CreateTileMap(TileMapContainer container,
-                                     Dictionary<int, TileSet> tileSets,
-                                     int[,] tileData)
+        static Dictionary<string, string> ReadProperties(XmlElement xmlElement)
         {
-            var tileMap = new TileMap(container.Columns, container.Rows, 
-                                      container.TileWidth, container.TileHeight);
-            var size = tileData.GetLength(0) * tileData.GetLength(1);
+            var properties = new Dictionary<string, string>();
+            var xmlProperties = xmlElement["properties"]?.GetElementsByTagName("property");
 
-            foreach (var pair in tileSets)
+            if (xmlProperties != null)
+                foreach (XmlElement xmlProperty in xmlProperties)
+                    properties.Add(xmlProperty.Attribute("name").ToLower(), 
+                                   xmlProperty.Attribute("value").ToLower());
+
+            return properties;
+        }
+
+        static void CreateLayer(TileMapContainer container,
+                                List<TileSetInfo> infos,
+                                int[,] tileData,
+                                string layerName)
+        {
+            var tileLayer = new TileMap(container.Columns, container.Rows,
+                                      container.TileWidth, container.TileHeight);
+
+            var tileLayerFilled = false;
+
+            foreach (var info in infos)
             {
-                for (int i = 0; i < size; i++)
+                var dataLayer = new int[container.Columns, container.Rows];
+                var dataLayerFilled = false;
+
+                for (int i = 0; i < tileData.GetLength(0) * tileData.GetLength(1); i++)
                 {
                     var x = i % tileData.GetLength(0);
                     var y = i / tileData.GetLength(0);
                     var index = tileData[x, y];
 
-                    if (index.Between(pair.Key, pair.Key + pair.Value.Count - 1))
+                    if (index.Between(info.Offset, info.Offset + info.TileCount - 1))
                     {
-                        index -= pair.Key;
-                        tileMap.Fill(pair.Value[index], x, y, 1, 1);
+                        index -= info.Offset;
+
+                        if (info.ReferenceOnly)
+                        {
+                            dataLayer[x, y] = index + 1;
+                            dataLayerFilled = true;
+                        }
+                        else
+                        {
+                            tileLayer.Fill(info.TileSet[index], x, y, 1, 1);
+                            tileLayerFilled = true;
+                        }
                     }
+                }
+
+                if (dataLayerFilled)
+                {
+                    var source = Path.GetFileNameWithoutExtension(info.Source)
+                        .Replace(" ", string.Empty)
+                        .Replace("-", string.Empty)
+                        .Replace("_", string.Empty)
+                        .ToLower();
+
+                    container.DataLayers.Add($"{layerName}-{source}", dataLayer);
                 }
             }
 
-            return tileMap;
+            if (tileLayerFilled) container.TileLayers.Add(layerName, tileLayer);
+        }
+
+        class TileSetInfo
+        {
+            public int Offset { get; set; }
+
+            public int TileCount { get; set; }
+
+            public string Source { get; set; }
+
+            public bool ReferenceOnly { get; set; }
+
+            public TileSet TileSet { get; set; }
         }
     }
 }
