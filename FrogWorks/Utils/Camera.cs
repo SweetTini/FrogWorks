@@ -157,7 +157,11 @@ namespace FrogWorks
             _zone = new Rectangle(Point.Zero, size);
         }
 
+        public void SetZone(Vector2 size) => SetZone(size.Round().ToPoint());
+
         public void SetZone(int width, int height) => SetZone(new Point(width, height));
+
+        public void SetZone(float width, float height) => SetZone(new Vector2(width, height).Round().ToPoint());
 
         public void ResetZone() => _zone = null;
 
