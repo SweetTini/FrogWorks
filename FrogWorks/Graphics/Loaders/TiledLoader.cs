@@ -82,7 +82,8 @@ namespace FrogWorks
         {
             foreach (XmlElement xmlLayer in xmlRoot.GetElementsByTagName("layer"))
             {
-                var layerName = xmlLayer.Attribute("name").ToLower();
+                var layerName = xmlLayer.Attribute("name")
+                    .Replace(" ", "-").Replace("_", "-").ToLower();
                 var tileData = ReadLayerData(xmlLayer["data"], container);
                 CreateLayer(container, infos, tileData, layerName);
             }
@@ -211,19 +212,16 @@ namespace FrogWorks
                 if (dataLayerFilled)
                 {
                     var source = Path.GetFileNameWithoutExtension(info.Source)
-                        .Replace(" ", string.Empty)
-                        .Replace("-", string.Empty)
-                        .Replace("_", string.Empty)
-                        .ToLower();
+                        .Replace(" ", "-").Replace("_", "-").ToLower();
 
                     if (source != layerName)
                         source = $"{layerName}-{source}";
 
-                    container.DataLayers.Add(source, dataLayer);
+                    container.AddDataLayer(source, dataLayer);
                 }
             }
 
-            if (tileLayerFilled) container.TileLayers.Add(layerName, tileLayer);
+            if (tileLayerFilled) container.AddTileLayer(layerName, tileLayer);
         }
 
         class TileSetInfo
