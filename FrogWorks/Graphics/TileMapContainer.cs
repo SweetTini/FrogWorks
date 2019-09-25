@@ -43,8 +43,8 @@ namespace FrogWorks
             {
                 for (int i = 0; i < Size.X * Size.Y; i++)
                 {
-                    var x = i % TileSize.X;
-                    var y = i / TileSize.X;
+                    var x = i % Size.X;
+                    var y = i / Size.X;
                     var data = dataLayer[x, y];
                     if (data == 0) continue;
 
