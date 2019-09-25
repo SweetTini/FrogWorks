@@ -46,6 +46,7 @@
     <Compile Include="Entities\MonoFont.cs" />
     <Compile Include="Entities\MoveableEntity.cs" />
     <Compile Include="Entities\Player.cs" />
+    <Compile Include="Entities\TileMapRenderer.cs" />
     <Compile Include="Entities\Transition.cs" />
     <Compile Include="Entities\World.cs" />
     <Compile Include="Program.cs" />
@@ -111,6 +112,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="app.manifest" />
+    <Content Include="Content\Maps\TestMap.tmx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FrogWorks\FrogWorks.csproj">
@@ -121,6 +125,15 @@
   <ItemGroup>
     <Content Include="Content\Images\MonoFont.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Maps\blocks.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Maps\objects.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Maps\tile_test.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup />

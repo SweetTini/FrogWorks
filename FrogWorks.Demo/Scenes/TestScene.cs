@@ -5,12 +5,6 @@ namespace FrogWorks.Demo.Scenes
 {
     public class TestScene : Scene
     {
-        private Player Player { get; set; }
-
-        private World World { get; set; }
-
-        private MonoFont Font { get; set; }
-
         private MonoFont FpsFont { get; set; }
 
         public TestScene() 
@@ -20,43 +14,25 @@ namespace FrogWorks.Demo.Scenes
         {
             BackgroundColor = Color.CornflowerBlue;
 
-            var layer = new BasicLayer();
+            var mainLayer = new BasicLayer();
             var hudLayer = new BasicLayer();
-            var maskLayer = new AlphaMaskLayer();
-            Layers.Add(layer, maskLayer, hudLayer);
+            Layers.Add(mainLayer, hudLayer);
 
-            World = new World(20, 15, 32, 32);
-            Player = new Player(World) { X = 64f, Y = 64f };
-            Font = new MonoFont(304, 224) { X = 8, Y = 8 };
+            var container = TiledLoader.Load("Maps/TestMap.tmx");
+            var renderer = new TileMapRenderer();
+            renderer.Add(container.GetTileLayer("background"));
+            var world = new World(container);
+            var player = new Player(world) { X = 64f, Y = 64f };
+            container.ProcessDataLayer("blocks", world.Configure);
+            mainLayer.Entities.Add(renderer, world, player);
+            mainLayer.Camera.SetZone(world.Size.ToPoint());
+
             FpsFont = new MonoFont(304, 224) { X = 8, Y = 8, HorizontalAlignment = HorizontalAlignment.Right };
-
-            var transition = new Transition() { CenterX = 160f, CenterY = 120f };
-            
-            layer.Entities.Add(World, Player);
-            hudLayer.Entities.Add(Font, FpsFont);
-            maskLayer.Entities.Add(transition);
-
-            layer.Camera.SetZone(World.Collider.Size.ToPoint());
-        }
-
-        protected override void BeforeUpdate()
-        {
-            var collider = World.Collider.As<BitFlagMapCollider>();
-            var mouse = Layers[0].Camera.ViewToWorld(Input.Mouse.Position);
-
-            var mouseToGrid = mouse.SnapToGrid(
-                collider.CellSize.ToVector2(), 
-                collider.AbsolutePosition).ToPoint();
-
-            if (Input.Mouse.IsClicked(MouseButton.Left))
-                collider.Fill(BitFlag.FlagB, mouseToGrid.X, mouseToGrid.Y, 1, 1);
-            else if (Input.Mouse.IsClicked(MouseButton.Right))
-                collider.Fill(BitFlag.None, mouseToGrid.X, mouseToGrid.Y, 1, 1);
+            hudLayer.Entities.Add(FpsFont);
         }
 
         protected override void AfterUpdate()
         {
-            Font.Text = Player.ToString();
             FpsFont.Text = $"{Runner.Application.FramesPerSecond}fps";
         }
     }

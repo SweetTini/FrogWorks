@@ -6,7 +6,7 @@ namespace FrogWorks.Demo.Entities
     {
         private const float MaxSpeed = 3f, MaxFallSpeed = 6f;
         private const float Acceleration = .3f, Deceleration = .15f, Gravity = .3f;
-        private const float JumpStrength = 6.5f, JumpRelease = 2f;
+        private const float JumpStrength = 7.5f, JumpRelease = 2f;
 
         public bool IsJumping { get; private set; }
 
@@ -72,7 +72,10 @@ namespace FrogWorks.Demo.Entities
         }
 
         protected override void AfterUpdate(float deltaTime)
-            => Parent?.Camera.Approach(Center, .125f);
+        {
+            Parent?.Camera.Approach(Center, .125f);
+            Parent?.Camera.RoundPosition();
+        }
 
         protected override void BeforeDraw(RendererBatch batch)
         {

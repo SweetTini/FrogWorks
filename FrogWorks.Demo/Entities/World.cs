@@ -15,21 +15,11 @@ namespace FrogWorks.Demo.Entities
         public World(int columns, int rows, int tileWidth, int tileHeight)
             : base()
         {
-            var collider = new BitFlagMapCollider(columns, rows, tileWidth, tileHeight);
-
-            collider.Fill(BitFlag.FlagA, 0, 0, columns, 1);
-            collider.Fill(BitFlag.FlagA, 0, 0, 1, rows);
-            collider.Fill(BitFlag.FlagA, 0, rows - 1, columns, 1);
-            collider.Fill(BitFlag.FlagA, columns - 1, 0, 1, rows);
-            collider.DefineColors(BitFlag.FlagB, Color.Olive, Color.Goldenrod);
-
-            Collider = collider;
+            Collider = new BitFlagMapCollider(columns, rows, tileWidth, tileHeight);
         }
 
-        protected override void BeforeDraw(RendererBatch batch)
-        {
-            Collider.Draw(batch, Color.DarkGreen, Color.LimeGreen);
-        }
+        public World(TileMapContainer container)
+            : this(container.Columns, container.Rows, container.TileWidth, container.TileHeight) { }
 
         public bool IsSolid(float x, float y, float width, float height)
             => Map.Collide(new RectangleF(x, y, width, height), BitFlag.FlagA);
@@ -60,6 +50,20 @@ namespace FrogWorks.Demo.Entities
             }
 
             return false;
+        }
+
+        public void Configure(int x, int y, int tileWidth, int tileHeight, int index)
+        {
+            var flag = BitFlag.None;
+
+            switch (index)
+            {
+                case 1: flag |= BitFlag.FlagB; break;
+                case 15: flag |= BitFlag.FlagA; break;
+                default: break;
+            }
+
+            Map.Fill(flag, x, y, 1, 1);
         }
     }
 }
