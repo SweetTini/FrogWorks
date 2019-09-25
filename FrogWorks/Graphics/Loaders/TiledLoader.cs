@@ -166,7 +166,7 @@ namespace FrogWorks
             if (xmlProperties != null)
                 foreach (XmlElement xmlProperty in xmlProperties)
                     properties.Add(xmlProperty.Attribute("name").ToLower(), 
-                                   xmlProperty.Attribute("value").ToLower());
+                                   xmlProperty.Attribute("value"));
 
             return properties;
         }
