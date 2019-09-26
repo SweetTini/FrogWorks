@@ -18,7 +18,7 @@ namespace FrogWorks.Demo.Scenes
             var hudLayer = new BasicLayer();
             Layers.Add(mainLayer, hudLayer);
 
-            var container = TiledLoader.Load("Maps/TestMap.tmx");
+            var container = Tiled.Load("Maps/TestMap.tmx");
             var renderer = new TileMapRenderer();
             renderer.Add(container.TileLayers["background"]);
             var world = new World(container);

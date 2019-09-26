@@ -7,18 +7,17 @@ using System.Xml;
 
 namespace FrogWorks
 {
-    public sealed class TiledLoader
+    public sealed class Tiled
     {
         const uint FlipHorizontally = 0x80000000,
                    FlipVertically = 0x40000000,
                    FlipDiagonally = 0x20000000;
 
-        public static TileMapContainer Load(string filePath, string rootDirectory = "")
+        public static TileMapContainer Load(string filePath)
         {
-            if (string.IsNullOrWhiteSpace(rootDirectory))
-                rootDirectory = Runner.Application.ContentDirectory;
+            var absolutePath = Path.Combine(Runner.Application.ContentDirectory, filePath);
 
-            using (var stream = File.OpenRead(Path.Combine(rootDirectory, filePath)))
+            using (var stream = File.OpenRead(absolutePath))
             {
                 var container = new TileMapContainer();
                 Read(stream, container, Path.GetDirectoryName(filePath));

@@ -6,14 +6,13 @@ using System.Xml;
 
 namespace FrogWorks
 {
-    public sealed class BmFontLoader
+    public sealed class BmFont
     {
-        public static BitmapFont Load(BmFontFileType fileType, string filePath, string rootDirectory = "")
+        public static BitmapFont Load(BmFontFileType fileType, string filePath)
         {
-            if (string.IsNullOrWhiteSpace(rootDirectory))
-                rootDirectory = Runner.Application.ContentDirectory;
+            var absolutePath = Path.Combine(Runner.Application.ContentDirectory, filePath);
 
-            using (var stream = File.OpenRead(filePath))
+            using (var stream = File.OpenRead(absolutePath))
             {
                 var font = new BitmapFont();
 

@@ -58,7 +58,12 @@ namespace FrogWorks
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing) Input.Dispose();
+            if (disposing)
+            {
+                Input.Dispose();
+                Texture.DisposeCache();
+            }
+
             base.Dispose(disposing);
         }
 

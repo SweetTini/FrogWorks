@@ -1,12 +1,15 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace FrogWorks
 {
     public class Texture : IDisposable
     {
+        static Dictionary<string, Texture2D> Cache { get; } = new Dictionary<string, Texture2D>();
+
         public Texture2D XnaTexture { get; private set; }
 
         public Rectangle Bounds { get; private set; }
@@ -94,16 +97,10 @@ namespace FrogWorks
         }
 
         #region Static Methods
-        public static Texture Load(string filePath, string rootDirectory = "")
+        public static Texture Load(string filePath)
         {
-            if (string.IsNullOrWhiteSpace(rootDirectory))
-                rootDirectory = Runner.Application.ContentDirectory;
-
-            using (var stream = File.OpenRead(Path.Combine(rootDirectory, filePath)))
-            {
-                var xnaTexture = Texture2D.FromStream(Runner.Application.Game.GraphicsDevice, stream);
-                return new Texture(xnaTexture, xnaTexture.Bounds);
-            }
+            var xnaTexture = TryGetFromCache(filePath);
+            return new Texture(xnaTexture, xnaTexture.Bounds);
         }
 
         public static Texture[] Split(Texture2D xnaTexture, int frameWidth, int frameHeight)
@@ -126,6 +123,32 @@ namespace FrogWorks
         public static Texture[] Split(Texture texture, int frameWidth, int frameHeight)
         {
             return Split(texture.XnaTexture, frameWidth, frameHeight);
+        }
+
+        internal static Texture2D TryGetFromCache(string filePath)
+        {
+            Texture2D xnaTexture;
+
+            if (!Cache.TryGetValue(filePath, out xnaTexture))
+            {
+                var absolutePath = Path.Combine(Runner.Application.ContentDirectory, filePath);
+
+                using (var stream = File.OpenRead(absolutePath))
+                {
+                    xnaTexture = Texture2D.FromStream(Runner.Application.Game.GraphicsDevice, stream);
+                    Cache.Add(filePath, xnaTexture);
+                }
+            }
+
+            return xnaTexture;
+        }
+
+        internal static void DisposeCache()
+        {
+            foreach (var xnaTexture in Cache.Values)
+                xnaTexture.Dispose();
+
+            Cache.Clear();
         }
         #endregion
     }
