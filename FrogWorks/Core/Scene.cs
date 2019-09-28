@@ -8,6 +8,8 @@ namespace FrogWorks
 
         public LayerManager Layers { get; private set; }
 
+        public Camera Camera { get; private set; }
+
         public Color BackgroundColor { get; set; } = Color.White;
 
         public float TimeActive { get; private set; }
@@ -18,6 +20,7 @@ namespace FrogWorks
         {
             Colliders = new AABBTree(4f);
             Layers = new LayerManager(this);
+            Camera = new Camera();
         }
 
         internal void InternalBegin()

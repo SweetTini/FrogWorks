@@ -4,5 +4,17 @@
     {
         internal LayerManager(Scene scene)
             : base(scene) { }
+
+        internal override void Update(float deltaTime)
+        {
+            base.Update(deltaTime);
+
+            IsBusy = true;
+
+            foreach (var item in Items)
+                item.UpdateCamera();
+
+            IsBusy = false;
+        }
     }
 }
