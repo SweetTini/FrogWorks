@@ -14,18 +14,17 @@ namespace FrogWorks.Demo.Scenes
         {
             BackgroundColor = Color.CornflowerBlue;
 
+            var backgroundLayer = new BasicLayer() { ScrollRate = Vector2.One * .4f };
             var mainLayer = new BasicLayer();
-            var hudLayer = new BasicLayer();
-            Layers.Add(mainLayer, hudLayer);
+            var hudLayer = new BasicLayer() { ScrollRate = Vector2.Zero };
+            Layers.Add(backgroundLayer, mainLayer, hudLayer);
 
-            var container = Tiled.Load("Maps/TestMap.tmx");
-            var renderer = new TileMapRenderer();
-            renderer.Add(container.TileLayers["background"]);
-            var world = new World(container);
+            var checker = new Checker();
+            var world = new World(30, 10, 32, 32);
             var player = new Player(world) { X = 64f, Y = 64f };
-            container.ProcessDataLayer("blocks", world.Configure);
-            mainLayer.Entities.Add(renderer, world, player);
-            mainLayer.Camera.SetZone(world.Size.ToPoint());
+            backgroundLayer.Entities.Add(checker);
+            mainLayer.Entities.Add(world, player);
+            Camera.SetZone(world.Size.ToPoint());
 
             FpsFont = new MonoFont(304, 224) { X = 8, Y = 8, HorizontalAlignment = HorizontalAlignment.Right };
             hudLayer.Entities.Add(FpsFont);

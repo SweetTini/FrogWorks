@@ -16,6 +16,7 @@ namespace FrogWorks.Demo.Entities
             : base()
         {
             Collider = new BitFlagMapCollider(columns, rows, tileWidth, tileHeight);
+            GenerateMap();
         }
 
         public World(TileMapContainer container)
@@ -64,6 +65,19 @@ namespace FrogWorks.Demo.Entities
             }
 
             Map.Fill(flag, x, y, 1, 1);
+        }
+
+        protected override void BeforeDraw(RendererBatch batch)
+        {
+            Map.Draw(batch, Color.DarkGreen, Color.LimeGreen);
+        }
+
+        void GenerateMap()
+        {
+            Map.Fill(BitFlag.FlagA, 0, 0, Map.Columns, 1);
+            Map.Fill(BitFlag.FlagA, 0, 0, 1, Map.Rows);
+            Map.Fill(BitFlag.FlagA, 0, Map.Rows - 1, Map.Columns, 1);
+            Map.Fill(BitFlag.FlagA, Map.Columns - 1, 0, 1, Map.Rows);
         }
     }
 }
