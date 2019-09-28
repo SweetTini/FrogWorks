@@ -190,7 +190,11 @@ namespace FrogWorks
         internal void OnInternalTransformed()
         {
             OnTransformed();
+
             Collider?.OnInternalTransformed();
+
+            foreach (var component in Components)
+                component.OnInternalTransformed();
         }
 
         protected virtual void OnTransformed() { }

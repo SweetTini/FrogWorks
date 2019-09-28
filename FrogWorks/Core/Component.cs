@@ -28,6 +28,10 @@
 
         protected virtual void OnLayerRemoved() { }
 
+        internal void OnInternalTransformed() => OnTransformed();
+
+        protected virtual void OnTransformed() { }
+
         public sealed override void Destroy() => Parent?.Components.Remove(this);
     }
 }

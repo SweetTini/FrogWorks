@@ -111,6 +111,8 @@ namespace FrogWorks
 
         protected override void OnLayerRemoved() => RemoveCameraUpdateEvent();
 
+        protected override void OnTransformed() => UpdateDrawableRegion(Layer.Camera);
+
         public void Populate(TileSet tileSet, int[,] tiles, int offsetX = 0, int offsetY = 0)
         {
             var tileColumns = tiles.GetLength(0);

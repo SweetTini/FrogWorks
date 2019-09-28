@@ -105,6 +105,8 @@ namespace FrogWorks
 
         protected override void OnLayerRemoved() => RemoveCameraUpdateEvent();
 
+        protected override void OnTransformed() => UpdateDrawableRegion(Layer.Camera);
+
         private void AddCameraUpdateEvent()
         {
             if (!_isRegistered && Layer != null)
