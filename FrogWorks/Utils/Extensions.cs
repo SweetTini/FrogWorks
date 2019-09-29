@@ -724,6 +724,14 @@ namespace FrogWorks
                 : defaultValue;
         }
 
+
+        public static Color AttrToColor(this XmlElement element, string name, Color defaultValue = default(Color))
+        {
+            return element.Attributes[name] != null
+                ? ColorConvert.FromHex(element.Attributes[name].InnerText)
+                : defaultValue;
+        }
+
         public static Point AttrToPoint(this XmlElement element, string nameForX, string nameForY, Point defaultValue = default(Point))
         {
             return new Point(
