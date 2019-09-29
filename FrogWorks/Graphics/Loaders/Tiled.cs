@@ -204,6 +204,7 @@ namespace FrogWorks
                         case "bool": propertyValue = xmlProperty.AttrToBoolean("value"); break;
                         case "int": propertyValue = xmlProperty.AttrToInt32("value"); break;
                         case "float": propertyValue = xmlProperty.AttrToSingle("value"); break;
+                        case "color": propertyValue = xmlProperty.AttrToColor("value"); break;
                         default: propertyValue = xmlProperty.Attribute("value"); break;
                     }
 
