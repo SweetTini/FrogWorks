@@ -36,6 +36,7 @@ namespace FrogWorks
             ReadMap(xmlRoot, container);
             ReadTileSets(xmlRoot, container, infos, directory);
             ReadLayers(xmlRoot, container, infos);
+            ReadObjectLayers(xmlRoot, container);
         }
 
         static void ReadMap(XmlElement xmlRoot, TileMapContainer container)
@@ -63,7 +64,7 @@ namespace FrogWorks
                 };
 
                 if (properties.ContainsKey("referenceonly"))
-                    info.ReferenceOnly = Convert.ToBoolean(properties["referenceonly"]);
+                    info.ReferenceOnly = (bool)properties["referenceonly"];
 
                 if (!info.ReferenceOnly)
                 {
@@ -158,15 +159,57 @@ namespace FrogWorks
             }
         }
 
-        static Dictionary<string, string> ReadProperties(XmlElement xmlElement)
+        static void ReadObjectLayers(XmlElement xmlRoot, TileMapContainer container)
         {
-            var properties = new Dictionary<string, string>();
+            foreach (XmlElement xmlObjectLayer in xmlRoot.GetElementsByTagName("objectgroup"))
+                ReadObjects(xmlObjectLayer, container);
+        }
+
+        static void ReadObjects(XmlElement xmlObjectLayer, TileMapContainer container)
+        {
+            foreach (XmlElement xmlObject in xmlObjectLayer.GetElementsByTagName("object"))
+            {
+                var objectName = xmlObject.Attribute("name");
+                var objectType = xmlObject.Attribute("type");
+                var bounds = xmlObject.AttributeToRectangle().SnapToGrid(container.TileSize.ToVector2());
+
+                var containerProperty = new TileMapContainerProperty()
+                {
+                    Position = bounds.Location,
+                    Size = bounds.Size
+                };
+
+                if (!string.IsNullOrWhiteSpace(objectName)) containerProperty.AddProperty("objectname", objectName);
+                if (!string.IsNullOrWhiteSpace(objectType)) containerProperty.AddProperty("objecttype", objectType);
+
+                foreach (var property in ReadProperties(xmlObject))
+                    containerProperty.AddProperty(property.Key, property.Value);
+            }
+        }
+
+        static Dictionary<string, object> ReadProperties(XmlElement xmlElement)
+        {
+            var properties = new Dictionary<string, object>();
             var xmlProperties = xmlElement["properties"]?.GetElementsByTagName("property");
 
             if (xmlProperties != null)
+            {
                 foreach (XmlElement xmlProperty in xmlProperties)
-                    properties.Add(xmlProperty.Attribute("name").ToLower(), 
-                                   xmlProperty.Attribute("value"));
+                {
+                    var propertyName = xmlProperty.Attribute("name").ToLower();
+                    object propertyValue;
+
+                    switch (xmlProperty.Attribute("type"))
+                    {
+                        case "bool": propertyValue = xmlProperty.AttrToBoolean("value"); break;
+                        case "int": propertyValue = xmlProperty.AttrToInt32("value"); break;
+                        case "float": propertyValue = xmlProperty.AttrToSingle("value"); break;
+                        default: propertyValue = xmlProperty.Attribute("value"); break;
+                    }
+
+                    properties.Add(propertyName, propertyValue);
+                }
+            }
 
             return properties;
         }
