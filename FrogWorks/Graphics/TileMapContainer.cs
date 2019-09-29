@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace FrogWorks
 {
@@ -9,6 +10,7 @@ namespace FrogWorks
     {
         private Dictionary<string, TileMap> _tileLayers;
         private Dictionary<string, int[,]> _dataLayers;
+        private List<TileMapContainerProperty> _properties;
 
         public Point Size { get; internal set; }
 
@@ -26,20 +28,26 @@ namespace FrogWorks
 
         public ReadOnlyDictionary<string, int[,]> DataLayers { get; private set; }
 
+        public ReadOnlyCollection<TileMapContainerProperty> Properties { get; private set; }
+
         internal TileMapContainer()
         {
             _tileLayers = new Dictionary<string, TileMap>();
             _dataLayers = new Dictionary<string, int[,]>();
+            _properties = new List<TileMapContainerProperty>();
 
             TileLayers = new ReadOnlyDictionary<string, TileMap>(_tileLayers);
             DataLayers = new ReadOnlyDictionary<string, int[,]>(_dataLayers);
+            Properties = new ReadOnlyCollection<TileMapContainerProperty>(_properties);
         }
 
         internal void AddTileLayer(string name, TileMap tileMap) => _tileLayers.Add(name, tileMap);
 
         internal void AddDataLayer(string name, int[,] data) => _dataLayers.Add(name, data);
 
-        public void ProcessDataLayer(string name, Action<int, int, int, int, int> processAction)
+        internal void AddProperty(TileMapContainerProperty property) => _properties.Add(property);
+
+        public void ProcessDataLayer(string name, Action<TileMapContainerDataInfo> processAction)
         {
             int[,] dataLayer;
 
@@ -47,14 +55,75 @@ namespace FrogWorks
             {
                 for (int i = 0; i < Size.X * Size.Y; i++)
                 {
-                    var x = i % Size.X;
-                    var y = i / Size.X;
-                    var data = dataLayer[x, y];
-                    if (data == 0) continue;
+                    var position = new Point(i % Size.X, i / Size.X);
+                    var tileIndex = dataLayer[position.X, position.Y];
+                    if (tileIndex == 0) continue;
 
-                    processAction(x, y, TileSize.X, TileSize.Y, dataLayer[x, y]);
+                    var bounds = new Rectangle(position, new Point(1, 1));
+                    var properties = _properties.Where(x => x.Bounds.Contains(bounds));
+
+                    processAction(new TileMapContainerDataInfo(position, TileSize, tileIndex, properties));
                 }
             }
+        }
+    }
+
+    public sealed class TileMapContainerProperty
+    {
+        Dictionary<string, object> _properties;
+
+        public Point Position { get; internal set; }
+
+        public int X => Position.X;
+
+        public int Y => Position.Y;
+
+        public Point Size { get; internal set; }
+
+        public int Width => Size.X;
+
+        public int Height => Size.Y;
+
+        public ReadOnlyDictionary<string, object> Properties { get; private set; }
+
+        internal Rectangle Bounds => new Rectangle(Position, Size);
+
+        internal TileMapContainerProperty()
+        {
+            _properties = new Dictionary<string, object>();
+            Properties = new ReadOnlyDictionary<string, object>(_properties);
+        }
+
+        internal void AddProperty(string name, object value) => _properties.Add(name, value);
+    }
+
+    public sealed class TileMapContainerDataInfo
+    {
+        public Point Position { get; internal set; }
+
+        public int X => Position.X;
+
+        public int Y => Position.Y;
+
+        public Point TileSize { get; internal set; }
+
+        public int TileWidth => TileSize.X;
+
+        public int TileHeight => TileSize.Y;
+
+        public int TileIndex { get; internal set; }
+
+        public ReadOnlyCollection<TileMapContainerProperty> Properties { get; private set; }
+
+        internal TileMapContainerDataInfo(Point position, 
+                                          Point tileSize, 
+                                          int tileIndex, 
+                                          IEnumerable<TileMapContainerProperty> properties)
+        {
+            Position = position;
+            TileSize = tileSize;
+            TileIndex = tileIndex;
+            Properties = new ReadOnlyCollection<TileMapContainerProperty>(properties.ToList());
         }
     }
 }
