@@ -169,21 +169,21 @@ namespace FrogWorks
         {
             foreach (XmlElement xmlObject in xmlObjectLayer.GetElementsByTagName("object"))
             {
-                var objectName = xmlObject.Attribute("name");
-                var objectType = xmlObject.Attribute("type");
+                var objName = xmlObject.Attribute("name");
+                var objType = xmlObject.Attribute("type");
                 var bounds = xmlObject.AttributeToRectangle().SnapToGrid(container.TileSize.ToVector2());
 
-                var containerProperty = new TileMapContainerProperty()
+                var obj = new TileMapContainerObject()
                 {
                     Position = bounds.Location,
                     Size = bounds.Size
                 };
 
-                if (!string.IsNullOrWhiteSpace(objectName)) containerProperty.AddProperty("objectname", objectName);
-                if (!string.IsNullOrWhiteSpace(objectType)) containerProperty.AddProperty("objecttype", objectType);
+                if (!string.IsNullOrWhiteSpace(objName)) obj.AddProperty("objectname", objName);
+                if (!string.IsNullOrWhiteSpace(objType)) obj.AddProperty("objecttype", objType);
 
                 foreach (var property in ReadProperties(xmlObject))
-                    containerProperty.AddProperty(property.Key, property.Value);
+                    obj.AddProperty(property.Key, property.Value);
             }
         }
 

@@ -10,7 +10,7 @@ namespace FrogWorks
     {
         private Dictionary<string, TileMap> _tileLayers;
         private Dictionary<string, int[,]> _dataLayers;
-        private List<TileMapContainerProperty> _properties;
+        private List<TileMapContainerObject> _objects;
 
         public Point Size { get; internal set; }
 
@@ -28,24 +28,24 @@ namespace FrogWorks
 
         public ReadOnlyDictionary<string, int[,]> DataLayers { get; private set; }
 
-        public ReadOnlyCollection<TileMapContainerProperty> Properties { get; private set; }
+        public ReadOnlyCollection<TileMapContainerObject> Properties { get; private set; }
 
         internal TileMapContainer()
         {
             _tileLayers = new Dictionary<string, TileMap>();
             _dataLayers = new Dictionary<string, int[,]>();
-            _properties = new List<TileMapContainerProperty>();
+            _objects = new List<TileMapContainerObject>();
 
             TileLayers = new ReadOnlyDictionary<string, TileMap>(_tileLayers);
             DataLayers = new ReadOnlyDictionary<string, int[,]>(_dataLayers);
-            Properties = new ReadOnlyCollection<TileMapContainerProperty>(_properties);
+            Properties = new ReadOnlyCollection<TileMapContainerObject>(_objects);
         }
 
         internal void AddTileLayer(string name, TileMap tileMap) => _tileLayers.Add(name, tileMap);
 
         internal void AddDataLayer(string name, int[,] data) => _dataLayers.Add(name, data);
 
-        internal void AddProperty(TileMapContainerProperty property) => _properties.Add(property);
+        internal void AddObject(TileMapContainerObject obj) => _objects.Add(obj);
 
         public void ProcessDataLayer(string name, Action<TileMapContainerDataInfo> processAction)
         {
@@ -60,15 +60,15 @@ namespace FrogWorks
                     if (tileIndex == 0) continue;
 
                     var bounds = new Rectangle(position, new Point(1, 1));
-                    var properties = _properties.Where(x => x.Bounds.Contains(bounds));
+                    var objects = _objects.Where(x => x.Bounds.Contains(bounds));
 
-                    processAction(new TileMapContainerDataInfo(position, TileSize, tileIndex, properties));
+                    processAction(new TileMapContainerDataInfo(position, TileSize, tileIndex, objects));
                 }
             }
         }
     }
 
-    public sealed class TileMapContainerProperty
+    public sealed class TileMapContainerObject
     {
         Dictionary<string, object> _properties;
 
@@ -88,7 +88,7 @@ namespace FrogWorks
 
         internal Rectangle Bounds => new Rectangle(Position, Size);
 
-        internal TileMapContainerProperty()
+        internal TileMapContainerObject()
         {
             _properties = new Dictionary<string, object>();
             Properties = new ReadOnlyDictionary<string, object>(_properties);
@@ -113,17 +113,17 @@ namespace FrogWorks
 
         public int TileIndex { get; internal set; }
 
-        public ReadOnlyCollection<TileMapContainerProperty> Properties { get; private set; }
+        public ReadOnlyCollection<TileMapContainerObject> Objects { get; private set; }
 
         internal TileMapContainerDataInfo(Point position, 
                                           Point tileSize, 
                                           int tileIndex, 
-                                          IEnumerable<TileMapContainerProperty> properties)
+                                          IEnumerable<TileMapContainerObject> objects)
         {
             Position = position;
             TileSize = tileSize;
             TileIndex = tileIndex;
-            Properties = new ReadOnlyCollection<TileMapContainerProperty>(properties.ToList());
+            Objects = new ReadOnlyCollection<TileMapContainerObject>(objects.ToList());
         }
     }
 }
