@@ -184,6 +184,8 @@ namespace FrogWorks
 
                 foreach (var property in ReadProperties(xmlObject))
                     obj.AddProperty(property.Key, property.Value);
+
+                container.AddObject(obj);
             }
         }
 

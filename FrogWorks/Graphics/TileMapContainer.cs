@@ -28,7 +28,7 @@ namespace FrogWorks
 
         public ReadOnlyDictionary<string, int[,]> DataLayers { get; private set; }
 
-        public ReadOnlyCollection<TileMapContainerObject> Properties { get; private set; }
+        public ReadOnlyCollection<TileMapContainerObject> Objects { get; private set; }
 
         internal TileMapContainer()
         {
@@ -38,7 +38,7 @@ namespace FrogWorks
 
             TileLayers = new ReadOnlyDictionary<string, TileMap>(_tileLayers);
             DataLayers = new ReadOnlyDictionary<string, int[,]>(_dataLayers);
-            Properties = new ReadOnlyCollection<TileMapContainerObject>(_objects);
+            Objects = new ReadOnlyCollection<TileMapContainerObject>(_objects);
         }
 
         internal void AddTileLayer(string name, TileMap tileMap) => _tileLayers.Add(name, tileMap);
