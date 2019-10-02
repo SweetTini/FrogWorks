@@ -56,6 +56,8 @@ namespace FrogWorks
             {
                 var info = new TileSetInfo()
                 {
+                    Name = xmlTileSet.Attribute("name")
+                        .Replace("?", "").Replace(" ", "-").Replace("_", "-").ToLower(),
                     Offset = xmlTileSet.AttrToInt32("firstgid"),
                     TileCount = xmlTileSet.AttrToInt32("tilecount"),
                     Source = Path.Combine(directory, xmlTileSet["image"].Attribute("source")),
@@ -252,13 +254,12 @@ namespace FrogWorks
 
                 if (dataLayerFilled)
                 {
-                    var source = Path.GetFileNameWithoutExtension(info.Source)
-                        .Replace(" ", "-").Replace("_", "-").ToLower();
+                    var dataLayerName = info.Name;
 
-                    if (source != layerName)
-                        source = $"{layerName}-{source}";
+                    if (dataLayerName != layerName)
+                        dataLayerName = $"{layerName}-{dataLayerName}";
 
-                    container.AddDataLayer(source, dataLayer);
+                    container.AddDataLayer(dataLayerName, dataLayer);
                 }
             }
 
@@ -267,6 +268,8 @@ namespace FrogWorks
 
         class TileSetInfo
         {
+            public string Name { get; set; }
+
             public int Offset { get; set; }
 
             public int TileCount { get; set; }
