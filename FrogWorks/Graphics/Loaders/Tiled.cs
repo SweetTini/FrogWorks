@@ -54,17 +54,13 @@ namespace FrogWorks
         {
             foreach (XmlElement xmlTileSet in xmlRoot.GetElementsByTagName("tileset"))
             {
-                var properties = ReadProperties(xmlTileSet);
-
                 var info = new TileSetInfo()
                 {
                     Offset = xmlTileSet.AttrToInt32("firstgid"),
                     TileCount = xmlTileSet.AttrToInt32("tilecount"),
-                    Source = Path.Combine(directory, xmlTileSet["image"].Attribute("source"))
+                    Source = Path.Combine(directory, xmlTileSet["image"].Attribute("source")),
+                    ReferenceOnly = xmlTileSet.Attribute("name").EndsWith("?")
                 };
-
-                if (properties.ContainsKey("referenceonly"))
-                    info.ReferenceOnly = (bool)properties["referenceonly"];
 
                 if (!info.ReferenceOnly)
                 {
