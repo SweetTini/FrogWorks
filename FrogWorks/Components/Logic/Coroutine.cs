@@ -108,6 +108,28 @@ namespace FrogWorks
         {
             while (!predicate()) yield return 0;
         }
+
+        public static IEnumerator DoInTicks(int ticks, Action<int, int> action)
+        {
+            for (int i = 0; i <= ticks; i++)
+            {
+                action(i, ticks);
+                yield return 0;
+            }
+        }
+
+        public static IEnumerator DoInSeconds(float seconds, Action<float, float> action)
+        {
+            var timer = 0f;
+
+            while (timer < seconds)
+            {
+                timer += Runner.Application.Game.DeltaTime;
+                timer = timer.Min(seconds);
+                action(timer, seconds);
+                yield return 0;
+            }
+        }
         #endregion
     }
 }
