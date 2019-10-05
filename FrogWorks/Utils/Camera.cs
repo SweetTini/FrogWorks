@@ -133,8 +133,6 @@ namespace FrogWorks
             UpdateViewport();
         }
 
-        public void RoundPosition() => Position = Position.Round();
-
         public Vector2 ViewToWorld(Vector2 position) => Vector2.Transform(position, InverseMatrix);
 
         public Vector2 WorldToView(Vector2 position) => Vector2.Transform(position, TransformMatrix);
@@ -180,6 +178,7 @@ namespace FrogWorks
         {
             if (_isDirty)
             {
+                _position = _position.Round();
                 _transformMatrix = Matrix.CreateTranslation(new Vector3(-_position, 0f)) 
                     * Matrix.CreateRotationZ(_angle) 
                     * Matrix.CreateScale(new Vector3(_zoom * Vector2.One, 1f)) 

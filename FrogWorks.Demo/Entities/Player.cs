@@ -74,7 +74,6 @@ namespace FrogWorks.Demo.Entities
         protected override void AfterUpdate(float deltaTime)
         {
             Scene?.Camera.Approach(Center, .125f);
-            Scene?.Camera.RoundPosition();
         }
 
         protected override void BeforeDraw(RendererBatch batch)
