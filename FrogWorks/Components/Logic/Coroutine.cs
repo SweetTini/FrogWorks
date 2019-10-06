@@ -89,19 +89,14 @@ namespace FrogWorks
         #region Static Methods
         public static IEnumerator WaitForTicks(int ticks)
         {
-            for (int i = 0; i < ticks; i++)
+            for (int t = 0; t < ticks; t++)
                 yield return 0;
         }
 
         public static IEnumerator WaitForSeconds(float seconds)
         {
-            var timer = 0f;
-
-            while (timer < seconds)
-            {
-                timer += Runner.Application.Game.DeltaTime;
+            for (float t = 0f; t < seconds; t += Runner.Application.Game.DeltaTime)
                 yield return 0;
-            }
         }
 
         public static IEnumerator WaitUntil(Func<bool> predicate)
@@ -111,22 +106,19 @@ namespace FrogWorks
 
         public static IEnumerator DoInTicks(int ticks, Action<int, int> action)
         {
-            for (int i = 0; i <= ticks; i++)
+            for (int t = 0; t <= ticks; t++)
             {
-                action(i, ticks);
+                action(t, ticks);
                 yield return 0;
             }
         }
 
         public static IEnumerator DoInSeconds(float seconds, Action<float, float> action)
         {
-            var timer = 0f;
-
-            while (timer < seconds)
+            for (float t = 0f; t <= seconds; t += Runner.Application.Game.DeltaTime)
             {
-                timer += Runner.Application.Game.DeltaTime;
-                timer = timer.Min(seconds);
-                action(timer, seconds);
+                t = t.Min(seconds);
+                action(t, seconds);
                 yield return 0;
             }
         }
