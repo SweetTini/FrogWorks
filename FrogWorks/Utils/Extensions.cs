@@ -164,6 +164,11 @@ namespace FrogWorks
         {
             return Math.Sign(number);
         }
+
+        public static float Sqrt(this float number)
+        {
+            return (float)Math.Sqrt(number);
+        }
         #endregion
 
         #region String
