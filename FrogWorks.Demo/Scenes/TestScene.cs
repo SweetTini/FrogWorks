@@ -12,6 +12,7 @@ namespace FrogWorks.Demo.Scenes
 
         protected override void Begin()
         {
+            //var mapTest = Tiled.Load("Maps\\TestArea1.tmx");
             BackgroundColor = Color.CornflowerBlue;
 
             var backgroundLayer = new BasicLayer() { ScrollRate = Vector2.One * .4f };

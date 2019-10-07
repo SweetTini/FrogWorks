@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" tiledversion="1.1.6" orientation="orthogonal" renderorder="right-down" width="10" height="8" tilewidth="32" tileheight="32" infinite="0" nextobjectid="11">
+ <tileset firstgid="1" name="PhTiles" tilewidth="32" tileheight="32" tilecount="3" columns="3">
+  <image source="../Textures/PhTiles.png" width="96" height="32"/>
+ </tileset>
+ <tileset firstgid="4" name="Properties" tilewidth="32" tileheight="32" tilecount="3" columns="3">
+  <properties>
+   <property name="ReferenceOnly" type="bool" value="true"/>
+  </properties>
+  <image source="../Textures/Properties.png" width="96" height="32"/>
+ </tileset>
+ <layer name="Background" width="10" height="8">
+  <data encoding="base64" compression="zlib">
+   eJxjZGBgYCQSEwKkqmOCYnLNg5lBLfPQ1RGDARvUACw=
+  </data>
+ </layer>
+ <layer name="Collision" width="10" height="8">
+  <data encoding="base64" compression="zlib">
+   eJxjYGBgYCGAGZBofABZPTHqWKGYXPNgZlDLPGR1yOrxhQsAWLgAjg==
+  </data>
+ </layer>
+ <objectgroup name="Objects">
+  <object id="8" name="Door" type="Door" x="0" y="0" width="96" height="96">
+   <properties>
+    <property name="GoTo" value="NextMap"/>
+    <property name="X" type="int" value="1"/>
+    <property name="Y" type="int" value="4"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>
