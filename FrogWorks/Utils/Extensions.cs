@@ -36,6 +36,16 @@ namespace FrogWorks
             return MathHelper.Clamp(number, lowest, highest);
         }
 
+        public static int Divide(this int number, int divider)
+        {
+            return divider != 0f ? number / divider : divider;
+        }
+
+        public static float Divide(this float number, float divider)
+        {
+            return divider != 0f ? number / divider : divider;
+        }
+
         public static float Floor(this float number)
         {
             return (float)Math.Floor(number);
