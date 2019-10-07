@@ -55,6 +55,8 @@ namespace FrogWorks
 
         protected override void OnAdded()
         {
+            Entities.ProcessQueues();
+
             foreach (var entity in Entities)
                 entity.OnInternalLayerAdded();
         }

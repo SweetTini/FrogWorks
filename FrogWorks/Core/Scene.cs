@@ -26,6 +26,7 @@ namespace FrogWorks
         internal void InternalBegin()
         {
             Begin();
+            Layers.ProcessQueues();
 
             foreach (var layer in Layers)
                 layer.OnInternalSceneBegan();

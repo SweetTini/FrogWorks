@@ -141,6 +141,8 @@ namespace FrogWorks
 
         protected override void OnAdded()
         {
+            Components.ProcessQueues();
+
             foreach (var component in Components)
                 component.OnInternalEntityAdded();
 

@@ -11,11 +11,9 @@ namespace FrogWorks
 
         protected List<TItem> Items { get; private set; }
 
-        protected Queue<TItem> ToAdd { get; private set; }
+        protected List<TItem> ToAdd { get; private set; }
 
-        protected Queue<TItem> ToRemove { get; private set; }
-
-        protected bool IsBusy { get; set; }
+        protected List<TItem> ToRemove { get; private set; }
 
         public TItem this[int index] => Items[index];
 
@@ -25,17 +23,25 @@ namespace FrogWorks
         {
             Container = container;
             Items = new List<TItem>();
-            ToAdd = new Queue<TItem>();
-            ToRemove = new Queue<TItem>();
+            ToAdd = new List<TItem>();
+            ToRemove = new List<TItem>();
         }
 
         internal void ProcessQueues()
         {
-            while (ToAdd.Count > 0)
-                TryAdd(ToAdd.Dequeue());
+            if (ToRemove.Count > 0)
+            {
+                foreach (var item in ToRemove)
+                    TryRemove(item);
+                ToRemove.Clear();
+            }
 
-            while (ToRemove.Count > 0)
-                TryRemove(ToRemove.Dequeue());
+            if (ToAdd.Count > 0)
+            {
+                foreach (var item in ToAdd)
+                    TryAdd(item);
+                ToAdd.Clear();
+            }
 
             PostProcessQueues();
         }
@@ -44,35 +50,24 @@ namespace FrogWorks
 
         internal virtual void Update(float deltaTime)
         {
-            IsBusy = true;
-
             foreach (var item in Items)
                 if (item.IsEnabled)
                     item.InternalUpdate(deltaTime);
-
-            IsBusy = false;
         }
 
         internal virtual void Draw(RendererBatch batch)
         {
-            IsBusy = true;
-
             foreach (var item in Items)
                 if (item.IsVisible)
                     item.InternalDraw(batch);
-
-            IsBusy = false;
         }
 
         public void Add(TItem item)
         {
-            if (Items.Contains(item))
-                return;
-
-            if (IsBusy && !ToAdd.Contains(item))
-                ToAdd.Enqueue(item);
-            else if (!IsBusy)
-                TryAdd(item);
+            if (Items.Contains(item) && ToRemove.Contains(item))
+                ToRemove.Remove(item);
+            else if (!ToAdd.Contains(item))
+                ToAdd.Add(item);
         }
 
         public void Add(params TItem[] items)
@@ -89,13 +84,10 @@ namespace FrogWorks
 
         public void Remove(TItem item)
         {
-            if (!Items.Contains(item))
-                return;
-
-            if (IsBusy && !ToRemove.Contains(item))
-                ToRemove.Enqueue(item);
-            else if (!IsBusy)
-                TryRemove(item);
+            if (!Items.Contains(item) && ToAdd.Contains(item))
+                ToAdd.Remove(item);
+            else if (!ToRemove.Contains(item))
+                ToRemove.Add(item);
         }
 
         public void Remove(params TItem[] items)
@@ -112,14 +104,20 @@ namespace FrogWorks
 
         protected void TryAdd(TItem item)
         {
-            Items.Add(item);
-            item.OnInternalAdded(Container);
+            if (!Items.Contains(item))
+            {
+                Items.Add(item);
+                item.OnInternalAdded(Container);
+            }
         }
 
         protected void TryRemove(TItem item)
         {
-            Items.Remove(item);
-            item.OnInternalRemoved();
+            if (Items.Contains(item))
+            {
+                Items.Remove(item);
+                item.OnInternalRemoved();
+            }
         }
 
         public TItem[] ToArray()

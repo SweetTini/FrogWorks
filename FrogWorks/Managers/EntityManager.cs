@@ -30,10 +30,8 @@ namespace FrogWorks
 
             var command = new SwitchLayerCommand(item, layer);
 
-            if (IsBusy && !ToSwitchLayer.Contains(command))
+            if (!ToSwitchLayer.Contains(command))
                 ToSwitchLayer.Enqueue(command);
-            else if (!IsBusy)
-                TrySwitchToLayer(command);
         }
 
         private void TrySwitchToLayer(SwitchLayerCommand command)

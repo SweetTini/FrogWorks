@@ -27,10 +27,8 @@ namespace FrogWorks
 
             var command = new MoveItemCommand(item, MoveOperation.ToTop);
 
-            if (IsBusy && !ToMove.Contains(command))
+            if (!ToMove.Contains(command))
                 ToMove.Enqueue(command);
-            else if (!IsBusy)
-                TryMove(command);
         }
 
         public void MoveToBottom(TItem item)
@@ -40,10 +38,8 @@ namespace FrogWorks
 
             var command = new MoveItemCommand(item, MoveOperation.ToBottom);
 
-            if (IsBusy && !ToMove.Contains(command))
+            if (!ToMove.Contains(command))
                 ToMove.Enqueue(command);
-            else if (!IsBusy)
-                TryMove(command);
         }
 
         public void MoveAhead(TItem item, TItem other)
@@ -53,10 +49,8 @@ namespace FrogWorks
 
             var command = new MoveItemCommand(item, other, MoveOperation.Ahead);
 
-            if (IsBusy && !ToMove.Contains(command))
+            if (!ToMove.Contains(command))
                 ToMove.Enqueue(command);
-            else if (!IsBusy)
-                TryMove(command);
         }
 
         public void MoveBehind(TItem item, TItem other)
@@ -66,10 +60,8 @@ namespace FrogWorks
 
             var command = new MoveItemCommand(item, other, MoveOperation.Behind);
 
-            if (IsBusy && !ToMove.Contains(command))
+            if (!ToMove.Contains(command))
                 ToMove.Enqueue(command);
-            else if (!IsBusy)
-                TryMove(command);
         }
 
         protected void TryMove(MoveItemCommand command)
