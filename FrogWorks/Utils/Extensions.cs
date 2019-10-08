@@ -61,6 +61,16 @@ namespace FrogWorks
             return number != 0f ? 1f / number : number;
         }
 
+        public static int Lerp(this int number, int target, float amount)
+        {
+            return (int)Math.Round(number + (target - number) * amount);
+        }
+
+        public static float Lerp(this float number, float target, float amount)
+        {
+            return number + (target - number) * amount;
+        }
+
         public static int Max(this int number, int other)
         {
             return Math.Max(number, other);
