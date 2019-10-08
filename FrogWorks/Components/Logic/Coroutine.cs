@@ -106,20 +106,26 @@ namespace FrogWorks
 
         public static IEnumerator DoInTicks(int ticks, Action<int, int> action)
         {
-            for (int t = 0; t <= ticks; t++)
+            if (ticks > 0)
             {
-                action(t, ticks);
-                yield return 0;
+                for (int t = 0; t <= ticks; t++)
+                {
+                    action(t, ticks);
+                    yield return 0;
+                }
             }
         }
 
         public static IEnumerator DoInSeconds(float seconds, Action<float, float> action)
         {
-            for (float t = 0f; t <= seconds; t += Runner.Application.Game.DeltaTime)
+            if (seconds > 0f)
             {
-                t = t.Min(seconds);
-                action(t, seconds);
-                yield return 0;
+                for (float t = 0f; t <= seconds; t += Runner.Application.Game.DeltaTime)
+                {
+                    t = t.Min(seconds);
+                    action(t, seconds);
+                    yield return 0;
+                }
             }
         }
         #endregion
