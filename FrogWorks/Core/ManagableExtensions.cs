@@ -8,6 +8,12 @@
             return scene is T ? scene as T : null;
         }
 
+        public static T As<T>(this Layer layer)
+            where T : Layer
+        {
+            return layer is T ? layer as T : null;
+        }
+
         public static T As<T>(this Collider collider)
             where T : Collider
         {
