@@ -88,7 +88,6 @@
     <Compile Include="Graphics\TileMapContainer.cs" />
     <Compile Include="Layers\AlphaMaskLayer.cs" />
     <Compile Include="Layers\BasicLayer.cs" />
-    <Compile Include="Managers\ManagedQueueCommand.cs" />
     <Compile Include="Runners\DesktopRunner.cs" />
     <Compile Include="Core\Layer.cs" />
     <Compile Include="GameAdapter.cs" />

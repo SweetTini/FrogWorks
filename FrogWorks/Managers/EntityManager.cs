@@ -44,13 +44,16 @@ namespace FrogWorks
         }
     }
 
-    internal class LayerSwitchCommand : ManagedQueueCommand<Entity, Layer>
+    internal struct LayerSwitchCommand : IManagedQueueCommand<Entity>
     {
-        public Layer Target { get; private set; }
+        public Entity Item { get; }
+
+        public Layer Target { get; }
 
         public LayerSwitchCommand(Entity item, Layer target) 
-            : base(item, ManagedQueueAction.Switch)
+            : this()
         {
+            Item = item;
             Target = target;
         }
     }

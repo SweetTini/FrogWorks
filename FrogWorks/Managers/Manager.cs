@@ -5,8 +5,7 @@ using System.Collections.Generic;
 namespace FrogWorks
 {
     public abstract class Manager<T, TT> : IManager<T>
-        where T : Managable<TT>
-        where TT : class
+        where T : Managable<TT> where TT : class
     {
         private ManagerState _state;
 
@@ -37,7 +36,7 @@ namespace FrogWorks
             QueuedItems = new Queue<ManagedQueueCommand<T, TT>>();
         }
 
-        internal void ProcessQueues()
+        private void ProcessQueues()
         {
             while (QueuedItems.Count > 0)
             {
@@ -164,6 +163,27 @@ namespace FrogWorks
         {
             return GetEnumerator();
         }
+    }
+
+    public struct ManagedQueueCommand<T, TT> : IManagedQueueCommand<T, ManagedQueueAction>
+        where T : Managable<TT> where TT : class
+    {
+        public T Item { get; }
+
+        public ManagedQueueAction Action { get; }
+
+        internal ManagedQueueCommand(T item, ManagedQueueAction action)
+            : this()
+        {
+            Item = item;
+            Action = action;
+        }
+    }
+
+    public enum ManagedQueueAction
+    {
+        Add,
+        Remove
     }
 
     public enum ManagerState

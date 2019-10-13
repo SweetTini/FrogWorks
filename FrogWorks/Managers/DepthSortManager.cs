@@ -3,8 +3,7 @@
 namespace FrogWorks
 {
     public abstract class DepthSortManager<T, TT> : Manager<T, TT>
-        where T : Managable<TT>
-        where TT : class
+        where T : Managable<TT> where TT : class
     {
         protected Queue<SortedManagedQueueCommand<T, TT>> QueuedMovedItems { get; private set; }
 
@@ -25,7 +24,7 @@ namespace FrogWorks
             if (!Items.Contains(item))
                 return;
 
-            var command = new SortedManagedQueueCommand<T, TT>(item, ManagedQueueAction.MoveToTop);
+            var command = new SortedManagedQueueCommand<T, TT>(item, SortedManagedQueueAction.MoveToTop);
 
             if (!QueuedMovedItems.Contains(command))
                 QueuedMovedItems.Enqueue(command);
@@ -36,7 +35,7 @@ namespace FrogWorks
             if (!Items.Contains(item))
                 return;
 
-            var command = new SortedManagedQueueCommand<T, TT>(item, ManagedQueueAction.MoveToBottom);
+            var command = new SortedManagedQueueCommand<T, TT>(item, SortedManagedQueueAction.MoveToBottom);
 
             if (!QueuedMovedItems.Contains(command))
                 QueuedMovedItems.Enqueue(command);
@@ -47,7 +46,7 @@ namespace FrogWorks
             if (item.Equals(other) || !Items.Contains(item) || !Items.Contains(other))
                 return;
 
-            var command = new SortedManagedQueueCommand<T, TT>(item, other, ManagedQueueAction.MoveAbove);
+            var command = new SortedManagedQueueCommand<T, TT>(item, other, SortedManagedQueueAction.MoveAbove);
 
             if (!QueuedMovedItems.Contains(command))
                 QueuedMovedItems.Enqueue(command);
@@ -58,7 +57,7 @@ namespace FrogWorks
             if (item.Equals(other) || !Items.Contains(item) || !Items.Contains(other))
                 return;
 
-            var command = new SortedManagedQueueCommand<T, TT>(item, other, ManagedQueueAction.MoveBelow);
+            var command = new SortedManagedQueueCommand<T, TT>(item, other, SortedManagedQueueAction.MoveBelow);
 
             if (!QueuedMovedItems.Contains(command))
                 QueuedMovedItems.Enqueue(command);
@@ -68,28 +67,28 @@ namespace FrogWorks
         {
             switch (command.Action)
             {
-                case ManagedQueueAction.MoveToTop:
+                case SortedManagedQueueAction.MoveToTop:
                     if (Items.Contains(command.Item))
                     {
                         Items.Remove(command.Item);
                         Items.Add(command.Item);
                     }
                     break;
-                case ManagedQueueAction.MoveToBottom:
+                case SortedManagedQueueAction.MoveToBottom:
                     if (Items.Contains(command.Item))
                     {
                         Items.Remove(command.Item);
                         Items.Insert(0, command.Item);
                     }
                     break;
-                case ManagedQueueAction.MoveAbove:
+                case SortedManagedQueueAction.MoveAbove:
                     if (Items.Contains(command.Item) && Items.Contains(command.Target))
                     {
                         Items.Remove(command.Item);
                         Items.Insert(Items.IndexOf(command.Target) + 1, command.Item);
                     }
                     break;
-                case ManagedQueueAction.MoveBelow:
+                case SortedManagedQueueAction.MoveBelow:
                     if (Items.Contains(command.Item) && Items.Contains(command.Target))
                     {
                         Items.Remove(command.Item);
@@ -100,19 +99,32 @@ namespace FrogWorks
         }
     }
 
-    public class SortedManagedQueueCommand<T, TT> : ManagedQueueCommand<T, TT>
-        where T : Managable<TT>
-        where TT : class
+    public struct SortedManagedQueueCommand<T, TT> : IManagedQueueCommand<T, SortedManagedQueueAction>
+        where T : Managable<TT> where TT : class
     {
-        public T Target { get; private set; }
+        public T Item { get; }
 
-        internal SortedManagedQueueCommand(T item, ManagedQueueAction action)
+        public T Target { get; }
+
+        public SortedManagedQueueAction Action { get; }
+
+        internal SortedManagedQueueCommand(T item, SortedManagedQueueAction action)
             : this(item, null, action) { }
 
-        internal SortedManagedQueueCommand(T item, T target, ManagedQueueAction action) 
-            :  base(item, action)
+        internal SortedManagedQueueCommand(T item, T target, SortedManagedQueueAction action)
+            : this()
         {
+            Item = item;
             Target = target;
+            Action = action;
         }
+    }
+
+    public enum SortedManagedQueueAction
+    {
+        MoveToTop,
+        MoveToBottom,
+        MoveAbove,
+        MoveBelow
     }
 }
