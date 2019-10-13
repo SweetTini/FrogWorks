@@ -7,12 +7,12 @@ namespace FrogWorks
     {
         private Scene Scene => Container.Parent;
 
-        private Queue<SwitchLayerCommand> ToSwitchLayer { get; set; }
+        private Queue<LayerSwitchCommand> ToSwitchLayer { get; set; }
 
         internal EntityManager(Layer layer)
             : base(layer)
         {
-            ToSwitchLayer = new Queue<SwitchLayerCommand>();
+            ToSwitchLayer = new Queue<LayerSwitchCommand>();
         }
 
         protected override void PostProcessQueues()
@@ -28,32 +28,30 @@ namespace FrogWorks
             if (!Items.Contains(item) || item.Parent == null || !Scene.Layers.Contains(layer))
                 return;
 
-            var command = new SwitchLayerCommand(item, layer);
+            var command = new LayerSwitchCommand(item, layer);
 
             if (!ToSwitchLayer.Contains(command))
                 ToSwitchLayer.Enqueue(command);
         }
 
-        private void TrySwitchToLayer(SwitchLayerCommand command)
+        private void TrySwitchToLayer(LayerSwitchCommand command)
         {
-            if (!Items.Contains(command.Entity) || !Scene.Layers.Contains(command.Layer))
+            if (!Items.Contains(command.Item) || !Scene.Layers.Contains(command.Target))
                 return;
 
-            TryRemove(command.Entity);
-            command.Layer.Entities.TryAdd(command.Entity);
+            TryRemove(command.Item);
+            command.Target.Entities.TryAdd(command.Item);
         }
+    }
 
-        private class SwitchLayerCommand
+    internal class LayerSwitchCommand : ManagedQueueCommand<Entity, Layer>
+    {
+        public Layer Target { get; private set; }
+
+        public LayerSwitchCommand(Entity item, Layer target) 
+            : base(item, ManagedQueueAction.Switch)
         {
-            public Entity Entity { get; set; }
-
-            public Layer Layer { get; set; }
-
-            public SwitchLayerCommand(Entity entity, Layer layer)
-            {
-                Entity = entity;
-                Layer = layer;
-            }
+            Target = target;
         }
     }
 }

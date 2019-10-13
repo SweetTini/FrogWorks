@@ -1,46 +1,54 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace FrogWorks
 {
-    public abstract class Manager<TItem, TContainer> : IManager<TItem>
-        where TItem : Managable<TContainer>
-        where TContainer : class
+    public abstract class Manager<T, TT> : IManager<T>
+        where T : Managable<TT>
+        where TT : class
     {
-        protected TContainer Container { get; private set; }
+        private ManagerState _state;
 
-        protected List<TItem> Items { get; private set; }
+        protected TT Container { get; private set; }
 
-        protected List<TItem> ToAdd { get; private set; }
+        protected List<T> Items { get; private set; }
 
-        protected List<TItem> ToRemove { get; private set; }
+        protected Queue<ManagedQueueCommand<T, TT>> QueuedItems { get; private set; }
 
-        public TItem this[int index] => Items[index];
+        protected ManagerState State
+        {
+            get { return _state; }
+            set
+            {
+                _state = value;
+                ProcessQueues();
+            }
+        }
+
+        public T this[int index] => Items[index];
 
         public int Count => Items.Count;
 
-        protected Manager(TContainer container)
+        protected Manager(TT container)
         {
             Container = container;
-            Items = new List<TItem>();
-            ToAdd = new List<TItem>();
-            ToRemove = new List<TItem>();
+            Items = new List<T>();
+            QueuedItems = new Queue<ManagedQueueCommand<T, TT>>();
         }
 
         internal void ProcessQueues()
         {
-            if (ToRemove.Count > 0)
+            while (QueuedItems.Count > 0)
             {
-                foreach (var item in ToRemove)
-                    TryRemove(item);
-                ToRemove.Clear();
-            }
+                var command = QueuedItems.Dequeue();
 
-            if (ToAdd.Count > 0)
-            {
-                foreach (var item in ToAdd)
-                    TryAdd(item);
-                ToAdd.Clear();
+                switch (command.Action)
+                {
+                    case ManagedQueueAction.Add: TryAdd(command.Item); break;
+                    case ManagedQueueAction.Remove: TryRemove(command.Item); break;
+                    default: break;
+                }
             }
 
             PostProcessQueues();
@@ -50,59 +58,81 @@ namespace FrogWorks
 
         internal virtual void Update(float deltaTime)
         {
+            State = ManagerState.Queue;
+
             foreach (var item in Items)
                 if (item.IsEnabled)
                     item.InternalUpdate(deltaTime);
+
+            State = ManagerState.Opened;
         }
 
         internal virtual void Draw(RendererBatch batch)
         {
+            State = ManagerState.ThrowError;
+
             foreach (var item in Items)
                 if (item.IsVisible)
                     item.InternalDraw(batch);
+
+            State = ManagerState.Opened;
         }
 
-        public void Add(TItem item)
+        public void Add(T item)
         {
-            if (Items.Contains(item) && ToRemove.Contains(item))
-                ToRemove.Remove(item);
-            else if (!ToAdd.Contains(item))
-                ToAdd.Add(item);
+            switch (State)
+            {
+                case ManagerState.Opened:
+                    TryAdd(item);
+                    break;
+                case ManagerState.Queue:
+                    QueuedItems.Enqueue(new ManagedQueueCommand<T, TT>(item, ManagedQueueAction.Add));
+                    break;
+                case ManagerState.ThrowError:
+                    throw new Exception($"Cannot add {typeof(T)} at this time.");
+            }
         }
 
-        public void Add(params TItem[] items)
+        public void Add(params T[] items)
         {
             foreach (var item in items)
                 Add(item);
         }
 
-        public void Add(IEnumerable<TItem> items)
+        public void Add(IEnumerable<T> items)
         {
             foreach (var item in items)
                 Add(item);
         }
 
-        public void Remove(TItem item)
+        public void Remove(T item)
         {
-            if (!Items.Contains(item) && ToAdd.Contains(item))
-                ToAdd.Remove(item);
-            else if (!ToRemove.Contains(item))
-                ToRemove.Add(item);
+            switch (State)
+            {
+                case ManagerState.Opened:
+                    TryRemove(item);
+                    break;
+                case ManagerState.Queue:
+                    QueuedItems.Enqueue(new ManagedQueueCommand<T, TT>(item, ManagedQueueAction.Remove));
+                    break;
+                case ManagerState.ThrowError:
+                    throw new Exception($"Cannot remove {typeof(T)} at this time.");
+            }
         }
 
-        public void Remove(params TItem[] items)
+        public void Remove(params T[] items)
         {
             foreach (var item in items)
                 Remove(item);
         }
 
-        public void Remove(IEnumerable<TItem> items)
+        public void Remove(IEnumerable<T> items)
         {
             foreach (var item in items)
                 Remove(item);
         }
 
-        protected void TryAdd(TItem item)
+        protected void TryAdd(T item)
         {
             if (!Items.Contains(item))
             {
@@ -111,7 +141,7 @@ namespace FrogWorks
             }
         }
 
-        protected void TryRemove(TItem item)
+        protected void TryRemove(T item)
         {
             if (Items.Contains(item))
             {
@@ -120,12 +150,12 @@ namespace FrogWorks
             }
         }
 
-        public TItem[] ToArray()
+        public T[] ToArray()
         {
             return Items.ToArray();
         }
 
-        public IEnumerator<TItem> GetEnumerator()
+        public IEnumerator<T> GetEnumerator()
         {
             return Items.GetEnumerator();
         }
@@ -134,6 +164,13 @@ namespace FrogWorks
         {
             return GetEnumerator();
         }
+    }
+
+    public enum ManagerState
+    {
+        Opened,
+        Queue,
+        ThrowError
     }
 }
 

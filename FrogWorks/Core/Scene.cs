@@ -26,7 +26,6 @@ namespace FrogWorks
         internal void InternalBegin()
         {
             Begin();
-            Layers.ProcessQueues();
 
             foreach (var layer in Layers)
                 layer.OnInternalSceneBegan();
@@ -47,7 +46,6 @@ namespace FrogWorks
         internal void Update(float deltaTime)
         {
             BeforeUpdate();
-            Layers.ProcessQueues();
 
             if (IsEnabled)
             {

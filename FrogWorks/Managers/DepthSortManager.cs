@@ -2,94 +2,94 @@
 
 namespace FrogWorks
 {
-    public abstract class DepthSortManager<TItem, TContainer> : Manager<TItem, TContainer>
-        where TItem : Managable<TContainer>
-        where TContainer : class
+    public abstract class DepthSortManager<T, TT> : Manager<T, TT>
+        where T : Managable<TT>
+        where TT : class
     {
-        protected Queue<MoveItemCommand> ToMove { get; private set; }
+        protected Queue<SortedManagedQueueCommand<T, TT>> QueuedMovedItems { get; private set; }
 
-        protected DepthSortManager(TContainer container)
+        protected DepthSortManager(TT container)
             : base(container)
         {
-            ToMove = new Queue<MoveItemCommand>();
+            QueuedMovedItems = new Queue<SortedManagedQueueCommand<T, TT>>();
         }
 
         protected override void PostProcessQueues()
         {
-            while (ToMove.Count > 0)
-                TryMove(ToMove.Dequeue());
+            while (QueuedMovedItems.Count > 0)
+                TryMove(QueuedMovedItems.Dequeue());
         }
 
-        public void MoveToTop(TItem item)
+        public void MoveToTop(T item)
         {
             if (!Items.Contains(item))
                 return;
 
-            var command = new MoveItemCommand(item, MoveOperation.ToTop);
+            var command = new SortedManagedQueueCommand<T, TT>(item, ManagedQueueAction.MoveToTop);
 
-            if (!ToMove.Contains(command))
-                ToMove.Enqueue(command);
+            if (!QueuedMovedItems.Contains(command))
+                QueuedMovedItems.Enqueue(command);
         }
 
-        public void MoveToBottom(TItem item)
+        public void MoveToBottom(T item)
         {
             if (!Items.Contains(item))
                 return;
 
-            var command = new MoveItemCommand(item, MoveOperation.ToBottom);
+            var command = new SortedManagedQueueCommand<T, TT>(item, ManagedQueueAction.MoveToBottom);
 
-            if (!ToMove.Contains(command))
-                ToMove.Enqueue(command);
+            if (!QueuedMovedItems.Contains(command))
+                QueuedMovedItems.Enqueue(command);
         }
 
-        public void MoveAhead(TItem item, TItem other)
+        public void MoveAbove(T item, T other)
         {
             if (item.Equals(other) || !Items.Contains(item) || !Items.Contains(other))
                 return;
 
-            var command = new MoveItemCommand(item, other, MoveOperation.Ahead);
+            var command = new SortedManagedQueueCommand<T, TT>(item, other, ManagedQueueAction.MoveAbove);
 
-            if (!ToMove.Contains(command))
-                ToMove.Enqueue(command);
+            if (!QueuedMovedItems.Contains(command))
+                QueuedMovedItems.Enqueue(command);
         }
 
-        public void MoveBehind(TItem item, TItem other)
+        public void MoveBelow(T item, T other)
         {
             if (item.Equals(other) || !Items.Contains(item) || !Items.Contains(other))
                 return;
 
-            var command = new MoveItemCommand(item, other, MoveOperation.Behind);
+            var command = new SortedManagedQueueCommand<T, TT>(item, other, ManagedQueueAction.MoveBelow);
 
-            if (!ToMove.Contains(command))
-                ToMove.Enqueue(command);
+            if (!QueuedMovedItems.Contains(command))
+                QueuedMovedItems.Enqueue(command);
         }
 
-        protected void TryMove(MoveItemCommand command)
+        protected void TryMove(SortedManagedQueueCommand<T, TT> command)
         {
-            switch (command.Operation)
+            switch (command.Action)
             {
-                case MoveOperation.ToTop:
+                case ManagedQueueAction.MoveToTop:
                     if (Items.Contains(command.Item))
                     {
                         Items.Remove(command.Item);
                         Items.Add(command.Item);
                     }
                     break;
-                case MoveOperation.ToBottom:
+                case ManagedQueueAction.MoveToBottom:
                     if (Items.Contains(command.Item))
                     {
                         Items.Remove(command.Item);
                         Items.Insert(0, command.Item);
                     }
                     break;
-                case MoveOperation.Ahead:
+                case ManagedQueueAction.MoveAbove:
                     if (Items.Contains(command.Item) && Items.Contains(command.Target))
                     {
                         Items.Remove(command.Item);
                         Items.Insert(Items.IndexOf(command.Target) + 1, command.Item);
                     }
                     break;
-                case MoveOperation.Behind:
+                case ManagedQueueAction.MoveBelow:
                     if (Items.Contains(command.Item) && Items.Contains(command.Target))
                     {
                         Items.Remove(command.Item);
@@ -98,32 +98,21 @@ namespace FrogWorks
                     break;
             }
         }
+    }
 
-        protected class MoveItemCommand
+    public class SortedManagedQueueCommand<T, TT> : ManagedQueueCommand<T, TT>
+        where T : Managable<TT>
+        where TT : class
+    {
+        public T Target { get; private set; }
+
+        internal SortedManagedQueueCommand(T item, ManagedQueueAction action)
+            : this(item, null, action) { }
+
+        internal SortedManagedQueueCommand(T item, T target, ManagedQueueAction action) 
+            :  base(item, action)
         {
-            public TItem Item { get; set; }
-
-            public TItem Target { get; set; }
-
-            public MoveOperation Operation { get; set; }
-
-            public MoveItemCommand(TItem item, MoveOperation operation)
-                : this(item, null, operation) { }
-
-            public MoveItemCommand(TItem item, TItem target, MoveOperation operation)
-            {
-                Item = item;
-                Target = target;
-                Operation = operation;
-            }
-        }
-
-        protected enum MoveOperation
-        {
-            ToTop,
-            ToBottom,
-            Ahead,
-            Behind
+            Target = target;
         }
     }
 }

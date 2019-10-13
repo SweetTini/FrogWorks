@@ -133,7 +133,6 @@ namespace FrogWorks
 
         protected sealed override void Update(float deltaTime)
         {
-            Components.ProcessQueues();
             Components.Update(deltaTime);
         }
 
@@ -141,8 +140,6 @@ namespace FrogWorks
 
         protected override void OnAdded()
         {
-            Components.ProcessQueues();
-
             foreach (var component in Components)
                 component.OnInternalEntityAdded();
 

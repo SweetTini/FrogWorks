@@ -40,7 +40,6 @@ namespace FrogWorks
 
         protected sealed override void Update(float deltaTime)
         {
-            Entities.ProcessQueues();
             Entities.Update(deltaTime);
             UpdateCamera();
         }
@@ -55,8 +54,6 @@ namespace FrogWorks
 
         protected override void OnAdded()
         {
-            Entities.ProcessQueues();
-
             foreach (var entity in Entities)
                 entity.OnInternalLayerAdded();
         }

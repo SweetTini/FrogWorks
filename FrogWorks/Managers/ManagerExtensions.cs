@@ -14,13 +14,13 @@ namespace FrogWorks
 
         public static IEnumerable<Layer> With(this IEnumerable<Layer> layers, IEnumerable<Entity> entities)
         {
-            return layers.Where(l => entities.Any(e => e.Parent == l));
+            return layers.Where(l => entities.Any(e => e.Parent == l)).ToList();
         }
 
         public static IEnumerable<Layer> WithType<T>(this IEnumerable<Layer> layers)
             where T : Entity
         {
-            return layers.Where(l => l.Entities.AnyOfType<T>());
+            return layers.Where(l => l.Entities.AnyOfType<T>()).ToList();
         }
         #endregion
 
@@ -28,13 +28,13 @@ namespace FrogWorks
         public static IEnumerable<Entity> WithType<T>(this IEnumerable<Entity> entities)
             where T : Component
         {
-            return entities.Where(e => e.Components.AnyOfType<T>());
+            return entities.Where(e => e.Components.AnyOfType<T>()).ToList();
         }
 
         public static IEnumerable<T> OfType<T>(this IEnumerable<Entity> entities)
             where T : Entity
         {
-            return entities.Where(e => e is T).Select(e => e as T);
+            return entities.Where(e => e is T).Select(e => e as T).ToList();
         }
 
         public static T FirstOfType<T>(this IEnumerable<Entity> entities)
@@ -72,7 +72,7 @@ namespace FrogWorks
         public static IEnumerable<T> OfType<T>(this IEnumerable<Component> components)
             where T : Component
         {
-            return components.Where(c => c is T).Select(c => c as T);
+            return components.Where(c => c is T).Select(c => c as T).ToList();
         }
 
         public static T FirstOfType<T>(this IEnumerable<Component> components)
