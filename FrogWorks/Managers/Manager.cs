@@ -115,7 +115,7 @@ namespace FrogWorks
                     QueuedItems.Enqueue(new ManagedQueueCommand<T, TT>(item, ManagedQueueAction.Remove));
                     break;
                 case ManagerState.ThrowError:
-                    throw new Exception($"Cannot remove {typeof(T)} at this time.");
+                    throw new Exception($"Cannot remove {typeof(T).Name} at this time.");
             }
         }
 
