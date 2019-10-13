@@ -88,7 +88,7 @@ namespace FrogWorks
                     QueuedItems.Enqueue(new ManagedQueueCommand<T, TT>(item, ManagedQueueAction.Add));
                     break;
                 case ManagerState.ThrowError:
-                    throw new Exception($"Cannot add {typeof(T)} at this time.");
+                    throw new Exception($"Cannot add {typeof(T).Name} at this time.");
             }
         }
 
