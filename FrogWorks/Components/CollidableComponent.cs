@@ -30,5 +30,16 @@ namespace FrogWorks
         {
             IsCollidable = isCollidable;
         }
+
+        protected override void OnAdded()
+        {
+            if (Parent != null)
+                Collider?.OnInternalAdded(Parent);
+        }
+
+        protected override void OnRemoved()
+        {
+            Collider?.OnInternalRemoved();
+        }
     }
 }
