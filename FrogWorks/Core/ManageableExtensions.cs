@@ -1,6 +1,6 @@
 ﻿namespace FrogWorks
 {
-    public static class ManagableExtensions
+    public static class ManageableExtensions
     {
         public static T As<T>(this Scene scene)
             where T : Scene

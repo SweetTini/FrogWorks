@@ -7,20 +7,20 @@ namespace FrogWorks
     {
         private Scene Scene => Container.Parent;
 
-        private Queue<LayerSwitchCommand> ToSwitchLayer { get; set; }
+        private Queue<LayerSwitchCommand> SwitchCommands { get; set; }
 
         internal EntityManager(Layer layer)
             : base(layer)
         {
-            ToSwitchLayer = new Queue<LayerSwitchCommand>();
+            SwitchCommands = new Queue<LayerSwitchCommand>();
         }
 
         protected override void PostProcessQueues()
         {
             base.PostProcessQueues();
 
-            while (ToSwitchLayer.Count > 0)
-                TrySwitchToLayer(ToSwitchLayer.Dequeue());
+            while (SwitchCommands.Count > 0)
+                TrySwitchToLayer(SwitchCommands.Dequeue());
         }
 
         public void SwitchToLayer(Entity item, Layer layer)
@@ -30,8 +30,8 @@ namespace FrogWorks
 
             var command = new LayerSwitchCommand(item, layer);
 
-            if (!ToSwitchLayer.Contains(command))
-                ToSwitchLayer.Enqueue(command);
+            if (!SwitchCommands.Contains(command))
+                SwitchCommands.Enqueue(command);
         }
 
         private void TrySwitchToLayer(LayerSwitchCommand command)

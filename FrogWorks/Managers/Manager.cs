@@ -13,7 +13,7 @@ namespace FrogWorks
 
         protected List<T> Items { get; private set; }
 
-        protected Queue<ManagedQueueCommand<T, TT>> QueuedItems { get; private set; }
+        protected Queue<ManagedQueueCommand<T, TT>> Commands { get; private set; }
 
         protected ManagerState State
         {
@@ -33,14 +33,14 @@ namespace FrogWorks
         {
             Container = container;
             Items = new List<T>();
-            QueuedItems = new Queue<ManagedQueueCommand<T, TT>>();
+            Commands = new Queue<ManagedQueueCommand<T, TT>>();
         }
 
         private void ProcessQueues()
         {
-            while (QueuedItems.Count > 0)
+            while (Commands.Count > 0)
             {
-                var command = QueuedItems.Dequeue();
+                var command = Commands.Dequeue();
 
                 switch (command.Action)
                 {
@@ -85,7 +85,7 @@ namespace FrogWorks
                     TryAdd(item);
                     break;
                 case ManagerState.Queue:
-                    QueuedItems.Enqueue(new ManagedQueueCommand<T, TT>(item, ManagedQueueAction.Add));
+                    Commands.Enqueue(new ManagedQueueCommand<T, TT>(item, ManagedQueueAction.Add));
                     break;
                 case ManagerState.ThrowError:
                     throw new Exception($"Cannot add {typeof(T).Name} at this time.");
@@ -112,7 +112,7 @@ namespace FrogWorks
                     TryRemove(item);
                     break;
                 case ManagerState.Queue:
-                    QueuedItems.Enqueue(new ManagedQueueCommand<T, TT>(item, ManagedQueueAction.Remove));
+                    Commands.Enqueue(new ManagedQueueCommand<T, TT>(item, ManagedQueueAction.Remove));
                     break;
                 case ManagerState.ThrowError:
                     throw new Exception($"Cannot remove {typeof(T).Name} at this time.");
