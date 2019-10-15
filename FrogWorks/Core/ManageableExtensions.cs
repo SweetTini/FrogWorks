@@ -1,4 +1,8 @@
-﻿namespace FrogWorks
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace FrogWorks
 {
     public static class ManageableExtensions
     {
@@ -18,6 +22,34 @@
             where T : Collider
         {
             return collider is T ? collider as T : null;
+        }
+
+        public static IEnumerable<T> Query<T>(this Entity entity)
+            where T : Entity
+        {
+            var isQueryable = entity.Scene != null
+                && entity.Collider != null
+                && entity.Collider is ShapeCollider;
+
+            if (isQueryable)
+            {
+                var collidables = entity.Scene.Colliders
+                    .Query(entity.Collider as ShapeCollider);
+
+                return collidables
+                    .Select(c => c as ShapeCollider)
+                    .Where(c => c.Parent is T)
+                    .Select(c => c.Parent as T)
+                    .ToList();
+            }
+
+            return new List<T>();
+        }
+
+        public static void QueryForEach<T>(this Entity entity, Action<T> action)
+            where T : Entity
+        {
+            (entity.Query<T>() as List<T>).ForEach(action);
         }
     }
 }
