@@ -24,7 +24,7 @@ namespace FrogWorks
             return collider is T ? collider as T : null;
         }
 
-        public static IEnumerable<T> Query<T>(this Entity entity)
+        public static IEnumerable<T> QueryOfType<T>(this Entity entity)
             where T : Entity
         {
             var isQueryable = entity.Scene != null
@@ -46,10 +46,10 @@ namespace FrogWorks
             return new List<T>();
         }
 
-        public static void QueryForEach<T>(this Entity entity, Action<T> action)
+        public static void QueryForEachType<T>(this Entity entity, Action<T> action)
             where T : Entity
         {
-            (entity.Query<T>() as List<T>).ForEach(action);
+            (entity.QueryOfType<T>() as List<T>).ForEach(action);
         }
     }
 }
