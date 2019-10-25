@@ -7,6 +7,8 @@ namespace FrogWorks
     {
         protected GraphicsDevice GraphicsDevice { get; private set; }
 
+        protected internal RenderTarget2D Buffer { get; private set; }
+
         protected internal Camera Camera { get; private set; }
 
         public EntityManager Entities { get; private set; }
@@ -54,6 +56,8 @@ namespace FrogWorks
 
         protected override void OnAdded()
         {
+            ResetBuffer();
+
             foreach (var entity in Entities)
                 entity.OnInternalLayerAdded();
         }
@@ -62,7 +66,24 @@ namespace FrogWorks
         {
             foreach (var entity in Entities)
                 entity.OnInternalLayerRemoved();
+
+            ResetBuffer(true);
         }
+
+        protected void ResetBuffer(bool dispose = false)
+        {
+            Buffer?.Dispose();
+            
+            if (!dispose)
+            {
+                var display = Runner.Application.Display;
+
+                Buffer = new RenderTarget2D(GraphicsDevice, display.Width, display.Height, false, 
+                                            SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
+            }
+        }
+
+        internal void UpdateBuffer() => ResetBuffer();
 
         internal void UpdateCamera()
         {

@@ -12,5 +12,20 @@
             foreach (var item in Items)
                 item.UpdateCamera();
         }
+
+        internal void Reset()
+        {
+            foreach (var item in Items)
+            {
+                item.Camera.UpdateViewport();
+                item.UpdateBuffer();
+            }
+        }
+
+        internal void Dispose()
+        {
+            foreach (var item in Items)
+                item.Buffer.Dispose();
+        }
     }
 }

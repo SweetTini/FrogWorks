@@ -8,7 +8,6 @@ namespace FrogWorks
     {
         private GameAdapter _game;
         private RendererBatch _batch;
-        private RenderTarget2D _buffer;
         private Viewport _viewport;
         private Matrix _matrix;
 
@@ -42,13 +41,10 @@ namespace FrogWorks
                 if (_scaling == value) return;
                 _scaling = value;
                 ApplyScaling();
-                Reset();
             }
         }
 
         public bool IsDisposed { get; private set; }
-
-        public Action OnBufferChanged { get; set; }
 
         internal DisplayAdapter(GameAdapter game, Point size, int scale, bool fullscreen)
         {
@@ -64,25 +60,42 @@ namespace FrogWorks
             _game.ApplyChanges();
 
             _batch = new RendererBatch(_game.GraphicsDevice);
-            _buffer = new RenderTarget2D(_game.GraphicsDevice, _size.X, _size.Y, 
-                false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
+        }
+
+        private RenderTarget2D DrawSceneBuffer(Scene scene)
+        {
+            RenderTarget2D buffer = null;
+
+            if (scene != null)
+            {
+                foreach (var layer in scene.Layers)
+                {
+                    _game.GraphicsDevice.SetRenderTarget(layer.Buffer);
+                    _game.GraphicsDevice.Viewport = new Viewport(0, 0, Width, Height);
+                    _game.GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.Stencil,
+                        scene?.BackgroundColor ?? ClearColor, 0, 0);
+
+                    scene?.Draw(_batch);
+                    buffer = layer.Buffer;
+                }
+            }
+
+            return buffer;
         }
 
         public void Draw(Scene scene)
         {
-            _game.GraphicsDevice.SetRenderTarget(_buffer);
-            _game.GraphicsDevice.Viewport = new Viewport(0, 0, Width, Height);
-            _game.GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.Stencil,
-                scene?.BackgroundColor ?? ClearColor, 0, 0);
+            Reset(scene);
 
-            scene?.Draw(_batch);
-
+            var buffer = DrawSceneBuffer(scene);   
             _game.GraphicsDevice.SetRenderTarget(null);
             _game.GraphicsDevice.Viewport = _viewport;
             _game.GraphicsDevice.Clear(ClearColor);
 
+            if (buffer == null) return;
+
             _batch.Sprite.Begin(samplerState: SamplerState.PointClamp, transformMatrix: _matrix);
-            _batch.Sprite.Draw(_buffer, Vector2.Zero, Color.White);
+            _batch.Sprite.Draw(buffer, Vector2.Zero, Color.White);
             _batch.Sprite.End();
         }
 
@@ -120,7 +133,6 @@ namespace FrogWorks
         {
             if (disposing && !IsDisposed)
             {
-                _buffer.Dispose();
                 _batch.Dispose();
                 IsDisposed = true;
             }
@@ -129,7 +141,6 @@ namespace FrogWorks
         private void OnDeviceChanged(object sender, EventArgs args)
         {
             ApplyScaling();
-            Reset();
         }
 
         private void ApplyScaling()
@@ -204,15 +215,12 @@ namespace FrogWorks
             _isDirty = _isDirty || lastExtended != Extended;
         }
 
-        private void Reset()
+        private void Reset(Scene scene)
         {
-            if (_isDirty || _buffer == null)
+            if (_isDirty)
             {
-                _buffer?.Dispose();
-                _buffer = new RenderTarget2D(_game.GraphicsDevice, Width, Height);
+                scene?.OnDisplayReset();
                 _isDirty = false;
-
-                OnBufferChanged?.Invoke();
             }
         }
     }

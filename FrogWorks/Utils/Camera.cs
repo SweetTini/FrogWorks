@@ -13,7 +13,7 @@ namespace FrogWorks
         private float _zoom = 1f, _angle;
         private bool _isDirty = true;
 
-        public Action<Camera> OnCameraUpdated { get; set; }
+        public Action<Camera> OnChanged { get; set; }
 
         public Matrix ProjectionMatrix => _projectionMatrix;
 
@@ -124,12 +124,12 @@ namespace FrogWorks
 
         public Camera()
         {
-            var application = Runner.Application;
-            Position = application.Size.ToVector2() * .5f;
-            _projectionMatrix = Matrix.CreateOrthographicOffCenter(
-                new Rectangle(Point.Zero, application.Size), -1000f, 1000f);
+            var size = Runner.Application.Size;
+            var projectionView = new Rectangle(Point.Zero, size);
 
-            application.Display.OnBufferChanged += UpdateViewport;
+            Position = size.ToVector2() * .5f;
+            _projectionMatrix = Matrix.CreateOrthographicOffCenter(projectionView, -1000f, 1000f);
+
             UpdateViewport();
         }
 
@@ -163,7 +163,7 @@ namespace FrogWorks
 
         public void ResetZone() => _zone = null;
 
-        protected void UpdateViewport()
+        internal void UpdateViewport()
         {
             var display = Runner.Application.Display;
 
@@ -188,7 +188,7 @@ namespace FrogWorks
                 _isDirty = false;
 
                 View = _viewport.Bounds.Transform(_position, _origin, Vector2.One / _zoom, _angle);
-                OnCameraUpdated?.Invoke(this);
+                OnChanged?.Invoke(this);
             }
         }
     }

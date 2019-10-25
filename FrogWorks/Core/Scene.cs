@@ -37,6 +37,8 @@ namespace FrogWorks
                 layer.OnInternalSceneEnded();
 
             End();
+
+            Layers.Reset();
         }
 
         protected virtual void Begin() { }
@@ -70,5 +72,11 @@ namespace FrogWorks
         protected virtual void BeforeDraw(RendererBatch batch) { }
 
         protected virtual void AfterDraw(RendererBatch batch) { }
+
+        internal void OnDisplayReset()
+        {
+            Camera.UpdateViewport();
+            Layers.Reset();
+        }
     }
 }

@@ -181,7 +181,7 @@ namespace FrogWorks
         {
             if (!_isRegistered && Layer != null)
             {
-                Layer.Camera.OnCameraUpdated += UpdateDrawableRegion;
+                Layer.Camera.OnChanged += UpdateDrawableRegion;
                 UpdateDrawableRegion(Layer.Camera);
                 _isRegistered = true;
             }
@@ -191,7 +191,7 @@ namespace FrogWorks
         {
             if (_isRegistered && Layer != null)
             {
-                Layer.Camera.OnCameraUpdated -= UpdateDrawableRegion;
+                Layer.Camera.OnChanged -= UpdateDrawableRegion;
                 _isRegistered = false;
             }
         }

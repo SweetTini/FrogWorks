@@ -60,6 +60,7 @@ namespace FrogWorks
         {
             if (disposing)
             {
+                _scene?.Layers.Dispose();
                 Input.Dispose();
                 Texture.DisposeCache();
             }
