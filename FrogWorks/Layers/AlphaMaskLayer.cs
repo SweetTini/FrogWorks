@@ -11,7 +11,7 @@ namespace FrogWorks
 
         public Color BackgroundColor { get; set; } = Color.Black;
 
-        public AlphaMaskLayer()
+        public AlphaMaskLayer(bool reverse = false)
             : base()
         {
             _nonColorWriteBlend = new BlendState() { ColorWriteChannels = ColorWriteChannels.None };
@@ -36,7 +36,9 @@ namespace FrogWorks
             {
                 DepthBufferEnable = false,
                 StencilEnable = true,
-                StencilFunction = CompareFunction.Equal,
+                StencilFunction = reverse 
+                    ? CompareFunction.Equal 
+                    : CompareFunction.NotEqual,
                 StencilPass = StencilOperation.Keep,
                 ReferenceStencil = 0
             };
