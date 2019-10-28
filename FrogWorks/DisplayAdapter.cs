@@ -56,7 +56,7 @@ namespace FrogWorks
 
             if (fullscreen) ToFullscreen();
             else ToFixedScale(scale);
-            
+
             _game.ApplyChanges();
 
             _batch = new RendererBatch(_game.GraphicsDevice);
@@ -68,15 +68,28 @@ namespace FrogWorks
 
             if (scene != null)
             {
+                var first = true;
+
                 foreach (var layer in scene.Layers)
                 {
+                    var clearColor = first
+                        ? (scene?.BackgroundColor ?? ClearColor)
+                        : Color.TransparentBlack;
+
                     _game.GraphicsDevice.SetRenderTarget(layer.Buffer);
                     _game.GraphicsDevice.Viewport = new Viewport(0, 0, Width, Height);
-                    _game.GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.Stencil,
-                        scene?.BackgroundColor ?? ClearColor, 0, 0);
+                    _game.GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.Stencil, clearColor, 0, 0);
 
-                    scene?.Draw(_batch);
+                    if (buffer != null)
+                    {
+                        _batch.Sprite.Begin(samplerState: SamplerState.PointClamp);
+                        _batch.Sprite.Draw(buffer, Vector2.Zero, Color.White);
+                        _batch.Sprite.End();
+                    }
+
+                    scene?.Draw(_batch, layer);
                     buffer = layer.Buffer;
+                    first = false;
                 }
             }
 
@@ -87,7 +100,7 @@ namespace FrogWorks
         {
             Reset(scene);
 
-            var buffer = DrawSceneBuffer(scene);   
+            var buffer = DrawSceneBuffer(scene);
             _game.GraphicsDevice.SetRenderTarget(null);
             _game.GraphicsDevice.Viewport = _viewport;
             _game.GraphicsDevice.Clear(ClearColor);
@@ -176,7 +189,7 @@ namespace FrogWorks
                     break;
                 case ScalingType.Stretch:
                     Scale = new Vector2(
-                        1f * Client.X / _size.X, 
+                        1f * Client.X / _size.X,
                         1f * Client.Y / _size.Y);
                     break;
                 case ScalingType.Extend:

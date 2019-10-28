@@ -62,10 +62,10 @@ namespace FrogWorks
 
         protected virtual void AfterUpdate() { }
 
-        internal void Draw(RendererBatch batch)
+        internal void Draw(RendererBatch batch, Layer layer)
         {
             BeforeDraw(batch);
-            Layers.Draw(batch);
+            layer.InternalDraw(batch);
             AfterDraw(batch);
         }
 
