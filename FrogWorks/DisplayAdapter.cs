@@ -68,7 +68,7 @@ namespace FrogWorks
         {
             Reset(scene);
 
-            var buffer = scene.Draw(this, _batch);
+            var buffer = scene?.Draw(this, _batch);
 
             GraphicsDevice.SetRenderTarget(null);
             GraphicsDevice.Viewport = _viewport;
