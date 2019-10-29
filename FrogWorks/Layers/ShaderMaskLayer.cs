@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using System;
 
 namespace FrogWorks
 {
@@ -8,8 +9,10 @@ namespace FrogWorks
         private DepthStencilState _alwaysStencil, _keepIfZeroStencil;
         private AlphaTestEffect _alphaTestEffect;
 
-        public ShaderMaskLayer(Effect shaderEffect, bool reverse = false)
-            : base(shaderEffect)
+        public ShaderMaskLayer(Effect shaderEffect, 
+                               Action<Effect> onShaderUpdate = null, 
+                               bool reverse = false)
+            : base(shaderEffect, onShaderUpdate)
         {
             _nonColorWriteBlend = new BlendState() { ColorWriteChannels = ColorWriteChannels.None };
 
