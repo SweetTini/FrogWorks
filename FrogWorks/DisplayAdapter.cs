@@ -15,6 +15,8 @@ namespace FrogWorks
         private ScalingType _scaling = ScalingType.Fit;
         private bool _isDirty;
 
+        internal GraphicsDevice GraphicsDevice => _game.GraphicsDevice;
+
         public Color ClearColor { get; set; } = Color.Black;
 
         public Point Size => _size + Extended;
@@ -62,48 +64,15 @@ namespace FrogWorks
             _batch = new RendererBatch(_game.GraphicsDevice);
         }
 
-        private RenderTarget2D DrawSceneBuffer(Scene scene)
-        {
-            RenderTarget2D buffer = null;
-
-            if (scene != null)
-            {
-                var first = true;
-
-                foreach (var layer in scene.Layers)
-                {
-                    var clearColor = first
-                        ? (scene?.BackgroundColor ?? ClearColor)
-                        : Color.TransparentBlack;
-
-                    _game.GraphicsDevice.SetRenderTarget(layer.Buffer);
-                    _game.GraphicsDevice.Viewport = new Viewport(0, 0, Width, Height);
-                    _game.GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.Stencil, clearColor, 0, 0);
-
-                    if (buffer != null)
-                    {
-                        _batch.Sprite.Begin(samplerState: SamplerState.PointClamp);
-                        _batch.Sprite.Draw(buffer, Vector2.Zero, Color.White);
-                        _batch.Sprite.End();
-                    }
-
-                    scene?.Draw(_batch, layer);
-                    buffer = layer.Buffer;
-                    first = false;
-                }
-            }
-
-            return buffer;
-        }
-
         public void Draw(Scene scene)
         {
             Reset(scene);
 
-            var buffer = DrawSceneBuffer(scene);
-            _game.GraphicsDevice.SetRenderTarget(null);
-            _game.GraphicsDevice.Viewport = _viewport;
-            _game.GraphicsDevice.Clear(ClearColor);
+            var buffer = scene.Draw(this, _batch);
+
+            GraphicsDevice.SetRenderTarget(null);
+            GraphicsDevice.Viewport = _viewport;
+            GraphicsDevice.Clear(ClearColor);
 
             if (buffer == null) return;
 

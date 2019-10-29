@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace FrogWorks
 {
@@ -62,11 +63,36 @@ namespace FrogWorks
 
         protected virtual void AfterUpdate() { }
 
-        internal void Draw(RendererBatch batch, Layer layer)
+        internal RenderTarget2D Draw(DisplayAdapter display, RendererBatch batch)
         {
             BeforeDraw(batch);
-            layer.InternalDraw(batch);
+
+            var buffer = null as RenderTarget2D;
+            var first = true;
+
+            foreach (var layer in Layers)
+            {
+                var clearColor = first ? BackgroundColor : Color.TransparentBlack;
+
+                display.GraphicsDevice.SetRenderTarget(layer.Buffer);
+                display.GraphicsDevice.Viewport = new Viewport(0, 0, display.Width, display.Height);
+                display.GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.Stencil, clearColor, 0, 0);
+
+                if (buffer != null)
+                {
+                    batch.Sprite.Begin(samplerState: SamplerState.PointClamp);
+                    batch.Sprite.Draw(buffer, Vector2.Zero, Color.White);
+                    batch.Sprite.End();
+                }
+
+                layer.InternalDraw(batch);
+                buffer = layer.Buffer;
+                first = false;
+            }
+
             AfterDraw(batch);
+
+            return buffer;
         }
 
         protected virtual void BeforeDraw(RendererBatch batch) { }
