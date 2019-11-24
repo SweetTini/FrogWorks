@@ -1,5 +1,4 @@
-﻿using FrogWorks.Demo.Scenes;
-using System;
+﻿using System;
 
 namespace FrogWorks.Demo
 {
@@ -10,8 +9,6 @@ namespace FrogWorks.Demo
         {
             using (var runner = new DesktopRunner(320, 240, 2))
             {
-                UserInput.Initialize();
-                runner.GoTo<TestScene>();
                 runner.AllowUserResizing = true;
                 runner.IsMouseVisible = true;
                 runner.Run();
