@@ -66,9 +66,7 @@
     <Compile Include="Collision\Response\Manifold.cs" />
     <Compile Include="Collision\Response\Raycast.cs" />
     <Compile Include="Components\Graphics\GraphicsComponent.cs" />
-    <Compile Include="Components\Graphics\AnimatedBackgroundImage.cs" />
     <Compile Include="Components\Graphics\AnimatedTiledImage.cs" />
-    <Compile Include="Components\Graphics\BackgroundImage.cs" />
     <Compile Include="Components\Graphics\Image.cs" />
     <Compile Include="Components\Graphics\Sprite.cs" />
     <Compile Include="Components\Graphics\SpriteText.cs" />
