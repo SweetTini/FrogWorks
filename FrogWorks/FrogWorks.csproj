@@ -50,7 +50,7 @@
     <Compile Include="Collision\Colliders\RectangleCollider.cs" />
     <Compile Include="Collision\Colliders\ShapeCollider.cs" />
     <Compile Include="Collision\Colliders\SimpleMapCollider.cs" />
-    <Compile Include="Components\CollidableComponent.cs" />
+    <Compile Include="Components\Logic\CollidableComponent.cs" />
     <Compile Include="Components\Logic\SineWave.cs" />
     <Compile Include="Core\Collider.cs" />
     <Compile Include="Collision\Collision.cs" />
@@ -62,7 +62,7 @@
     <Compile Include="Collision\GJK.cs" />
     <Compile Include="Collision\Response\Manifold.cs" />
     <Compile Include="Collision\Response\Raycast.cs" />
-    <Compile Include="Components\GraphicsComponent.cs" />
+    <Compile Include="Components\Graphics\GraphicsComponent.cs" />
     <Compile Include="Components\Graphics\AnimatedBackgroundImage.cs" />
     <Compile Include="Components\Graphics\AnimatedTiledImage.cs" />
     <Compile Include="Components\Graphics\BackgroundImage.cs" />
