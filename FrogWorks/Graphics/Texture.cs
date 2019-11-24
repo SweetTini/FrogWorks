@@ -14,9 +14,23 @@ namespace FrogWorks
 
         public Rectangle Bounds { get; private set; }
 
-        public int Width { get; private set; }
+        public Point Size { get; private set; }
 
-        public int Height { get; private set; }
+        public int Width => Size.X;
+
+        public int Height => Size.Y;
+
+        public Vector2 UpperUV => Bounds.Location.ToVector2().Divide(XnaTexture.Bounds.Size.ToVector2());
+
+        public Vector2 LowerUV => (Bounds.Location + Bounds.Size).ToVector2().Divide(XnaTexture.Bounds.Size.ToVector2());
+
+        public float LeftUV => UpperUV.X;
+
+        public float TopUV => LowerUV.Y;
+
+        public float RightUV => LowerUV.X;
+
+        public float BottomUV => LowerUV.Y;
 
         public bool IsDisposed { get; private set; }
 
@@ -37,12 +51,21 @@ namespace FrogWorks
 
             XnaTexture = xnaTexture;
             Bounds = bounds.Intersect(xnaTexture.Bounds);
-            Width = Bounds.Width;
-            Height = Bounds.Height;
+            Size = bounds.Size;
         }
 
         public Texture(Texture texture, Rectangle bounds)
             : this(texture.XnaTexture, bounds)
+        {
+        }
+
+        public Texture(Texture2D xnaTexture, Point location, Point size)
+            : this(xnaTexture, new Rectangle(location, size))
+        {
+        }
+
+        public Texture(Texture texture, Point location, Point size)
+            : this(texture.XnaTexture, new Rectangle(location, size))
         {
         }
 
@@ -69,6 +92,11 @@ namespace FrogWorks
         public Texture ClipRegion(Rectangle bounds)
         {
             return new Texture(XnaTexture, bounds);
+        }
+
+        public Texture ClipRegion(Point location, Point size)
+        {
+            return new Texture(XnaTexture, location, size);
         }
 
         public Texture ClipRegion(int x, int y, int width, int height)
