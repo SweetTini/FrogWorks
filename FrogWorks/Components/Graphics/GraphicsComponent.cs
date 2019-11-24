@@ -65,7 +65,7 @@ namespace FrogWorks
             }
         }
 
-        public GraphicsComponent(bool isEnabled)
+        protected GraphicsComponent(bool isEnabled)
             : base(isEnabled, true)
         {
         }
