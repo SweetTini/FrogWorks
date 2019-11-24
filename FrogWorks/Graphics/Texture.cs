@@ -20,9 +20,9 @@ namespace FrogWorks
 
         public int Height => Size.Y;
 
-        public Vector2 UpperUV => Bounds.Location.ToVector2().Divide(XnaTexture.Bounds.Size.ToVector2());
+        public Vector2 UpperUV { get; private set; }
 
-        public Vector2 LowerUV => (Bounds.Location + Bounds.Size).ToVector2().Divide(XnaTexture.Bounds.Size.ToVector2());
+        public Vector2 LowerUV { get; private set; }
 
         public float LeftUV => UpperUV.X;
 
@@ -52,6 +52,10 @@ namespace FrogWorks
             XnaTexture = xnaTexture;
             Bounds = bounds.Intersect(xnaTexture.Bounds);
             Size = bounds.Size;
+
+            var size = XnaTexture.Bounds.Size.ToVector2();
+            UpperUV = Bounds.Location.ToVector2().Divide(size);
+            LowerUV = (Bounds.Location + Bounds.Size).ToVector2().Divide(size);
         }
 
         public Texture(Texture texture, Rectangle bounds)
