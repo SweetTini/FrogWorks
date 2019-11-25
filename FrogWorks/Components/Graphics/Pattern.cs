@@ -2,11 +2,11 @@
 
 namespace FrogWorks
 {
-    public class Pattern : GraphicsComponent
+    public class Pattern : Image
     {
         private Point _size, _mapSize, _remaining;
 
-        public Texture Texture { get; protected set; }
+        public override Rectangle Bounds => new Rectangle(Point.Zero, Size);
 
         public Point Size
         {
@@ -48,9 +48,8 @@ namespace FrogWorks
         }
 
         protected Pattern(Texture texture, Point size, bool isEnabled) 
-            : base(isEnabled)
+            : base(texture, isEnabled)
         {
-            Texture = texture;
             Size = size;
         }
 

@@ -6,7 +6,7 @@ namespace FrogWorks
     {
         public Texture Texture { get; protected set; }
 
-        public virtual Rectangle Bounds => new Rectangle(0, 0, Texture.Width, Texture.Height);
+        public virtual Rectangle Bounds => new Rectangle(Point.Zero, Texture.Size);
 
         public Rectangle AbsoluteBounds => Bounds.Transform(DrawPosition, Origin, Scale, Angle);
 
