@@ -59,7 +59,7 @@ namespace FrogWorks
             for (int i = 0; i < _mapSize.X * _mapSize.Y; i++)
             {
                 var x = i % _mapSize.X;
-                var y = i / _mapSize.Y;
+                var y = i / _mapSize.X;
                 var origin = Origin - new Vector2(x * Texture.Width, y * Texture.Height);
                 var width = x < _mapSize.X - 1 || _remaining.X == 0 ? Texture.Width : _remaining.X;
                 var height = y < _mapSize.Y - 1 || _remaining.Y == 0 ? Texture.Height : _remaining.Y;
