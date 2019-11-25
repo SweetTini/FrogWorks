@@ -1,211 +1,101 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using System;
 
 namespace FrogWorks
 {
-    public class TileMap : Component
+    public class TileMap : TiledGraphicsComponent
     {
-        private Vector2 _position;
-        private Rectangle _drawableRegion;
-        private bool _isRegistered;
+        protected Map<Texture> Map { get; private set; }
 
-        protected Map<Texture> TextureMap { get; private set; }
+        public Point Size => Map.Size;
 
-        public int Columns => TextureMap.Columns;
+        public int Columns => Map.Columns;
 
-        public int Rows => TextureMap.Rows;
+        public int Rows => Map.Rows;
 
-        public int TileWidth { get; private set; }
-
-        public int TileHeight { get; private set; }
-
-        public Rectangle Bounds => new Rectangle(0, 0, Columns * TileWidth, Rows * TileHeight);
-
-        public Vector2 Position
+        public TileMap(Point size, Point tileSize)
+            : this(size, tileSize, false)
         {
-            get { return _position; }
-            set
-            {
-                if (value == _position) return;
-                _position = value;
-                UpdateDrawableRegion(Layer?.Camera);
-            }
-        }
-
-        public float X
-        {
-            get { return Position.X; }
-            set { Position = new Vector2(value, Position.Y); }
-        }
-
-        public float Y
-        {
-            get { return Position.Y; }
-            set { Position = new Vector2(Position.X, value); }
-        }
-
-        public Vector2 DrawPosition
-        {
-            get { return Position + (Parent?.Position ?? Vector2.Zero); }
-            set { Position = value - (Parent?.Position ?? Vector2.Zero); }
-        }
-
-        public Color Color { get; set; } = Color.White;
-
-        public float Opacity { get; set; } = 1f;
-
-        public SpriteEffects SpriteEffects { get; set; }
-
-        public bool FlipHorizontally
-        {
-            get { return (SpriteEffects & SpriteEffects.FlipHorizontally) == SpriteEffects.FlipHorizontally; }
-            set
-            {
-                SpriteEffects = value
-                    ? (SpriteEffects | SpriteEffects.FlipHorizontally)
-                    : (SpriteEffects & ~SpriteEffects.FlipHorizontally);
-            }
-        }
-
-        public bool FlipVertically
-        {
-            get { return (SpriteEffects & SpriteEffects.FlipVertically) == SpriteEffects.FlipVertically; }
-            set
-            {
-                SpriteEffects = value
-                    ? (SpriteEffects | SpriteEffects.FlipVertically)
-                    : (SpriteEffects & ~SpriteEffects.FlipVertically);
-            }
         }
 
         public TileMap(int columns, int rows, int tileWidth, int tileHeight)
-            : base(false, true)
+            : this(new Point(columns, rows), new Point(tileWidth, tileHeight), false)
         {
-            TextureMap = new Map<Texture>(columns, rows);
-            TileWidth = tileWidth;
-            TileHeight = tileHeight;
         }
 
-        protected override void Draw(RendererBatch batch)
+        protected TileMap(Point size, Point tileSize, bool isEnabled)
+            : base(isEnabled)
         {
-            for (int i = 0; i < _drawableRegion.Width * _drawableRegion.Height; i++)
-            {
-                var x = _drawableRegion.Left + (i % _drawableRegion.Width);
-                var y = _drawableRegion.Top + (i / _drawableRegion.Width);
-                var position = DrawPosition + new Vector2(x * TileWidth, y * TileHeight);
-
-                TextureMap[x, y]?.Draw(batch, position, Vector2.Zero, Vector2.One, 0f, Color * Opacity.Clamp(0f, 1f), SpriteEffects);
-            }
+            Map = new Map<Texture>(size);
+            TileSize = tileSize;
         }
 
-        protected override void OnAdded() => AddCameraUpdateEvent();
+        protected override Texture GetTile(int x, int y)
+        {
+            if (WrapHorizontally) x = x.Mod(Columns);
+            if (WrapVertically) y = y.Mod(Rows);
 
-        protected override void OnRemoved() => RemoveCameraUpdateEvent();
-
-        protected override void OnEntityAdded() => AddCameraUpdateEvent();
-
-        protected override void OnEntityRemoved() => RemoveCameraUpdateEvent();
-
-        protected override void OnLayerAdded() => AddCameraUpdateEvent();
-
-        protected override void OnLayerRemoved() => RemoveCameraUpdateEvent();
-
-        protected override void OnTransformed() => UpdateDrawableRegion(Layer.Camera);
+            return Map[x, y];
+        }
 
         public void Populate(TileSet tileSet, int[,] tiles, int offsetX = 0, int offsetY = 0)
         {
-            var tileColumns = tiles.GetLength(0);
-            var tileRows = tiles.GetLength(1);
+            var columns = tiles.GetLength(0);
+            var rows = tiles.GetLength(1);
 
-            for (int i = 0; i < tileColumns * tileRows; i++)
+            for (int i = 0; i < columns * rows; i++)
             {
-                var x = i % tileColumns;
-                var y = i / tileColumns;
-                var index = tiles[x, y];
-                TextureMap[x + offsetX, y + offsetY] = tileSet[index];
+                var x = i % columns;
+                var y = i / columns;
+
+                Map[offsetX + x, offsetY + y] = tileSet[tiles[x, y]];
             }
         }
 
         public void Overlay(TileSet tileSet, int[,] tiles, int offsetX = 0, int offsetY = 0)
         {
-            var tileColumns = tiles.GetLength(0);
-            var tileRows = tiles.GetLength(1);
+            var columns = tiles.GetLength(0);
+            var rows = tiles.GetLength(1);
 
-            for (int i = 0; i < tileColumns * tileRows; i++)
+            for (int i = 0; i < columns * rows; i++)
             {
-                var x = i % tileColumns;
-                var y = i / tileColumns;
+                var x = i % columns;
+                var y = i / columns;
                 var index = tiles[x, y];
 
                 if (index >= 0)
-                    TextureMap[x + offsetX, y + offsetY] = tileSet[index];
+                    Map[offsetX + x, offsetY + y] = tileSet[index];
+            }
+        }
+
+        public void Fill(Texture tile, Point location, Point size)
+        {
+            var from = location.Max(Point.Zero);
+            var to = (location + size).Min(Size);
+            var area = to - from;
+
+            for (int i = 0; i < area.X * area.Y; i++)
+            {
+                var x = location.X + (i % area.X);
+                var y = location.Y + (i / area.X);
+
+                Map[x, y] = tile;
             }
         }
 
         public void Fill(Texture tile, int x, int y, int columns, int rows)
         {
-            var x1 = Math.Max(x, 0);
-            var y1 = Math.Max(y, 0);
-            var x2 = Math.Min(x + columns, Columns);
-            var y2 = Math.Min(y + rows, Rows);
-
-            var tileColumns = x2 - x1;
-            var tileRows = y2 - y1;
-
-            for (int i = 0; i < tileColumns * tileRows; i++)
-            {
-                var tx = x1 + (i % tileColumns);
-                var ty = y1 + (i / tileColumns);
-
-                TextureMap[tx, ty] = tile;
-            }
+            Fill(tile, new Point(x, y), new Point(columns, rows));
         }
 
-        public void Clear()
-        {
-            TextureMap.Clear();
-        }
+        public void Clear() => Map.Clear();
 
-        public void Resize(int columns, int rows)
-        {
-            TextureMap.Resize(columns, rows);
-        }
+        public void Resize(Point size) => Map.Resize(size);
 
-        public void Resize(int x1, int y1, int x2, int y2)
-        {
-            TextureMap.Resize(x1, y1, x2, y2);
-        }
+        public void Resize(int columns, int rows) => Map.Resize(columns, rows);
 
-        private void AddCameraUpdateEvent()
-        {
-            if (!_isRegistered && Layer != null)
-            {
-                Layer.Camera.OnChanged += UpdateDrawableRegion;
-                UpdateDrawableRegion(Layer.Camera);
-                _isRegistered = true;
-            }
-        }
+        public void Resize(Point from, Point to) => Map.Resize(from, to);
 
-        private void RemoveCameraUpdateEvent()
-        {
-            if (_isRegistered && Layer != null)
-            {
-                Layer.Camera.OnChanged -= UpdateDrawableRegion;
-                _isRegistered = false;
-            }
-        }
-
-        private void UpdateDrawableRegion(Camera camera)
-        {
-            if (camera == null) return;
-
-            var x1 = (int)Math.Max(Math.Floor((camera.View.Left - DrawPosition.X) / TileWidth), 0);
-            var y1 = (int)Math.Max(Math.Floor((camera.View.Top - DrawPosition.Y) / TileHeight), 0);
-            var x2 = (int)Math.Min(Math.Ceiling((camera.View.Right + DrawPosition.X) / TileWidth), Columns);
-            var y2 = (int)Math.Min(Math.Ceiling((camera.View.Bottom + DrawPosition.Y) / TileHeight), Rows);
-
-            _drawableRegion = new Rectangle(x1, y1, x2 - x1, y2 - y1);
-        }
+        public void Resize(int x1, int y1, int x2, int y2) => Map.Resize(x1, y1, x2, y2);
     }
 }
