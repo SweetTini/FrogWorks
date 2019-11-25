@@ -2,7 +2,7 @@
 
 namespace FrogWorks
 {
-    public class BackAnimatedPattern : BackPattern
+    public class AnimatedPattern : Pattern
     {
         private float _timer, _duration;
         private int _index;
@@ -29,8 +29,24 @@ namespace FrogWorks
             set { _duration = value.Max(0); }
         }
 
-        public BackAnimatedPattern(Texture texture, Point frameSize, float duration)
-            : base(texture, true)
+        public AnimatedPattern(Texture[] textures, Point size, int[] frames, float duration)
+            : base(textures[0], size, true)
+        {
+            Textures = textures;
+            Frames = frames;
+            Duration = duration;
+
+            for (int i = 0; i < Frames.Length; i++)
+                Frames[i] = Frames[i].Mod(Textures.Length);
+        }
+
+        public AnimatedPattern(Texture[] textures, int width, int height, int[] frames, float duration)
+            : this(textures, new Point(width, height), frames, duration)
+        {
+        }
+
+        public AnimatedPattern(Texture texture, Point frameSize, Point size, float duration)
+            : base(texture, size, true)
         {
             Textures = Texture.Split(texture, frameSize.X, frameSize.Y);
             Texture = Textures[0];
@@ -41,20 +57,9 @@ namespace FrogWorks
                 Frames[i] = i;
         }
 
-        public BackAnimatedPattern(Texture texture, int frameWidth, int frameHeight, float duration)
-            : this(texture, new Point(frameWidth, frameHeight), duration)
+        public AnimatedPattern(Texture texture, int frameWidth, int frameHeight, int width, int height, float duration)
+            : this(texture, new Point(frameWidth, frameHeight), new Point(width, height), duration)
         {
-        }
-
-        public BackAnimatedPattern(Texture[] textures, int[] frames, float duration)
-            : base(textures[0], true)
-        {
-            Textures = textures;
-            Frames = frames;
-            Duration = duration;
-
-            for (int i = 0; i < Frames.Length; i++)
-                Frames[i] = Frames[i].Mod(Textures.Length);
         }
 
         protected override void Update(float deltaTime)
@@ -70,14 +75,10 @@ namespace FrogWorks
             }
         }
 
-        protected override Texture GetTile(int x, int y)
+        protected override void Draw(RendererBatch batch)
         {
-            var texture = base.GetTile(x, y);
-
-            if (texture != null)
-                texture = Textures[Frames[_index]];
-
-            return texture;
+            Texture = Textures[Frames[_index]];
+            base.Draw(batch);
         }
 
         public void SetFrames(params int[] frames)

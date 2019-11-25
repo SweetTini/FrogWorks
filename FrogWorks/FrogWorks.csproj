@@ -50,8 +50,10 @@
     <Compile Include="Collision\Colliders\RectangleCollider.cs" />
     <Compile Include="Collision\Colliders\ShapeCollider.cs" />
     <Compile Include="Collision\Colliders\SimpleMapCollider.cs" />
+    <Compile Include="Components\Graphics\AnimatedPattern.cs" />
     <Compile Include="Components\Graphics\BackAnimatedPattern.cs" />
     <Compile Include="Components\Graphics\BackPattern.cs" />
+    <Compile Include="Components\Graphics\Pattern.cs" />
     <Compile Include="Components\Graphics\TiledGraphicsComponent.cs" />
     <Compile Include="Components\Logic\CollidableComponent.cs" />
     <Compile Include="Components\Logic\SineWave.cs" />
