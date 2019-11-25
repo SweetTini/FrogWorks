@@ -32,7 +32,7 @@ namespace FrogWorks
         public BackAnimatedPattern(Texture texture, Point frameSize, float duration)
             : base(texture, true)
         {
-            Textures = Texture.Split(texture, frameSize.X, frameSize.Y);
+            Textures = Texture.Split(texture, frameSize);
             Texture = Textures[0];
             Frames = new int[Textures.Length];
             Duration = duration;

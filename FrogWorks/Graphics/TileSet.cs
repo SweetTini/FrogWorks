@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 
 namespace FrogWorks
 {
@@ -25,15 +26,16 @@ namespace FrogWorks
 
         public Texture Texture { get; private set; }
 
-        public int TileWidth { get; private set; }
+        public Point TileSize { get; private set; }
 
-        public int TileHeight { get; private set; }
+        public int TileWidth => TileSize.X;
 
-        public TileSet(Texture texture, int tileWidth, int tileHeight)
+        public int TileHeight => TileSize.Y;
+
+        public TileSet(Texture texture, Point tileSize)
         {
             Texture = texture;
-            TileWidth = tileWidth;
-            TileHeight = tileHeight;
+            TileSize = tileSize.Abs();
 
             var columns = texture.Width / TileWidth;
             var rows = texture.Height / TileHeight;
@@ -49,9 +51,14 @@ namespace FrogWorks
             }
         }
 
+        public TileSet(Texture texture, int tileWidth, int tileHeight)
+            : this(texture, new Point(tileWidth, tileHeight))
+        {
+        }
+
         public TileSet Clone()
         {
-            return new TileSet(Texture, TileWidth, TileHeight);
+            return new TileSet(Texture, TileSize);
         }
     }
 }

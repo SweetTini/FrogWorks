@@ -48,7 +48,7 @@ namespace FrogWorks
         public AnimatedPattern(Texture texture, Point frameSize, Point size, float duration)
             : base(texture, size, true)
         {
-            Textures = Texture.Split(texture, frameSize.X, frameSize.Y);
+            Textures = Texture.Split(texture, frameSize);
             Texture = Textures[0];
             Frames = new int[Textures.Length];
             Duration = duration;

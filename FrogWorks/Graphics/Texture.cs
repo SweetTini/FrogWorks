@@ -135,26 +135,36 @@ namespace FrogWorks
             return new Texture(xnaTexture, xnaTexture.Bounds);
         }
 
-        public static Texture[] Split(Texture2D xnaTexture, int frameWidth, int frameHeight)
+        public static Texture[] Split(Texture2D xnaTexture, Point frameSize)
         {
-            var columns = xnaTexture.Width / frameWidth;
-            var rows = xnaTexture.Height / frameHeight;
+            frameSize = frameSize.Abs();
+
+            var columns = xnaTexture.Width / frameSize.X;
+            var rows = xnaTexture.Height / frameSize.Y;
             var frames = new Texture[columns * rows];
 
             for (int i = 0; i < frames.Length; i++)
             {
-                var x = i % columns;
-                var y = i / columns;
-
-                frames[i] = new Texture(xnaTexture, x * frameWidth, y * frameHeight, frameWidth, frameHeight);
+                var position = new Point(i % columns, i / columns) * frameSize;
+                frames[i] = new Texture(xnaTexture, position, frameSize);
             }
 
             return frames;
         }
 
+        public static Texture[] Split(Texture2D xnaTexture, int frameWidth, int frameHeight)
+        {
+            return Split(xnaTexture, new Point(frameWidth, frameHeight));
+        }
+
+        public static Texture[] Split(Texture texture, Point frameSize)
+        {
+            return Split(texture.XnaTexture, frameSize);
+        }
+
         public static Texture[] Split(Texture texture, int frameWidth, int frameHeight)
         {
-            return Split(texture.XnaTexture, frameWidth, frameHeight);
+            return Split(texture.XnaTexture, new Point(frameWidth, frameHeight));
         }
 
         internal static Texture2D TryGetFromCache(string filePath)
