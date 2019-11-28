@@ -20,15 +20,15 @@ namespace FrogWorks
         {
         }
 
-        public AnimatedPattern(Texture[] textures, Point size, 
-                               int[] frames, float delayPerFrame, AnimationPlayMode playMode)
-            : this(textures, size, new Animation(frames, delayPerFrame, playMode))
+        public AnimatedPattern(Texture[] textures, Point size, int[] frames, float delayPerFrame, 
+                               AnimationPlayMode playMode, int maxLoops = 0)
+            : this(textures, size, new Animation(frames, delayPerFrame, playMode, maxLoops))
         {
         }
 
-        public AnimatedPattern(Texture[] textures, int width, int height,
-                               int[] frames, float delayPerFrame, AnimationPlayMode playMode)
-            : this(textures, new Point(width, height), new Animation(frames, delayPerFrame, playMode))
+        public AnimatedPattern(Texture[] textures, int width, int height, int[] frames, float delayPerFrame, 
+                               AnimationPlayMode playMode, int maxLoops = 0)
+            : this(textures, new Point(width, height), new Animation(frames, delayPerFrame, playMode, maxLoops))
         {
         }
 
@@ -46,16 +46,16 @@ namespace FrogWorks
         {
         }
 
-        public AnimatedPattern(Texture texture, Point frameSize, Point size,
-                               int[] frames, float delayPerFrame, AnimationPlayMode playMode)
-            : this(texture, frameSize, size, new Animation(frames, delayPerFrame, playMode))
+        public AnimatedPattern(Texture texture, Point frameSize, Point size, int[] frames, 
+                               float delayPerFrame, AnimationPlayMode playMode, int maxLoops = 0)
+            : this(texture, frameSize, size, new Animation(frames, delayPerFrame, playMode, maxLoops))
         {
         }
 
         public AnimatedPattern(Texture texture, int frameWidth, int frameHeight, int width, int height,
-                               int[] frames, float delayPerFrame, AnimationPlayMode playMode)
+                               int[] frames, float delayPerFrame, AnimationPlayMode playMode, int maxLoops = 0)
             : this(texture, new Point(frameWidth, frameHeight), new Point(width, height),
-                   new Animation(frames, delayPerFrame, playMode))
+                   new Animation(frames, delayPerFrame, playMode, maxLoops))
         {
         }
 

@@ -6,11 +6,26 @@ namespace FrogWorks
     public sealed class Animation
     {
         private int[] _frames;
-        private int _lastFrameIndex;
         private float _timer, _lastTimer, _delayPerFrame, _origDelayPerFrame;
+        private int _lastIndex, _loops, _maxLoops, _origMaxLoops;
         private AnimationPlayMode _playMode;
 
         public ReadOnlyCollection<int> Frames { get; private set; }
+
+        public int MaxFrames
+        {
+            get
+            {
+                switch (_playMode)
+                {
+                    case AnimationPlayMode.Yoyo:
+                    case AnimationPlayMode.LoopYoyo:
+                        return (_frames.Length - 1) * 2;
+                    default:
+                        return _frames.Length;
+                }
+            }
+        }
 
         public int FrameIndex
         {
@@ -18,8 +33,7 @@ namespace FrogWorks
             {
                 if (_frames.Length < 1 || _delayPerFrame <= 0f) return 0;
 
-                var maxFrames = _playMode == AnimationPlayMode.Yoyo || _playMode == AnimationPlayMode.LoopYoyo 
-                    ? (_frames.Length - 1) * 2 : _frames.Length;
+                var maxFrames = MaxFrames;
                 var index = (int)(_timer / Duration * maxFrames).Floor();
 
                 switch (_playMode)
@@ -49,12 +63,12 @@ namespace FrogWorks
                             var lastIndex = (int)(_lastTimer / Duration * maxFrames).Floor();
                             index = lastIndex != index
                                 ? Randomizer.Current.Next(maxFrames)
-                                : _lastFrameIndex;
+                                : _lastIndex;
                         }
                         break;
                 }
 
-                _lastFrameIndex = index;
+                _lastIndex = index;
                 return index;
             }
             set
@@ -67,14 +81,14 @@ namespace FrogWorks
                             var maxFrames = (_frames.Length - 1) * 2;
                             value = value.Mod(maxFrames);
                             maxFrames /= 2;
-                            _lastFrameIndex = value > maxFrames
+                            _lastIndex = value > maxFrames
                                 ? maxFrames - (value - maxFrames)
                                 : value;
                         }
                         break;
                     default:
                         value = value.Mod(_frames.Length);
-                        _lastFrameIndex = value;
+                        _lastIndex = value;
                         break;
                 }
 
@@ -88,19 +102,12 @@ namespace FrogWorks
             set { _delayPerFrame = value.Abs(); }
         }
 
-        public float Duration
+        public float Duration => _delayPerFrame * MaxFrames;
+
+        public int MaxLoops
         {
-            get
-            {
-                switch (_playMode)
-                {
-                    case AnimationPlayMode.Yoyo:
-                    case AnimationPlayMode.LoopYoyo:
-                        return _delayPerFrame * (_frames.Length - 1) * 2;
-                    default:
-                        return _delayPerFrame * _frames.Length;
-                }
-            }
+            get { return _maxLoops; }
+            set { _maxLoops = value.Abs(); }
         }
 
         public AnimationPlayMode PlayMode
@@ -118,10 +125,12 @@ namespace FrogWorks
         {
             get
             {
-                return _playMode == AnimationPlayMode.Loop
+                var isLoopPlayMode = _playMode == AnimationPlayMode.Loop
                     || _playMode == AnimationPlayMode.LoopReverse
                     || _playMode == AnimationPlayMode.LoopYoyo
                     || _playMode == AnimationPlayMode.LoopRandom;
+
+                return isLoopPlayMode && (_maxLoops < 1 || _loops < _maxLoops - 1);
             }
         }
 
@@ -133,11 +142,12 @@ namespace FrogWorks
         {
         }
 
-        public Animation(int[] frames, float delayPerFrame, AnimationPlayMode playMode,
+        public Animation(int[] frames, float delayPerFrame, AnimationPlayMode playMode, int maxLoops = 0,
                          Action onFinished = null, Action onLoop = null)
         {
             _frames = frames;
             _origDelayPerFrame = delayPerFrame.Abs();
+            _origMaxLoops = maxLoops.Abs();
             _playMode = playMode;
             OnFinished = onFinished;
             OnLoop = onLoop;
@@ -157,6 +167,7 @@ namespace FrogWorks
                 _timer = IsLooping 
                     ? _timer.Mod(Duration) 
                     : _timer.Min(Duration);
+                _loops++;
 
                 if (IsLooping) OnLoop?.Invoke();
                 else OnFinished?.Invoke();
@@ -180,12 +191,14 @@ namespace FrogWorks
         {
             _timer = 0f;
             _lastTimer = 0f;
-            _lastFrameIndex = 0;
+            _lastIndex = 0;
+            _loops = 0;
         }
 
         public void ResetChanges()
         {
             _delayPerFrame = _origDelayPerFrame;
+            _maxLoops = _origMaxLoops;
             Reset();
         }
     }

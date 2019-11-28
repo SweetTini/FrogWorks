@@ -23,6 +23,8 @@ namespace FrogWorks
             }
         }
 
+        public int MaxFrames => Current?.MaxFrames ?? 1;
+
         public int FrameIndex
         {
             get { return Current?.FrameIndex ?? 0; }
@@ -40,6 +42,16 @@ namespace FrogWorks
             {
                 if (Current != null)
                     Current.DelayPerFrame = value;
+            }
+        }
+
+        public int MaxLoops
+        {
+            get { return Current?.MaxLoops ?? 0; }
+            set
+            {
+                if (Current != null)
+                    Current.MaxLoops = value;
             }
         }
 
@@ -121,10 +133,10 @@ namespace FrogWorks
                 Play(key, true);
         }
 
-        public void AddOrUpdate(T key, int[] frames, float delayPerFrame, AnimationPlayMode playMode,
-                                Action onFinished = null, Action onLoop = null)
+        public void AddOrUpdate(T key, int[] frames, float delayPerFrame, AnimationPlayMode playMode, 
+                                int maxLoops = 0, Action onFinished = null, Action onLoop = null)
         {
-            AddOrUpdate(key, new Animation(frames, delayPerFrame, playMode, onFinished, onLoop));
+            AddOrUpdate(key, new Animation(frames, delayPerFrame, playMode, maxLoops, onFinished, onLoop));
         }
 
         public void Remove(T key)
