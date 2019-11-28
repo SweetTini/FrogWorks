@@ -8,6 +8,18 @@ namespace FrogWorks
 
         public Animation Animation { get; protected set; }
 
+        public BackAnimatedPattern(Texture[] textures, Animation animation)
+            : base(textures[0], true)
+        {
+            Textures = textures;
+            Animation = animation;
+        }
+
+        public BackAnimatedPattern(Texture[] textures, int[] frames, float delayPerFrame, AnimationPlayMode playMode)
+            : this(textures, new Animation(frames, delayPerFrame, playMode))
+        {
+        }
+
         public BackAnimatedPattern(Texture texture, Point frameSize, Animation animation)
             : base(texture, true)
         {
@@ -30,18 +42,6 @@ namespace FrogWorks
         public BackAnimatedPattern(Texture texture, int frameWidth, int frameHeight, 
                                    int[] frames, float delayPerFrame, AnimationPlayMode playMode)
             : this(texture, new Point(frameWidth, frameHeight), new Animation(frames, delayPerFrame, playMode))
-        {
-        }
-
-        public BackAnimatedPattern(Texture[] textures, Animation animation)
-            : base(textures[0], true)
-        {
-            Textures = textures;
-            Animation = animation;
-        }
-
-        public BackAnimatedPattern(Texture[] textures, int[] frames, float delayPerFrame, AnimationPlayMode playMode)
-            : this(textures, new Animation(frames, delayPerFrame, playMode))
         {
         }
 
