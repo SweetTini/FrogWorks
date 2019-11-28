@@ -48,7 +48,7 @@ namespace FrogWorks
 
         internal void Update(float deltaTime)
         {
-            BeforeUpdate();
+            BeforeUpdate(deltaTime);
 
             if (IsEnabled)
             {
@@ -56,12 +56,12 @@ namespace FrogWorks
                 TimeActive += deltaTime;
             }
 
-            AfterUpdate();
+            AfterUpdate(deltaTime);
         }
 
-        protected virtual void BeforeUpdate() { }
+        protected virtual void BeforeUpdate(float deltaTime) { }
 
-        protected virtual void AfterUpdate() { }
+        protected virtual void AfterUpdate(float deltaTime) { }
 
         internal RenderTarget2D Draw(DisplayAdapter display, RendererBatch batch)
         {
