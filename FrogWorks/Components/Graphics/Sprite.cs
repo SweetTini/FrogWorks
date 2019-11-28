@@ -7,44 +7,51 @@ namespace FrogWorks
         where T : struct
     {
         private T _key;
-        private float _timer, _duration;
-        private int _index, _loops, _loopFrom;
         private bool _isPlaying;
 
         protected Texture[] Textures { get; set; }
 
         protected Dictionary<T, Animation> Animations { get; private set; }
 
-        public int Frame
+        protected Animation Current
         {
-            get { return _index; }
-            set
+            get
             {
-                _index = value.Mod(FrameCount);
-                _timer = 0f;
+                Animation animation;
+                Animations.TryGetValue(_key, out animation);
+                return animation;
             }
         }
 
-        public int FrameCount
+        public int FrameIndex
         {
-            get { return Animations.ContainsKey(_key) ? Animations[_key].Frames.Length : 1; }
+            get { return Current?.FrameIndex ?? 0; }
+            set
+            {
+                if (Current != null)
+                    Current.FrameIndex = value;
+            }
         }
 
-        public float Duration
+        public float DelayPerFrame
         {
-            get { return _duration; }
-            set { _duration = Math.Max(value, 0f); }
+            get { return Current?.DelayPerFrame ?? 0f; }
+            set
+            {
+                if (Current != null)
+                    Current.DelayPerFrame = value;
+            }
         }
 
-        public int LoopFrom
+        public AnimationPlayMode PlayMode
         {
-            get { return _loopFrom; }
-            set { _loopFrom = value.Mod(FrameCount); }
+            get { return Current?.PlayMode ?? AnimationPlayMode.Normal; }
+            set
+            {
+                if (Current != null)
+                    Current.PlayMode = value;
+            }
         }
-
-        public Action<T, Animation> OnLoop { get; set; }
-
-        public Action<T, Animation> OnFinished { get; set; }
 
         public Sprite(Texture texture, int frameWidth, int frameHeight)
             : base(texture, true)
@@ -56,45 +63,13 @@ namespace FrogWorks
 
         protected override void Update(float deltaTime)
         {
-            Animation animation;
-
-            if (_isPlaying && _duration > 0 && Animations.TryGetValue(_key, out animation))
-            {
-                _timer += deltaTime;
-
-                if (_timer >= _duration)
-                {
-                    _timer -= _duration;
-                    _index++;
-
-                    if (_index >= animation.Frames.Length)
-                    {
-                        if (animation.Loop && (animation.LoopCount <= 0 || _loops < animation.LoopCount))
-                        {
-                            _index = _loopFrom;
-                            if (_loops < animation.LoopCount) _loops++;
-                            OnLoop?.Invoke(_key, animation);
-                        }
-                        else
-                        {
-                            _index = animation.Frames.Length - 1;
-                            OnFinished?.Invoke(_key, animation);
-                            _isPlaying = false;
-                        }
-                    }
-                }
-            }
+            if (_isPlaying)
+                Current?.Update(deltaTime);
         }
 
         protected override void Draw(RendererBatch batch)
         {
-            Animation animation;
-            var index = 0;
-
-            if (Animations.TryGetValue(_key, out animation))
-                index = animation.Frames[_index];
-
-            Texture = Textures[index];
+            Texture = Current?.GetFrame(Textures) ?? Textures[0];
             base.Draw(batch);
         }
 
@@ -103,10 +78,7 @@ namespace FrogWorks
             if (Animations.ContainsKey(key) && (!IsPlaying(key) || restart))
             {
                 _key = key;
-                _duration = Animations[_key].Duration;
-                _loopFrom = Animations[_key].LoopFrom;
-                _timer = 0f;
-                _index = _loops = 0;
+                Current?.ResetChanges();
                 _isPlaying = true;
             }
         }
@@ -123,8 +95,7 @@ namespace FrogWorks
 
         public void Stop()
         {
-            _timer = 0f;
-            _index = _loops = 0;
+            Current?.Reset();
             _isPlaying = false;
         }
 
@@ -139,21 +110,9 @@ namespace FrogWorks
             _isPlaying = false;
         }
 
-        public void Add(T key, int[] frames, float duration, bool loop = true, int loopCount = 0, int loopFrom = 0)
+        public void AddOrUpdate(T key, Animation animation)
         {
             var isFirst = Animations.Count == 0;
-
-            for (int i = 0; i < frames.Length; i++)
-                frames[i] = frames[i].Mod(Textures.Length);
-
-            var animation = new Animation()
-            {
-                Frames = frames,
-                Duration = duration,
-                Loop = loop,
-                LoopCount = loopCount,
-                LoopFrom = loopFrom
-            };
 
             if (Animations.ContainsKey(key)) Animations[key] = animation;
             else Animations.Add(key, animation);
@@ -162,27 +121,32 @@ namespace FrogWorks
                 Play(key, true);
         }
 
+        public void AddOrUpdate(T key, int[] frames, float delayPerFrame, AnimationPlayMode playMode,
+                                Action onFinished = null, Action onLoop = null)
+        {
+            AddOrUpdate(key, new Animation(frames, delayPerFrame, playMode, onFinished, onLoop));
+        }
+
         public void Remove(T key)
         {
             if (Animations.ContainsKey(key))
-            {
-                if (IsPlaying(key)) Reset();
                 Animations.Remove(key);
-            }
         }
 
         public void Clear()
         {
-            Reset();
             Animations.Clear();
         }
 
-        private void Reset()
+        public void SetFrames(params int[] frames)
         {
-            _key = default(T);
-            _timer = _duration = 0f;
-            _index = _loops = _loopFrom = 0;
-            _isPlaying = false;
+            Current?.SetFrames(frames);
+        }
+
+        public void SetFrames(T key, params int[] frames)
+        {
+            if (Animations.ContainsKey(key))
+                Animations[key]?.SetFrames(frames);
         }
     }
 }

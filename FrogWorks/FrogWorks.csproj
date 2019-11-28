@@ -51,6 +51,7 @@
     <Compile Include="Collision\Colliders\ShapeCollider.cs" />
     <Compile Include="Collision\Colliders\SimpleMapCollider.cs" />
     <Compile Include="Components\Graphics\AnimatedPattern.cs" />
+    <Compile Include="Components\Graphics\AnimatedTileMap.cs" />
     <Compile Include="Components\Graphics\BackAnimatedPattern.cs" />
     <Compile Include="Components\Graphics\BackPattern.cs" />
     <Compile Include="Components\Graphics\Pattern.cs" />

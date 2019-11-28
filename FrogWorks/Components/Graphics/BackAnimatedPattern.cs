@@ -4,70 +4,50 @@ namespace FrogWorks
 {
     public class BackAnimatedPattern : BackPattern
     {
-        private float _timer, _duration;
-        private int _index;
-
         protected Texture[] Textures { get; set; }
 
-        protected int[] Frames { get; set; }
+        public Animation Animation { get; protected set; }
 
-        public int Frame
-        {
-            get { return _index; }
-            set
-            {
-                _index = value.Mod(Frames.Length);
-                _timer = 0f;
-            }
-        }
-
-        public int FrameCount => Frames.Length;
-
-        public float Duration
-        {
-            get { return _duration; }
-            set { _duration = value.Max(0); }
-        }
-
-        public BackAnimatedPattern(Texture texture, Point frameSize, float duration)
+        public BackAnimatedPattern(Texture texture, Point frameSize, Animation animation)
             : base(texture, true)
         {
             Textures = Texture.Split(texture, frameSize);
             Texture = Textures[0];
-            Frames = new int[Textures.Length];
-            Duration = duration;
-
-            for (int i = 0; i < Textures.Length; i++)
-                Frames[i] = i;
+            Animation = animation;
         }
 
-        public BackAnimatedPattern(Texture texture, int frameWidth, int frameHeight, float duration)
-            : this(texture, new Point(frameWidth, frameHeight), duration)
+        public BackAnimatedPattern(Texture texture, int frameWidth, int frameHeight, Animation animation)
+            : this(texture, new Point(frameWidth, frameHeight), animation)
         {
         }
 
-        public BackAnimatedPattern(Texture[] textures, int[] frames, float duration)
+        public BackAnimatedPattern(Texture texture, Point frameSize, 
+                                   int[] frames, float delayPerFrame, AnimationPlayMode playMode)
+            : this(texture, frameSize, new Animation(frames, delayPerFrame, playMode))
+        {
+        }
+
+        public BackAnimatedPattern(Texture texture, int frameWidth, int frameHeight, 
+                                   int[] frames, float delayPerFrame, AnimationPlayMode playMode)
+            : this(texture, new Point(frameWidth, frameHeight), new Animation(frames, delayPerFrame, playMode))
+        {
+        }
+
+        public BackAnimatedPattern(Texture[] textures, Animation animation)
             : base(textures[0], true)
         {
             Textures = textures;
-            Frames = frames;
-            Duration = duration;
+            Animation = animation;
+        }
 
-            for (int i = 0; i < Frames.Length; i++)
-                Frames[i] = Frames[i].Mod(Textures.Length);
+        public BackAnimatedPattern(Texture[] textures, int[] frames, float delayPerFrame, AnimationPlayMode playMode)
+            : this(textures, new Animation(frames, delayPerFrame, playMode))
+        {
         }
 
         protected override void Update(float deltaTime)
         {
-            if (_duration == 0f) return;
-
-            _timer += deltaTime;
-
-            if (_timer >= _duration)
-            {
-                _timer -= _duration;
-                _index = (_index++).Mod(Frames.Length);
-            }
+            Animation.Update(deltaTime);
         }
 
         protected override Texture GetTile(int x, int y)
@@ -75,24 +55,9 @@ namespace FrogWorks
             var texture = base.GetTile(x, y);
 
             if (texture != null)
-                texture = Textures[Frames[_index]];
+                texture = Animation.GetFrame(Textures);
 
             return texture;
-        }
-
-        public void SetFrames(params int[] frames)
-        {
-            for (int i = 0; i < frames.Length; i++)
-                frames[i] = frames[i].Mod(Textures.Length);
-
-            Frames = frames;
-            Reset();
-        }
-
-        public void Reset()
-        {
-            _timer = 0f;
-            _index = 0;
         }
     }
 }

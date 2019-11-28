@@ -4,96 +4,70 @@ namespace FrogWorks
 {
     public class AnimatedPattern : Pattern
     {
-        private float _timer, _duration;
-        private int _index;
-
         protected Texture[] Textures { get; set; }
 
-        protected int[] Frames { get; set; }
+        public Animation Animation { get; protected set; }
 
-        public int Frame
-        {
-            get { return _index; }
-            set
-            {
-                _index = value.Mod(Frames.Length);
-                _timer = 0f;
-            }
-        }
-
-        public int FrameCount => Frames.Length;
-
-        public float Duration
-        {
-            get { return _duration; }
-            set { _duration = value.Max(0); }
-        }
-
-        public AnimatedPattern(Texture[] textures, Point size, int[] frames, float duration)
+        public AnimatedPattern(Texture[] textures, Point size, Animation animation)
             : base(textures[0], size, true)
         {
             Textures = textures;
-            Frames = frames;
-            Duration = duration;
-
-            for (int i = 0; i < Frames.Length; i++)
-                Frames[i] = Frames[i].Mod(Textures.Length);
+            Animation = animation;
         }
 
-        public AnimatedPattern(Texture[] textures, int width, int height, int[] frames, float duration)
-            : this(textures, new Point(width, height), frames, duration)
+        public AnimatedPattern(Texture[] textures, int width, int height, Animation animation)
+            : this(textures, new Point(width, height), animation)
         {
         }
 
-        public AnimatedPattern(Texture texture, Point frameSize, Point size, float duration)
+        public AnimatedPattern(Texture[] textures, Point size, 
+                               int[] frames, float delayPerFrame, AnimationPlayMode playMode)
+            : this(textures, size, new Animation(frames, delayPerFrame, playMode))
+        {
+        }
+
+        public AnimatedPattern(Texture[] textures, int width, int height,
+                               int[] frames, float delayPerFrame, AnimationPlayMode playMode)
+            : this(textures, new Point(width, height), new Animation(frames, delayPerFrame, playMode))
+        {
+        }
+
+        public AnimatedPattern(Texture texture, Point frameSize, Point size, Animation animation)
             : base(texture, size, true)
         {
             Textures = Texture.Split(texture, frameSize);
             Texture = Textures[0];
-            Frames = new int[Textures.Length];
-            Duration = duration;
-
-            for (int i = 0; i < Textures.Length; i++)
-                Frames[i] = i;
+            Animation = animation;
         }
 
-        public AnimatedPattern(Texture texture, int frameWidth, int frameHeight, int width, int height, float duration)
-            : this(texture, new Point(frameWidth, frameHeight), new Point(width, height), duration)
+        public AnimatedPattern(Texture texture, int frameWidth, int frameHeight, 
+                               int width, int height, Animation animation)
+            : this(texture, new Point(frameWidth, frameHeight), new Point(width, height), animation)
+        {
+        }
+
+        public AnimatedPattern(Texture texture, Point frameSize, Point size,
+                               int[] frames, float delayPerFrame, AnimationPlayMode playMode)
+            : this(texture, frameSize, size, new Animation(frames, delayPerFrame, playMode))
+        {
+        }
+
+        public AnimatedPattern(Texture texture, int frameWidth, int frameHeight, int width, int height,
+                               int[] frames, float delayPerFrame, AnimationPlayMode playMode)
+            : this(texture, new Point(frameWidth, frameHeight), new Point(width, height),
+                   new Animation(frames, delayPerFrame, playMode))
         {
         }
 
         protected override void Update(float deltaTime)
         {
-            if (_duration == 0f) return;
-
-            _timer += deltaTime;
-
-            if (_timer >= _duration)
-            {
-                _timer -= _duration;
-                _index = (_index++).Mod(Frames.Length);
-            }
+            Animation.Update(deltaTime);
         }
 
         protected override void Draw(RendererBatch batch)
         {
-            Texture = Textures[Frames[_index]];
+            Texture = Animation.GetFrame(Textures);
             base.Draw(batch);
-        }
-
-        public void SetFrames(params int[] frames)
-        {
-            for (int i = 0; i < frames.Length; i++)
-                frames[i] = frames[i].Mod(Textures.Length);
-
-            Frames = frames;
-            Reset();
-        }
-
-        public void Reset()
-        {
-            _timer = 0f;
-            _index = 0;
         }
     }
 }
