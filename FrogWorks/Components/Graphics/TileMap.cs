@@ -86,9 +86,9 @@ namespace FrogWorks
             }
         }
 
-        public void Fill(Texture tile, int x, int y, int columns, int rows)
+        public void Fill(Texture texture, int x, int y, int columns, int rows)
         {
-            Fill(tile, new Point(x, y), new Point(columns, rows));
+            Fill(texture, new Point(x, y), new Point(columns, rows));
         }
 
         public void Clear() => Map.Clear();

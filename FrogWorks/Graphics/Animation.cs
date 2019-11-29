@@ -121,18 +121,45 @@ namespace FrogWorks
             }
         }
 
-        public bool IsLooping
+        public bool Loop
         {
             get
             {
-                var isLoopPlayMode = _playMode == AnimationPlayMode.Loop
+                return _playMode == AnimationPlayMode.Loop
                     || _playMode == AnimationPlayMode.LoopReverse
                     || _playMode == AnimationPlayMode.LoopYoyo
                     || _playMode == AnimationPlayMode.LoopRandom;
-
-                return isLoopPlayMode && (_maxLoops < 1 || _loops < _maxLoops - 1);
+            }
+            set
+            {
+                if (value)
+                {
+                    switch (_origPlayMode)
+                    {
+                        case AnimationPlayMode.Normal: _playMode = AnimationPlayMode.Loop; break;
+                        case AnimationPlayMode.Reverse: _playMode = AnimationPlayMode.LoopReverse; break;
+                        case AnimationPlayMode.Yoyo: _playMode = AnimationPlayMode.LoopYoyo; break;
+                        default: break;
+                    }
+                }
+                else
+                {
+                    switch (_origPlayMode)
+                    {
+                        case AnimationPlayMode.Loop: _playMode = AnimationPlayMode.Normal; break;
+                        case AnimationPlayMode.LoopReverse: _playMode = AnimationPlayMode.Reverse; break;
+                        case AnimationPlayMode.LoopYoyo: _playMode = AnimationPlayMode.Yoyo; break;
+                        case AnimationPlayMode.LoopRandom:
+                            _playMode = AnimationPlayMode.Normal;
+                            FrameIndex = _lastIndex;
+                            break;
+                        default: break;
+                    }
+                }
             }
         }
+
+        public bool IsLooping => Loop && (_maxLoops < 1 || _loops < _maxLoops - 1);
 
         public Action OnFinished { get; set; }
 
@@ -214,6 +241,11 @@ namespace FrogWorks
             _maxLoops = _origMaxLoops;
             _playMode = _origPlayMode;
             Reset();
+        }
+
+        public Animation Clone()
+        {
+            return new Animation(_frames, _origDelayPerFrame, _origPlayMode, _origMaxLoops);
         }
     }
 
