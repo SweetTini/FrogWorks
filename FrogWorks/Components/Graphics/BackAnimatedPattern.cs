@@ -26,6 +26,7 @@ namespace FrogWorks
         {
             Textures = Texture.Split(texture, frameSize);
             Texture = Textures[0];
+            TileSize = Texture.Size;
             Animation = animation;
         }
 
