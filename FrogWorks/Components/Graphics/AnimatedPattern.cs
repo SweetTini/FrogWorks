@@ -38,6 +38,7 @@ namespace FrogWorks
             Textures = Texture.Split(texture, frameSize);
             Texture = Textures[0];
             Animation = animation;
+            Resize();
         }
 
         public AnimatedPattern(Texture texture, int frameWidth, int frameHeight, 

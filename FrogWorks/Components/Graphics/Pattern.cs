@@ -68,7 +68,7 @@ namespace FrogWorks
             }
         }
 
-        private void Resize()
+        protected void Resize()
         {
             _mapSize.X = _size.X / Texture.Width;
             _mapSize.Y = _size.Y / Texture.Height;
