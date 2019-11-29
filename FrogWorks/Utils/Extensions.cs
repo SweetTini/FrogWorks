@@ -218,6 +218,18 @@ namespace FrogWorks
             return min <= number && number <= max;
         }
 
+        public static bool Between(this Point point, Point min, Point max)
+        {
+            return point.X.Between(min.X, max.X) 
+                && point.Y.Between(min.Y, max.Y);
+        }
+
+        public static bool Between(this Vector2 vector, Vector2 min, Vector2 max)
+        {
+            return vector.X.Between(min.X, max.X)
+                && vector.Y.Between(min.Y, max.Y);
+        }
+
         public static bool WithinRange<T>(this T[] array, int index)
         {
             return 0 <= index && index < array.Length;
@@ -300,6 +312,13 @@ namespace FrogWorks
             return new Point(
                 MathHelper.Clamp(point.X, lowest.X, highest.X),
                 MathHelper.Clamp(point.Y, lowest.Y, highest.Y));
+        }
+
+        public static Point Divide(this Point point, Point divider)
+        {
+            return new Point(
+                divider.X != 0 ? point.X / divider.X : 0,
+                divider.Y != 0 ? point.Y / divider.Y : 0);
         }
 
         public static Point Max(this Point point, Point other)

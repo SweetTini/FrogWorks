@@ -5,24 +5,26 @@ namespace FrogWorks
 {
     public class TileSet
     {
-        private Texture[,] _tiles;
+        private Texture[] _textures;
+        private Point _size;
 
         public Texture this[int x, int y]
         {
-            get { return _tiles.WithinRange(x, y) ? _tiles[x, y] : null; }
+            get
+            {
+                var one = new Point(1, 1);
+
+                return new Point(x, y).Between(Point.Zero, _size - one) 
+                    ? _textures[x + (y * _size.X)] : null;
+            }
         }
 
         public Texture this[int index]
         {
-            get
-            {
-                var x = index % _tiles.GetLength(0);
-                var y = index / _tiles.GetLength(0);
-                return _tiles.WithinRange(x, y) ? _tiles[x, y] : null;
-            }
+            get { return _textures.WithinRange(index) ? _textures[index] : null; }
         }
 
-        public int Count => _tiles.GetLength(0) * _tiles.GetLength(1);
+        public int Count => _textures.Length;
 
         public Texture Texture { get; private set; }
 
@@ -37,18 +39,8 @@ namespace FrogWorks
             Texture = texture;
             TileSize = tileSize.Abs();
 
-            var columns = texture.Width / TileWidth;
-            var rows = texture.Height / TileHeight;
-            var textures = Texture.Split(Texture, TileWidth, TileHeight);
-
-            _tiles = new Texture[columns, rows];
-
-            for (int i = 0; i < textures.Length; i++)
-            {
-                var x = i % columns;
-                var y = i / columns;
-                _tiles[x, y] = textures[i];
-            }
+            _textures = Texture.Split(Texture, TileSize);
+            _size = texture.Size.Divide(TileSize);
         }
 
         public TileSet(Texture texture, int tileWidth, int tileHeight)

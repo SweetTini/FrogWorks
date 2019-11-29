@@ -8,7 +8,7 @@ namespace FrogWorks
         private int[] _frames;
         private float _timer, _lastTimer, _delayPerFrame, _origDelayPerFrame;
         private int _lastIndex, _loops, _maxLoops, _origMaxLoops;
-        private AnimationPlayMode _playMode;
+        private AnimationPlayMode _playMode, _origPlayMode;
 
         public ReadOnlyCollection<int> Frames { get; private set; }
 
@@ -148,7 +148,7 @@ namespace FrogWorks
             _frames = frames;
             _origDelayPerFrame = delayPerFrame.Abs();
             _origMaxLoops = maxLoops.Abs();
-            _playMode = playMode;
+            _origPlayMode = playMode;
             OnFinished = onFinished;
             OnLoop = onLoop;
 
@@ -174,17 +174,30 @@ namespace FrogWorks
             }
         }
 
+        public void OffsetTimer(float timer)
+        {
+            var deltaTime = timer - _lastTimer;
+            Update(timer);
+        }
+
         public void SetFrames(params int[] frames)
         {
             _frames = frames;
             Reset();
         }
 
-        public T GetFrame<T>(T[] array)
+        public Texture GetFrame(Texture[] textures)
         {
-            if (array == null) return default(T);
-            var index = _frames[FrameIndex].Mod(array.Length);
-            return array[index];
+            if (textures == null) return default(Texture);
+            var index = _frames[FrameIndex].Mod(textures.Length);
+            return textures[index];
+        }
+
+        public Texture GetFrame(TileSet tileSet)
+        {
+            if (tileSet == null) return default(Texture);
+            var index = _frames[FrameIndex].Mod(tileSet.Count);
+            return tileSet[index];
         }
 
         public void Reset()
@@ -199,6 +212,7 @@ namespace FrogWorks
         {
             _delayPerFrame = _origDelayPerFrame;
             _maxLoops = _origMaxLoops;
+            _playMode = _origPlayMode;
             Reset();
         }
     }

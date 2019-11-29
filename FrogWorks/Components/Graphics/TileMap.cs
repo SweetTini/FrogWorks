@@ -4,7 +4,7 @@ namespace FrogWorks
 {
     public class TileMap : TiledGraphicsComponent
     {
-        protected Map<Texture> Map { get; private set; }
+        protected Map<TileMapTile> Map { get; private set; }
 
         public Point Size => Map.Size;
 
@@ -25,7 +25,7 @@ namespace FrogWorks
         protected TileMap(Point size, Point tileSize, bool isEnabled)
             : base(isEnabled)
         {
-            Map = new Map<Texture>(size);
+            Map = new Map<TileMapTile>(size);
             TileSize = tileSize;
         }
 
@@ -34,7 +34,7 @@ namespace FrogWorks
             if (WrapHorizontally) x = x.Mod(Columns);
             if (WrapVertically) y = y.Mod(Rows);
 
-            return Map[x, y];
+            return Map[x, y]?.Texture;
         }
 
         public void Populate(TileSet tileSet, int[,] tiles, int offsetX = 0, int offsetY = 0)
@@ -46,8 +46,9 @@ namespace FrogWorks
             {
                 var x = i % columns;
                 var y = i / columns;
+                var texture = tileSet[tiles[x, y]];
 
-                Map[offsetX + x, offsetY + y] = tileSet[tiles[x, y]];
+                Map[offsetX + x, offsetY + y] = new TileMapTile(texture);
             }
         }
 
@@ -63,11 +64,14 @@ namespace FrogWorks
                 var index = tiles[x, y];
 
                 if (index >= 0)
-                    Map[offsetX + x, offsetY + y] = tileSet[index];
+                {
+                    var texture = tileSet[index];
+                    Map[offsetX + x, offsetY + y] = new TileMapTile(texture);
+                }
             }
         }
 
-        public void Fill(Texture tile, Point location, Point size)
+        public void Fill(Texture texture, Point location, Point size)
         {
             var from = location.Max(Point.Zero);
             var to = (location + size).Min(Size);
@@ -78,7 +82,7 @@ namespace FrogWorks
                 var x = location.X + (i % area.X);
                 var y = location.Y + (i / area.X);
 
-                Map[x, y] = tile;
+                Map[x, y] = new TileMapTile(texture);
             }
         }
 
@@ -96,5 +100,29 @@ namespace FrogWorks
         public void Resize(Point from, Point to) => Map.Resize(from, to);
 
         public void Resize(int x1, int y1, int x2, int y2) => Map.Resize(x1, y1, x2, y2);
+    }
+
+    public class TileMapTile
+    {
+        private Texture _texture;
+        private TileSet _tileSet;
+        private Animation _animation;
+
+        public Texture Texture => _animation?.GetFrame(_tileSet) ?? _texture;
+
+        public TileMapTile(Texture texture)
+            : base()
+        {
+            _texture = texture;
+        }
+
+        public TileMapTile(TileSet tileSet, Animation animation)
+            : base()
+        {
+            _tileSet = tileSet;
+            _animation = animation;
+        }
+
+        public void OffsetTimer(float timer) => _animation?.OffsetTimer(timer);
     }
 }
