@@ -8,6 +8,7 @@ namespace FrogWorks
         private int[] _frames;
         private float _timer, _lastTimer, _delayPerFrame, _origDelayPerFrame;
         private int _lastIndex, _loops, _maxLoops, _origMaxLoops;
+        private bool _randUpdated;
         private AnimationPlayMode _playMode, _origPlayMode;
 
         public ReadOnlyCollection<int> Frames { get; private set; }
@@ -61,9 +62,10 @@ namespace FrogWorks
                     case AnimationPlayMode.LoopRandom:
                         {
                             var lastIndex = (int)(_lastTimer / Duration * maxFrames).Floor();
-                            index = lastIndex != index
-                                ? Randomizer.Current.Next(maxFrames)
+                            index = lastIndex != index && !_randUpdated
+                                ? Randomizer.Current.Next(maxFrames) 
                                 : _lastIndex;
+                            _randUpdated = lastIndex != index;
                         }
                         break;
                 }
@@ -233,6 +235,7 @@ namespace FrogWorks
             _lastTimer = 0f;
             _lastIndex = 0;
             _loops = 0;
+            _randUpdated = false;
         }
 
         public void ResetChanges()
