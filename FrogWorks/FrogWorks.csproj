@@ -40,7 +40,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Graphics\Audio.cs" />
     <Compile Include="Collision\Broad\AABB.cs" />
     <Compile Include="Collision\Broad\AABBTree.cs" />
     <Compile Include="Collision\Colliders\BitFlagMapCollider.cs" />
@@ -90,7 +89,6 @@
     <Compile Include="Core\Entity.cs" />
     <Compile Include="DisplayAdapter.cs" />
     <Compile Include="Graphics\Loaders\Tiled.cs" />
-    <Compile Include="Graphics\ShaderEffect.cs" />
     <Compile Include="Graphics\TileMapContainer.cs" />
     <Compile Include="Layers\AlphaMaskLayer.cs" />
     <Compile Include="Layers\BasicLayer.cs" />
