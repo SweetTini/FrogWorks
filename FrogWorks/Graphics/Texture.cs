@@ -64,9 +64,7 @@ namespace FrogWorks
             var size = XnaTexture.Bounds.Size.ToVector2();
             UpperUV = Bounds.Location.ToVector2().Divide(size);
             LowerUV = (Bounds.Location + Bounds.Size).ToVector2().Divide(size);
-        }
-
-        
+        }        
 
         internal Texture(Texture2D xnaTexture, Point location, Point size)
             : this(xnaTexture, new Rectangle(location, size))
