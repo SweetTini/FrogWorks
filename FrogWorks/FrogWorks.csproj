@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Graphics\Audio.cs" />
     <Compile Include="Collision\Broad\AABB.cs" />
     <Compile Include="Collision\Broad\AABBTree.cs" />
     <Compile Include="Collision\Colliders\BitFlagMapCollider.cs" />

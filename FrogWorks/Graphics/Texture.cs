@@ -6,11 +6,11 @@ using System.IO;
 
 namespace FrogWorks
 {
-    public class Texture : IDisposable
+    public sealed class Texture
     {
-        static Dictionary<string, Texture2D> Cache { get; } = new Dictionary<string, Texture2D>();
+        private static Dictionary<string, Texture2D> Cache { get; } = new Dictionary<string, Texture2D>();
 
-        public Texture2D XnaTexture { get; private set; }
+        private Texture2D XnaTexture { get; set; }
 
         public Rectangle Bounds { get; private set; }
 
@@ -32,19 +32,27 @@ namespace FrogWorks
 
         public float BottomUV => LowerUV.Y;
 
-        public bool IsDisposed { get; private set; }
-
-        public Texture(Texture2D xnaTexture)
-            : this(xnaTexture, xnaTexture.Bounds)
-        {
-        }
-
         public Texture(Texture texture)
             : this(texture.XnaTexture, texture.Bounds)
         {
         }
 
-        public Texture(Texture2D xnaTexture, Rectangle bounds)
+        public Texture(Texture texture, Rectangle bounds)
+            : this(texture.XnaTexture, bounds)
+        {
+        }
+
+        public Texture(Texture texture, Point location, Point size)
+            : this(texture.XnaTexture, new Rectangle(location, size))
+        {
+        }
+
+        public Texture(Texture texture, int x, int y, int width, int height)
+            : this(texture.XnaTexture, new Rectangle(x, y, width, height))
+        {
+        }
+
+        internal Texture(Texture2D xnaTexture, Rectangle bounds)
         {
             if (xnaTexture == null)
                 throw new NullReferenceException("XNA texture cannot be null.");
@@ -58,28 +66,15 @@ namespace FrogWorks
             LowerUV = (Bounds.Location + Bounds.Size).ToVector2().Divide(size);
         }
 
-        public Texture(Texture texture, Rectangle bounds)
-            : this(texture.XnaTexture, bounds)
-        {
-        }
+        
 
-        public Texture(Texture2D xnaTexture, Point location, Point size)
+        internal Texture(Texture2D xnaTexture, Point location, Point size)
             : this(xnaTexture, new Rectangle(location, size))
         {
         }
 
-        public Texture(Texture texture, Point location, Point size)
-            : this(texture.XnaTexture, new Rectangle(location, size))
-        {
-        }
-
-        public Texture(Texture2D xnaTexture, int x, int y, int width, int height)
+        internal Texture(Texture2D xnaTexture, int x, int y, int width, int height)
             : this(xnaTexture, new Rectangle(x, y, width, height))
-        {
-        }
-
-        public Texture(Texture texture, int x, int y, int width, int height)
-            : this(texture.XnaTexture, new Rectangle(x, y, width, height))
         {
         }
 
@@ -111,21 +106,6 @@ namespace FrogWorks
         public Texture Clone()
         {
             return new Texture(XnaTexture, Bounds);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool isDisposing)
-        {
-            if (isDisposing && !IsDisposed)
-            {
-                XnaTexture.Dispose();
-                IsDisposed = true;
-            }
         }
 
         #region Static Methods
