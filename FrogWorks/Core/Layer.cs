@@ -1,9 +1,11 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace FrogWorks
 {
-    public abstract class Layer : Manageable<Scene>
+    public abstract class Layer : Manageable<Scene>, IManagerAccessor<Entity>
     {
         protected GraphicsDevice GraphicsDevice { get; private set; }
 
@@ -125,5 +127,23 @@ namespace FrogWorks
         }
 
         public sealed override void Destroy() => Parent?.Layers.Remove(this);
+
+        #region Manager Shortcuts
+        public void Add(Entity item) => Entities.Add(item);
+
+        public void Add(params Entity[] items) => Entities.Add(items);
+
+        public void Add(IEnumerable<Entity> items) => Entities.Add(items);
+
+        public void Remove(Entity item) => Entities.Remove(item);
+
+        public void Remove(params Entity[] items) => Entities.Remove(items);
+
+        public void Remove(IEnumerable<Entity> items) => Entities.Remove(items);
+
+        public IEnumerator<Entity> GetEnumerator() => Entities.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        #endregion
     }
 }

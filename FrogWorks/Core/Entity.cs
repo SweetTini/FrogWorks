@@ -1,9 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace FrogWorks
 {
-    public abstract class Entity : Manageable<Layer>
+    public abstract class Entity : Manageable<Layer>, IManagerAccessor<Component>
     {
         private Vector2 _position;
         private Collider _collider;
@@ -199,5 +201,23 @@ namespace FrogWorks
         protected virtual void OnTransformed() { }
 
         public sealed override void Destroy() => Parent?.Entities.Remove(this);
+
+        #region Manager Shortcuts
+        public void Add(Component item) => Components.Add(item);
+
+        public void Add(params Component[] items) => Components.Add(items);
+
+        public void Add(IEnumerable<Component> items) => Components.Add(items);
+
+        public void Remove(Component item) => Components.Remove(item);
+
+        public void Remove(params Component[] items) => Components.Remove(items);
+
+        public void Remove(IEnumerable<Component> items) => Components.Remove(items);
+
+        public IEnumerator<Component> GetEnumerator() => Components.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        #endregion
     }
 }

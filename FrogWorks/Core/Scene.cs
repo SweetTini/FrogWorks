@@ -1,9 +1,12 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace FrogWorks
 {
-    public abstract class Scene
+    public abstract class Scene : IManagerAccessor<Layer>
     {
         protected internal AABBTree Colliders { get; private set; }
 
@@ -104,5 +107,23 @@ namespace FrogWorks
             Camera.UpdateViewport();
             Layers.Reset();
         }
+
+        #region Manager Shortcuts
+        public void Add(Layer item) => Layers.Add(item);
+
+        public void Add(params Layer[] items) => Layers.Add(items);
+
+        public void Add(IEnumerable<Layer> items) => Layers.Add(items);
+
+        public void Remove(Layer item) => Layers.Remove(item);
+
+        public void Remove(params Layer[] items) => Layers.Remove(items);
+
+        public void Remove(IEnumerable<Layer> items) => Layers.Remove(items);
+
+        public IEnumerator<Layer> GetEnumerator() => Layers.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        #endregion
     }
 }
