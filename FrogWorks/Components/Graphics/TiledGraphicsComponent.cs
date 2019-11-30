@@ -116,10 +116,10 @@ namespace FrogWorks
         {
             if (camera == null) return;
 
-            var x1 = (int)((camera.View.Left - DrawPosition.X) / TileWidth).Floor();
-            var y1 = (int)((camera.View.Top - DrawPosition.Y) / TileHeight).Floor();
-            var x2 = (int)((camera.View.Right + DrawPosition.X) / TileWidth).Ceiling();
-            var y2 = (int)((camera.View.Bottom + DrawPosition.Y) / TileHeight).Ceiling();
+            var x1 = (int)((camera.View.Left - DrawPosition.X.Abs()) / TileWidth).Floor();
+            var y1 = (int)((camera.View.Top - DrawPosition.Y.Abs()) / TileHeight).Floor();
+            var x2 = (int)((camera.View.Right + DrawPosition.X.Abs()) / TileWidth).Ceiling();
+            var y2 = (int)((camera.View.Bottom + DrawPosition.Y.Abs()) / TileHeight).Ceiling();
 
             _drawRegion = new Rectangle(x1, y1, x2 - x1, y2 - y1);
         }
