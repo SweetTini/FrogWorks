@@ -6,28 +6,28 @@ namespace FrogWorks
 {
     public class ShaderLayer : Layer
     {
-        protected Effect ShaderEffect { get; private set; }
+        protected Shader Shader { get; private set; }
 
-        public Action<Effect> OnShaderUpdate { get; set; }
+        public Action<Shader> OnShaderUpdate { get; set; }
 
-        public ShaderLayer(Effect shaderEffect, Action<Effect> onShaderUpdate = null)
+        public ShaderLayer(Shader shader, Action<Shader> onShaderUpdate = null)
             : base()
         {
-            ShaderEffect = shaderEffect;
+            Shader = shader;
             OnShaderUpdate = onShaderUpdate;
         }
 
         protected override void AfterUpdate(float deltaTime)
         {
-            OnShaderUpdate?.Invoke(ShaderEffect);
+            OnShaderUpdate?.Invoke(Shader);
         }
 
         protected override void AfterDraw(RendererBatch batch)
         {
-            if (ShaderEffect == null) return;
+            if (Shader == null) return;
 
             var lastEffect = Effect;
-            Effect = ShaderEffect;
+            Effect = Shader.Effect;
 
             batch.Configure(BlendState, DepthStencilState, Effect);
             batch.Begin();

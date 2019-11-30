@@ -62,7 +62,8 @@ namespace FrogWorks
             {
                 _scene?.Layers.Dispose();
                 Input.Dispose();
-                Texture.DisposeCache();
+                Texture.Dispose();
+                Shader.Dispose();
             }
 
             base.Dispose(disposing);

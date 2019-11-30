@@ -167,7 +167,7 @@ namespace FrogWorks
             return xnaTexture;
         }
 
-        internal static void DisposeCache()
+        internal static void Dispose()
         {
             foreach (var xnaTexture in Cache.Values)
                 xnaTexture.Dispose();

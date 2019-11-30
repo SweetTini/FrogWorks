@@ -9,10 +9,10 @@ namespace FrogWorks
         private DepthStencilState _alwaysStencil, _keepIfZeroStencil;
         private AlphaTestEffect _alphaTestEffect;
 
-        public ShaderMaskLayer(Effect shaderEffect, 
-                               Action<Effect> onShaderUpdate = null, 
+        public ShaderMaskLayer(Shader shader, 
+                               Action<Shader> onShaderUpdate = null, 
                                bool reverse = false)
-            : base(shaderEffect, onShaderUpdate)
+            : base(shader, onShaderUpdate)
         {
             _nonColorWriteBlend = new BlendState() { ColorWriteChannels = ColorWriteChannels.None };
 
