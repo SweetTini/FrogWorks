@@ -2,7 +2,12 @@
 {
     public class BackPattern : TiledGraphicsComponent
     {
-        public BackPattern(Texture texture, bool isEnabled)
+        public BackPattern(Texture texture)
+            : this(texture, false)
+        {
+        }
+
+        protected BackPattern(Texture texture, bool isEnabled)
             : base(isEnabled)
         {
             Texture = texture;
