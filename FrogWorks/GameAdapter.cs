@@ -62,7 +62,6 @@ namespace FrogWorks
             {
                 _scene?.Layers.Dispose();
                 Input.Dispose();
-                Audio.DisposeCache();
                 Texture.DisposeCache();
             }
 

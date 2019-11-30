@@ -88,8 +88,8 @@
     <Compile Include="Core\Component.cs" />
     <Compile Include="Core\Entity.cs" />
     <Compile Include="DisplayAdapter.cs" />
-    <Compile Include="Graphics\Loaders\Tiled.cs" />
-    <Compile Include="Graphics\TileMapContainer.cs" />
+    <Compile Include="Assets\Loaders\Tiled.cs" />
+    <Compile Include="Assets\Maps\TileMapContainer.cs" />
     <Compile Include="Layers\AlphaMaskLayer.cs" />
     <Compile Include="Layers\BasicLayer.cs" />
     <Compile Include="Layers\ShaderLayer.cs" />
@@ -97,12 +97,12 @@
     <Compile Include="Runners\DesktopRunner.cs" />
     <Compile Include="Core\Layer.cs" />
     <Compile Include="GameAdapter.cs" />
-    <Compile Include="Graphics\Animation.cs" />
-    <Compile Include="Graphics\BitmapCharacter.cs" />
-    <Compile Include="Graphics\BitmapFont.cs" />
-    <Compile Include="Graphics\Loaders\BmFont.cs" />
-    <Compile Include="Graphics\Texture.cs" />
-    <Compile Include="Graphics\TileSet.cs" />
+    <Compile Include="Assets\Graphics\Animation.cs" />
+    <Compile Include="Assets\Graphics\BitmapCharacter.cs" />
+    <Compile Include="Assets\Graphics\BitmapFont.cs" />
+    <Compile Include="Assets\Loaders\BmFont.cs" />
+    <Compile Include="Assets\Graphics\Texture.cs" />
+    <Compile Include="Assets\Maps\TileSet.cs" />
     <Compile Include="Inputs\Input.cs" />
     <Compile Include="Inputs\Readers\GamePadReader.cs" />
     <Compile Include="Inputs\Readers\KeyboardReader.cs" />
@@ -160,7 +160,9 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Assets\Audio\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="packages\MonoGame.Framework.DesktopGL.3.7.1.189\build\MonoGame.Framework.DesktopGL.targets" Condition="Exists('packages\MonoGame.Framework.DesktopGL.3.7.1.189\build\MonoGame.Framework.DesktopGL.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
