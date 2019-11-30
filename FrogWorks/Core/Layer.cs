@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace FrogWorks
 {
-    public abstract class Layer : Managable<Scene>
+    public abstract class Layer : Manageable<Scene>
     {
         protected GraphicsDevice GraphicsDevice { get; private set; }
 

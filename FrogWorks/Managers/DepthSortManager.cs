@@ -3,7 +3,7 @@
 namespace FrogWorks
 {
     public abstract class DepthSortManager<T, TT> : Manager<T, TT>
-        where T : Managable<TT> where TT : class
+        where T : Manageable<TT> where TT : class
     {
         protected Queue<ManagedQueueSortCommand<T, TT>> SortCommands { get; private set; }
 
@@ -100,7 +100,7 @@ namespace FrogWorks
     }
 
     public struct ManagedQueueSortCommand<T, TT> : IManagedQueueCommand<T, ManagedQueueSortAction>
-        where T : Managable<TT> where TT : class
+        where T : Manageable<TT> where TT : class
     {
         public T Item { get; }
 

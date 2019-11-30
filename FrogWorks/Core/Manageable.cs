@@ -2,7 +2,7 @@
 
 namespace FrogWorks
 {
-    public abstract class Managable<T>
+    public abstract class Manageable<T>
         where T : class
     {
         protected internal T Parent { get; private set; }

@@ -3,7 +3,7 @@ using System;
 
 namespace FrogWorks
 {
-    public abstract class Entity : Managable<Layer>
+    public abstract class Entity : Manageable<Layer>
     {
         private Vector2 _position;
         private Collider _collider;

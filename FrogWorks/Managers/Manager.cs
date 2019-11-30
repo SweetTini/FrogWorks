@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace FrogWorks
 {
     public abstract class Manager<T, TT> : IManager<T>
-        where T : Managable<TT> where TT : class
+        where T : Manageable<TT> where TT : class
     {
         private ManagerState _state;
 
@@ -166,7 +166,7 @@ namespace FrogWorks
     }
 
     public struct ManagedQueueCommand<T, TT> : IManagedQueueCommand<T, ManagedQueueAction>
-        where T : Managable<TT> where TT : class
+        where T : Manageable<TT> where TT : class
     {
         public T Item { get; }
 
