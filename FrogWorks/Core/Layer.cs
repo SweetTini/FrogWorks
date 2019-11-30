@@ -33,6 +33,24 @@ namespace FrogWorks
             set { ScrollRate = new Vector2(ScrollRate.X, value); }
         }
 
+        public float Zoom
+        {
+            get { return Camera.Zoom; }
+            set { Camera.Zoom = value; }
+        }
+
+        public float Angle
+        {
+            get { return Camera.Angle; }
+            set { Camera.Angle = value; }
+        }
+
+        public float AngleInDegrees
+        {
+            get { return Camera.AngleInDegrees; }
+            set { Camera.AngleInDegrees = value; }
+        }        
+
         protected Layer()
         {
             GraphicsDevice = Runner.Application.Game.GraphicsDevice;
