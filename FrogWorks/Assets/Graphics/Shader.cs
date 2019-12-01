@@ -7,23 +7,42 @@ using System.IO;
 
 namespace FrogWorks
 {
-    public class Shader
+    public abstract class Shader
     {
         private static Dictionary<string, Effect> Cache = new Dictionary<string, Effect>();
 
         public Effect Effect { get; private set; }
 
-        protected Shader(Effect effect)
-            : base()
+        protected Shader()
         {
-            Effect = effect;
         }
 
+        protected Shader(Effect effect)
+            : this()
+        {
+            Initialize(effect);
+        }
+
+        protected virtual void Initialize()
+        {
+        }
+
+        private void Initialize(Effect effect)
+        {
+            Effect = effect;
+            Initialize();
+        }
+
+        public abstract Shader Clone();
+
         #region Static Methods
-        public static Shader Load(string filePath)
+        public static T Load<T>(string filePath)
+            where T : Shader, new()
         {
             var effect = TryGetFromCache(filePath);
-            return new Shader(effect);
+            var shader = new T();
+            shader.Initialize(effect);
+            return shader;
         }
 
         internal static Effect TryGetFromCache(string filePath)
