@@ -37,14 +37,14 @@ namespace FrogWorks.Demo
         {
             if (BitmapFont == null)
             {
-                var texture = Texture.Load(@"Textures/DebugFont.png");
-                var charSet = " !\"#$%&\'()*+,-./0123456789:;<=>?" 
+                var texture = Texture.Load(@"Textures\\DebugFont.png");
+                var charSet = " !\"#$%&\'()*+,-./0123456789:;<=>?"
                             + "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`"
                             + "abcdefghijklmnopqrstuvwxyz{|}~";
                 BitmapFont = new BitmapFont(texture, 8, 8, charSet);
             }
 
-            _spriteText = new SpriteText(BitmapFont, string.Empty, width, height);
+            _spriteText = new SpriteText(BitmapFont, string.Empty, width, height) { WordWrap = true };
             Components.Add(_spriteText);
         }
     }
