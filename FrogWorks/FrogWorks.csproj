@@ -33,6 +33,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ChaiFoxes.FMODAudio.Desktop, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\ChaiFoxes.FMODAudio.Desktop.1.0.3\lib\net45\ChaiFoxes.FMODAudio.Desktop.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="MonoGame.Framework, Version=3.7.1.189, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\MonoGame.Framework.DesktopGL.3.7.1.189\lib\net45\MonoGame.Framework.dll</HintPath>
       <Private>True</Private>
@@ -45,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Audio\Audio.cs" />
     <Compile Include="Assets\Graphics\Shader.cs" />
     <Compile Include="Collision\Broad\AABB.cs" />
     <Compile Include="Collision\Broad\AABBTree.cs" />
@@ -166,9 +171,7 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Assets\Audio\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="libmojoshader_64.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

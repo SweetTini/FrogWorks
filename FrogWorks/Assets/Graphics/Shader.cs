@@ -55,7 +55,7 @@ namespace FrogWorks
                 var processor = new EffectProcessor();
                 var pipelineManager = new PipelineManager(string.Empty, string.Empty, string.Empty);
 
-                pipelineManager.Profile = GraphicsProfile.Reach;
+                pipelineManager.Profile = Runner.Application.Game.Graphics.GraphicsProfile;
                 pipelineManager.Platform = TargetPlatform.DesktopGL;
 
                 var processorContext = new PipelineProcessorContext(pipelineManager, new PipelineBuildEvent());

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ChaiFoxes.FMODAudio;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
@@ -24,6 +25,7 @@ namespace FrogWorks
             Graphics.SynchronizeWithVerticalRetrace = true;
             Graphics.GraphicsProfile = GraphicsProfile.Reach;
             Input.Initialize();
+            AudioMgr.Init(string.Empty);
 
             Content.RootDirectory = "Content";
         }
@@ -64,6 +66,7 @@ namespace FrogWorks
                 Input.Dispose();
                 Texture.Dispose();
                 Shader.Dispose();
+                AudioMgr.Unload();
             }
 
             base.Dispose(disposing);
