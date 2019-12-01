@@ -157,10 +157,18 @@ namespace FrogWorks
             {
                 var absolutePath = Path.Combine(Runner.Application.ContentDirectory, filePath);
 
-                using (var stream = File.OpenRead(absolutePath))
+                try
                 {
-                    xnaTexture = Texture2D.FromStream(Runner.Application.Game.GraphicsDevice, stream);
-                    Cache.Add(filePath, xnaTexture);
+                    using (var stream = File.OpenRead(absolutePath))
+                    {
+                        var graphicsDevice = Runner.Application.Game.GraphicsDevice;
+                        xnaTexture = Texture2D.FromStream(graphicsDevice, stream);
+                        Cache.Add(filePath, xnaTexture);
+                    }
+                }
+                catch
+                {
+                    xnaTexture = null;
                 }
             }
 

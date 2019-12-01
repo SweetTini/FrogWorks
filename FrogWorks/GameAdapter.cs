@@ -24,6 +24,7 @@ namespace FrogWorks
             Graphics = new GraphicsDeviceManager(this);
             Graphics.SynchronizeWithVerticalRetrace = true;
             Graphics.GraphicsProfile = GraphicsProfile.Reach;
+
             Input.Initialize();
             AudioMgr.Init(string.Empty);
 
@@ -39,6 +40,8 @@ namespace FrogWorks
             if (DeltaTime > 0f) FramesPerSecond = (int)Math.Round(1f / DeltaTime);
 
             Input.Update(IsActive, DeltaTime);
+            AudioMgr.Update();
+
             _scene?.Update(DeltaTime);
 
             if (_scene != _nextScene)
@@ -63,9 +66,11 @@ namespace FrogWorks
             if (disposing)
             {
                 _scene?.Layers.Dispose();
+
                 Input.Dispose();
                 Texture.Dispose();
                 Shader.Dispose();
+                Audio.Dispose();
                 AudioMgr.Unload();
             }
 

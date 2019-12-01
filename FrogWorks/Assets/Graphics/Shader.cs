@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Content.Pipeline.Processors;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Framework.Content.Pipeline.Builder;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -9,7 +10,7 @@ namespace FrogWorks
 {
     public abstract class Shader
     {
-        private static Dictionary<string, Effect> Cache = new Dictionary<string, Effect>();
+        private static Dictionary<string, Effect> Cache { get; } = new Dictionary<string, Effect>();
 
         public Effect Effect { get; private set; }
 
@@ -29,6 +30,9 @@ namespace FrogWorks
 
         private void Initialize(Effect effect)
         {
+            if (effect == null)
+                throw new NullReferenceException("XNA effect cannot be null.");
+
             Effect = effect;
             Initialize();
         }
@@ -51,21 +55,30 @@ namespace FrogWorks
 
             if (!Cache.TryGetValue(filePath, out effect))
             {
-                var importer = new EffectImporter();
-                var processor = new EffectProcessor();
-                var pipelineManager = new PipelineManager(string.Empty, string.Empty, string.Empty);
-
-                pipelineManager.Profile = Runner.Application.Game.Graphics.GraphicsProfile;
-                pipelineManager.Platform = TargetPlatform.DesktopGL;
-
-                var processorContext = new PipelineProcessorContext(pipelineManager, new PipelineBuildEvent());
                 var absolutePath = Path.Combine(Runner.Application.ContentDirectory, filePath);
-                var content = importer.Import(absolutePath, null);
-                var compiledContent = processor.Process(content, processorContext);
-                var graphicsDevice = Runner.Application.Game.GraphicsDevice;
 
-                effect = new Effect(graphicsDevice, compiledContent.GetEffectCode());
-                Cache.Add(filePath, effect);
+                try
+                {
+                    var importer = new EffectImporter();
+                    var processor = new EffectProcessor();
+                    var pipelineManager = new PipelineManager(string.Empty, string.Empty, string.Empty)
+                    {
+                        Profile = Runner.Application.Game.Graphics.GraphicsProfile,
+                        Platform = TargetPlatform.DesktopGL
+                    };
+
+                    var processorContext = new PipelineProcessorContext(pipelineManager, new PipelineBuildEvent());
+                    var content = importer.Import(absolutePath, null);
+                    var compiledContent = processor.Process(content, processorContext);
+                    var graphicsDevice = Runner.Application.Game.GraphicsDevice;
+
+                    effect = new Effect(graphicsDevice, compiledContent.GetEffectCode());
+                    Cache.Add(filePath, effect);
+                }
+                catch
+                {
+                    effect = null;
+                }
             }
 
             return effect;
