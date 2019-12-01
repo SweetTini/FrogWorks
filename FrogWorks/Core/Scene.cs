@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -120,6 +119,14 @@ namespace FrogWorks
         public void Remove(params Layer[] items) => Layers.Remove(items);
 
         public void Remove(IEnumerable<Layer> items) => Layers.Remove(items);
+
+        public void MoveToTop(Layer item) => Layers.MoveToTop(item);
+
+        public void MoveToBottom(Layer item) => Layers.MoveToBottom(item);
+
+        public void MoveAbove(Layer item, Layer other) => Layers.MoveAbove(item, other);
+
+        public void MoveBelow(Layer item, Layer other) => Layers.MoveBelow(item, other);
 
         public IEnumerator<Layer> GetEnumerator() => Layers.GetEnumerator();
 

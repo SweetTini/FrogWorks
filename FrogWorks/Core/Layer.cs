@@ -141,6 +141,16 @@ namespace FrogWorks
 
         public void Remove(IEnumerable<Entity> items) => Entities.Remove(items);
 
+        public void MoveToTop(Entity item) => Entities.MoveToTop(item);
+
+        public void MoveToBottom(Entity item) => Entities.MoveToBottom(item);
+
+        public void MoveAbove(Entity item, Entity other) => Entities.MoveAbove(item, other);
+
+        public void MoveBelow(Entity item, Entity other) => Entities.MoveBelow(item, other);
+
+        public void SwitchToLayer(Entity item, Layer layer) => Entities.SwitchToLayer(item, layer);
+
         public IEnumerator<Entity> GetEnumerator() => Entities.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
