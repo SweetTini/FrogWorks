@@ -14,6 +14,8 @@ namespace FrogWorks.Demo
 
         private WaveShader WaveShader { get; set; }
 
+        private MusicTrack DemoTrack { get; set; }
+
         public GraphicsTestSceneA() 
             : base()
         {
@@ -39,6 +41,9 @@ namespace FrogWorks.Demo
 
             DefaultLayer.Add(Pattern);
             TextLayer.Add(Font);
+
+            DemoTrack = MusicTrack.Load("Music\\Demonstrate.ogg");
+            DemoTrack.Play();
         }
 
         protected override void AfterUpdate(float deltaTime)

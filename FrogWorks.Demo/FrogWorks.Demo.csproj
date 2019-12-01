@@ -113,6 +113,9 @@
     </None>
     <None Include="app.config" />
     <None Include="app.manifest" />
+    <Content Include="Content\Music\Demonstrate.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
