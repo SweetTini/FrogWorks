@@ -75,7 +75,8 @@ namespace FrogWorks
 
             if (!cache.TryGetValue(filePath, out sound))
             {
-                var absolutePath = Path.Combine(Runner.Application.ContentDirectory, filePath);
+                var contentDirectory = Runner.Application.Game.Content.RootDirectory;
+                var absolutePath = Path.Combine(contentDirectory, filePath);
 
                 try
                 {
