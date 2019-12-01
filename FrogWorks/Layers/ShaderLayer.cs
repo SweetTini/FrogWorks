@@ -1,6 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
 
 namespace FrogWorks
 {
@@ -8,18 +6,10 @@ namespace FrogWorks
     {
         protected Shader Shader { get; private set; }
 
-        public Action<Shader> OnShaderUpdate { get; set; }
-
-        public ShaderLayer(Shader shader, Action<Shader> onShaderUpdate = null)
+        public ShaderLayer(Shader shader)
             : base()
         {
             Shader = shader;
-            OnShaderUpdate = onShaderUpdate;
-        }
-
-        protected override void AfterUpdate(float deltaTime)
-        {
-            OnShaderUpdate?.Invoke(Shader);
         }
 
         protected override void AfterDraw(RendererBatch batch)
