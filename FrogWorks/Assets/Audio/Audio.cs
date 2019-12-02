@@ -13,6 +13,8 @@ namespace FrogWorks
 
         private static Dictionary<string, Sound> StreamCache { get; } = new Dictionary<string, Sound>();
 
+        public static float MasterVolume { get; set; } = 1f;
+
         protected Sound Sound { get; private set; }
 
         protected SoundChannel Channel { get; private set; }
@@ -25,7 +27,7 @@ namespace FrogWorks
                 _volume = value.Clamp(0f, 1f);
 
                 if (Channel != null)
-                    Channel.Volume = _volume;
+                    Channel.Volume = _volume * MasterVolume.Clamp(0f, 1f);
             }
         }
 
@@ -45,7 +47,7 @@ namespace FrogWorks
         public void Play()
         {
             Channel = Sound.Play();
-            Channel.Volume = _volume;
+            Channel.Volume = _volume * MasterVolume.Clamp(0f, 1f);
         }
 
         public void Play(int loopCount)
