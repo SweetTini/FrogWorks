@@ -53,7 +53,7 @@ namespace FrogWorks
         public void Play(int loopCount)
         {
             Play();
-            Channel.Loops = loopCount.Abs();
+            Channel.Loops = (loopCount.Abs() - 1).Max(0);
         }
 
         public void Loop()
