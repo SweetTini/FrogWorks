@@ -6,12 +6,12 @@ namespace FrogWorks.Demo
     {
         BackPattern _pattern;
 
-        public SplashPattern()
+        public SplashPattern(Color? color = null)
             : base()
         {
             var texture = Texture.Load("Textures\\Splash.png");
             _pattern = new BackPattern(texture);
-            _pattern.Color = Color.Red;
+            _pattern.Color = color ?? Color.White;
             Add(_pattern);
         }
     }

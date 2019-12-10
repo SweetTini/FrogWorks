@@ -2,7 +2,7 @@
 
 namespace FrogWorks.Demo
 {
-    public class GraphicsTestSceneA : DefaultScene
+    public class GraphicsTestScene : DefaultScene
     {
         private DebugFont Font { get; set; }
 
@@ -16,7 +16,7 @@ namespace FrogWorks.Demo
 
         private MusicTrack DemoTrack { get; set; }
 
-        public GraphicsTestSceneA() 
+        public GraphicsTestScene() 
             : base()
         {
         }
@@ -29,7 +29,7 @@ namespace FrogWorks.Demo
 
             Add(WaveLayer, TextLayer);
 
-            Pattern = new SplashPattern();
+            Pattern = new SplashPattern(Color.Red);
             Font = new DebugFont(Runner.Application.Width - 16, Runner.Application.Height - 16)
             {
                 Text = "Hello World",

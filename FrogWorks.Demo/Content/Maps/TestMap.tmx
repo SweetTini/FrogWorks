@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" tiledversion="1.1.6" orientation="orthogonal" renderorder="right-down" width="15" height="8" tilewidth="32" tileheight="32" infinite="0" nextobjectid="12">
+ <tileset firstgid="1" name="Tiles" tilewidth="32" tileheight="32" tilecount="4" columns="2">
+  <image source="../Textures/Tiles.png" width="64" height="64"/>
+ </tileset>
+ <tileset firstgid="5" name="Collision?" tilewidth="32" tileheight="32" tilecount="4" columns="2">
+  <image source="../Textures/Properties.png" width="64" height="64"/>
+ </tileset>
+ <tileset firstgid="9" name="Objects?" tilewidth="32" tileheight="32" tilecount="6" columns="6">
+  <image source="../Textures/Objects.png" width="192" height="32"/>
+ </tileset>
+ <layer name="Background" width="15" height="8">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgF5AJmEsWRAQuJ4uQCAAhQAA8=
+  </data>
+ </layer>
+ <layer name="Foreground" width="15" height="8">
+  <data encoding="base64" compression="zlib">
+   eJxjZGBgYKQAkwOGqt6BApTEDwAnrAAn
+  </data>
+ </layer>
+ <layer name="Collision" width="15" height="8">
+  <data encoding="base64" compression="zlib">
+   eJxjYGBgYCUDMyDRpAJkM4aS3oEC5MQPDAMArTQAtQ==
+  </data>
+ </layer>
+ <layer name="Objects" width="15" height="8">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFxAJuMvXxYNHLhcTmxCEO00sJAAAiAABM
+  </data>
+ </layer>
+ <objectgroup name="ObjectData">
+  <object id="6" name="Door2" type="Door" x="128" y="192" width="32" height="32">
+   <properties>
+    <property name="AtX" type="int" value="8"/>
+    <property name="AtY" type="int" value="3"/>
+    <property name="GoToMap" value="OtherTestMap"/>
+    <property name="Transit" type="int" value="1"/>
+   </properties>
+  </object>
+  <object id="9" name="Door1" type="Door" x="320" y="192" width="32" height="32">
+   <properties>
+    <property name="AtX" type="int" value="2"/>
+    <property name="AtY" type="int" value="18"/>
+    <property name="GoToMap" value="OtherTestMap"/>
+    <property name="Transit" type="int" value="1"/>
+   </properties>
+  </object>
+  <object id="10" name="Teleport2" type="Teleport" x="448" y="160" width="32" height="64">
+   <properties>
+    <property name="AtX" type="int" value="1"/>
+    <property name="AtY" type="int" value="6"/>
+    <property name="GoToMap" value="TestMap"/>
+    <property name="Transit" type="int" value="3"/>
+   </properties>
+  </object>
+  <object id="11" name="Teleport1" type="Teleport" x="0" y="160" width="32" height="64">
+   <properties>
+    <property name="AtX" type="int" value="13"/>
+    <property name="AtY" type="int" value="6"/>
+    <property name="GoToMap" value="TestMap"/>
+    <property name="Transit" type="int" value="2"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

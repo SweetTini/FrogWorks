@@ -9,7 +9,7 @@ namespace FrogWorks.Demo
         {
             using (var runner = new DesktopRunner(160, 144, 3))
             {
-                runner.GoTo<GraphicsTestSceneA>();
+                runner.GoTo<TileMapScene>();
                 runner.AllowUserResizing = true;
                 runner.IsMouseVisible = true;
                 runner.Run();
