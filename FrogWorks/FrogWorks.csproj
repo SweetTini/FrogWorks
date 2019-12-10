@@ -103,7 +103,6 @@
     <Compile Include="Core\Entity.cs" />
     <Compile Include="DisplayAdapter.cs" />
     <Compile Include="Assets\Loaders\Tiled.cs" />
-    <Compile Include="Assets\Maps\TileMapContainer.cs" />
     <Compile Include="Layers\AlphaMaskLayer.cs" />
     <Compile Include="Layers\BasicLayer.cs" />
     <Compile Include="Layers\ShaderLayer.cs" />
