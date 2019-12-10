@@ -201,16 +201,17 @@ namespace FrogWorks
                 var gid = layer.GidMap[i];
                 if (gid == 0) continue;
                 var tileSet = tileSets.First(x => x.WithinOffset(gid));
+                gid -= tileSet.GidOffset;
 
                 if (tileSet.TileSet == null)
                 {
-                    BuildUnusedTile(collection, layer, i, gid - tileSet.GidOffset);
+                    BuildUnusedTile(collection, layer, i, gid);
                 }
                 else
                 {
                     if (tileMap == null) tileMap = new TileMap(collection.Size, collection.TileSize);
                     var position = new Point(i % collection.Columns, i / collection.Columns);
-                    var texture = tileSet.TileSet[gid - tileSet.GidOffset];
+                    var texture = tileSet.TileSet[gid];
                     tileMap.Fill(texture, position, new Point(1, 1));
                 }
             }
