@@ -113,8 +113,11 @@ namespace FrogWorks
         #region Static Methods
         public static Texture Load(string filePath)
         {
-            var xnaTexture = TryGetFromCache(filePath);
-            return new Texture(xnaTexture, xnaTexture.Bounds);
+            Texture2D xnaTexture;
+
+            return TryGetFromCache(filePath, out xnaTexture)
+                ? new Texture(xnaTexture, xnaTexture.Bounds)
+                : null;
         }
 
         public static Texture[] Split(Texture2D xnaTexture, Point frameSize)
@@ -149,10 +152,8 @@ namespace FrogWorks
             return Split(texture.XnaTexture, new Point(frameWidth, frameHeight));
         }
 
-        internal static Texture2D TryGetFromCache(string filePath)
+        internal static bool TryGetFromCache(string filePath, out Texture2D xnaTexture)
         {
-            Texture2D xnaTexture;
-
             if (!Cache.TryGetValue(filePath, out xnaTexture))
             {
                 var absolutePath = Path.Combine(Runner.Application.ContentDirectory, filePath);
@@ -169,10 +170,11 @@ namespace FrogWorks
                 catch
                 {
                     xnaTexture = null;
+                    return false;
                 }
             }
 
-            return xnaTexture;
+            return true;
         }
 
         internal static void Dispose()

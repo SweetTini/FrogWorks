@@ -3,282 +3,313 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Xml;
 
 namespace FrogWorks
 {
     public sealed class Tiled
     {
-        const uint FlipHorizontally = 0x80000000,
-                   FlipVertically = 0x40000000,
-                   FlipDiagonally = 0x20000000;
-
-        public static TileMapContainer Load(string filePath)
+        public static TileMapCollection Load(string filePath)
         {
-            var absolutePath = Path.Combine(Runner.Application.ContentDirectory, filePath);
+            TileMapCollection collection;
+            TileMapCollection.TryGetFromCache(filePath, Read, out collection);
+            return collection;
+        }
 
-            using (var stream = File.OpenRead(absolutePath))
+        static TileMapCollection Read(string filePath)
+        {
+            try
             {
-                var container = new TileMapContainer();
-                Read(stream, container, Path.GetDirectoryName(filePath));
-                return container;
+                var absolutePath = Path.Combine(Runner.Application.ContentDirectory, filePath);
+
+                using (var stream = File.OpenRead(absolutePath))
+                {
+                    var collection = new TileMapCollection();
+                    var xmlDoc = new XmlDocument();
+                    var rootDirectory = Path.GetDirectoryName(filePath);
+
+                    xmlDoc.Load(stream);
+                    ReadMap(collection, xmlDoc, rootDirectory);
+
+                    return collection;
+                }
+            }
+            catch
+            {
+                return null;
             }
         }
 
-        static void Read(FileStream stream, TileMapContainer container, string directory)
+        static void ReadMap(TileMapCollection collection, XmlDocument xmlDoc, string rootDirectory)
         {
-            var document = new XmlDocument();
-            document.Load(stream);
+            var xmlRoot = xmlDoc["map"];
 
-            var xmlRoot = document["map"];
-            var infos = new List<TileSetInfo>();
+            collection.Size = new Point(xmlRoot.AttrToInt32("width"), xmlRoot.AttrToInt32("height"));
+            collection.TileSize = new Point(xmlRoot.AttrToInt32("tilewidth"), xmlRoot.AttrToInt32("tileheight"));
+            collection.BackgroundColor = xmlRoot.AttrToColor("backgroundcolor");
 
-            ReadMap(xmlRoot, container);
-            ReadTileSets(xmlRoot, container, infos, directory);
-            ReadLayers(xmlRoot, container, infos);
-            ReadObjectLayers(xmlRoot, container);
+            var tileSets = ReadTileSets(collection, xmlRoot, rootDirectory);
+            var layers = ReadLayers(collection, xmlRoot, tileSets);
+            var objects = ReadObjectGroups(xmlRoot);
+
+            layers.ForEach(x => BuildTileMap(collection, tileSets, x));
+            objects.ForEach(x => BuildObject(collection, x));
         }
 
-        static void ReadMap(XmlElement xmlRoot, TileMapContainer container)
+        static List<TiledTileSet> ReadTileSets(TileMapCollection collection, XmlElement xmlRoot, string rootDirectory)
         {
-            container.Size = new Point(xmlRoot.AttrToInt32("width"), 
-                                       xmlRoot.AttrToInt32("height"));
-            container.TileSize = new Point(xmlRoot.AttrToInt32("tilewidth"),
-                                           xmlRoot.AttrToInt32("tileheight"));
-        }
+            var tileSets = new List<TiledTileSet>();
 
-        static void ReadTileSets(XmlElement xmlRoot, 
-                                 TileMapContainer container,
-                                 List<TileSetInfo> infos, 
-                                 string directory)
-        {
             foreach (XmlElement xmlTileSet in xmlRoot.GetElementsByTagName("tileset"))
             {
-                var info = new TileSetInfo()
-                {
-                    Name = xmlTileSet.Attribute("name")
-                        .Replace("?", "").Replace(" ", "-").Replace("_", "-").ToLower(),
-                    Offset = xmlTileSet.AttrToInt32("firstgid"),
-                    TileCount = xmlTileSet.AttrToInt32("tilecount"),
-                    Source = Path.Combine(directory, xmlTileSet["image"].Attribute("source")),
-                    ReferenceOnly = xmlTileSet.Attribute("name").EndsWith("?")
-                };
+                var source = Path.Combine(rootDirectory, xmlTileSet["image"].Attribute("source"));
+                var texture = Texture.Load(source);
 
-                if (!info.ReferenceOnly)
+                tileSets.Add(new TiledTileSet()
                 {
-                    var texture = Texture.Load(info.Source);
-                    info.TileSet = new TileSet(texture, container.TileWidth, container.TileHeight);
-                }
-
-                infos.Add(info);
+                    TileSet = texture != null ? new TileSet(texture, collection.TileSize) : null,
+                    GidOffset = xmlTileSet.AttrToInt32("firstgid"),
+                    TileCount = xmlTileSet.AttrToInt32("tilecount")
+                });
             }
+
+            return tileSets;
         }
 
-        static void ReadLayers(XmlElement xmlRoot, 
-                               TileMapContainer container, 
-                               List<TileSetInfo> infos)
+        static List<TiledLayer> ReadLayers(TileMapCollection collection, XmlElement xmlRoot, List<TiledTileSet> tileSets)
         {
+            var layers = new List<TiledLayer>();
+
             foreach (XmlElement xmlLayer in xmlRoot.GetElementsByTagName("layer"))
             {
-                var layerName = xmlLayer.Attribute("name")
-                    .Replace(" ", "-").Replace("_", "-").ToLower();
-                var tileData = ReadLayerData(xmlLayer["data"], container);
-                CreateLayer(container, infos, tileData, layerName);
+                layers.Add(new TiledLayer()
+                {
+                    Name = xmlLayer.Attribute("name").ToLower(),
+                    GidMap = ReadLayer(collection, xmlLayer["data"]),
+                    Properties = ReadProperties(xmlLayer)
+                });
+            }
+
+            return layers;
+        }
+
+        static int[] ReadLayer(TileMapCollection collection, XmlElement xmlRoot)
+        {
+            var gidMap = new int[collection.Columns * collection.Rows];
+            var hasEncoding = !string.IsNullOrEmpty(xmlRoot.Attribute("encoding"));
+            var compression = xmlRoot.AttrToEnum<TiledCompression>("compression");
+
+            if (hasEncoding) ReadTileMap(xmlRoot, gidMap, compression);
+            else ReadTileMap(xmlRoot, gidMap);
+
+            return gidMap;
+        }
+
+        static void ReadTileMap(XmlElement xmlRoot, int[] gidMap)
+        {
+            var index = 0;
+
+            foreach (XmlElement xmlTile in xmlRoot.GetElementsByTagName("tile"))
+            {
+                var gid = xmlTile.AttrToInt32("gid");
+                gidMap[index] = gid;
+                index++;
             }
         }
 
-        static int[,] ReadLayerData(XmlElement xmlData, TileMapContainer container)
+        static void ReadTileMap(XmlElement xmlRoot, int[] gidMap, TiledCompression compression)
         {
-            var tileData = new int[container.Columns, container.Rows];
-
-            if (!string.IsNullOrEmpty(xmlData.Attribute("encoding")))
+            var encoding = xmlRoot.Attribute("encoding");
+            if (encoding == "base64")
             {
-                ReadEncodedLayerData(xmlData, tileData);
-            }
-            else
-            {
-                var index = 0;
-
-                foreach (XmlElement xmlTile in xmlData.GetElementsByTagName("tile"))
+                using (var stream = GetDecodedStream(xmlRoot, compression))
                 {
-                    var gid = xmlTile.AttrToInt32("gid");
-                    var x = index % tileData.GetLength(0);
-                    var y = index / tileData.GetLength(0);
-
-                    tileData[x, y] = gid;
-                    index++;
-                }
-            }
-
-            return tileData;
-        }
-
-        static void ReadEncodedLayerData(XmlElement xmlData, int[,] tileData)
-        {
-            if (xmlData.Attribute("encoding") != "base64")
-                throw new Exception("Tiled supports Base64 encoding only.");
-
-            var rawData = Convert.FromBase64String(xmlData.InnerText);
-            var stream = new MemoryStream(rawData, false) as Stream;
-
-            switch (xmlData.Attribute("compression"))
-            {
-                case "gzip":
-                    stream = new GZipStream(stream, CompressionMode.Decompress);
-                    break;
-                case "zlib":
+                    using (var reader = new BinaryReader(stream))
                     {
-                        var size = rawData.Length - 6;
-                        var data = new byte[size];
+                        const uint horizontal = 0x80000000;
+                        const uint vertical = 0x40000000;
+                        const uint diagonal = 0x20000000;
 
-                        Array.Copy(rawData, 2, data, 0, size);
-                        stream = new MemoryStream(data, false);
-                        stream = new DeflateStream(stream, CompressionMode.Decompress);
-                    }
-                    break;
-                default:
-                    break;
-            }
-
-            using (stream)
-            {
-                using (var reader = new BinaryReader(stream))
-                {
-                    for (int i = 0; i < tileData.GetLength(0) * tileData.GetLength(1); i++)
-                    {
-                        var ugid = reader.ReadUInt32();
-                        ugid &= ~(FlipHorizontally | FlipVertically | FlipDiagonally);
-
-                        var x = i % tileData.GetLength(0);
-                        var y = i / tileData.GetLength(0);
-                        tileData[x, y] = (int)ugid;
+                        for (int i = 0; i < gidMap.Length; i++)
+                        {
+                            var ugid = reader.ReadUInt32();
+                            ugid &= ~(horizontal | vertical | diagonal);
+                            gidMap[i] = (int)ugid;
+                        }
                     }
                 }
             }
         }
 
-        static void ReadObjectLayers(XmlElement xmlRoot, TileMapContainer container)
+        static List<TiledObject> ReadObjectGroups(XmlElement xmlRoot)
         {
-            foreach (XmlElement xmlObjectLayer in xmlRoot.GetElementsByTagName("objectgroup"))
-                ReadObjects(xmlObjectLayer, container);
-        }
+            var objects = new List<TiledObject>();
 
-        static void ReadObjects(XmlElement xmlObjectLayer, TileMapContainer container)
-        {
-            foreach (XmlElement xmlObject in xmlObjectLayer.GetElementsByTagName("object"))
+            foreach (XmlElement xmlObjectGroup in xmlRoot.GetElementsByTagName("objectgroup"))
             {
-                var objName = xmlObject.Attribute("name");
-                var objType = xmlObject.Attribute("type");
-                var bounds = xmlObject.AttributeToRectangle().SnapToGrid(container.TileSize.ToVector2());
-
-                var obj = new TileMapContainerObject()
+                foreach (XmlElement xmlObject in xmlObjectGroup.GetElementsByTagName("object"))
                 {
-                    Position = bounds.Location,
-                    Size = bounds.Size
-                };
-
-                if (!string.IsNullOrWhiteSpace(objName)) obj.AddProperty("objectname", objName);
-                if (!string.IsNullOrWhiteSpace(objType)) obj.AddProperty("objecttype", objType);
-
-                foreach (var property in ReadProperties(xmlObject))
-                    obj.AddProperty(property.Key, property.Value);
-
-                container.AddObject(obj);
+                    objects.Add(new TiledObject()
+                    {
+                        Name = xmlObject.Attribute("name").ToLower(),
+                        Type = xmlObject.Attribute("type").ToLower(),
+                        Region = xmlObject.AttributeToRectangle(),
+                        Properties = ReadProperties(xmlObject)
+                    });
+                }
             }
+
+            return objects;
         }
 
-        static Dictionary<string, object> ReadProperties(XmlElement xmlElement)
+        static Dictionary<string, object> ReadProperties(XmlElement xmlRoot)
         {
             var properties = new Dictionary<string, object>();
-            var xmlProperties = xmlElement["properties"]?.GetElementsByTagName("property");
+            var xmlProperties = xmlRoot["properties"]?.GetElementsByTagName("property");
 
             if (xmlProperties != null)
             {
-                foreach (XmlElement xmlProperty in xmlProperties)
+                foreach (XmlElement xmlProp in xmlProperties)
                 {
-                    var propertyName = xmlProperty.Attribute("name").ToLower();
-                    object propertyValue;
+                    var name = xmlProp.Attribute("name").ToLower();
+                    object value;
 
-                    switch (xmlProperty.Attribute("type"))
+                    switch (xmlProp.Attribute("type"))
                     {
-                        case "bool": propertyValue = xmlProperty.AttrToBoolean("value"); break;
-                        case "int": propertyValue = xmlProperty.AttrToInt32("value"); break;
-                        case "float": propertyValue = xmlProperty.AttrToSingle("value"); break;
-                        case "color": propertyValue = xmlProperty.AttrToColor("value"); break;
-                        default: propertyValue = xmlProperty.Attribute("value"); break;
+                        case "bool": value = xmlProp.AttrToBoolean("value"); break;
+                        case "int": value = xmlProp.AttrToInt32("value"); break;
+                        case "float": value = xmlProp.AttrToSingle("value"); break;
+                        case "color": value = xmlProp.AttrToColor("value"); break;
+                        default: value = xmlProp.Attribute("value"); break;
                     }
 
-                    properties.Add(propertyName, propertyValue);
+                    properties.Add(name, value);
                 }
             }
 
             return properties;
         }
 
-        static void CreateLayer(TileMapContainer container,
-                                List<TileSetInfo> infos,
-                                int[,] tileData,
-                                string layerName)
+        #region Import Methods
+        static void BuildTileMap(TileMapCollection collection, List<TiledTileSet> tileSets, TiledLayer layer)
         {
-            var tileLayer = new TileMap(container.Columns, container.Rows,
-                                      container.TileWidth, container.TileHeight);
-            var tileLayerFilled = false;
+            var tileMap = null as TileMap;
 
-            foreach (var info in infos)
+            for (int i = 0; i < layer.GidMap.Length; i++)
             {
-                var dataLayer = new int[container.Columns, container.Rows];
-                var dataLayerFilled = false;
+                var gid = layer.GidMap[i];
+                if (gid == 0) continue;
+                var tileSet = tileSets.First(x => x.WithinOffset(gid));
 
-                for (int i = 0; i < tileData.GetLength(0) * tileData.GetLength(1); i++)
+                if (tileSet.TileSet == null)
                 {
-                    var x = i % tileData.GetLength(0);
-                    var y = i / tileData.GetLength(0);
-                    var index = tileData[x, y];
-
-                    if (index.Between(info.Offset, info.Offset + info.TileCount - 1))
-                    {
-                        index -= info.Offset;
-
-                        if (info.ReferenceOnly)
-                        {
-                            dataLayer[x, y] = index + 1;
-                            dataLayerFilled = true;
-                        }
-                        else
-                        {
-                            tileLayer.Fill(info.TileSet[index], x, y, 1, 1);
-                            tileLayerFilled = true;
-                        }
-                    }
+                    BuildUnusedTile(collection, layer, i, gid - tileSet.GidOffset);
                 }
-
-                if (dataLayerFilled)
+                else
                 {
-                    var dataLayerName = info.Name;
-
-                    if (dataLayerName != layerName)
-                        dataLayerName = $"{layerName}-{dataLayerName}";
-
-                    container.AddDataLayer(dataLayerName, dataLayer);
+                    if (tileMap == null) tileMap = new TileMap(collection.Size, collection.TileSize);
+                    var position = new Point(i % collection.Columns, i / collection.Columns);
+                    var texture = tileSet.TileSet[gid - tileSet.GidOffset];
+                    tileMap.Fill(texture, position, new Point(1, 1));
                 }
             }
 
-            if (tileLayerFilled) container.AddTileLayer(layerName, tileLayer);
+            if (tileMap != null)
+            {
+                collection.InternalTileMaps.Add(new TileMapCollectionTileMap()
+                {
+                    GroupName = layer.Name,
+                    Component = tileMap,
+                    InternalProperties = layer.Properties
+                });
+            }
         }
 
-        class TileSetInfo
+        static void BuildUnusedTile(TileMapCollection collection, TiledLayer layer, int index, int gid)
         {
-            public string Name { get; set; }
+            var position = new Point(index % collection.Columns, index / collection.Columns);
 
-            public int Offset { get; set; }
+            collection.InternalUnusedTiles.Add(new TileMapCollectionTile()
+            {
+                Gid = gid,
+                GroupName = layer.Name,
+                Position = position * collection.TileSize
+            });
+        }
+
+        static void BuildObject(TileMapCollection collection, TiledObject obj)
+        {
+            collection.InternalObjects.Add(new TileMapCollectionObject()
+            {
+                Name = obj.Name,
+                Type = obj.Type,
+                Region = obj.Region,
+                InternalProperties = obj.Properties
+            });
+        }
+        #endregion
+
+        #region Dependencies
+        static Stream GetDecodedStream(XmlElement xmlRoot, TiledCompression compression)
+        {
+            var rawData = Convert.FromBase64String(xmlRoot.InnerText);
+
+            switch (compression)
+            {
+                case TiledCompression.Gzip:
+                    return new GZipStream(
+                        new MemoryStream(rawData, false),
+                        CompressionMode.Decompress);
+                case TiledCompression.Zlib:
+                    {
+                        var data = new byte[rawData.Length - 6];
+                        Array.Copy(rawData, 2, data, 0, data.Length);
+                        return new DeflateStream(
+                            new MemoryStream(data, false),
+                            CompressionMode.Decompress);
+                    }
+                default:
+                    throw new Exception("Unrecognizable compression type.");
+            }
+        }
+
+        class TiledTileSet
+        {
+            public TileSet TileSet { get; set; }
+
+            public int GidOffset { get; set; }
 
             public int TileCount { get; set; }
 
-            public string Source { get; set; }
-
-            public bool ReferenceOnly { get; set; }
-
-            public TileSet TileSet { get; set; }
+            public bool WithinOffset(int index) => index.Between(GidOffset, GidOffset + TileCount - 1);
         }
+
+        class TiledLayer
+        {
+            public string Name { get; set; }
+
+            public int[] GidMap { get; set; }
+
+            public Dictionary<string, object> Properties { get; set; }
+        }
+
+        class TiledObject
+        {
+            public string Name { get; set; }
+
+            public string Type { get; set; }
+
+            public Rectangle Region { get; set; }
+
+            public Dictionary<string, object> Properties { get; set; }
+        }
+
+        enum TiledCompression
+        {
+            Gzip,
+            Zlib
+        }
+        #endregion
     }
 }

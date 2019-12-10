@@ -768,6 +768,19 @@ namespace FrogWorks
                 : defaultValue;
         }
 
+        public static T AttrToEnum<T>(this XmlElement element, string name, T defaultValue = default(T))
+            where T : struct
+        {
+            if (element.HasAttribute(name))
+            {
+                T enumValue;
+                if (Enum.TryParse(element.Attributes[name].InnerText, true, out enumValue))
+                    return enumValue;
+            }
+
+            return defaultValue;
+        }
+
 
         public static Color AttrToColor(this XmlElement element, string name, Color defaultValue = default(Color))
         {
@@ -776,14 +789,16 @@ namespace FrogWorks
                 : defaultValue;
         }
 
-        public static Point AttrToPoint(this XmlElement element, string nameForX, string nameForY, Point defaultValue = default(Point))
+        public static Point AttrToPoint(this XmlElement element, string nameForX, string nameForY, 
+            Point defaultValue = default(Point))
         {
             return new Point(
                 element.AttrToInt32(nameForX, defaultValue.X),
                 element.AttrToInt32(nameForY, defaultValue.Y));
         }
 
-        public static Vector2 AttrToVector2(this XmlElement element, string nameForX, string nameForY, Vector2 defaultValue = default(Vector2))
+        public static Vector2 AttrToVector2(this XmlElement element, string nameForX, string nameForY, 
+            Vector2 defaultValue = default(Vector2))
         {
             return new Vector2(
                 element.AttrToSingle(nameForX, defaultValue.X),

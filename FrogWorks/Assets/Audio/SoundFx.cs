@@ -12,8 +12,11 @@ namespace FrogWorks
         #region Static Methods
         public static SoundFx Load(string filePath)
         {
-            var sound = TryGetFromCache(filePath, false);
-            return new SoundFx(sound);
+            Sound sound;
+
+            return TryGetFromCache(filePath, false, out sound)
+                ? new SoundFx(sound)
+                : null;
         }
         #endregion
     }

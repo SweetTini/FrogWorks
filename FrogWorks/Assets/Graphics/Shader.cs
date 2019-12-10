@@ -43,16 +43,20 @@ namespace FrogWorks
         public static T Load<T>(string filePath)
             where T : Shader, new()
         {
-            var effect = TryGetFromCache(filePath);
-            var shader = new T();
-            shader.Initialize(effect);
-            return shader;
-        }
-
-        internal static Effect TryGetFromCache(string filePath)
-        {
             Effect effect;
 
+            if (TryGetFromCache(filePath, out effect))
+            {
+                var shader = new T();
+                shader.Initialize(effect);
+                return shader;
+            }
+
+            return null;
+        }
+
+        internal static bool TryGetFromCache(string filePath, out Effect effect)
+        {
             if (!Cache.TryGetValue(filePath, out effect))
             {
                 var absolutePath = Path.Combine(Runner.Application.ContentDirectory, filePath);
@@ -78,10 +82,11 @@ namespace FrogWorks
                 catch
                 {
                     effect = null;
+                    return false;
                 }
             }
 
-            return effect;
+            return true;
         }
 
         internal static void Dispose()

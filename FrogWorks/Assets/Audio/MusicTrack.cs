@@ -22,8 +22,11 @@ namespace FrogWorks
         #region Static Methods
         public static MusicTrack Load(string filePath)
         {
-            var sound = TryGetFromCache(filePath, true);
-            return new MusicTrack(sound);
+            Sound sound;
+
+            return TryGetFromCache(filePath, true, out sound)
+                ? new MusicTrack(sound)
+                : null;
         }
         #endregion
     }

@@ -53,6 +53,7 @@
     <Compile Include="Assets\Audio\MusicTrack.cs" />
     <Compile Include="Assets\Audio\SoundFx.cs" />
     <Compile Include="Assets\Graphics\Shader.cs" />
+    <Compile Include="Assets\Maps\TileMapCollection.cs" />
     <Compile Include="Collision\Broad\AABB.cs" />
     <Compile Include="Collision\Broad\AABBTree.cs" />
     <Compile Include="Collision\Colliders\BitFlagMapCollider.cs" />

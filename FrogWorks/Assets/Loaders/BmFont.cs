@@ -12,22 +12,29 @@ namespace FrogWorks
         {
             var absolutePath = Path.Combine(Runner.Application.ContentDirectory, filePath);
 
-            using (var stream = File.OpenRead(absolutePath))
+            try
             {
-                var font = new BitmapFont();
-
-                switch (fileType)
+                using (var stream = File.OpenRead(absolutePath))
                 {
-                    default:
-                    case BmFontFileType.Binary:
-                        BinaryFile.Read(stream, font, Path.GetDirectoryName(filePath));
-                        break;
-                    case BmFontFileType.Xml:
-                        XmlFile.Read(stream, font, Path.GetDirectoryName(filePath));
-                        break;
-                }
+                    var font = new BitmapFont();
 
-                return font;
+                    switch (fileType)
+                    {
+                        default:
+                        case BmFontFileType.Binary:
+                            BinaryFile.Read(stream, font, Path.GetDirectoryName(filePath));
+                            break;
+                        case BmFontFileType.Xml:
+                            XmlFile.Read(stream, font, Path.GetDirectoryName(filePath));
+                            break;
+                    }
+
+                    return font;
+                }
+            }
+            catch
+            {
+                return null;
             }
         }
 

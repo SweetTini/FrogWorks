@@ -69,10 +69,8 @@ namespace FrogWorks
         public void Pause() => Channel?.Pause();
 
         #region Static Methods
-        internal static Sound TryGetFromCache(string filePath, bool isStreamed)
+        internal static bool TryGetFromCache(string filePath, bool isStreamed, out Sound sound)
         {
-            Sound sound;
-
             var cache = isStreamed ? StreamCache : SoundCache;
 
             if (!cache.TryGetValue(filePath, out sound))
@@ -91,10 +89,11 @@ namespace FrogWorks
                 catch
                 {
                     sound = null;
+                    return false;
                 }
             }
 
-            return sound;
+            return true;
         }
 
         internal static void Dispose()
