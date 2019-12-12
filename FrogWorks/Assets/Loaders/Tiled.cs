@@ -218,36 +218,46 @@ namespace FrogWorks
 
             if (tileMap != null)
             {
-                collection.InternalTileMaps.Add(new TileMapCollectionTileMap()
+                var newTileMap = new TileMapCollectionTileMap()
                 {
                     GroupName = layer.Name,
                     Component = tileMap,
-                    InternalProperties = layer.Properties
-                });
+                };
+
+                layer.Properties.ToList()
+                    .ForEach(x => newTileMap.InternalProperties.Add(x.Key, x.Value));
+
+                collection.InternalTileMaps.Add(newTileMap);
             }
         }
 
         static void BuildUnusedTile(TileMapCollection collection, TiledLayer layer, int index, int gid)
         {
-            var position = new Point(index % collection.Columns, index / collection.Columns);
-
-            collection.InternalUnusedTiles.Add(new TileMapCollectionTile()
+            var newTile = new TileMapCollectionTile()
             {
                 Gid = gid,
                 GroupName = layer.Name,
-                Position = position * collection.TileSize
-            });
+                Position = new Point(
+                    index % collection.Columns, 
+                    index / collection.Columns)
+            };
+
+            collection.InternalUnusedTiles.Add(newTile);
         }
 
         static void BuildObject(TileMapCollection collection, TiledObject obj)
         {
-            collection.InternalObjects.Add(new TileMapCollectionObject()
+            var newObj = new TileMapCollectionObject()
             {
                 Name = obj.Name,
                 Type = obj.Type,
-                Region = obj.Region,
-                InternalProperties = obj.Properties
-            });
+                Region = obj.Region.SnapToGrid(collection.TileSize),
+            };
+
+            obj.Properties.ToList()
+                .ForEach(x => newObj.InternalProperties.Add(x.Key, x.Value));
+
+            collection.InternalObjects.Add(newObj);
         }
         #endregion
 
