@@ -282,9 +282,9 @@ namespace FrogWorks
 
         public static Rectangle SnapToGrid(this Rectangle rect, Vector2 size, Vector2 offset = default(Vector2))
         {
-            var upper = (rect.Location.ToVector2() - offset).Divide(size).Floor();
-            var lower = ((rect.Location + rect.Size).ToVector2() - offset).Divide(size).Ceiling();
-            return new Rectangle(upper.ToPoint(), (lower - upper).ToPoint());
+            var upper = (rect.Location.ToVector2() - offset).Divide(size).Floor().ToPoint();
+            var lower = ((rect.Location + rect.Size).ToVector2() - offset).Divide(size).Ceiling().ToPoint();
+            return new Rectangle(upper, lower - upper);
         }
 
         public static Rectangle Transform(this Rectangle rect, Vector2? position = null, Vector2? origin = null, Vector2? scale = null, float angle = 0f)
