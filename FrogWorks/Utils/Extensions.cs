@@ -275,9 +275,7 @@ namespace FrogWorks
 
         public static Rectangle SnapToGrid(this Rectangle rect, Point size, Point offset = default(Point))
         {
-            var upper = (rect.Location - offset).Divide(size);
-            var lower = ((rect.Location + rect.Size) - offset).Divide(size);
-            return new Rectangle(upper, lower - upper);
+            return rect.SnapToGrid(size.ToVector2(), offset.ToVector2());
         }
 
         public static Rectangle SnapToGrid(this Rectangle rect, Vector2 size, Vector2 offset = default(Vector2))

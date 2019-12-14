@@ -60,7 +60,7 @@ namespace FrogWorks
             return collection != null;
         }
 
-        internal static void Dispose()
+        public static void Dispose()
         {
             Cache.Clear();
         }
