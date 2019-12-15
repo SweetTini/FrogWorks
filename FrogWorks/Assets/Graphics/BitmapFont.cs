@@ -251,6 +251,8 @@ namespace FrogWorks
                 else
                 {
                     _builder.Append(words[i]);
+                    if (words[i] == "\n")
+                        width = 0;
                     width += wordWidth;
                 }
             }
