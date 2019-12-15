@@ -790,7 +790,7 @@ namespace FrogWorks
         public static Color AttrToColor(this XmlElement element, string name, Color defaultValue = default(Color))
         {
             return element.Attributes[name] != null
-                ? ColorConvert.FromHex(element.Attributes[name].InnerText)
+                ? ColorConvert.FromHex(element.Attributes[name].InnerText.Replace("#", ""))
                 : defaultValue;
         }
 
