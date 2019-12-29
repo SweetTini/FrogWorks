@@ -157,7 +157,7 @@ namespace FrogWorks
             return (float)(result ?? defaultValue);
         }
 
-        public string GetAsSingle(string key, string defaultValue = "")
+        public string GetAsString(string key, string defaultValue = "")
         {
             object result;
             TryGetValue(key, out result);
