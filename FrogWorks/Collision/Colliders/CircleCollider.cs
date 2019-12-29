@@ -28,12 +28,26 @@ namespace FrogWorks
             set { Radius = (value.Abs().X > value.Abs().Y ? value.X : value.Y) / 2f; }
         }
 
-        public CircleCollider(float radius, float x = 0f, float y = 0f)
-            : base(new Vector2(x, y))
+        public CircleCollider(float radius)
+            : this(radius, Vector2.Zero)
         {
             _radius = Math.Abs(radius);
         }
 
-        public override Collider Clone() => new CircleCollider(Radius, X, Y);
+        public CircleCollider(float radius, Vector2 offset)
+            : base(offset)
+        {
+            _radius = Math.Abs(radius);
+        }
+
+        public CircleCollider(float radius, float offsetX, float offsetY)
+            : this(radius, new Vector2(offsetX, offsetY))
+        {
+        }
+
+        public override Collider Clone()
+        {
+            return new CircleCollider(Radius, Position);
+        }
     }
 }

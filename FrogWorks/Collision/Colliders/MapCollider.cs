@@ -12,11 +12,11 @@ namespace FrogWorks
 
         protected Map<T> Map { get; private set; }
 
-        public Point MapSize => new Point(Map.Columns, Map.Rows);
+        public Point MapSize => Map.Size;
 
-        public int Columns => MapSize.X;
+        public int Columns => Map.Columns;
 
-        public int Rows => MapSize.Y;
+        public int Rows => Map.Rows;
 
         public Point CellSize
         {
@@ -66,12 +66,17 @@ namespace FrogWorks
             set { AbsolutePosition = value - Size; }
         }
 
-        protected MapCollider(int columns, int rows, int cellWidth, int cellHeight, float x = 0f, float y = 0f) 
-            : base(new Vector2(x, y))
+        protected MapCollider(Point size, Point cellSize, Vector2 offset)
+            : base(offset)
         {
-            Map = new Map<T>(Math.Abs(columns), Math.Abs(rows));
+            Map = new Map<T>(size);
 
-            _cellSize = new Point(cellWidth, cellHeight).Abs();
+            _cellSize = cellSize.Abs();
+        }
+
+        protected MapCollider(int columns, int rows, int cellWidth, int cellHeight, float offsetX, float offsetY)
+            : this(new Point(columns, rows), new Point(cellWidth, cellHeight), new Vector2(offsetX, offsetY))
+        {
         }
 
         public sealed override void Draw(RendererBatch batch, Color stroke, Color? fill = null)
@@ -105,7 +110,12 @@ namespace FrogWorks
                 (p, e) => Validate(p, s => (collider as ShapeCollider).Collide(s)));
         }
 
-        public void Populate(T[,] items, int offsetX = 0, int offsetY = 0)
+        public void Populate(T[,] items)
+        {
+            Populate(items, Point.Zero);
+        }
+
+        public void Populate(T[,] items, Point offset)
         {
             var columns = items.GetLength(0);
             var rows = items.GetLength(1);
@@ -115,11 +125,21 @@ namespace FrogWorks
                 var x = i % columns;
                 var y = i / columns;
 
-                Map[x + offsetX, y + offsetY] = items[x, y];
+                Map[x + offset.X, y + offset.Y] = items[x, y];
             }
         }
 
-        public void Overlay(T[,] items, int offsetX = 0, int offsetY = 0)
+        public void Populate(T[,] items, int offsetX, int offsetY)
+        {
+            Populate(items, new Point(offsetX, offsetY));
+        }
+
+        public void Overlay(T[,] items)
+        {
+            Overlay(items, Point.Zero);
+        }
+
+        public void Overlay(T[,] items, Point offset)
         {
             var columns = items.GetLength(0);
             var rows = items.GetLength(1);
@@ -130,27 +150,43 @@ namespace FrogWorks
                 var y = i / columns;
                 if (items[x, y].Equals(Map.Empty)) continue;
 
-                Map[x + offsetX, y + offsetY] = items[x, y];
+                Map[x + offset.X, y + offset.Y] = items[x, y];
             }
+        }
+
+        public void Overlay(T[,] items, int offsetX, int offsetY)
+        {
+            Overlay(items, new Point(offsetX, offsetY));
+        }
+
+        public void Fill(T item, Point location)
+        {
+            Fill(item, location, new Point(1, 1));
+        }
+
+        public void Fill(T item, Point location, Point size)
+        {
+            var upper = location.Max(Point.Zero);
+            var lower = (location + size).Min(MapSize);
+            var cellSize = lower - upper;
+
+            for (int i = 0; i < cellSize.X * cellSize.Y; i++)
+            {
+                var tx = upper.X + (i % cellSize.X);
+                var ty = upper.Y + (i / cellSize.X);
+
+                Map[tx, ty] = item;
+            }
+        }
+
+        public void Fill(T item, int x, int y)
+        {
+            Fill(item, new Point(x, y), new Point(1, 1));
         }
 
         public void Fill(T item, int x, int y, int columns, int rows)
         {
-            var x1 = Math.Max(x, 0);
-            var y1 = Math.Max(y, 0);
-            var x2 = Math.Min(x + columns, Columns);
-            var y2 = Math.Min(y + rows, Rows);
-
-            var cellColumns = x2 - x1;
-            var cellRows = y2 - y1;
-
-            for (int i = 0; i < cellColumns * cellRows; i++)
-            {
-                var tx = x1 + (i % cellColumns);
-                var ty = y1 + (i / cellColumns);
-
-                Map[tx, ty] = item;
-            }
+            Fill(item, new Point(x, y), new Point(columns, rows));
         }
 
         public void Clear() => Map.Clear();

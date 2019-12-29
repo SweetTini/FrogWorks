@@ -8,8 +8,26 @@ namespace FrogWorks
     {
         private Dictionary<BitFlag, MapColorDefinition> _colors;
 
-        public BitFlagMapCollider(int columns, int rows, int cellWidth, int cellHeight, float x = 0, float y = 0) 
-            : base(columns, rows, cellWidth, cellHeight, x, y)
+        public BitFlagMapCollider(Point size, Point cellSize)
+            : base(size, cellSize, Vector2.Zero)
+        {
+            _colors = new Dictionary<BitFlag, MapColorDefinition>();
+        }
+
+        public BitFlagMapCollider(Point size, Point cellSize, Vector2 offset)
+            : base(size, cellSize, offset)
+        {
+            _colors = new Dictionary<BitFlag, MapColorDefinition>();
+        }
+
+        public BitFlagMapCollider(int columns, int rows, int cellWidth, int cellHeight)
+            : base(columns, rows, cellWidth, cellHeight, 0f, 0f)
+        {
+            _colors = new Dictionary<BitFlag, MapColorDefinition>();
+        }
+
+        public BitFlagMapCollider(int columns, int rows, int cellWidth, int cellHeight, float offsetX, float offsetY)
+            : base(columns, rows, cellWidth, cellHeight, offsetX, offsetY)
         {
             _colors = new Dictionary<BitFlag, MapColorDefinition>();
         }
@@ -40,7 +58,7 @@ namespace FrogWorks
 
         public override Collider Clone()
         {
-            var collider = new BitFlagMapCollider(Columns, Rows, CellWidth, CellHeight, X, Y);
+            var collider = new BitFlagMapCollider(MapSize, CellSize, Position);
             collider.Populate(Map.ToArray());
             return collider;
         }
@@ -65,7 +83,7 @@ namespace FrogWorks
 
         public override Shape ShapeAt(Point point)
         {
-            return !Map.IsEmpty(point.X, point.Y)
+            return !Map.IsEmpty(point)
                 ? new RectangleF(
                     AbsolutePosition + (point * CellSize).ToVector2(),
                     CellSize.ToVector2())

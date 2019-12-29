@@ -115,6 +115,11 @@ namespace FrogWorks
             UpdateVertices(true);
         }
 
+        public Polygon(float x, float y, Vector2[] vertices)
+            : this(new Vector2(x, y), vertices)
+        {
+        }
+
         public override void Draw(RendererBatch batch, Color stroke, Color? fill = null)
         {
             batch.DrawPrimitives((primitive) =>

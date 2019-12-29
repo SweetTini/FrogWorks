@@ -20,12 +20,30 @@ namespace FrogWorks
             }
         }
 
-        public RectangleCollider(float width, float height, float x = 0f, float y = 0f)
-            : base(new Vector2(x, y))
+        public RectangleCollider(Vector2 size)
+            : this(size, Vector2.Zero)
         {
-            _size = new Vector2(width, height).Abs();
         }
 
-        public override Collider Clone() => new RectangleCollider(Width, Height, X, Y);
+        public RectangleCollider(Vector2 size, Vector2 offset)
+            : base(offset)
+        {
+            _size = size.Abs();
+        }
+
+        public RectangleCollider(float width, float height)
+            : this(new Vector2(width, height), Vector2.Zero)
+        {
+        }
+
+        public RectangleCollider(float width, float height, float offsetX, float offsetY)
+            : this(new Vector2(width, height), new Vector2(offsetX, offsetY))
+        {
+        }
+
+        public override Collider Clone()
+        {
+            return new RectangleCollider(Size, Position);
+        }
     }
 }

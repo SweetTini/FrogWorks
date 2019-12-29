@@ -56,8 +56,13 @@ namespace FrogWorks
             set { Angle = MathHelper.ToRadians(value); }
         }
 
-        public PolygonCollider(Vector2[] vertices, float x = 0f, float y = 0f)
-            : base(new Vector2(x, y))
+        public PolygonCollider(Vector2[] vertices)
+            : this(vertices, Vector2.Zero)
+        {
+        }
+
+        public PolygonCollider(Vector2[] vertices, Vector2 offset)
+            : base(offset)
         {
             _vertices = vertices;
             _size = _vertices.Max() - _vertices.Min();
@@ -65,11 +70,19 @@ namespace FrogWorks
             _scale = Vector2.One;
         }
 
-        public sealed override Collider Clone() => new PolygonCollider(_vertices, X, Y)
+        public PolygonCollider(Vector2[] vertices, float offsetX, float offsetY)
+            : this(vertices, new Vector2(offsetX, offsetY))
         {
-            Origin = Origin,
-            Scale = Scale,
-            Angle = Angle
-        };
+        }
+
+        public sealed override Collider Clone()
+        {
+            return new PolygonCollider(_vertices, Position)
+            {
+                Origin = Origin,
+                Scale = Scale,
+                Angle = Angle
+            };
+        }
     }
 }

@@ -38,7 +38,9 @@ namespace FrogWorks
         }
 
         public RectangleF(float x, float y, float width, float height)
-            : this(new Vector2(x, y), new Vector2(width, height)) { }
+            : this(new Vector2(x, y), new Vector2(width, height))
+        {
+        }
 
         public override void Draw(RendererBatch batch, Color stroke, Color? fill = null)
         {

@@ -40,8 +40,8 @@ namespace FrogWorks
             Radius = radius;
         }
 
-        public Circle(float centerX, float centerY, float radius)
-            : this(new Vector2(centerX, centerY), radius) { }
+        public Circle(float x, float y, float radius)
+            : this(new Vector2(x, y), radius) { }
 
         public override void Draw(RendererBatch batch, Color stroke, Color? fill = null)
         {
