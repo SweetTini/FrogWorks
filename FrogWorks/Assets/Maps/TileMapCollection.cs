@@ -147,21 +147,27 @@ namespace FrogWorks
         {
             object result;
             TryGetValue(key, out result);
-            return (int)(result ?? defaultValue);
+            return result != null && result is int
+                ? (int)result
+                : defaultValue;
         }
 
         public float GetAsSingle(string key, float defaultValue = 0f)
         {
             object result;
             TryGetValue(key, out result);
-            return (float)(result ?? defaultValue);
+            return result != null && result is float
+                ? (float)result
+                : defaultValue;
         }
 
         public string GetAsString(string key, string defaultValue = "")
         {
             object result;
             TryGetValue(key, out result);
-            return (string)(result ?? defaultValue);
+            return result != null && result is string
+                ? (string)result
+                : defaultValue;
         }
 
         public T GetAsEnum<T>(string key, T defaultValue = default(T))
@@ -178,7 +184,9 @@ namespace FrogWorks
         {
             object result;
             TryGetValue(key, out result);
-            return (Color)(result ?? defaultValue);
+            return result != null && result is Color
+                ? (Color)result
+                : defaultValue;
         }
 
         public Color GetAsColor(
