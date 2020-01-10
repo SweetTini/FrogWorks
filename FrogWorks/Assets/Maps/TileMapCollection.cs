@@ -197,8 +197,8 @@ namespace FrogWorks
         {
             return new Color(
                 GetAsInt32(keyR, defaultValue.R),
-                GetAsInt32(keyR, defaultValue.G),
-                GetAsInt32(keyR, defaultValue.B),
+                GetAsInt32(keyG, defaultValue.G),
+                GetAsInt32(keyB, defaultValue.B),
                 255);
         }
 
@@ -211,9 +211,9 @@ namespace FrogWorks
         {
             return new Color(
                 GetAsInt32(keyR, defaultValue.R),
-                GetAsInt32(keyR, defaultValue.G),
-                GetAsInt32(keyR, defaultValue.B),
-                GetAsInt32(keyR, defaultValue.A));
+                GetAsInt32(keyG, defaultValue.G),
+                GetAsInt32(keyB, defaultValue.B),
+                GetAsInt32(keyA, defaultValue.A));
         }
 
         public Point GetAsPoint(
