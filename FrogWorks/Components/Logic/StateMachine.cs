@@ -7,21 +7,22 @@ namespace FrogWorks
     public class StateMachine<T> : Component
         where T : struct
     {
-        private T _key;
+        private T? _key;
         private Dictionary<T, State<T>> _states;
         private Coroutine _coroutine;
 
-        public T CurrentState
+        public T? CurrentState
         {
             get { return _key; }
             set
             {
-                if (!IsLocked && !value.Equals(_key) && _states.ContainsKey(value))
-                    ForceState(value);
+                if (!IsLocked && !value.Equals(_key))
+                    if (!value.HasValue || _states.ContainsKey(value.Value))
+                        ForceState(value);
             }
         }
 
-        public T LastState { get; private set; }
+        public T? LastState { get; private set; }
 
         public bool IsLocked { get; set; }
 
@@ -37,7 +38,7 @@ namespace FrogWorks
         {
             State<T> state;
 
-            if (_states.TryGetValue(_key, out state))
+            if (_key.HasValue && _states.TryGetValue(_key.Value, out state))
             {
                 CurrentState = state.Update?.Invoke() ?? _key;
 
@@ -69,7 +70,7 @@ namespace FrogWorks
         {
             State<T> state;
 
-            if (_states.TryGetValue(_key, out state))
+            if (_key.HasValue && _states.TryGetValue(_key.Value, out state))
             {
                 state.Update = update;
                 state.Coroutine = coroutine;
@@ -78,14 +79,15 @@ namespace FrogWorks
             }
         }
 
-        public void ForceState(T key)
+        public void ForceState(T? key)
         {
             LastState = _key;
             _key = key;
 
-            State<T> lastState, currentState;
-            _states.TryGetValue(LastState, out lastState);
-            _states.TryGetValue(_key, out currentState);
+            State<T> lastState = null;
+            State<T> currentState = null;
+            if (LastState.HasValue) _states.TryGetValue(LastState.Value, out lastState);
+            if (_key.HasValue) _states.TryGetValue(_key.Value, out currentState);
 
             lastState?.End?.Invoke();
             currentState?.Begin?.Invoke();
@@ -99,7 +101,7 @@ namespace FrogWorks
         {
             State<T> state;
 
-            if (Parent != null && _states.TryGetValue(_key, out state))
+            if (Parent != null && _key.HasValue && _states.TryGetValue(_key.Value, out state))
             {
                 state.Update += (Func<T>)Extensions.GetMethod<Func<T>>(Parent, $"Update{name}");
                 state.Coroutine += (Func<IEnumerator>)Extensions.GetMethod<Func<IEnumerator>>(Parent, $"Coroutine{name}");
@@ -108,7 +110,7 @@ namespace FrogWorks
             }
         }
 
-        public static implicit operator T(StateMachine<T> stateMachine)
+        public static implicit operator T?(StateMachine<T> stateMachine)
         {
             return stateMachine.CurrentState;
         }

@@ -220,7 +220,7 @@ namespace FrogWorks
 
         public static bool Between(this Point point, Point min, Point max)
         {
-            return point.X.Between(min.X, max.X) 
+            return point.X.Between(min.X, max.X)
                 && point.Y.Between(min.Y, max.Y);
         }
 
@@ -483,7 +483,7 @@ namespace FrogWorks
         public static Vector2 Inverse(this Vector2 vector)
         {
             return new Vector2(
-                vector.X != 0f ? 1f / vector.X : 0f, 
+                vector.X != 0f ? 1f / vector.X : 0f,
                 vector.Y != 0f ? 1f / vector.Y : 0f);
         }
 
@@ -733,9 +733,19 @@ namespace FrogWorks
         public static Delegate GetMethod<T>(object obj, string name)
             where T : class
         {
-            var flags =  BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+            var flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
             var method = obj.GetType().GetMethod(name, flags);
-            return method != null ? Delegate.CreateDelegate(typeof(T), obj, name) : null;
+
+            try
+            {
+                return method != null
+                    ? Delegate.CreateDelegate(typeof(T), obj, name)
+                    : null;
+            }
+            catch
+            {
+                return null;
+            }
         }
         #endregion
 
@@ -748,13 +758,13 @@ namespace FrogWorks
         public static string Attribute(this XmlElement element, string name, string defaultValue = "")
         {
             return !string.IsNullOrEmpty(element.Attributes[name]?.InnerText)
-                ? element.Attributes[name].InnerText 
+                ? element.Attributes[name].InnerText
                 : defaultValue;
         }
 
         public static bool AttrToBoolean(this XmlElement element, string name, bool defaultValue = false)
         {
-            return element.Attributes[name] != null 
+            return element.Attributes[name] != null
                 ? Convert.ToBoolean(element.Attributes[name].InnerText)
                 : defaultValue;
         }
@@ -794,7 +804,7 @@ namespace FrogWorks
                 : defaultValue;
         }
 
-        public static Point AttrToPoint(this XmlElement element, string nameForX, string nameForY, 
+        public static Point AttrToPoint(this XmlElement element, string nameForX, string nameForY,
             Point defaultValue = default(Point))
         {
             return new Point(
@@ -802,7 +812,7 @@ namespace FrogWorks
                 element.AttrToInt32(nameForY, defaultValue.Y));
         }
 
-        public static Vector2 AttrToVector2(this XmlElement element, string nameForX, string nameForY, 
+        public static Vector2 AttrToVector2(this XmlElement element, string nameForX, string nameForY,
             Vector2 defaultValue = default(Vector2))
         {
             return new Vector2(
