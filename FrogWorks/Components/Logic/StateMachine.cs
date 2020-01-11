@@ -47,7 +47,7 @@ namespace FrogWorks
             }
         }
 
-        protected void AddOrUpdate(T key, Func<T> update = null, Func<IEnumerator> coroutine = null, Action begin = null, Action end = null)
+        public void AddOrUpdate(T key, Func<T> update = null, Func<IEnumerator> coroutine = null, Action begin = null, Action end = null)
         {
             if (_states.ContainsKey(key))
             {
