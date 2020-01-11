@@ -31,7 +31,6 @@ namespace FrogWorks
         {
             _states = new Dictionary<T, State<T>>();
             _coroutine = new Coroutine(false);
-            _key = default(T);
         }
 
         protected override void Update(float deltaTime)
@@ -40,14 +39,15 @@ namespace FrogWorks
 
             if (_key.HasValue && _states.TryGetValue(_key.Value, out state))
             {
-                CurrentState = state.Update?.Invoke() ?? _key;
+                var nextState = state.Update?.Invoke(deltaTime);
+                if (nextState.HasValue) CurrentState = nextState;
 
                 if (_coroutine.IsEnabled)
                     _coroutine.ForceUpdate(deltaTime);
             }
         }
 
-        public void AddOrUpdate(T key, Func<T> update = null, Func<IEnumerator> coroutine = null, Action begin = null, Action end = null)
+        protected void AddOrUpdate(T key, Func<float, T?> update = null, Func<IEnumerator> coroutine = null, Action begin = null, Action end = null)
         {
             if (_states.ContainsKey(key))
             {
@@ -66,17 +66,27 @@ namespace FrogWorks
             }
         }
 
-        public void SetCallbacks(T key, Func<T> update, Func<IEnumerator> coroutine = null, Action begin = null, Action end = null)
+        public void SetCallbacks(T key, Func<float, T?> update, Func<IEnumerator> coroutine = null, Action begin = null, Action end = null)
         {
-            State<T> state;
+            AddOrUpdate(key, update, coroutine, begin, end);
+        }
 
-            if (_key.HasValue && _states.TryGetValue(_key.Value, out state))
+        public void ReflectState(T key, string name)
+        {
+            Func<float, T?> update = null;
+            Func<IEnumerator> coroutine = null;
+            Action begin = null;
+            Action end = null;
+
+            if (Parent != null)
             {
-                state.Update = update;
-                state.Coroutine = coroutine;
-                state.Begin = begin;
-                state.End = end;
+                update = (Func<float, T?>)Extensions.GetMethod<Func<float, T?>>(Parent, $"Update{name}");
+                coroutine = (Func<IEnumerator>)Extensions.GetMethod<Func<IEnumerator>>(Parent, $"Coroutine{name}");
+                begin = (Action)Extensions.GetMethod<Action>(Parent, $"Begin{name}");
+                end = (Action)Extensions.GetMethod<Action>(Parent, $"End{name}");
             }
+
+            SetCallbacks(key, update, coroutine, begin, end);
         }
 
         public void ForceState(T? key)
@@ -97,20 +107,7 @@ namespace FrogWorks
             else _coroutine.Cancel();
         }
 
-        public void ReflectState(T key, string name)
-        {
-            State<T> state;
-
-            if (Parent != null && _key.HasValue && _states.TryGetValue(_key.Value, out state))
-            {
-                state.Update += (Func<T>)Extensions.GetMethod<Func<T>>(Parent, $"Update{name}");
-                state.Coroutine += (Func<IEnumerator>)Extensions.GetMethod<Func<IEnumerator>>(Parent, $"Coroutine{name}");
-                state.Begin += (Action)Extensions.GetMethod<Action>(Parent, $"Begin{name}");
-                state.End += (Action)Extensions.GetMethod<Action>(Parent, $"End{name}");
-            }
-        }
-
-        public static implicit operator T?(StateMachine<T> stateMachine)
+        public static implicit operator T? (StateMachine<T> stateMachine)
         {
             return stateMachine.CurrentState;
         }
@@ -119,7 +116,7 @@ namespace FrogWorks
     internal class State<T>
         where T : struct
     {
-        public Func<T> Update { get; set; }
+        public Func<float, T?> Update { get; set; }
 
         public Func<IEnumerator> Coroutine { get; set; }
 
@@ -127,7 +124,7 @@ namespace FrogWorks
 
         public Action End { get; set; }
 
-        public State(Func<T> update, Func<IEnumerator> coroutine = null, Action begin = null, Action end = null)
+        public State(Func<float, T?> update, Func<IEnumerator> coroutine = null, Action begin = null, Action end = null)
         {
             Update = update;
             Coroutine = coroutine;
