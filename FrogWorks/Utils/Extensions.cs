@@ -545,9 +545,11 @@ namespace FrogWorks
             return result;
         }
 
-        public static Vector2 Perpendicular(this Vector2 vector)
+        public static Vector2 Perpendicular(this Vector2 vector, bool counterClockwise = false)
         {
-            return new Vector2(vector.Y, -vector.X);
+            return counterClockwise
+                ? new Vector2(-vector.Y, vector.X)
+                : new Vector2(vector.Y, -vector.X);
         }
 
         public static Vector2 Round(this Vector2 vector)
@@ -750,40 +752,55 @@ namespace FrogWorks
         #endregion
 
         #region XML: Attributes
-        public static bool HasAttribute(this XmlElement element, string name)
+        public static bool HasAttr(this XmlElement element, string name)
         {
             return element.Attributes[name] != null;
         }
 
-        public static string Attribute(this XmlElement element, string name, string defaultValue = "")
+        public static string AttrToString(
+            this XmlElement element,
+            string name,
+            string defaultValue = "")
         {
             return !string.IsNullOrEmpty(element.Attributes[name]?.InnerText)
                 ? element.Attributes[name].InnerText
                 : defaultValue;
         }
 
-        public static bool AttrToBoolean(this XmlElement element, string name, bool defaultValue = false)
+        public static bool AttrToBoolean(
+            this XmlElement element,
+            string name,
+            bool defaultValue = false)
         {
             return element.Attributes[name] != null
                 ? Convert.ToBoolean(element.Attributes[name].InnerText)
                 : defaultValue;
         }
 
-        public static int AttrToInt32(this XmlElement element, string name, int defaultValue = 0)
+        public static int AttrToInt32(
+            this XmlElement element,
+            string name,
+            int defaultValue = 0)
         {
             return element.Attributes[name] != null
                 ? Convert.ToInt32(element.Attributes[name].InnerText)
                 : defaultValue;
         }
 
-        public static float AttrToSingle(this XmlElement element, string name, float defaultValue = 0f)
+        public static float AttrToSingle(
+            this XmlElement element,
+            string name,
+            float defaultValue = 0f)
         {
             return element.Attributes[name] != null
                 ? Convert.ToSingle(element.Attributes[name].InnerText)
                 : defaultValue;
         }
 
-        public static T AttrToEnum<T>(this XmlElement element, string name, T defaultValue = default(T))
+        public static T AttrToEnum<T>(
+            this XmlElement element,
+            string name,
+            T defaultValue = default(T))
             where T : struct
         {
             if (element.HasAttribute(name))
@@ -796,37 +813,140 @@ namespace FrogWorks
             return defaultValue;
         }
 
-
-        public static Color AttrToColor(this XmlElement element, string name, Color defaultValue = default(Color))
+        public static Color AttrToColor(
+            this XmlElement element,
+            string name,
+            Color defaultValue = default(Color))
         {
             return element.Attributes[name] != null
                 ? ColorConvert.FromHex(element.Attributes[name].InnerText.Replace("#", ""))
                 : defaultValue;
         }
 
-        public static Point AttrToPoint(this XmlElement element, string nameForX, string nameForY,
+        public static Color AttrToColor(
+            this XmlElement element,
+            string nameR,
+            string nameG,
+            string nameB,
+            Color defaultValue = default(Color))
+        {
+            return new Color(
+                element.AttrToInt32(nameR, defaultValue.R),
+                element.AttrToInt32(nameG, defaultValue.G),
+                element.AttrToInt32(nameB, defaultValue.B));
+        }
+
+        public static Color AttrToColor(
+            this XmlElement element,
+            string nameR,
+            string nameG,
+            string nameB,
+            string nameA,
+            Color defaultValue = default(Color))
+        {
+            return new Color(
+                element.AttrToInt32(nameR, defaultValue.R),
+                element.AttrToInt32(nameG, defaultValue.G),
+                element.AttrToInt32(nameB, defaultValue.B),
+                element.AttrToInt32(nameA, defaultValue.A));
+        }
+
+        public static Point AttrToPoint(
+            this XmlElement element,
+            string nameX,
+            string nameY,
             Point defaultValue = default(Point))
         {
             return new Point(
-                element.AttrToInt32(nameForX, defaultValue.X),
-                element.AttrToInt32(nameForY, defaultValue.Y));
+                element.AttrToInt32(nameX, defaultValue.X),
+                element.AttrToInt32(nameY, defaultValue.Y));
         }
 
-        public static Vector2 AttrToVector2(this XmlElement element, string nameForX, string nameForY,
+        public static Point AttrToPoint(
+            this XmlElement element,
+            Point defaultValue = default(Point))
+        {
+            return element.AttrToPoint("x", "y", defaultValue);
+        }
+
+        public static Vector2 AttrToVector2(
+            this XmlElement element,
+            string nameX,
+            string nameY,
             Vector2 defaultValue = default(Vector2))
         {
             return new Vector2(
-                element.AttrToSingle(nameForX, defaultValue.X),
-                element.AttrToSingle(nameForY, defaultValue.Y));
+                element.AttrToSingle(nameX, defaultValue.X),
+                element.AttrToSingle(nameY, defaultValue.Y));
         }
 
-        public static Rectangle AttributeToRectangle(this XmlElement element, Rectangle defaultValue = default(Rectangle))
+        public static Vector2 AttrToVector2(
+            this XmlElement element,
+            Vector2 defaultValue = default(Vector2))
+        {
+            return element.AttrToVector2("x", "y", defaultValue);
+        }
+
+        public static Vector3 AttrToVector3(
+            this XmlElement element,
+            string nameX,
+            string nameY,
+            string nameZ,
+            Vector3 defaultValue = default(Vector3))
+        {
+            return new Vector3(
+                element.AttrToSingle(nameX, defaultValue.X),
+                element.AttrToSingle(nameY, defaultValue.Y),
+                element.AttrToSingle(nameZ, defaultValue.Z));
+        }
+
+        public static Vector3 AttrToVector3(
+            this XmlElement element,
+            Vector3 defaultValue = default(Vector3))
+        {
+            return element.AttrToVector3("x", "y", "z", defaultValue);
+        }
+
+        public static Vector4 AttrToVector4(
+            this XmlElement element,
+            string nameX,
+            string nameY,
+            string nameZ,
+            string nameW,
+            Vector4 defaultValue = default(Vector4))
+        {
+            return new Vector4(
+                element.AttrToSingle(nameX, defaultValue.X),
+                element.AttrToSingle(nameY, defaultValue.Y),
+                element.AttrToSingle(nameZ, defaultValue.Z),
+                element.AttrToSingle(nameW, defaultValue.W));
+        }
+
+        public static Vector4 AttrToVector4(
+            this XmlElement element,
+            Vector4 defaultValue = default(Vector4))
+        {
+            return element.AttrToVector4("x", "y", "z", "w", defaultValue);
+        }
+
+        public static Rectangle AttrToRectangle(
+            this XmlElement element,
+            string nameX,
+            string nameY,
+            string nameW,
+            string nameH,
+            Rectangle defaultValue = default(Rectangle))
         {
             return new Rectangle(
-                element.AttrToInt32("x", defaultValue.X),
-                element.AttrToInt32("y", defaultValue.Y),
-                element.AttrToInt32("width", defaultValue.Width),
-                element.AttrToInt32("height", defaultValue.Height));
+                element.AttrToPoint(nameX, nameY, defaultValue.Location),
+                element.AttrToPoint(nameW, nameH, defaultValue.Size));
+        }
+
+        public static Rectangle AttrToRectangle(
+            this XmlElement element,
+            Rectangle defaultValue = default(Rectangle))
+        {
+            return element.AttrToRectangle("x", "y", "width", "height", defaultValue);
         }
         #endregion
     }

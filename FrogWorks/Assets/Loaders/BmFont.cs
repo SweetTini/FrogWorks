@@ -172,7 +172,7 @@ namespace FrogWorks
 
                 foreach (XmlElement page in pages.ChildNodes)
                 {
-                    var pageFile = page.Attribute("file");
+                    var pageFile = page.AttrToString("file");
                     var texture = Texture.Load(Path.Combine(directory, pageFile));
                     textures.Add(texture);
                 }
@@ -185,7 +185,7 @@ namespace FrogWorks
                 foreach (XmlElement charInfo in chars)
                 {
                     var ascii = charInfo.AttrToInt32("id");
-                    var bounds = charInfo.AttributeToRectangle();
+                    var bounds = charInfo.AttrToRectangle();
                     var offset = charInfo.AttrToPoint("xoffset", "yoffset");
                     var spacing = charInfo.AttrToInt32("xadvance");
                     var page = charInfo.AttrToInt32("page");

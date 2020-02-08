@@ -63,7 +63,7 @@ namespace FrogWorks
 
             foreach (XmlElement xmlTileSet in xmlRoot.GetElementsByTagName("tileset"))
             {
-                var source = Path.Combine(rootDirectory, xmlTileSet["image"].Attribute("source"));
+                var source = Path.Combine(rootDirectory, xmlTileSet["image"].AttrToString("source"));
                 var texture = Texture.Load(source);
 
                 tileSets.Add(new TiledTileSet()
@@ -85,7 +85,7 @@ namespace FrogWorks
             {
                 layers.Add(new TiledLayer()
                 {
-                    Name = xmlLayer.Attribute("name").ToLower(),
+                    Name = xmlLayer.AttrToString("name").ToLower(),
                     GidMap = ReadLayer(collection, xmlLayer["data"]),
                     Properties = ReadProperties(xmlLayer)
                 });
@@ -97,7 +97,7 @@ namespace FrogWorks
         static int[] ReadLayer(TileMapCollection collection, XmlElement xmlRoot)
         {
             var gidMap = new int[collection.Columns * collection.Rows];
-            var hasEncoding = !string.IsNullOrEmpty(xmlRoot.Attribute("encoding"));
+            var hasEncoding = !string.IsNullOrEmpty(xmlRoot.AttrToString("encoding"));
             var compression = xmlRoot.AttrToEnum<TiledCompression>("compression");
 
             if (hasEncoding) ReadTileMap(xmlRoot, gidMap, compression);
@@ -120,7 +120,7 @@ namespace FrogWorks
 
         static void ReadTileMap(XmlElement xmlRoot, int[] gidMap, TiledCompression compression)
         {
-            var encoding = xmlRoot.Attribute("encoding");
+            var encoding = xmlRoot.AttrToString("encoding");
             if (encoding == "base64")
             {
                 using (var stream = GetDecodedStream(xmlRoot, compression))
@@ -152,9 +152,9 @@ namespace FrogWorks
                 {
                     objects.Add(new TiledObject()
                     {
-                        Name = xmlObject.Attribute("name").ToLower(),
-                        Type = xmlObject.Attribute("type").ToLower(),
-                        Region = xmlObject.AttributeToRectangle(),
+                        Name = xmlObject.AttrToString("name").ToLower(),
+                        Type = xmlObject.AttrToString("type").ToLower(),
+                        Region = xmlObject.AttrToRectangle(),
                         Properties = ReadProperties(xmlObject)
                     });
                 }
@@ -172,16 +172,16 @@ namespace FrogWorks
             {
                 foreach (XmlElement xmlProp in xmlProperties)
                 {
-                    var name = xmlProp.Attribute("name").ToLower();
+                    var name = xmlProp.AttrToString("name").ToLower();
                     object value;
 
-                    switch (xmlProp.Attribute("type"))
+                    switch (xmlProp.AttrToString("type"))
                     {
                         case "bool": value = xmlProp.AttrToBoolean("value"); break;
                         case "int": value = xmlProp.AttrToInt32("value"); break;
                         case "float": value = xmlProp.AttrToSingle("value"); break;
                         case "color": value = xmlProp.AttrToColor("value"); break;
-                        default: value = xmlProp.Attribute("value"); break;
+                        default: value = xmlProp.AttrToString("value"); break;
                     }
 
                     properties.Add(name, value);
@@ -225,9 +225,9 @@ namespace FrogWorks
                 };
 
                 layer.Properties.ToList()
-                    .ForEach(x => newTileMap.InternalProperties.Add(x.Key, x.Value));
+                    .ForEach(x => newTileMap._properties.Add(x.Key, x.Value));
 
-                collection.InternalTileMaps.Add(newTileMap);
+                collection._tileMaps.Add(newTileMap);
             }
         }
 
@@ -242,7 +242,7 @@ namespace FrogWorks
                     index / collection.Columns)
             };
 
-            collection.InternalUnusedTiles.Add(newTile);
+            collection._unusedTiles.Add(newTile);
         }
 
         static void BuildObject(TileMapCollection collection, TiledObject obj)
@@ -255,9 +255,9 @@ namespace FrogWorks
             };
 
             obj.Properties.ToList()
-                .ForEach(x => newObj.InternalProperties.Add(x.Key, x.Value));
+                .ForEach(x => newObj._properties.Add(x.Key, x.Value));
 
-            collection.InternalObjects.Add(newObj);
+            collection._objects.Add(newObj);
         }
         #endregion
 

@@ -7,6 +7,10 @@ namespace FrogWorks
 {
     public sealed class TileMapCollection
     {
+        internal List<TileMapCollectionTileMap> _tileMaps;
+        internal List<TileMapCollectionTile> _unusedTiles;
+        internal List<TileMapCollectionObject> _objects;
+
         static Dictionary<string, TileMapCollection> Cache { get; } = 
             new Dictionary<string, TileMapCollection>();
 
@@ -30,21 +34,15 @@ namespace FrogWorks
 
         public ReadOnlyCollection<TileMapCollectionObject> Objects { get; private set; }
 
-        internal List<TileMapCollectionTileMap> InternalTileMaps { get; set; }
-
-        internal List<TileMapCollectionTile> InternalUnusedTiles { get; set; }
-
-        internal List<TileMapCollectionObject> InternalObjects { get; set; }
-
         internal TileMapCollection()
             : base()
         {
-            InternalTileMaps = new List<TileMapCollectionTileMap>();
-            InternalUnusedTiles = new List<TileMapCollectionTile>();
-            InternalObjects = new List<TileMapCollectionObject>();
-            TileMaps = new ReadOnlyCollection<TileMapCollectionTileMap>(InternalTileMaps);
-            UnusedTiles = new ReadOnlyCollection<TileMapCollectionTile>(InternalUnusedTiles);
-            Objects = new ReadOnlyCollection<TileMapCollectionObject>(InternalObjects);
+            _tileMaps = new List<TileMapCollectionTileMap>();
+            _unusedTiles = new List<TileMapCollectionTile>();
+            _objects = new List<TileMapCollectionObject>();
+            TileMaps = new ReadOnlyCollection<TileMapCollectionTileMap>(_tileMaps);
+            UnusedTiles = new ReadOnlyCollection<TileMapCollectionTile>(_unusedTiles);
+            Objects = new ReadOnlyCollection<TileMapCollectionObject>(_objects);
         }
 
         #region Static Methods
@@ -69,19 +67,19 @@ namespace FrogWorks
 
     public class TileMapCollectionTileMap
     {
+        internal Dictionary<string, object> _properties;
+
         public string GroupName { get; internal set; }
 
         public TileMap Component { get; internal set; }
 
         public TileMapCollectionProperties Properties { get; private set; }
 
-        internal Dictionary<string, object> InternalProperties { get; set; }
-
         internal TileMapCollectionTileMap()
             : base()
         {
-            InternalProperties = new Dictionary<string, object>();
-            Properties = new TileMapCollectionProperties(InternalProperties);
+            _properties = new Dictionary<string, object>();
+            Properties = new TileMapCollectionProperties(_properties);
         }
     }
 
@@ -105,6 +103,8 @@ namespace FrogWorks
 
     public class TileMapCollectionObject
     {
+        internal Dictionary<string, object> _properties;
+
         public string Name { get; internal set; }
 
         public string Type { get; internal set; }
@@ -125,13 +125,11 @@ namespace FrogWorks
 
         public TileMapCollectionProperties Properties { get; private set; }
 
-        internal Dictionary<string, object> InternalProperties { get; set; }
-
         internal TileMapCollectionObject()
             : base()
         {
-            InternalProperties = new Dictionary<string, object>();
-            Properties = new TileMapCollectionProperties(InternalProperties);
+            _properties = new Dictionary<string, object>();
+            Properties = new TileMapCollectionProperties(_properties);
         }
     }
 
