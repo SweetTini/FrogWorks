@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
+<!-- $TexturePacker:SmartUpdate:f83e308d821d40de21cb938f4d58dde9:ddeb2d785121b4bf357746c4208633f6:720e004b315eef48ae8b8a13f04e351a$ -->
+<!--Format:
+n  => name of the sprite
+x  => sprite x pos in texture
+y  => sprite y pos in texture
+w  => sprite width (may be trimmed)
+h  => sprite height (may be trimmed)
+pX => x pos of the pivot point (relative to sprite width)
+pY => y pos of the pivot point (relative to sprite height)
+oX => sprite's x-corner offset (only available if trimmed)
+oY => sprite's y-corner offset (only available if trimmed)
+oW => sprite's original width (only available if trimmed)
+oH => sprite's original height (only available if trimmed)
+r => 'y' only set if sprite is rotated
+with polygon mode enabled:
+vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
+verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
+triangles  => sprite triangulation, 3 vertex indices per triangle
+-->
+<TextureAtlas imagePath="Test.png" width="508" height="198">
+    <sprite n="HeroIdle.png" x="374" y="1" w="70" h="92" oX="27" oY="36" oW="128" oH="128"/>
+    <sprite n="HeroJump1.png" x="352" y="97" w="76" h="76" oX="32" oY="52" oW="128" oH="128"/>
+    <sprite n="HeroJump2.png" x="446" y="1" w="59" h="106" oX="37" oY="22" oW="128" oH="128"/>
+    <sprite n="HeroJump3.png" x="157" y="1" w="66" h="100" oX="30" oY="22" oW="128" oH="128"/>
+    <sprite n="HeroJump4.png" x="301" y="1" w="71" h="94" oX="27" oY="22" oW="128" oH="128"/>
+    <sprite n="HeroJump5.png" x="80" y="1" w="75" h="101" oX="26" oY="23" oW="128" oH="128"/>
+    <sprite n="HeroJump6.png" x="1" y="1" w="77" h="103" oX="27" oY="25" oW="128" oH="128"/>
+    <sprite n="HeroLand1.png" x="430" y="109" w="77" h="75" oX="31" oY="53" oW="128" oH="128"/>
+    <sprite n="HeroRun1.png" x="139" y="104" w="67" h="92" oX="29" oY="36" oW="128" oH="128"/>
+    <sprite n="HeroRun2.png" x="1" y="106" w="66" h="91" oX="31" oY="34" oW="128" oH="128"/>
+    <sprite n="HeroRun3.png" x="69" y="106" w="68" h="85" oX="28" oY="43" oW="128" oH="128"/>
+    <sprite n="HeroRun4.png" x="208" y="103" w="69" h="92" oX="28" oY="36" oW="128" oH="128"/>
+    <sprite n="HeroRun5.png" x="225" y="1" w="74" h="92" oX="25" oY="34" oW="128" oH="128"/>
+    <sprite n="HeroRun6.png" x="279" y="97" w="71" h="85" oX="27" oY="43" oW="128" oH="128"/>
+</TextureAtlas>

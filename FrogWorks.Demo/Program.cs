@@ -7,9 +7,9 @@ namespace FrogWorks.Demo
         [STAThread]
         static void Main()
         {
-            using (var runner = new DesktopRunner(160, 144, 3))
+            using (var runner = new DesktopRunner(320, 240, 2))
             {
-                runner.GoTo<TileMapScene>();
+                runner.GoTo<TextureAtlasScene>();
                 runner.AllowUserResizing = true;
                 runner.IsMouseVisible = true;
                 runner.Run();
