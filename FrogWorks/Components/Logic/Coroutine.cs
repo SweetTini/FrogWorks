@@ -25,7 +25,7 @@ namespace FrogWorks
             : base(true, false)
         {
             _enumerators = new Stack<IEnumerator>();
-            _enumerators.Push(callback);
+            _enumerators.Push(callback ?? WaitForTicks(0));
             RemoveOnCompletion = removeOnCompletion;
         }
 
@@ -75,7 +75,7 @@ namespace FrogWorks
             IsFinished = false;
             _timer = 0f;
             _enumerators.Clear();
-            _enumerators.Push(callback);
+            _enumerators.Push(callback ?? WaitForTicks(0));
         }
 
         public void Cancel()

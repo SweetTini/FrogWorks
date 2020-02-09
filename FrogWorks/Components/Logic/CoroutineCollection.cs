@@ -77,7 +77,7 @@ namespace FrogWorks
         internal CoroutineItem(IEnumerator callback)
         {
             Enumerators = new Stack<IEnumerator>();
-            Enumerators.Push(callback);
+            Enumerators.Push(callback ?? Coroutine.WaitForTicks(0));
         }
     }
 }
