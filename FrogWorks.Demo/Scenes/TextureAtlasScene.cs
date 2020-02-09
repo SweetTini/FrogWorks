@@ -11,6 +11,8 @@ namespace FrogWorks.Demo
 
         protected override void Begin()
         {
+            BackgroundColor = Color.White;
+
             var atlas = TexturePacker.Load(@"Textures/Test2.xml");
             _textures = atlas.ToArray();
         }

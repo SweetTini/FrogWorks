@@ -89,6 +89,7 @@ namespace FrogWorks
             Vector2 scale, float angle, Color color, SpriteEffects effects)
         {
             var offset = Origin;
+            var origEffects = effects;
 
             if (IsRotated)
             {
@@ -100,6 +101,18 @@ namespace FrogWorks
                     case SpriteEffects.FlipHorizontally: effects = SpriteEffects.FlipVertically; break;
                     case SpriteEffects.FlipVertically: effects = SpriteEffects.FlipHorizontally; break;
                 }
+            }
+
+            if (origEffects.HasFlag(SpriteEffects.FlipHorizontally))
+            {
+                if (IsRotated) offset.Y = (Width - RealWidth) - offset.Y;
+                else offset.X = (Width - RealWidth) - offset.X;
+            }
+
+            if (origEffects.HasFlag(SpriteEffects.FlipVertically))
+            {
+                if (IsRotated) offset.X = (Height - RealHeight) - (Height + offset.X) * 2f + offset.X;
+                else offset.Y = (Height - RealHeight) - offset.Y;
             }
 
             Texture.Draw(batch, position, origin - offset, scale, angle, color, effects);
