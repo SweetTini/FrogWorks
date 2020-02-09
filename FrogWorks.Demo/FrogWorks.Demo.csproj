@@ -46,6 +46,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Entities\DebugFont.cs" />
+    <Compile Include="Entities\Duck.cs" />
     <Compile Include="Entities\SplashPattern.cs" />
     <Compile Include="Entities\TileMapRenderer.cs" />
     <Compile Include="Program.cs" />

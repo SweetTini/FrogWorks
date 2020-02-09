@@ -6,15 +6,17 @@ namespace FrogWorks.Demo
     public class TextureAtlasScene : DefaultScene
     {
         private TextureAltasTexture[] _textures;
+        private Duck _duck;
         private int _index;
         private bool _flipX, _flipY;
 
         protected override void Begin()
         {
-            BackgroundColor = Color.White;
-
             var atlas = TexturePacker.Load(@"Textures/Test2.xml");
+            _duck = new Duck(atlas);
             _textures = atlas.ToArray();
+
+            DefaultLayer.Add(_duck);
         }
 
         protected override void BeforeUpdate(float deltaTime)
@@ -37,15 +39,11 @@ namespace FrogWorks.Demo
             if (_flipX) effects |= SpriteEffects.FlipHorizontally;
             if (_flipY) effects |= SpriteEffects.FlipVertically;
 
-            batch.Begin();
-
             batch.DrawPrimitives(b => b.DrawRectangle(position, texture.Size, Color.Red));
             batch.DrawPrimitives(b => b.DrawRectangle(position + texture.Origin, texture.RealSize, Color.Gray));
             texture.Draw(batch, position, Vector2.Zero, Vector2.One, 0f, Color.White, effects);
             batch.DrawPrimitives(b => b.DrawDot(position + texture.Origin, Color.Yellow));
             batch.DrawPrimitives(b => b.DrawCircle(position + texture.Origin, 2f, Color.Cyan));
-
-            batch.End();
         }
     }
 }
