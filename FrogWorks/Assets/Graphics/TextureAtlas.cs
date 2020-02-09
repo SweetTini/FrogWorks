@@ -12,6 +12,18 @@ namespace FrogWorks
 
         public ReadOnlyDictionary<string, TextureAltasTexture> Textures { get; private set; }
 
+        public TextureAltasTexture this[int index]
+        {
+            get
+            {
+                var textures = _textures.Values.ToArray();
+
+                return textures.WithinRange(index)
+                    ? textures[index]
+                    : null;
+            }
+        }
+
         public TextureAltasTexture this[string key]
         {
             get
@@ -45,6 +57,18 @@ namespace FrogWorks
             return keys.Distinct()
                 .Where(k => _textures.ContainsKey(k))
                 .Select(k => _textures[k])
+                .ToArray();
+        }
+
+        public int[] GetIndexes(params string[] keys)
+        {
+            var indexes = _textures
+                .Select((kv, i) => new { Index = i, Pair = kv })
+                .ToDictionary(k => k.Pair.Key, v => v.Index);
+
+            return keys.Distinct()
+                .Where(k => indexes.ContainsKey(k))
+                .Select(k => indexes[k])
                 .ToArray();
         }
 
@@ -94,6 +118,7 @@ namespace FrogWorks
             if (IsRotated)
             {
                 offset = offset.Perpendicular(true) - Texture.Width * Vector2.UnitX;
+                origin = origin.Perpendicular(true);
                 angle -= MathHelper.PiOver2;
 
                 switch (effects)

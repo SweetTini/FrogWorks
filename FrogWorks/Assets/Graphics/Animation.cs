@@ -222,6 +222,13 @@ namespace FrogWorks
             return textures[index];
         }
 
+        public TextureAltasTexture GetFrame(TextureAltasTexture[] textures)
+        {
+            if (textures == null) return default(TextureAltasTexture);
+            var index = _frames[FrameIndex].Mod(textures.Length);
+            return textures[index];
+        }
+
         public Texture GetFrame(TileSet tileSet)
         {
             if (tileSet == null) return default(Texture);

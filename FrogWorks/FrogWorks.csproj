@@ -69,6 +69,8 @@
     <Compile Include="Components\Graphics\AnimatedPattern.cs" />
     <Compile Include="Components\Graphics\AnimatedTileMap.cs" />
     <Compile Include="Components\Graphics\AnimatedBackPattern.cs" />
+    <Compile Include="Components\Graphics\AtlasImage.cs" />
+    <Compile Include="Components\Graphics\AtlasSprite.cs" />
     <Compile Include="Components\Graphics\BackPattern.cs" />
     <Compile Include="Components\Graphics\Pattern.cs" />
     <Compile Include="Components\Graphics\TiledGraphicsComponent.cs" />

@@ -67,7 +67,9 @@ namespace FrogWorks
 
         internal RenderTarget2D Draw(DisplayAdapter display, RendererBatch batch)
         {
+            batch.Begin();
             BeforeDraw(batch);
+            batch.End();
 
             var buffer = null as RenderTarget2D;
             var first = true;
@@ -92,7 +94,9 @@ namespace FrogWorks
                 first = false;
             }
 
+            batch.Begin();
             AfterDraw(batch);
+            batch.End();
 
             return buffer;
         }

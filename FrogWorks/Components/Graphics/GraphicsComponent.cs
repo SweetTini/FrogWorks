@@ -45,7 +45,7 @@ namespace FrogWorks
 
         public bool FlipHorizontally
         {
-            get { return (SpriteEffects & SpriteEffects.FlipHorizontally) == SpriteEffects.FlipHorizontally; }
+            get { return SpriteEffects.HasFlag(SpriteEffects.FlipHorizontally); }
             set
             {
                 SpriteEffects = value
@@ -56,7 +56,7 @@ namespace FrogWorks
 
         public bool FlipVertically
         {
-            get { return (SpriteEffects & SpriteEffects.FlipVertically) == SpriteEffects.FlipVertically; }
+            get { return SpriteEffects.HasFlag(SpriteEffects.FlipVertically); }
             set
             {
                 SpriteEffects = value
