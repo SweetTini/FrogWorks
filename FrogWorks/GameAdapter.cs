@@ -69,6 +69,7 @@ namespace FrogWorks
 
                 Input.Dispose();
                 TileMapCollection.Dispose();
+                TextureAtlas.Dispose();
                 Texture.Dispose();
                 Shader.Dispose();
                 Audio.Dispose();

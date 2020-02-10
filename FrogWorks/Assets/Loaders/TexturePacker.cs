@@ -7,6 +7,13 @@ namespace FrogWorks
     {
         public static TextureAtlas Load(string filePath)
         {
+            TextureAtlas atlas;
+            TextureAtlas.TryGetFromCache(filePath, Read, out atlas);
+            return atlas;
+        }
+
+        private static TextureAtlas Read(string filePath)
+        {
             var absolutePath = Path.Combine(Runner.Application.ContentDirectory, filePath);
 
             try

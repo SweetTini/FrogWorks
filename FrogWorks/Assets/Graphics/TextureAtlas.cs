@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -9,6 +10,9 @@ namespace FrogWorks
     public sealed class TextureAtlas
     {
         Dictionary<string, TextureAltasTexture> _textures;
+
+        private static Dictionary<string, TextureAtlas> Cache { get; } =
+            new Dictionary<string, TextureAtlas>();
 
         public ReadOnlyDictionary<string, TextureAltasTexture> Textures { get; private set; }
 
@@ -76,6 +80,29 @@ namespace FrogWorks
         {
             return _textures.Values.ToArray();
         }
+
+        #region Static Methods
+        internal static bool TryGetFromCache(
+            string filePath,
+            Func<string, TextureAtlas> loadCallback,
+            out TextureAtlas atlas)
+        {
+            if (!Cache.TryGetValue(filePath, out atlas))
+            {
+                atlas = loadCallback?.Invoke(filePath);
+
+                if (atlas != null)
+                    Cache.Add(filePath, atlas);
+            }
+
+            return atlas != null;
+        }
+
+        public static void Dispose()
+        {
+            Cache.Clear();
+        }
+        #endregion
     }
 
     public sealed class TextureAltasTexture

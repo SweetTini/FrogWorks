@@ -46,13 +46,17 @@ namespace FrogWorks
         }
 
         #region Static Methods
-        internal static bool TryGetFromCache(string filePath, Func<string, TileMapCollection> loadFunc, 
+        internal static bool TryGetFromCache(
+            string filePath, 
+            Func<string, TileMapCollection> loadCallback, 
             out TileMapCollection collection)
         {
             if (!Cache.TryGetValue(filePath, out collection))
             {
-                collection = loadFunc?.Invoke(filePath) ?? null;
-                if (collection != null) Cache.Add(filePath, collection);
+                collection = loadCallback?.Invoke(filePath);
+
+                if (collection != null)
+                    Cache.Add(filePath, collection);
             }
 
             return collection != null;
