@@ -2,7 +2,7 @@
 
 namespace FrogWorks
 {
-    public class MusicTrack : Audio
+    public class SoundTrack : Audio
     {
         public int Position
         {
@@ -14,18 +14,18 @@ namespace FrogWorks
             }
         }
 
-        protected MusicTrack(Sound sound) 
+        protected SoundTrack(Sound sound) 
             : base(sound)
         {
         }
 
         #region Static Methods
-        public static MusicTrack Load(string filePath)
+        public static SoundTrack Load(string filePath)
         {
             Sound sound;
 
             return TryGetFromCache(filePath, true, out sound)
-                ? new MusicTrack(sound)
+                ? new SoundTrack(sound)
                 : null;
         }
         #endregion

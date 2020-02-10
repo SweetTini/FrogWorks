@@ -2,20 +2,20 @@
 
 namespace FrogWorks
 {
-    public class SoundFx : Audio
+    public class SoundEffect : Audio
     {
-        protected SoundFx(Sound sound) 
+        protected SoundEffect(Sound sound) 
             : base(sound)
         {
         }
 
         #region Static Methods
-        public static SoundFx Load(string filePath)
+        public static SoundEffect Load(string filePath)
         {
             Sound sound;
 
             return TryGetFromCache(filePath, false, out sound)
-                ? new SoundFx(sound)
+                ? new SoundEffect(sound)
                 : null;
         }
         #endregion
