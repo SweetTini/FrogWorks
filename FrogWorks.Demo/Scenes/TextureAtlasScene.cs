@@ -5,7 +5,7 @@ namespace FrogWorks.Demo
 {
     public class TextureAtlasScene : DefaultScene
     {
-        private TextureAltasTexture[] _textures;
+        private TextureAtlasTexture[] _textures;
         private Duck _duck;
         private int _index;
         private bool _flipX, _flipY;

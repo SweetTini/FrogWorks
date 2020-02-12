@@ -10,8 +10,6 @@ namespace FrogWorks
 {
     public abstract class Shader
     {
-        private static Dictionary<string, Effect> Cache { get; } = new Dictionary<string, Effect>();
-
         public Effect Effect { get; private set; }
 
         protected Shader()
@@ -43,9 +41,9 @@ namespace FrogWorks
         public static T Load<T>(string filePath)
             where T : Shader, new()
         {
-            Effect effect;
+            var effect = AssetManager.GetFromCache(filePath, ReadAndCompile);
 
-            if (TryGetFromCache(filePath, out effect))
+            if (effect != null)
             {
                 var shader = new T();
                 shader.Initialize(effect);
@@ -55,46 +53,29 @@ namespace FrogWorks
             return null;
         }
 
-        internal static bool TryGetFromCache(string filePath, out Effect effect)
+        internal static Effect ReadAndCompile(string filePath)
         {
-            if (!Cache.TryGetValue(filePath, out effect))
+            var fullPath = AssetManager.GetFullPath(filePath, ".fx");
+
+            if (!string.IsNullOrEmpty(fullPath))
             {
-                var absolutePath = Path.Combine(Runner.Application.ContentDirectory, filePath);
-
-                try
+                var importer = new EffectImporter();
+                var processor = new EffectProcessor();
+                var pipelineManager = new PipelineManager(string.Empty, string.Empty, string.Empty)
                 {
-                    var importer = new EffectImporter();
-                    var processor = new EffectProcessor();
-                    var pipelineManager = new PipelineManager(string.Empty, string.Empty, string.Empty)
-                    {
-                        Profile = Runner.Application.Game.Graphics.GraphicsProfile,
-                        Platform = TargetPlatform.DesktopGL
-                    };
+                    Profile = Runner.Application.Game.Graphics.GraphicsProfile,
+                    Platform = TargetPlatform.DesktopGL
+                };
 
-                    var processorContext = new PipelineProcessorContext(pipelineManager, new PipelineBuildEvent());
-                    var content = importer.Import(absolutePath, null);
-                    var compiledContent = processor.Process(content, processorContext);
-                    var graphicsDevice = Runner.Application.Game.GraphicsDevice;
+                var processorContext = new PipelineProcessorContext(pipelineManager, new PipelineBuildEvent());
+                var content = importer.Import(fullPath, null);
+                var compiledContent = processor.Process(content, processorContext);
+                var graphicsDevice = Runner.Application.Game.GraphicsDevice;
 
-                    effect = new Effect(graphicsDevice, compiledContent.GetEffectCode());
-                    Cache.Add(filePath, effect);
-                }
-                catch
-                {
-                    effect = null;
-                    return false;
-                }
+                return new Effect(graphicsDevice, compiledContent.GetEffectCode());
             }
 
-            return true;
-        }
-
-        internal static void Dispose()
-        {
-            foreach (var effect in Cache.Values)
-                effect.Dispose();
-
-            Cache.Clear();
+            return null;
         }
         #endregion
     }

@@ -222,9 +222,9 @@ namespace FrogWorks
             return textures[index];
         }
 
-        public TextureAltasTexture GetFrame(TextureAltasTexture[] textures)
+        public TextureAtlasTexture GetFrame(TextureAtlasTexture[] textures)
         {
-            if (textures == null) return default(TextureAltasTexture);
+            if (textures == null) return default(TextureAtlasTexture);
             var index = _frames[FrameIndex].Mod(textures.Length);
             return textures[index];
         }

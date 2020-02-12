@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace FrogWorks
 {
@@ -111,13 +110,10 @@ namespace FrogWorks
         }
 
         #region Static Methods
-        public static Texture Load(string filePath)
+        public static Texture Load(string fileName)
         {
-            Texture2D xnaTexture;
-
-            return TryGetFromCache(filePath, out xnaTexture)
-                ? new Texture(xnaTexture, xnaTexture.Bounds)
-                : null;
+            var xnaTexture = AssetManager.GetFromCache(fileName, FromStream);
+            return xnaTexture != null ? new Texture(xnaTexture, xnaTexture.Bounds) : null;
         }
 
         public static Texture[] Split(Texture2D xnaTexture, Point frameSize)
@@ -152,37 +148,20 @@ namespace FrogWorks
             return Split(texture.XnaTexture, new Point(frameWidth, frameHeight));
         }
 
-        internal static bool TryGetFromCache(string filePath, out Texture2D xnaTexture)
+        internal static Texture2D FromStream(string path)
         {
-            if (!Cache.TryGetValue(filePath, out xnaTexture))
-            {
-                var absolutePath = Path.Combine(Runner.Application.ContentDirectory, filePath);
+            var stream = AssetManager.GetStream(path, ".png");
 
-                try
+            if (stream != null)
+            {
+                using (stream)
                 {
-                    using (var stream = File.OpenRead(absolutePath))
-                    {
-                        var graphicsDevice = Runner.Application.Game.GraphicsDevice;
-                        xnaTexture = Texture2D.FromStream(graphicsDevice, stream);
-                        Cache.Add(filePath, xnaTexture);
-                    }
-                }
-                catch
-                {
-                    xnaTexture = null;
-                    return false;
+                    var graphicsDevice = Runner.Application.Game.GraphicsDevice;
+                    return Texture2D.FromStream(graphicsDevice, stream);
                 }
             }
 
-            return true;
-        }
-
-        internal static void Dispose()
-        {
-            foreach (var xnaTexture in Cache.Values)
-                xnaTexture.Dispose();
-
-            Cache.Clear();
+            return null;
         }
         #endregion
     }

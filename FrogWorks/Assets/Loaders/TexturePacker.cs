@@ -7,18 +7,16 @@ namespace FrogWorks
     {
         public static TextureAtlas Load(string filePath)
         {
-            TextureAtlas atlas;
-            TextureAtlas.TryGetFromCache(filePath, Read, out atlas);
-            return atlas;
+            return AssetManager.GetFromCache(filePath, FromStream);
         }
 
-        private static TextureAtlas Read(string filePath)
+        private static TextureAtlas FromStream(string filePath)
         {
-            var absolutePath = Path.Combine(Runner.Application.ContentDirectory, filePath);
+            var stream = AssetManager.GetStream(filePath, ".xml");
 
-            try
+            if (stream != null)
             {
-                using (var stream = File.OpenRead(absolutePath))
+                using (stream)
                 {
                     var atlas = new TextureAtlas();
                     var document = new XmlDocument();
@@ -26,27 +24,25 @@ namespace FrogWorks
 
                     var root = document["TextureAtlas"];
                     var directory = Path.GetDirectoryName(filePath);
-                    var imagePath = Path.Combine(directory, root.AttrToString("imagePath"));
-                    var rootTexture = Texture.Load(imagePath);
+                    var rootTexturePath = Path.Combine(directory, root.AttrToString("imagePath"));
+                    var rootTexture = Texture.Load(rootTexturePath);
 
                     foreach (XmlElement spriteNode in root.ChildNodes)
                     {
-                        var key = Path.GetFileNameWithoutExtension(spriteNode.AttrToString("n"));
+                        var key = Path.ChangeExtension(spriteNode.AttrToString("n"), null);
                         var texture = rootTexture.ClipRegion(spriteNode.AttrToRectangle("x", "y", "w", "h"));
                         var size = spriteNode.AttrToVector2("oW", "oH");
                         var origin = spriteNode.AttrToVector2("oX", "oY");
                         var isRotated = spriteNode.HasAttribute("r");
 
-                        atlas.Add(key, new TextureAltasTexture(texture, size, origin, isRotated));
+                        atlas.Add(key, new TextureAtlasTexture(texture, size, origin, isRotated));
                     }
 
                     return atlas;
                 }
             }
-            catch
-            {
-                return null;
-            }
+
+            return null;
         }
     }
 }

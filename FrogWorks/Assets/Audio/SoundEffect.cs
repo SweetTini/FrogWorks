@@ -12,11 +12,8 @@ namespace FrogWorks
         #region Static Methods
         public static SoundEffect Load(string filePath)
         {
-            Sound sound;
-
-            return TryGetFromCache(filePath, false, out sound)
-                ? new SoundEffect(sound)
-                : null;
+            var sound = AssetManager.GetFromCache(filePath, LoadSound);
+            return sound != null ? new SoundEffect(sound) : null;
         }
         #endregion
     }

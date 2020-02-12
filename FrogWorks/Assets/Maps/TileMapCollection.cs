@@ -11,9 +11,6 @@ namespace FrogWorks
         internal List<TileMapCollectionTile> _unusedTiles;
         internal List<TileMapCollectionObject> _objects;
 
-        static Dictionary<string, TileMapCollection> Cache { get; } = 
-            new Dictionary<string, TileMapCollection>();
-
         public Point Size { get; internal set; }
 
         public int Columns => Size.X;
@@ -44,29 +41,6 @@ namespace FrogWorks
             UnusedTiles = new ReadOnlyCollection<TileMapCollectionTile>(_unusedTiles);
             Objects = new ReadOnlyCollection<TileMapCollectionObject>(_objects);
         }
-
-        #region Static Methods
-        internal static bool TryGetFromCache(
-            string filePath, 
-            Func<string, TileMapCollection> loadCallback, 
-            out TileMapCollection collection)
-        {
-            if (!Cache.TryGetValue(filePath, out collection))
-            {
-                collection = loadCallback?.Invoke(filePath);
-
-                if (collection != null)
-                    Cache.Add(filePath, collection);
-            }
-
-            return collection != null;
-        }
-
-        public static void Dispose()
-        {
-            Cache.Clear();
-        }
-        #endregion
     }
 
     public class TileMapCollectionTileMap

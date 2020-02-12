@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -9,14 +8,11 @@ namespace FrogWorks
 {
     public sealed class TextureAtlas
     {
-        Dictionary<string, TextureAltasTexture> _textures;
+        Dictionary<string, TextureAtlasTexture> _textures;
 
-        private static Dictionary<string, TextureAtlas> Cache { get; } =
-            new Dictionary<string, TextureAtlas>();
+        public ReadOnlyDictionary<string, TextureAtlasTexture> Textures { get; private set; }
 
-        public ReadOnlyDictionary<string, TextureAltasTexture> Textures { get; private set; }
-
-        public TextureAltasTexture this[int index]
+        public TextureAtlasTexture this[int index]
         {
             get
             {
@@ -28,11 +24,11 @@ namespace FrogWorks
             }
         }
 
-        public TextureAltasTexture this[string key]
+        public TextureAtlasTexture this[string key]
         {
             get
             {
-                TextureAltasTexture texture;
+                TextureAtlasTexture texture;
                 _textures.TryGetValue(key, out texture);
                 return texture;
             }
@@ -40,11 +36,11 @@ namespace FrogWorks
 
         internal TextureAtlas()
         {
-            _textures = new Dictionary<string, TextureAltasTexture>();
-            Textures = new ReadOnlyDictionary<string, TextureAltasTexture>(_textures);
+            _textures = new Dictionary<string, TextureAtlasTexture>();
+            Textures = new ReadOnlyDictionary<string, TextureAtlasTexture>(_textures);
         }
 
-        public void Add(string key, TextureAltasTexture texture)
+        public void Add(string key, TextureAtlasTexture texture)
         {
             if (!string.IsNullOrWhiteSpace(key) && texture != null)
                 _textures.Add(key, texture);
@@ -56,7 +52,7 @@ namespace FrogWorks
                 Add(texture.Key, texture.Value);
         }
 
-        public TextureAltasTexture[] Get(params string[] keys)
+        public TextureAtlasTexture[] Get(params string[] keys)
         {
             return keys.Distinct()
                 .Where(k => _textures.ContainsKey(k))
@@ -76,36 +72,13 @@ namespace FrogWorks
                 .ToArray();
         }
 
-        public TextureAltasTexture[] ToArray()
+        public TextureAtlasTexture[] ToArray()
         {
             return _textures.Values.ToArray();
         }
-
-        #region Static Methods
-        internal static bool TryGetFromCache(
-            string filePath,
-            Func<string, TextureAtlas> loadCallback,
-            out TextureAtlas atlas)
-        {
-            if (!Cache.TryGetValue(filePath, out atlas))
-            {
-                atlas = loadCallback?.Invoke(filePath);
-
-                if (atlas != null)
-                    Cache.Add(filePath, atlas);
-            }
-
-            return atlas != null;
-        }
-
-        public static void Dispose()
-        {
-            Cache.Clear();
-        }
-        #endregion
     }
 
-    public sealed class TextureAltasTexture
+    public sealed class TextureAtlasTexture
     {
         private Texture Texture { get; set; }
 
@@ -125,7 +98,7 @@ namespace FrogWorks
 
         public bool IsRotated { get; private set; }
 
-        public TextureAltasTexture(Texture texture, Vector2 size, Vector2 origin, bool isRotated)
+        public TextureAtlasTexture(Texture texture, Vector2 size, Vector2 origin, bool isRotated)
         {
             Texture = texture;
             RealSize = isRotated

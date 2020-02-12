@@ -12,33 +12,28 @@ namespace FrogWorks
     {
         public static TileMapCollection Load(string filePath)
         {
-            TileMapCollection collection;
-            TileMapCollection.TryGetFromCache(filePath, Read, out collection);
-            return collection;
+            return AssetManager.GetFromCache(filePath, FromStream);
         }
 
-        static TileMapCollection Read(string filePath)
+        static TileMapCollection FromStream(string filePath)
         {
-            try
-            {
-                var absolutePath = Path.Combine(Runner.Application.ContentDirectory, filePath);
+            var stream = AssetManager.GetStream(filePath, ".tmx");
 
-                using (var stream = File.OpenRead(absolutePath))
+            if (stream != null)
+            {
+                using (stream)
                 {
                     var collection = new TileMapCollection();
                     var xmlDoc = new XmlDocument();
-                    var rootDirectory = Path.GetDirectoryName(filePath);
 
                     xmlDoc.Load(stream);
-                    ReadMap(collection, xmlDoc, rootDirectory);
+                    ReadMap(collection, xmlDoc, Path.GetDirectoryName(filePath));
 
                     return collection;
                 }
             }
-            catch
-            {
-                return null;
-            }
+
+            return null;
         }
 
         static void ReadMap(TileMapCollection collection, XmlDocument xmlDoc, string rootDirectory)
@@ -63,7 +58,9 @@ namespace FrogWorks
 
             foreach (XmlElement xmlTileSet in xmlRoot.GetElementsByTagName("tileset"))
             {
-                var source = Path.Combine(rootDirectory, xmlTileSet["image"].AttrToString("source"));
+                var texturePath = xmlTileSet["image"].AttrToString("source")
+                    .Replace('/', Path.DirectorySeparatorChar);
+                var source = Path.Combine(rootDirectory, texturePath);
                 var texture = Texture.Load(source);
 
                 tileSets.Add(new TiledTileSet()

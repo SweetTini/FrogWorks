@@ -68,11 +68,7 @@ namespace FrogWorks
                 _scene?.Layers.Dispose();
 
                 Input.Dispose();
-                TileMapCollection.Dispose();
-                TextureAtlas.Dispose();
-                Texture.Dispose();
-                Shader.Dispose();
-                Audio.Dispose();
+                AssetManager.ClearCache();
                 AudioMgr.Unload();
             }
 

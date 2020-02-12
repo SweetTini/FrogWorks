@@ -9,7 +9,7 @@ namespace FrogWorks
         private T _key;
         private bool _isPlaying;
 
-        protected TextureAltasTexture[] Textures { get; set; }
+        protected TextureAtlasTexture[] Textures { get; set; }
 
         protected Dictionary<T, Animation> Animations { get; private set; }
 
@@ -65,7 +65,7 @@ namespace FrogWorks
             }
         }
 
-        public AtlasSprite(TextureAltasTexture[] textures)
+        public AtlasSprite(TextureAtlasTexture[] textures)
             : base(textures[0], true)
         {
             Animations = new Dictionary<T, Animation>();

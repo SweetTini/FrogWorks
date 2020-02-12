@@ -14,7 +14,7 @@ namespace FrogWorks
             }
         }
 
-        protected SoundTrack(Sound sound) 
+        protected SoundTrack(Sound sound)
             : base(sound)
         {
         }
@@ -22,11 +22,8 @@ namespace FrogWorks
         #region Static Methods
         public static SoundTrack Load(string filePath)
         {
-            Sound sound;
-
-            return TryGetFromCache(filePath, true, out sound)
-                ? new SoundTrack(sound)
-                : null;
+            var sound = AssetManager.GetFromCache(filePath, LoadStreamedSound);
+            return sound != null ? new SoundTrack(sound) : null;
         }
         #endregion
     }

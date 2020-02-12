@@ -8,47 +8,47 @@ namespace FrogWorks
 {
     public sealed class BmFont
     {
-        public static BitmapFont Load(BmFontFileType fileType, string filePath)
+        public static BitmapFont Load(string filePath)
+        { 
+            return AssetManager.GetFromCache(filePath, FromStream);
+        }
+
+        static BitmapFont FromStream(string filePath)
         {
-            var absolutePath = Path.Combine(Runner.Application.ContentDirectory, filePath);
+            var stream = AssetManager.GetStream(filePath, ".xml", ".bin");
 
-            try
+            if (stream != null)
             {
-                using (var stream = File.OpenRead(absolutePath))
+                using (stream)
                 {
-                    var font = new BitmapFont();
+                    var directory = Path.GetDirectoryName(filePath);
 
-                    switch (fileType)
+                    switch (GetFileType(filePath))
                     {
-                        default:
-                        case BmFontFileType.Binary:
-                            BinaryFile.Read(stream, font, Path.GetDirectoryName(filePath));
-                            break;
-                        case BmFontFileType.Xml:
-                            XmlFile.Read(stream, font, Path.GetDirectoryName(filePath));
-                            break;
+                        case BmFontFileType.Binary: return BinaryFile.Read(stream, directory);
+                        case BmFontFileType.Xml: return XmlFile.Read(stream, directory);
                     }
-
-                    return font;
                 }
             }
-            catch
-            {
-                return null;
-            }
+
+            return null;
         }
 
         #region Binary
-        private class BinaryFile
+        class BinaryFile
         {
-            public static void Read(FileStream stream, BitmapFont font, string directory)
+            public static BitmapFont Read(FileStream stream, string directory)
             {
                 using (var reader = new BinaryReader(stream))
                 {
+                    var font = new BitmapFont();
                     var textures = new List<Texture>();
-                    int versionNumber = ValidateFormat(reader);
+                    var versionNumber = ValidateFormat(reader);
+
                     while (ReadBlock(reader, font, textures, directory, versionNumber))
                         continue;
+
+                    return font;
                 }
             }
 
@@ -144,20 +144,22 @@ namespace FrogWorks
         #endregion
 
         #region XML
-        private class XmlFile
+        class XmlFile
         {
-            public static void Read(FileStream stream, BitmapFont font, string directory)
+            public static BitmapFont Read(FileStream stream, string directory)
             {
+                var font = new BitmapFont();
                 var textures = new List<Texture>();
                 var document = new XmlDocument();
                 document.Load(stream);
 
                 var root = document["font"];
-
                 ReadCommon(root, font);
                 ReadPages(root, font, textures, directory);
                 ReadChars(root, font, textures);
                 ReadKerningPairs(root, font);
+
+                return font;
             }
 
             static void ReadCommon(XmlElement root, BitmapFont font)
@@ -209,6 +211,19 @@ namespace FrogWorks
                     var character = font[ascii];
                     character?.AddOrUpdateKerning(nextAscii, kerning);
                 }
+            }
+        }
+        #endregion
+
+        #region Misc.
+        static BmFontFileType GetFileType(string path)
+        {
+            var extension = Path.GetExtension(path);
+
+            switch (extension)
+            {
+                case ".xml": return BmFontFileType.Xml;
+                default: return BmFontFileType.Binary;
             }
         }
         #endregion

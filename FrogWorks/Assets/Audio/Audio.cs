@@ -1,6 +1,5 @@
 ﻿using ChaiFoxes.FMODAudio;
 using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace FrogWorks
@@ -8,10 +7,6 @@ namespace FrogWorks
     public abstract class Audio
     {
         private float _volume = 1f;
-
-        private static Dictionary<string, Sound> SoundCache { get; } = new Dictionary<string, Sound>();
-
-        private static Dictionary<string, Sound> StreamCache { get; } = new Dictionary<string, Sound>();
 
         public static float MasterVolume { get; set; } = 1f;
 
@@ -69,37 +64,34 @@ namespace FrogWorks
         public void Pause() => Channel?.Pause();
 
         #region Static Methods
-        internal static bool TryGetFromCache(string filePath, bool isStreamed, out Sound sound)
+        internal static Sound LoadSound(string filePath)
         {
-            var cache = isStreamed ? StreamCache : SoundCache;
+            var fullPath = AssetManager.GetFullPath(filePath, ".ogg");
 
-            if (!cache.TryGetValue(filePath, out sound))
+            if (!string.IsNullOrEmpty(fullPath))
             {
-                var contentDirectory = Runner.Application.Game.Content.RootDirectory;
-                var absolutePath = Path.Combine(contentDirectory, filePath);
-
-                try
-                {
-                    sound = isStreamed
-                        ? AudioMgr.LoadStreamedSound(absolutePath)
-                        : AudioMgr.LoadSound(absolutePath);
-
-                    cache.Add(filePath, sound);
-                }
-                catch
-                {
-                    sound = null;
-                    return false;
-                }
+                var extension = Path.GetExtension(fullPath);
+                var rootDirectory = Runner.Application.Game.Content.RootDirectory;
+                fullPath = Path.Combine(rootDirectory, Path.ChangeExtension(filePath, extension));
+                return AudioMgr.LoadSound(fullPath);
             }
 
-            return true;
+            return null;
         }
 
-        internal static void Dispose()
+        internal static Sound LoadStreamedSound(string filePath)
         {
-            SoundCache.Clear();
-            StreamCache.Clear();
+            var fullPath = AssetManager.GetFullPath(filePath, ".ogg");
+
+            if (!string.IsNullOrEmpty(fullPath))
+            {
+                var extension = Path.GetExtension(fullPath);
+                var rootDirectory = Runner.Application.Game.Content.RootDirectory;
+                fullPath = Path.Combine(rootDirectory, Path.ChangeExtension(filePath, extension));
+                return AudioMgr.LoadStreamedSound(fullPath);
+            }
+
+            return null;
         }
         #endregion
     }

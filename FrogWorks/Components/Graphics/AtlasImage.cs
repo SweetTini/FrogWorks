@@ -4,13 +4,13 @@ namespace FrogWorks
 {
     public class AtlasImage : GraphicsComponent
     {
-        public TextureAltasTexture Texture { get; protected set; }
+        public TextureAtlasTexture Texture { get; protected set; }
 
         public virtual Rectangle Bounds => new Rectangle(Point.Zero, Texture.Size.ToPoint());
 
         public Rectangle AbsoluteBounds => Bounds.Transform(DrawPosition, Origin, Scale, Angle);
 
-        public AtlasImage(TextureAltasTexture texture, bool isEnabled)
+        public AtlasImage(TextureAtlasTexture texture, bool isEnabled)
             : base(isEnabled)
         {
             Texture = texture;
