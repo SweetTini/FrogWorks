@@ -15,9 +15,9 @@ namespace FrogWorks
             Animation = animation;
         }
 
-        public AnimatedBackPattern(Texture[] textures, int[] frames, float delayPerFrame, 
+        public AnimatedBackPattern(Texture[] textures, int[] frames, float frameStep, 
                                    AnimationPlayMode playMode, int maxLoops = 0)
-            : this(textures, new Animation(frames, delayPerFrame, playMode, maxLoops))
+            : this(textures, new Animation(frames, frameStep, playMode, maxLoops))
         {
         }
 
@@ -35,16 +35,16 @@ namespace FrogWorks
         {
         }
 
-        public AnimatedBackPattern(Texture texture, Point frameSize, int[] frames, float delayPerFrame, 
+        public AnimatedBackPattern(Texture texture, Point frameSize, int[] frames, float frameStep, 
                                    AnimationPlayMode playMode, int maxLoops = 0)
-            : this(texture, frameSize, new Animation(frames, delayPerFrame, playMode, maxLoops))
+            : this(texture, frameSize, new Animation(frames, frameStep, playMode, maxLoops))
         {
         }
 
         public AnimatedBackPattern(Texture texture, int frameWidth, int frameHeight, int[] frames, 
-                                   float delayPerFrame, AnimationPlayMode playMode, int maxLoops = 0)
+                                   float frameStep, AnimationPlayMode playMode, int maxLoops = 0)
             : this(texture, new Point(frameWidth, frameHeight), 
-                   new Animation(frames, delayPerFrame, playMode, maxLoops))
+                   new Animation(frames, frameStep, playMode, maxLoops))
         {
         }
 

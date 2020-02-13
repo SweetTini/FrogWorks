@@ -143,6 +143,7 @@ namespace FrogWorks
                     switch (_initialPlayMode)
                     {
                         case AnimationPlayMode.Loop:
+                        case AnimationPlayMode.LoopRandom:
                             _playMode = AnimationPlayMode.Normal;
                             break;
                         case AnimationPlayMode.LoopReverse:
@@ -150,9 +151,6 @@ namespace FrogWorks
                             break;
                         case AnimationPlayMode.LoopYoyo:
                             _playMode = AnimationPlayMode.Yoyo;
-                            break;
-                        case AnimationPlayMode.LoopRandom:
-                            _playMode = AnimationPlayMode.Normal;
                             break;
                     }
                 }

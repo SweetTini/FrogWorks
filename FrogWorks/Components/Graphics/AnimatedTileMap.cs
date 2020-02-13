@@ -51,16 +51,16 @@ namespace FrogWorks
             Fill(tileSet, animation, new Point(x, y), new Point(columns, rows));
         }
 
-        public void Fill(TileSet tileSet, int[] frames, float delayPerFrame, AnimationPlayMode playMode,
+        public void Fill(TileSet tileSet, int[] frames, float frameStep, AnimationPlayMode playMode,
                          Point location, Point size)
         {
-            Fill(tileSet, new Animation(frames, delayPerFrame, playMode), location, size);
+            Fill(tileSet, new Animation(frames, frameStep, playMode), location, size);
         }
 
-        public void Fill(TileSet tileSet, int[] frames, float delayPerFrame, AnimationPlayMode playMode,
+        public void Fill(TileSet tileSet, int[] frames, float frameStep, AnimationPlayMode playMode,
                          int x, int y, int columns, int rows)
         {
-            Fill(tileSet, new Animation(frames, delayPerFrame, playMode), 
+            Fill(tileSet, new Animation(frames, frameStep, playMode), 
                  new Point(x, y), new Point(columns, rows));
         }
 

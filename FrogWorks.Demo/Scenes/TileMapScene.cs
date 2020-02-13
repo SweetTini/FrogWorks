@@ -26,7 +26,7 @@ namespace FrogWorks.Demo
             ParallaxLayer.Add(Pattern);
             DefaultLayer.Add(Renderer);
 
-            var collection = Tiled.Load("Maps\\TestMap.tmx");
+            var collection = Tiled.Load(@"Maps\TestMap");
             BackgroundColor = collection.BackgroundColor;
             Renderer.Add(collection.TileMaps[0].Component, collection.TileMaps[1].Component);
             Camera.SetZone(collection.Size * collection.TileSize); 

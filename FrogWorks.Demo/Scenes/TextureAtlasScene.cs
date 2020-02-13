@@ -12,7 +12,7 @@ namespace FrogWorks.Demo
 
         protected override void Begin()
         {
-            var atlas = TexturePacker.Load(@"Textures/Test2.xml");
+            var atlas = TexturePacker.Load(@"Textures\Test2");
             _duck = new Duck(atlas);
             _textures = atlas.ToArray();
 

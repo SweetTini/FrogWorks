@@ -23,7 +23,7 @@ namespace FrogWorks.Demo
 
         protected override void Begin()
         {
-            WaveShader = Shader.Load<WaveShader>("Shaders\\WaveShader.fx");
+            WaveShader = Shader.Load<WaveShader>(@"Shaders\WaveShader");
             WaveLayer = new ShaderLayer(WaveShader);
             TextLayer = new BasicLayer();
 
@@ -42,7 +42,7 @@ namespace FrogWorks.Demo
             DefaultLayer.Add(Pattern);
             TextLayer.Add(Font);
 
-            DemoTrack = SoundTrack.Load("Music\\Demonstrate.ogg");
+            DemoTrack = SoundTrack.Load(@"Music\Demonstrate");
             DemoTrack.Play();
         }
 

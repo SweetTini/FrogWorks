@@ -132,10 +132,10 @@ namespace FrogWorks
                 Play(key, true);
         }
 
-        public void AddOrUpdate(T key, int[] frames, float delayPerFrame, AnimationPlayMode playMode,
+        public void AddOrUpdate(T key, int[] frames, float frameStep, AnimationPlayMode playMode,
                                 int maxLoops = 0, Action onFinished = null, Action onLoop = null)
         {
-            AddOrUpdate(key, new Animation(frames, delayPerFrame, playMode, maxLoops, onFinished, onLoop));
+            AddOrUpdate(key, new Animation(frames, frameStep, playMode, maxLoops, onFinished, onLoop));
         }
 
         public void Remove(T key)

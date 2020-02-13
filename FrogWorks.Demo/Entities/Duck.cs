@@ -34,7 +34,7 @@ namespace FrogWorks.Demo
 
             var indexes = _atlas.GetIndexes(runKeys);
 
-            _sprite.AddOrUpdate(0, new Animation(indexes, .1f, AnimationPlayMode.Loop));
+            _sprite.AddOrUpdate(0, new Animation(indexes, 8f, AnimationPlayMode.Loop));
             _sprite.Scale = Vector2.One * .5f;
             _sprite.Color = Color.LightCoral;
         }
