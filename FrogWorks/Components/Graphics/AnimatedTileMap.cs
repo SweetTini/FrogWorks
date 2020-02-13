@@ -24,7 +24,7 @@ namespace FrogWorks
             if (WrapVertically) y = y.Mod(Rows);
 
             var tile = Map[x, y];
-            tile?.OffsetTimer(_timer);
+            tile?.OffsetByTimer(_timer);
             return tile?.Texture;
         }
 

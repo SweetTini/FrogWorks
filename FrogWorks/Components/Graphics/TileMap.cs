@@ -123,6 +123,6 @@ namespace FrogWorks
             _animation = animation;
         }
 
-        public void OffsetTimer(float timer) => _animation?.OffsetTimer(timer);
+        public void OffsetByTimer(float timer) => _animation?.OffsetByTimer(timer);
     }
 }
