@@ -62,6 +62,7 @@ namespace FrogWorks
             set
             {
                 value = value.Mod(MaxFrames);
+                _timer = 0f;
 
                 switch (_playMode)
                 {
