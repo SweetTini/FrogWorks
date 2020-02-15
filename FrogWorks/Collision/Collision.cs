@@ -6,13 +6,13 @@ namespace FrogWorks
     public static class Collision
     {
         #region Raycasting
-        public static bool Cast(this Ray ray, Shape other)
+        public static bool Cast(this Ray2D ray, Shape other)
         {
             Raycast hit;
             return ray.Cast(other, out hit);
         }
 
-        public static bool Cast(this Ray ray, Shape other, out Raycast hit)
+        public static bool Cast(this Ray2D ray, Shape other, out Raycast hit)
         {
             hit = new Raycast(ray);
 
@@ -26,13 +26,13 @@ namespace FrogWorks
             return false;
         }
 
-        public static bool Cast(this Ray ray, Circle other)
+        public static bool Cast(this Ray2D ray, Circle other)
         {
             Raycast hit;
             return ray.Cast(other, out hit);
         }
 
-        public static bool Cast(this Ray ray, Circle other, out Raycast hit)
+        public static bool Cast(this Ray2D ray, Circle other, out Raycast hit)
         {
             hit = new Raycast(ray);
 
@@ -55,13 +55,13 @@ namespace FrogWorks
             return false;
         }
 
-        public static bool Cast(this Ray ray, RectangleF other)
+        public static bool Cast(this Ray2D ray, RectangleF other)
         {
             Raycast hit;
             return ray.Cast(other, out hit);
         }
 
-        public static bool Cast(this Ray ray, RectangleF other, out Raycast hit)
+        public static bool Cast(this Ray2D ray, RectangleF other, out Raycast hit)
         {
             hit = new Raycast(ray);
 
@@ -85,13 +85,13 @@ namespace FrogWorks
             return false;
         }
 
-        public static bool Cast(this Ray ray, Polygon other)
+        public static bool Cast(this Ray2D ray, Polygon other)
         {
             Raycast hit;
             return ray.Cast(other, out hit);
         }
 
-        public static bool Cast(this Ray ray, Polygon other, out Raycast hit)
+        public static bool Cast(this Ray2D ray, Polygon other, out Raycast hit)
         {
             hit = new Raycast(ray);
 

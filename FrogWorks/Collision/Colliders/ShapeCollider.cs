@@ -36,7 +36,7 @@ namespace FrogWorks
 
         public sealed override bool Collide(Vector2 point) => IsCollidable && Shape.Contains(point);
 
-        public sealed override bool Collide(Ray ray) => IsCollidable && ray.Cast(Shape);
+        public sealed override bool Collide(Ray2D ray) => IsCollidable && ray.Cast(Shape);
 
         public sealed override bool Collide(Shape shape) => IsCollidable && shape.Collide(Shape);
 

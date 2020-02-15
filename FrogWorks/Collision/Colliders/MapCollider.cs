@@ -93,7 +93,7 @@ namespace FrogWorks
         public sealed override bool Collide(Vector2 point)
             => Validate(Place(point), (p, e) => Validate(p, s => s.Contains(point)));
 
-        public sealed override bool Collide(Ray ray)
+        public sealed override bool Collide(Ray2D ray)
             => Validate(Place(ray), (p, e) => Validate(p, s => ray.Cast(s)));
 
         public sealed override bool Collide(Shape shape)
@@ -220,7 +220,7 @@ namespace FrogWorks
             var error = 0;
             var y = cellFrom.Y;
 
-            for (int x = cellFrom.X; x < cellTo.X; x++)
+            for (int x = cellFrom.X; x <= cellTo.X; x++)
             {
                 yield return isSteep
                     ? new Point(y, x)
@@ -248,7 +248,7 @@ namespace FrogWorks
             }
         }
 
-        public IEnumerable<Point> Place(Ray ray) => Place(ray.Position, ray.Endpoint);
+        public IEnumerable<Point> Place(Ray2D ray) => Place(ray.Position, ray.Endpoint);
 
         public IEnumerable<Point> Place(Shape shape) => Place(shape.Bounds);
 

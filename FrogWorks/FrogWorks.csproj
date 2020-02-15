@@ -80,7 +80,7 @@
     <Compile Include="Core\Collider.cs" />
     <Compile Include="Collision\Collision.cs" />
     <Compile Include="Collision\Geometry\Circle.cs" />
-    <Compile Include="Collision\Geometry\Ray.cs" />
+    <Compile Include="Collision\Geometry\Ray2D.cs" />
     <Compile Include="Collision\Geometry\Shape.cs" />
     <Compile Include="Collision\Geometry\Polygon.cs" />
     <Compile Include="Collision\Geometry\RectangleF.cs" />

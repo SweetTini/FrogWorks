@@ -132,7 +132,7 @@ namespace FrogWorks
 
         public bool Collide(float x, float y) => Collide(new Vector2(x, y));
 
-        public abstract bool Collide(Ray ray);
+        public abstract bool Collide(Ray2D ray);
 
         public abstract bool Collide(Shape shape);
 

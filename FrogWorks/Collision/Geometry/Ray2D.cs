@@ -2,7 +2,7 @@
 
 namespace FrogWorks
 {
-    public struct Ray
+    public struct Ray2D
     {
         public Vector2 Position { get; set; }
 
@@ -14,7 +14,7 @@ namespace FrogWorks
 
         public Vector2 ApplyImpact(float distance) => Position + Normal * distance;
 
-        public Ray(Vector2 from, Vector2 to)
+        public Ray2D(Vector2 from, Vector2 to)
             : this()
         {
             Position = from;
@@ -22,12 +22,12 @@ namespace FrogWorks
             Distance = Vector2.Distance(from, to);
         }
 
-        public Ray(float fromX, float fromY, float toX, float toY)
+        public Ray2D(float fromX, float fromY, float toX, float toY)
             : this(new Vector2(fromX, fromY), new Vector2(toX, toY))
         {
         }
 
-        public Ray(Vector2 position, Vector2 normal, float distance)
+        public Ray2D(Vector2 position, Vector2 normal, float distance)
             : this()
         {
             Position = position;
@@ -35,7 +35,7 @@ namespace FrogWorks
             Distance = distance;
         }
 
-        public Ray(float x, float y, float normalX, float normalY, float distance)
+        public Ray2D(float x, float y, float normalX, float normalY, float distance)
             : this(new Vector2(x, y), new Vector2(normalX, normalY), distance)
         {
         }

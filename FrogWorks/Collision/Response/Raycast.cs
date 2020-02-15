@@ -4,7 +4,7 @@ namespace FrogWorks
 {
     public struct Raycast
     {
-        public Ray Ray { get; internal set; }
+        public Ray2D Ray { get; internal set; }
 
         public Vector2 Normal { get; internal set; }
 
@@ -14,7 +14,7 @@ namespace FrogWorks
 
         public Vector2 Endpoint => Startpoint + Normal * (Ray.Distance - Ray.Distance * Impact);
 
-        internal Raycast(Ray ray)
+        internal Raycast(Ray2D ray)
             : this()
         {
             Ray = ray;

@@ -37,7 +37,7 @@ namespace FrogWorks
 
         public bool Collide(float x, float y, BitFlag flags) => Collide(new Vector2(x, y), flags);
 
-        public bool Collide(Ray ray, BitFlag flags)
+        public bool Collide(Ray2D ray, BitFlag flags)
             => Validate(Place(ray), flags, (p, e) => Validate(p, s => ray.Cast(s)));
 
         public bool Collide(Shape shape, BitFlag flags)
