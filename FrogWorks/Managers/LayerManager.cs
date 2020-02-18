@@ -1,31 +1,25 @@
 ﻿namespace FrogWorks
 {
-    public sealed class LayerManager : DepthSortManager<Layer, Scene>
+    public sealed class LayerManager : Manager<Layer, Scene>
     {
         internal LayerManager(Scene scene)
-            : base(scene) { }
-
-        internal override void Update(float deltaTime)
+            : base(scene)
         {
-            base.Update(deltaTime);
-
-            foreach (var item in Items)
-                item.UpdateCamera();
         }
 
         internal void Reset()
         {
-            foreach (var item in Items)
+            foreach (var child in Children)
             {
-                item.Camera.UpdateViewport();
-                item.UpdateBuffer();
+                child.Camera.UpdateViewport();
+                child.UpdateRenderTarget();
             }
         }
 
         internal void Dispose()
         {
-            foreach (var item in Items)
-                item.Buffer.Dispose();
+            foreach (var child in Children)
+                child.RenderTarget.Dispose();
         }
     }
 }

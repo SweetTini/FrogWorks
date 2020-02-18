@@ -26,7 +26,7 @@ namespace FrogWorks
                 value = value.Abs();
                 if (_cellSize == value) return;
                 _cellSize = value;
-                OnInternalTransformed();
+                OnTransformedInternally();
             }
         }
 
@@ -50,7 +50,7 @@ namespace FrogWorks
                 var mapSize = value.Abs().Divide(CellSize.ToVector2()).Round().ToPoint();
                 if (MapSize == mapSize) return;
                 Map.Resize(mapSize.X, mapSize.Y);
-                OnInternalTransformed();
+                OnTransformedInternally();
             }
         }
 

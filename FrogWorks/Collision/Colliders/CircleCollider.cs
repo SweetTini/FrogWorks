@@ -18,7 +18,7 @@ namespace FrogWorks
                 value = Math.Abs(value);
                 if (value == _radius) return;
                 _radius = value;
-                OnInternalTransformed();
+                OnTransformedInternally();
             }
         }
 

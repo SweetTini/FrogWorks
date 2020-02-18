@@ -34,12 +34,12 @@ namespace FrogWorks
         protected override void OnAdded()
         {
             if (Parent != null)
-                Collider?.OnInternalAdded(Parent);
+                Collider?.OnAddedInternally(Parent);
         }
 
         protected override void OnRemoved()
         {
-            Collider?.OnInternalRemoved();
+            Collider?.OnRemovedInternally();
         }
     }
 }

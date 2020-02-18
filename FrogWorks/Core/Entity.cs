@@ -1,33 +1,44 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 
 namespace FrogWorks
 {
-    public abstract class Entity : Manageable<Layer>, IManagerAccessor<Component>
+    public abstract class Entity : Manageable<Scene>, IManager<Component>
     {
-        private Vector2 _position;
-        private Collider _collider;
+        Layer _layer;
+        Collider _collider;
+        Vector2 _position;
 
-        protected internal Scene Scene => Parent?.Parent;
+        protected Scene Scene => Parent;
 
-        public ComponentManager Components { get; private set; }
+        internal ComponentManager Components { get; private set; }
+
+        protected internal Layer Layer
+        {
+            get { return _layer; }
+            internal set
+            {
+                if (_layer != value)
+                {
+                    OnRemovedInternally();
+                    _layer = value;
+                    OnLayerAddedInternally();
+                }
+            }
+        }
 
         public Collider Collider
         {
             get { return _collider; }
             protected set
             {
-                if (value == _collider)
-                    return;
-
-                if (value?.Parent != null)
-                    throw new Exception($"{value.GetType().Name} is already assigned to an instance of {GetType().Name}.");
-
-                _collider?.OnInternalRemoved();
-                _collider = value;
-                _collider?.OnInternalAdded(this);
+                if (_collider != value)
+                {
+                    _collider?.OnRemovedInternally();
+                    _collider = value;
+                    _collider?.OnAddedInternally(this);
+                }
             }
         }
 
@@ -38,9 +49,11 @@ namespace FrogWorks
             get { return _position; }
             set
             {
-                if (value == _position) return;
-                _position = value;
-                OnInternalTransformed();
+                if (_position != value)
+                {
+                    _position = value;
+                    OnTransformedInternally();
+                }
             }
         }
 
@@ -102,7 +115,7 @@ namespace FrogWorks
         {
             get { return Lower.X; }
             set { Lower = new Vector2(value, Lower.Y); }
-        }       
+        }
 
         public float Bottom
         {
@@ -138,86 +151,125 @@ namespace FrogWorks
             Components.Update(deltaTime);
         }
 
-        protected sealed override void Draw(RendererBatch batch) => Components.Draw(batch);
+        protected sealed override void Draw(RendererBatch batch)
+        {
+            Components.Draw(batch);
+        }
 
         protected override void OnAdded()
         {
             foreach (var component in Components)
-                component.OnInternalEntityAdded();
-
-            Collider?.OnInternalEntityAdded();
+                component.OnEntityAddedInternally();
         }
 
         protected override void OnRemoved()
         {
-            Collider?.OnInternalEntityRemoved();
-
             foreach (var component in Components)
-                component.OnInternalEntityRemoved();
+                component.OnEntityRemovedInternally();
         }
 
-        internal void OnInternalLayerAdded()
+        internal void OnSceneBeganInternally()
+        {
+            OnSceneBegan();
+        }
+
+        internal void OnSceneEndedInternally()
+        {
+            OnSceneEnded();
+        }
+
+        internal void OnLayerAddedInternally()
         {
             OnLayerAdded();
-
-            Collider?.OnInternalLayerAdded();
+            Collider?.OnLayerAddedInternally();
 
             foreach (var component in Components)
-                component.OnInternalLayerAdded();
+                component.OnLayerAddedInternally();
         }
 
-        internal void OnInternalLayerRemoved()
+        internal void OnLayerRemovedInternally()
         {
             foreach (var component in Components)
-                component.OnInternalLayerRemoved();
+                component.OnLayerRemovedInternally();
 
-            Collider?.OnInternalLayerRemoved();
-
+            Collider?.OnLayerRemovedInternally();
             OnLayerRemoved();
         }
 
-        protected virtual void OnLayerAdded() { }
-
-        protected virtual void OnLayerRemoved() { }
-
-        internal void OnInternalSceneBegan() => OnSceneBegan();
-
-        internal void OnInternalSceneEnded() => OnSceneEnded();
-
-        protected virtual void OnSceneBegan() { }
-
-        protected virtual void OnSceneEnded() { }
-
-        internal void OnInternalTransformed()
+        internal void OnTransformedInternally()
         {
             OnTransformed();
-
-            Collider?.OnInternalTransformed();
+            Collider?.OnTransformedInternally();
 
             foreach (var component in Components)
-                component.OnInternalTransformed();
+                component.OnTransformedInternally();
         }
 
-        protected virtual void OnTransformed() { }
+        protected virtual void OnSceneBegan()
+        {
+        }
 
-        public sealed override void Destroy() => Parent?.Entities.Remove(this);
+        protected virtual void OnSceneEnded()
+        {
+        }
 
-        #region Manager Shortcuts
-        public void Add(Component item) => Components.Add(item);
+        protected virtual void OnLayerAdded()
+        {
+        }
 
-        public void Add(params Component[] items) => Components.Add(items);
+        protected virtual void OnLayerRemoved()
+        {
+        }
 
-        public void Add(IEnumerable<Component> items) => Components.Add(items);
+        protected virtual void OnTransformed()
+        {
+        }
 
-        public void Remove(Component item) => Components.Remove(item);
+        public sealed override void Destroy()
+        {
+            Parent?.Entities.Remove(this);
+        }
 
-        public void Remove(params Component[] items) => Components.Remove(items);
+        #region Components
+        public void Add(Component component)
+        {
+            Components.Add(component);
+        }
 
-        public void Remove(IEnumerable<Component> items) => Components.Remove(items);
+        public void Add(params Component[] components)
+        {
+            Components.Add(components);
+        }
 
-        public IEnumerator<Component> GetEnumerator() => Components.GetEnumerator();
+        public void Add(IEnumerable<Component> components)
+        {
+            Components.Add(components);
+        }
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        public void Remove(Component component)
+        {
+            Components.Remove(component);
+        }
+
+        public void Remove(params Component[] components)
+        {
+            Components.Remove(components);
+        }
+
+        public void Remove(IEnumerable<Component> components)
+        {
+            Components.Remove(components);
+        }
+
+        public IEnumerator<Component> GetEnumerator()
+        {
+            return Components.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
         #endregion
     }
 }

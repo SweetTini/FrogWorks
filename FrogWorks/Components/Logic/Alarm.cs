@@ -22,7 +22,7 @@ namespace FrogWorks
 
         private void Initialize(float duration, AlarmMode mode, Action onFinished, bool canStart)
         {
-            IsEnabled = false;
+            IsActive = false;
             Duration = Math.Max(Math.Abs(duration), float.Epsilon);
             TimeLeft = 0f;
             Mode = mode;
@@ -42,7 +42,7 @@ namespace FrogWorks
 
                 switch (Mode)
                 {
-                    case AlarmMode.Persist: IsEnabled = false; break;
+                    case AlarmMode.Persist: IsActive = false; break;
                     case AlarmMode.PlayOnce: Destroy(); break;
                     case AlarmMode.Loop: Start(); break;
                 }
@@ -57,7 +57,7 @@ namespace FrogWorks
         public void Start()
         {
             TimeLeft = Duration;
-            IsEnabled = true;
+            IsActive = true;
         }
 
         public void Start(float duration, bool removeOnCompletion = false)
@@ -70,7 +70,7 @@ namespace FrogWorks
 
         public void Stop()
         {
-            IsEnabled = false;
+            IsActive = false;
         }
 
         #region Static Methods

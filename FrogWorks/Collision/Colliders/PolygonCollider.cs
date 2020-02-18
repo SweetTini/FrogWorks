@@ -24,7 +24,7 @@ namespace FrogWorks
             {
                 if (value == _origin) return;
                 _origin = value;
-                OnInternalTransformed();
+                OnTransformedInternally();
             }
         }
 
@@ -35,7 +35,7 @@ namespace FrogWorks
             {
                 if (value == _scale) return;
                 _scale = value;
-                OnInternalTransformed();
+                OnTransformedInternally();
             }
         }
 
@@ -46,7 +46,7 @@ namespace FrogWorks
             {
                 if (value == _angle) return;
                 _angle = value;
-                OnInternalTransformed();
+                OnTransformedInternally();
             }
         }
 

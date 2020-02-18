@@ -77,7 +77,6 @@
     <Compile Include="Components\Graphics\TiledGraphicsComponent.cs" />
     <Compile Include="Components\Logic\CollidableComponent.cs" />
     <Compile Include="Components\Logic\SineWave.cs" />
-    <Compile Include="Core\Collider.cs" />
     <Compile Include="Collision\Collision.cs" />
     <Compile Include="Collision\Geometry\Circle.cs" />
     <Compile Include="Collision\Geometry\Ray2D.cs" />
@@ -101,19 +100,24 @@
     <Compile Include="Components\Logic\StateMachine.cs" />
     <Compile Include="Components\Logic\Tween.cs" />
     <Compile Include="Components\Logic\Wiggler.cs" />
-    <Compile Include="Core\IManagerAccessor.cs" />
-    <Compile Include="Core\ManageableExtensions.cs" />
-    <Compile Include="Core\Manageable.cs" />
+    <Compile Include="Core\Collider.cs" />
     <Compile Include="Core\Component.cs" />
     <Compile Include="Core\Entity.cs" />
+    <Compile Include="Core\Layer.cs" />
+    <Compile Include="Core\ManagableEX.cs" />
+    <Compile Include="Core\Manageable.cs" />
+    <Compile Include="Core\Scene.cs" />
     <Compile Include="DisplayAdapter.cs" />
     <Compile Include="Assets\Loaders\Tiled.cs" />
     <Compile Include="Layers\AlphaMaskLayer.cs" />
-    <Compile Include="Layers\BasicLayer.cs" />
     <Compile Include="Layers\ShaderLayer.cs" />
     <Compile Include="Layers\ShaderMaskLayer.cs" />
+    <Compile Include="Managers\ComponentManager.cs" />
+    <Compile Include="Managers\EntityManager.cs" />
+    <Compile Include="Managers\LayerManager.cs" />
+    <Compile Include="Managers\Manager.cs" />
+    <Compile Include="Managers\ManagerEX.cs" />
     <Compile Include="Runners\DesktopRunner.cs" />
-    <Compile Include="Core\Layer.cs" />
     <Compile Include="GameAdapter.cs" />
     <Compile Include="Assets\Graphics\Animation.cs" />
     <Compile Include="Assets\Graphics\BitmapCharacter.cs" />
@@ -152,18 +156,8 @@
     <Compile Include="Inputs\Virtualization\VirtualAxis.cs" />
     <Compile Include="Inputs\Virtualization\VirtualButton.cs" />
     <Compile Include="Inputs\Virtualization\VirtualHardAxis.cs" />
-    <Compile Include="IRunner.cs" />
-    <Compile Include="Managers\Manager.cs" />
-    <Compile Include="Managers\DepthSortManager.cs" />
-    <Compile Include="Managers\ComponentManager.cs" />
-    <Compile Include="Managers\EntityManager.cs" />
-    <Compile Include="Managers\IManager.cs" />
-    <Compile Include="Managers\LayerManager.cs" />
-    <Compile Include="Managers\ManagerExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Core\Scene.cs" />
     <Compile Include="Runner.cs" />
-    <Compile Include="Utils\Cache.cs" />
     <Compile Include="Utils\Camera.cs" />
     <Compile Include="Utils\ColorConvert.cs" />
     <Compile Include="Utils\Easing.cs" />
@@ -184,6 +178,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

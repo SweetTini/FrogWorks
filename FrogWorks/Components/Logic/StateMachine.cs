@@ -42,7 +42,7 @@ namespace FrogWorks
                 var nextState = state.Update?.Invoke(deltaTime);
                 if (nextState.HasValue) CurrentState = nextState;
 
-                if (_coroutine.IsEnabled)
+                if (_coroutine.IsActive)
                     _coroutine.ForceUpdate(deltaTime);
             }
         }

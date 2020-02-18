@@ -26,7 +26,7 @@ namespace FrogWorks
             _timer += deltaTime;
         }
 
-        public bool IsActive(T key)
+        public bool IsOngoing(T key)
         {
             return _counters.ContainsKey(key) && _counters[key] - _timer > 0f;
         }

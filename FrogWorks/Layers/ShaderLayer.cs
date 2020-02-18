@@ -21,7 +21,7 @@ namespace FrogWorks
 
             batch.Configure(BlendState, DepthStencilState, Effect);
             batch.Begin();
-            batch.DrawSprites(sprite => sprite.Draw(Buffer, Vector2.Zero, Color.White));
+            batch.DrawSprites(sprite => sprite.Draw(RenderTarget, Vector2.Zero, Color.White));
             batch.End();
 
             Effect = lastEffect;

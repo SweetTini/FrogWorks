@@ -58,7 +58,7 @@ namespace FrogWorks
                         if (_enumerators.Count == 0)
                         {
                             IsFinished = true;
-                            IsEnabled = false;
+                            IsActive = false;
                             if (RemoveOnCompletion)
                                 Destroy();
                         }
@@ -71,7 +71,7 @@ namespace FrogWorks
 
         public void Replace(IEnumerator callback)
         {
-            IsEnabled = _hasEnded = true;
+            IsActive = _hasEnded = true;
             IsFinished = false;
             _timer = 0f;
             _enumerators.Clear();
@@ -80,7 +80,7 @@ namespace FrogWorks
 
         public void Cancel()
         {
-            IsEnabled = false;
+            IsActive = false;
             IsFinished = _hasEnded = true;
             _timer = 0f;
             _enumerators.Clear();

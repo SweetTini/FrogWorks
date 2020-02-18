@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace FrogWorks
 {
-    public abstract class Runner : IRunner
+    public abstract class Runner : IDisposable
     {
         public static Runner Application { get; private set; }
 
@@ -16,7 +16,13 @@ namespace FrogWorks
         public Version Version { get; set; } = new Version(0, 0, 1);
 
         public virtual string AssemblyDirectory
-            => Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+        {
+            get 
+            {
+                var assembly = Assembly.GetEntryAssembly();
+                return Path.GetDirectoryName(assembly.Location); 
+            }
+        }
 
         public string ContentDirectory
         {
@@ -48,14 +54,26 @@ namespace FrogWorks
             Display = new DisplayAdapter(Game, Size, scale, fullscreen);
         }
 
-        public virtual void Run() => Game.Run();
+        public virtual void Run()
+        {
+            Game.Run();
+        }
 
-        public virtual void RunOnce() => Game.RunOneFrame();
+        public virtual void RunOnce()
+        {
+            Game.RunOneFrame();
+        }
 
         public void GoTo<T>()
-            where T : Scene, new() => Game.GoTo<T>();
+            where T : Scene, new()
+        {
+            Game.GoTo<T>();
+        }
 
-        public void SetDisplay(ScalingType scaling) => Display.Scaling = scaling; 
+        public void SetDisplay(ScalingType scaling)
+        {
+            Display.Scaling = scaling;
+        }
 
         public void Dispose()
         {

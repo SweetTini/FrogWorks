@@ -38,7 +38,7 @@ namespace FrogWorks
             OnUpdate = onUpdate;
             OnFinished = onFinished;
             RemoveOnCompletion = removeOnCompletion;
-            IsEnabled = false;
+            IsActive = false;
 
             if (canStart) Start();
         }
@@ -72,7 +72,7 @@ namespace FrogWorks
             {
                 Counter = 0f;
                 OnFinished?.Invoke();
-                IsEnabled = false;
+                IsActive = false;
                 if (RemoveOnCompletion)
                     Destroy();
             }
@@ -86,7 +86,7 @@ namespace FrogWorks
             Counter = 1f;
             Value = StartAtZero ? 0f : 1f;
             OnUpdate?.Invoke(Value);
-            IsEnabled = true;
+            IsActive = true;
         }
 
         public void Start(float duration, float frequency, WigglerMode mode = WigglerMode.Linear, bool removeOnCompletion = false)
@@ -100,7 +100,7 @@ namespace FrogWorks
 
         public void Stop()
         {
-            IsEnabled = false;
+            IsActive = false;
         }
 
         #region Static Methods

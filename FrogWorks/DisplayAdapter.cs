@@ -6,32 +6,32 @@ namespace FrogWorks
 {
     public sealed class DisplayAdapter : IDisposable
     {
-        private GameAdapter _game;
-        private RendererBatch _batch;
-        private Viewport _viewport;
-        private Matrix _matrix;
+        GameAdapter _game;
+        RendererBatch _batch;
+        Viewport _viewport;
+        Matrix _matrix;
 
-        private Point _size;
-        private ScalingType _scaling = ScalingType.Fit;
-        private bool _isDirty;
+        Point _size;
+        ScalingType _scaling = ScalingType.Fit;
+        bool _isDirty;
 
         internal GraphicsDevice GraphicsDevice => _game.GraphicsDevice;
 
         public Color ClearColor { get; set; } = Color.Black;
 
-        public Point Size => _size + Extended;
+        public Point Size => _size + ExtendedSize;
 
         public int Width => Size.X;
 
         public int Height => Size.Y;
 
-        public Point Extended { get; private set; }
+        public Point ExtendedSize { get; private set; }
 
-        public Point View { get; private set; }
+        public Point ViewSize { get; private set; }
 
         public Point Padding { get; private set; }
 
-        public Point Client { get; private set; }
+        public Point ClientSize { get; private set; }
 
         public Vector2 Scale { get; private set; }
 
@@ -52,6 +52,7 @@ namespace FrogWorks
         {
             _game = game;
             _size = size;
+
             _game.Graphics.DeviceCreated += OnDeviceChanged;
             _game.Graphics.DeviceReset += OnDeviceChanged;
             _game.Window.ClientSizeChanged += OnDeviceChanged;
@@ -68,22 +69,23 @@ namespace FrogWorks
         {
             Reset(scene);
 
-            var buffer = scene?.Draw(this, _batch);
+            var renderTarget = scene?.Draw(this, _batch);
 
             GraphicsDevice.SetRenderTarget(null);
             GraphicsDevice.Viewport = _viewport;
             GraphicsDevice.Clear(ClearColor);
 
-            if (buffer == null) return;
+            if (renderTarget == null) return;
 
             _batch.Sprite.Begin(samplerState: SamplerState.PointClamp, transformMatrix: _matrix);
-            _batch.Sprite.Draw(buffer, Vector2.Zero, Color.White);
+            _batch.Sprite.Draw(renderTarget, Vector2.Zero, Color.White);
             _batch.Sprite.End();
         }
 
         public void ToFixedScale(int scale = 1)
         {
             scale = Math.Max(scale, 1);
+
             _game.Graphics.PreferredBackBufferWidth = _size.X * scale;
             _game.Graphics.PreferredBackBufferHeight = _size.Y * scale;
             _game.Graphics.IsFullScreen = false;
@@ -100,10 +102,16 @@ namespace FrogWorks
         }
 
         public Vector2 ToView(Vector2 position)
-            => Vector2.Transform(position - Padding.ToVector2(), Matrix.Invert(_matrix)).Round();
+        {
+            position -= Padding.ToVector2();
+            return Vector2.Transform(position, Matrix.Invert(_matrix)).Round();
+        }
 
         public Vector2 FromView(Vector2 position)
-            => Vector2.Transform(position, _matrix) + Padding.ToVector2().Round();
+        {
+            var transform = Vector2.Transform(position, _matrix).Round();
+            return transform + Padding.ToVector2();
+        }
 
         public void Dispose()
         {
@@ -111,7 +119,7 @@ namespace FrogWorks
             GC.SuppressFinalize(this);
         }
 
-        private void Dispose(bool disposing)
+        void Dispose(bool disposing)
         {
             if (disposing && !IsDisposed)
             {
@@ -120,88 +128,79 @@ namespace FrogWorks
             }
         }
 
-        private void OnDeviceChanged(object sender, EventArgs args)
+        void OnDeviceChanged(object sender, EventArgs args)
         {
             ApplyScaling();
         }
 
-        private void ApplyScaling()
+        void ApplyScaling()
         {
-            var lastExtended = Extended;
             var parameters = _game.GraphicsDevice.PresentationParameters;
-            Client = new Point(parameters.BackBufferWidth, parameters.BackBufferHeight);
-            Extended = Point.Zero;
+            var lastExtendedSize = ExtendedSize;
+            var lastScale = Scale;
 
-            var source = 1f * Client.Y / Client.X;
-            var target = 1f * _size.Y / _size.X;
+            ExtendedSize = Point.Zero;
+            ClientSize = new Point(
+                parameters.BackBufferWidth,
+                parameters.BackBufferHeight);
 
-            switch (Scaling)
+            if (Scaling == ScalingType.None)
             {
-                case ScalingType.None:
-                    Scale = Vector2.One;
-                    break;
-                case ScalingType.Fit:
-                    {
-                        var ratio = source < target
-                            ? 1f * Client.Y / _size.Y
-                            : 1f * Client.X / _size.X;
-                        Scale = Vector2.One * ratio;
-                    }
-                    break;
-                case ScalingType.PixelPerfect:
-                    {
-                        var ratio = source < target
-                            ? Client.Y / _size.Y
-                            : Client.X / _size.X;
-                        Scale = Vector2.One * ratio;
-                    }
-                    break;
-                case ScalingType.Stretch:
-                    Scale = new Vector2(
-                        1f * Client.X / _size.X,
-                        1f * Client.Y / _size.Y);
-                    break;
-                case ScalingType.Extend:
-                    if (source < target)
-                    {
-                        var viewScale = 1f * Client.Y / _size.Y;
-                        var worldScale = 1f * _size.Y / Client.Y;
-                        var amount = (int)Math.Round((Client.X - _size.X * viewScale) * worldScale);
-                        Extended = new Point(amount, Extended.Y);
-                        Scale = Vector2.One * viewScale;
-                    }
-                    else
-                    {
-                        var viewScale = 1f * Client.X / _size.X;
-                        var worldScale = 1f * _size.X / Client.X;
-                        var amount = (int)Math.Round((Client.Y - _size.Y * viewScale) * worldScale);
-                        Extended = new Point(Extended.X, amount);
-                        Scale = Vector2.One * viewScale;
-                    }
-                    break;
-                case ScalingType.Crop:
-                    {
-                        var ratio = source > target
-                            ? 1f * Client.Y / _size.Y
-                            : 1f * Client.X / _size.X;
-                        Scale = Vector2.One * ratio;
-                    }
-                    break;
+                Scale = Vector2.One;
+            }
+            else if (Scaling == ScalingType.Stretch)
+            {
+                Scale = ClientSize.ToVector2() / _size.ToVector2();
+            }
+            else
+            {
+                var source = 1f * ClientSize.Y / ClientSize.X;
+                var target = 1f * _size.Y / _size.X;
+                var canCrop = Scaling == ScalingType.Crop && source > target;
+                var scaleByHeight = source < target;
+                var ratio = canCrop || scaleByHeight
+                    ? 1f * ClientSize.Y / _size.Y
+                    : 1f * ClientSize.X / _size.X;
+
+                if (Scaling == ScalingType.PixelPerfect)
+                    ratio = ratio.Floor();
+
+                if (Scaling == ScalingType.Extend)
+                {
+                    var worldRatio = scaleByHeight
+                        ? 1f * _size.Y / ClientSize.Y
+                        : 1f * _size.X / ClientSize.X;
+                    var amount = scaleByHeight
+                        ? ((ClientSize.X - _size.X * ratio) * worldRatio)
+                        : ((ClientSize.Y - _size.Y * ratio) * worldRatio);
+                    var scaleUnit = scaleByHeight
+                        ? Vector2.UnitX
+                        : Vector2.UnitY;
+
+                    ExtendedSize = (scaleUnit * amount.Round()).ToPoint();
+                }
+
+                Scale = Vector2.One * ratio;
             }
 
-            View = (Size.ToVector2() * Scale).Round().ToPoint();
-            Padding = ((Client - View).ToVector2() / 2f).Round().ToPoint();
+            ViewSize = (Size.ToVector2() * Scale).Round().ToPoint();
+            Padding = ((ClientSize - ViewSize).ToVector2() * .5f).Round().ToPoint();
 
-            _viewport = new Viewport(Padding.X, Padding.Y, View.X, View.Y, 0f, 1f);
+            _viewport = new Viewport(new Rectangle(Padding, ViewSize));
             _matrix = Matrix.CreateScale(new Vector3(Scale, 1f));
-            _isDirty = _isDirty || lastExtended != Extended;
+
+            if (!_isDirty)
+            {
+                _isDirty = lastExtendedSize != ExtendedSize
+                    || lastScale != Scale;
+            }
         }
 
-        private void Reset(Scene scene)
+        void Reset(Scene scene)
         {
             if (_isDirty)
             {
-                scene?.OnDisplayReset();
+                scene?.ResetDisplay();
                 _isDirty = false;
             }
         }

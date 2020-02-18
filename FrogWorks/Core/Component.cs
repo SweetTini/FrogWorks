@@ -2,36 +2,66 @@
 {
     public abstract class Component : Manageable<Entity>
     {
-        protected internal Layer Layer => Parent?.Parent;
+        protected Entity Entity => Parent;
 
-        protected internal Scene Scene => Parent?.Scene;
+        protected Scene Scene => Parent?.Parent;
 
-        protected Component(bool isEnabled, bool isVisible)
+        protected Layer Layer => Parent?.Layer;
+
+        protected Component(bool isActive, bool isVisible)
         {
-            IsEnabled = isEnabled;
+            IsActive = isActive;
             IsVisible = isVisible;
         }
 
-        internal void OnInternalEntityAdded() => OnEntityAdded();
+        internal void OnEntityAddedInternally()
+        {
+            OnEntityAdded();
+        }
 
-        internal void OnInternalEntityRemoved() => OnEntityRemoved();
+        internal void OnEntityRemovedInternally()
+        {
+            OnEntityRemoved();
+        }
 
-        protected virtual void OnEntityAdded() { }
+        internal void OnLayerAddedInternally()
+        {
+            OnLayerAdded();
+        }
 
-        protected virtual void OnEntityRemoved() { }
+        internal void OnLayerRemovedInternally()
+        {
+            OnLayerRemoved();
+        }
 
-        internal void OnInternalLayerAdded() => OnLayerAdded();
+        internal void OnTransformedInternally()
+        {
+            OnTransformed();
+        }
 
-        internal void OnInternalLayerRemoved() => OnLayerRemoved();
+        protected virtual void OnEntityAdded()
+        {
+        }
 
-        protected virtual void OnLayerAdded() { }
+        protected virtual void OnEntityRemoved()
+        {
+        }
 
-        protected virtual void OnLayerRemoved() { }
+        protected virtual void OnLayerAdded()
+        {
+        }
 
-        internal void OnInternalTransformed() => OnTransformed();
+        protected virtual void OnLayerRemoved()
+        {
+        }
 
-        protected virtual void OnTransformed() { }
+        protected virtual void OnTransformed()
+        {
+        }
 
-        public sealed override void Destroy() => Parent?.Components.Remove(this);
+        public sealed override void Destroy()
+        {
+            Parent?.Components.Remove(this);
+        }
     }
 }

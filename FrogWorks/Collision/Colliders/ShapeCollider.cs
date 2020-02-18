@@ -57,22 +57,22 @@ namespace FrogWorks
             return false;
         }
 
-        protected sealed override void OnAdded() => IncludeIntoTree();
+        //protected sealed override void OnAdded() => IncludeIntoTree();
 
-        protected sealed override void OnRemoved() => ExcludeFromTree();
+        //protected sealed override void OnRemoved() => ExcludeFromTree();
 
-        protected sealed override void OnEntityAdded() => IncludeIntoTree();
+        //protected sealed override void OnEntityAdded() => IncludeIntoTree();
 
-        protected sealed override void OnEntityRemoved() => ExcludeFromTree();
+        //protected sealed override void OnEntityRemoved() => ExcludeFromTree();
 
-        protected sealed override void OnLayerAdded() => IncludeIntoTree();
+        //protected sealed override void OnLayerAdded() => IncludeIntoTree();
 
-        protected sealed override void OnLayerRemoved() => ExcludeFromTree();
+        //protected sealed override void OnLayerRemoved() => ExcludeFromTree();
 
-        protected sealed override void OnTransformed() => Scene?.Colliders.Update(this);
+        //protected sealed override void OnTransformed() => Scene?.Colliders.Update(this);
 
-        private void IncludeIntoTree() => Scene?.Colliders.Insert(this);
+        //private void IncludeIntoTree() => Scene?.Colliders.Insert(this);
 
-        private void ExcludeFromTree() => Scene?.Colliders.Remove(this);
+        //private void ExcludeFromTree() => Scene?.Colliders.Remove(this);
     }
 }

@@ -42,7 +42,7 @@ namespace FrogWorks
             Duration = Math.Max(Math.Abs(duration), float.Epsilon);
             TimeLeft = Percent = Value = 0f;
             Mode = mode;
-            IsEnabled = false;
+            IsActive = false;
 
             if (canStart) Start();
         }
@@ -63,10 +63,10 @@ namespace FrogWorks
                 switch (Mode)
                 {
                     case TweenMode.Persist:
-                        IsEnabled = false;
+                        IsActive = false;
                         break;
                     case TweenMode.PlayOnce:
-                        IsEnabled = false;
+                        IsActive = false;
                         Destroy();
                         break;
                     case TweenMode.Loop:
@@ -80,7 +80,7 @@ namespace FrogWorks
                         }
                         else
                         {
-                            IsEnabled = false;
+                            IsActive = false;
                             Destroy();
                         }
                         break;
@@ -103,7 +103,7 @@ namespace FrogWorks
             IsReversed = _hasBegunReversed = reverse;
             TimeLeft = Duration;
             Value = Percent = IsReversed ? 1f : 0f;
-            IsEnabled = true;
+            IsActive = true;
             OnBegin?.Invoke(this);
         }
 
@@ -115,7 +115,7 @@ namespace FrogWorks
 
         public void Stop()
         {
-            IsEnabled = false;
+            IsActive = false;
         }
 
         public void Reset()
@@ -126,7 +126,7 @@ namespace FrogWorks
 
         public IEnumerator Wait()
         {
-            while (IsEnabled) yield return 0;
+            while (IsActive) yield return 0;
         }
 
         #region Static Methods

@@ -7,9 +7,10 @@ namespace FrogWorks.Demo
         [STAThread]
         static void Main()
         {
-            using (var runner = new DesktopRunner(320, 240, 2))
+            using (var runner = new DesktopRunner(256, 224, 2))
             {
-                runner.GoTo<TileMapScene>();
+                runner.GoTo<DisplayTestScene>();
+                runner.SetDisplay(ScalingType.Extend);
                 runner.AllowUserResizing = true;
                 runner.IsMouseVisible = true;
                 runner.Run();

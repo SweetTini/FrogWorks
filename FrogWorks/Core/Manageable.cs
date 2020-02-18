@@ -1,21 +1,43 @@
-﻿using System;
+﻿using System.Collections;
+using System.Collections.Generic;
 
 namespace FrogWorks
 {
     public abstract class Manageable<T>
         where T : class
     {
-        protected internal T Parent { get; private set; }
+        internal T Parent { get; set; }
 
-        public bool IsEnabled { get; set; } = true;
+        public bool IsActive { get; set; } = true;
 
         public bool IsVisible { get; set; } = true;
 
-        internal void InternalUpdate(float deltaTime)
+        internal virtual void UpdateInternally(float deltaTime)
         {
             BeforeUpdate(deltaTime);
             Update(deltaTime);
             AfterUpdate(deltaTime);
+        }
+
+        internal virtual void DrawInternally(RendererBatch batch)
+        {
+            BeforeDraw(batch);
+            Draw(batch);
+            AfterDraw(batch);
+        }
+
+        internal void OnAddedInternally(T instance)
+        {
+            Parent = instance;
+            OnAdded();
+        }
+
+        internal void OnRemovedInternally()
+        {
+            if (Parent != null)
+                OnRemoved();
+
+            Parent = null;
         }
 
         protected virtual void Update(float deltaTime) { }
@@ -24,40 +46,31 @@ namespace FrogWorks
 
         protected virtual void AfterUpdate(float deltaTime) { }
 
-        internal void InternalDraw(RendererBatch batch)
-        {
-            BeforeDraw(batch);
-            Draw(batch);
-            AfterDraw(batch);
-        }
-
         protected virtual void Draw(RendererBatch batch) { }
 
         protected virtual void BeforeDraw(RendererBatch batch) { }
 
         protected virtual void AfterDraw(RendererBatch batch) { }
 
-        internal void OnInternalAdded(T parent)
-        {
-            if (Parent != null)
-                throw new Exception($"{GetType().Name} is already assigned to an instance of {typeof(T).Name}.");
-
-            Parent = parent;
-            OnAdded();
-        }
-
-        internal void OnInternalRemoved()
-        {
-            if (Parent != null)
-                OnRemoved();
-
-            Parent = null;
-        }
-
         protected virtual void OnAdded() { }
 
         protected virtual void OnRemoved() { }
 
         public abstract void Destroy();
+    }
+
+    public interface IManager<C> : IEnumerable<C>, IEnumerable
+    {
+        void Add(C child);
+
+        void Add(params C[] children);
+
+        void Add(IEnumerable<C> children);
+
+        void Remove(C child);
+
+        void Remove(params C[] children);
+
+        void Remove(IEnumerable<C> children);
     }
 }

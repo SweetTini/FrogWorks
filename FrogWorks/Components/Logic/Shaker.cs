@@ -30,7 +30,7 @@ namespace FrogWorks
             TimeLeft = 0f;
             OnShake = onShake;
             RemoveOnCompletion = removeOnCompletion;
-            IsEnabled = false;
+            IsActive = false;
 
             if (canActivate) Start();
         }
@@ -58,7 +58,7 @@ namespace FrogWorks
         public void Start()
         {
             TimeLeft = Duration;
-            IsEnabled = true;
+            IsActive = true;
         }
 
         public void Start(float duration, bool removeOnCompletion = false)
@@ -70,11 +70,11 @@ namespace FrogWorks
 
         public void Stop()
         {
-            if (IsEnabled)
+            if (IsActive)
             {
                 Value = Vector2.Zero;
                 OnShake?.Invoke(Value);
-                IsEnabled = false;
+                IsActive = false;
             }
         }
 

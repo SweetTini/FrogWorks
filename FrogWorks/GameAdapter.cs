@@ -7,9 +7,9 @@ namespace FrogWorks
 {
     public sealed class GameAdapter : Game
     {
-        private Runner _runner;
-        private Scene _scene, _nextScene;
-        private bool _isDirty;
+        Runner _runner;
+        Scene _scene, _nextScene;
+        bool _isDirty;
 
         public GraphicsDeviceManager Graphics { get; private set; }
 
@@ -32,12 +32,17 @@ namespace FrogWorks
         }
 
         public void GoTo<T>()
-            where T : Scene, new() => _nextScene = new T();
+            where T : Scene, new()
+        {
+            _nextScene = new T();
+        }
 
         protected override void Update(GameTime gameTime)
         {
             DeltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            if (DeltaTime > 0f) FramesPerSecond = (int)Math.Round(1f / DeltaTime);
+            
+            if (DeltaTime > 0f) 
+                FramesPerSecond = (int)Math.Round(1f / DeltaTime);
 
             Input.Update(IsActive, DeltaTime);
             AudioMgr.Update();
@@ -46,9 +51,9 @@ namespace FrogWorks
 
             if (_scene != _nextScene)
             {
-                _scene?.InternalEnd();
+                _scene?.EndInternally();
                 _scene = _nextScene;
-                _scene?.InternalBegin();
+                _scene?.BeginInternally();
             }
 
             base.Update(gameTime);
@@ -66,7 +71,6 @@ namespace FrogWorks
             if (disposing)
             {
                 _scene?.Layers.Dispose();
-
                 Input.Dispose();
                 AssetManager.ClearCache();
                 AudioMgr.Unload();
@@ -84,6 +88,9 @@ namespace FrogWorks
             }
         }
 
-        internal void MarkAsDirty() => _isDirty = true;
+        internal void MarkAsDirty()
+        {
+            _isDirty = true;
+        }
     }
 }

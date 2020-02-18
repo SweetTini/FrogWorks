@@ -1,39 +1,22 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 
 namespace FrogWorks
 {
-    public abstract class Layer : Manageable<Scene>, IManagerAccessor<Entity>
+    public class Layer : Manageable<Scene>
     {
+        protected Scene Scene => Parent;
+
         protected GraphicsDevice GraphicsDevice { get; private set; }
 
-        protected internal RenderTarget2D Buffer { get; private set; }
+        protected internal RenderTarget2D RenderTarget { get; private set; }
 
         protected internal Camera Camera { get; private set; }
-
-        public EntityManager Entities { get; private set; }
 
         public BlendState BlendState { get; protected set; }
 
         public DepthStencilState DepthStencilState { get; protected set; }
 
         public Effect Effect { get; protected set; }
-
-        public Vector2 ScrollRate { get; set; } = Vector2.One;
-
-        public float XScrollRate
-        {
-            get { return ScrollRate.X; }
-            set { ScrollRate = new Vector2(value, ScrollRate.Y); }
-        }
-
-        public float YScrollRate
-        {
-            get { return ScrollRate.Y; }
-            set { ScrollRate = new Vector2(ScrollRate.X, value); }
-        }
 
         public float Zoom
         {
@@ -51,109 +34,74 @@ namespace FrogWorks
         {
             get { return Camera.AngleInDegrees; }
             set { Camera.AngleInDegrees = value; }
-        }        
+        }
 
-        protected Layer()
+        public bool RenderBeforeMerge { get; set; }
+
+        public Layer()
         {
             GraphicsDevice = Runner.Application.Game.GraphicsDevice;
             Camera = new Camera();
-            Entities = new EntityManager(this);
         }
 
         protected sealed override void Update(float deltaTime)
         {
-            Entities.Update(deltaTime);
-            UpdateCamera();
+            if (Parent?.Camera != null)
+                Camera.Position = Parent.Camera.Position;
         }
 
-        protected override void Draw(RendererBatch batch)
+        protected sealed override void Draw(RendererBatch batch)
         {
+            if (Scene?.Entities == null) return;
+
+            Scene.Entities.State = ManagerState.ThrowError;
+            
             batch.Configure(BlendState, DepthStencilState, Effect, Camera);
             batch.Begin();
-            Entities.Draw(batch);
+
+            foreach (var entity in Scene.Entities.OnLayer(this))
+                if (entity.IsVisible)
+                    entity.DrawInternally(batch);
+
             batch.End();
+            
+            Scene.Entities.State = ManagerState.Opened;
         }
 
         protected override void OnAdded()
         {
-            ResetBuffer();
-
-            foreach (var entity in Entities)
-                entity.OnInternalLayerAdded();
+            ResetRenderTarget();
         }
 
         protected override void OnRemoved()
         {
-            foreach (var entity in Entities)
-                entity.OnInternalLayerRemoved();
-
-            ResetBuffer(true);
+            ResetRenderTarget(true);
         }
 
-        protected void ResetBuffer(bool dispose = false)
+        protected void ResetRenderTarget(bool dispose = false)
         {
-            Buffer?.Dispose();
-            
+            RenderTarget?.Dispose();
+
             if (!dispose)
             {
-                var display = Runner.Application.Display;
-
-                Buffer = new RenderTarget2D(GraphicsDevice, display.Width, display.Height, false, 
-                                            SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
+                RenderTarget = new RenderTarget2D(
+                    GraphicsDevice,
+                    Runner.Application.Display.Width,
+                    Runner.Application.Display.Height,
+                    false,
+                    SurfaceFormat.Color,
+                    DepthFormat.Depth24Stencil8);
             }
         }
 
-        internal void UpdateBuffer() => ResetBuffer();
-
-        internal void UpdateCamera()
+        internal void UpdateRenderTarget()
         {
-            if (Parent?.Camera != null)
-            {
-                if (XScrollRate != 0f) Camera.X = Parent.Camera.X * XScrollRate;
-                if (YScrollRate != 0f) Camera.Y = Parent.Camera.Y * YScrollRate;
-            }
+            ResetRenderTarget();
         }
 
-        internal void OnInternalSceneBegan()
+        public sealed override void Destroy()
         {
-            foreach (var entity in Entities)
-                entity.OnInternalSceneBegan();
+            Parent?.Layers.Remove(this);
         }
-
-        internal void OnInternalSceneEnded()
-        {
-            foreach (var entity in Entities)
-                entity.OnInternalSceneEnded();
-        }
-
-        public sealed override void Destroy() => Parent?.Layers.Remove(this);
-
-        #region Manager Shortcuts
-        public void Add(Entity item) => Entities.Add(item);
-
-        public void Add(params Entity[] items) => Entities.Add(items);
-
-        public void Add(IEnumerable<Entity> items) => Entities.Add(items);
-
-        public void Remove(Entity item) => Entities.Remove(item);
-
-        public void Remove(params Entity[] items) => Entities.Remove(items);
-
-        public void Remove(IEnumerable<Entity> items) => Entities.Remove(items);
-
-        public void MoveToTop(Entity item) => Entities.MoveToTop(item);
-
-        public void MoveToBottom(Entity item) => Entities.MoveToBottom(item);
-
-        public void MoveAbove(Entity item, Entity other) => Entities.MoveAbove(item, other);
-
-        public void MoveBelow(Entity item, Entity other) => Entities.MoveBelow(item, other);
-
-        public void SwitchToLayer(Entity item, Layer layer) => Entities.SwitchToLayer(item, layer);
-
-        public IEnumerator<Entity> GetEnumerator() => Entities.GetEnumerator();
-
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-        #endregion
     }
 }

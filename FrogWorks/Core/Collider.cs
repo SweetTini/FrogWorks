@@ -1,30 +1,39 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
 
 namespace FrogWorks
 {
     public abstract class Collider
     {
-        private Vector2 _position;
+        Vector2 _position;
 
         internal CollidableComponent Component { get; private set; }
 
-        protected internal Entity Parent { get; private set; }
+        protected internal Entity Entity { get; private set; }
 
-        protected internal Layer Layer => Parent?.Parent;
+        protected internal Scene Scene => Entity?.Parent;
 
-        protected internal Scene Scene => Parent?.Scene;
+        protected internal Layer Layer => Entity?.Layer;
 
-        protected internal bool IsCollidable => Component?.IsCollidable ?? Parent?.IsCollidable ?? true;
+        protected internal bool IsCollidable
+        {
+            get
+            {
+                return Component?.IsCollidable
+                    ?? Entity?.IsCollidable
+                    ?? true;
+            }
+        }
 
         public Vector2 Position
         {
             get { return _position; }
             set
             {
-                if (value == _position) return;
-                _position = value;
-                OnInternalTransformed();
+                if (_position != value)
+                {
+                    _position = value;
+                    OnTransformedInternally();
+                }
             }
         }
 
@@ -42,8 +51,8 @@ namespace FrogWorks
 
         public Vector2 AbsolutePosition
         {
-            get { return Position + (Parent?.Position ?? Vector2.Zero); }
-            set { Position = value - (Parent?.Position ?? Vector2.Zero); }
+            get { return Position + (Entity?.Position ?? Vector2.Zero); }
+            set { Position = value - (Entity?.Position ?? Vector2.Zero); }
         }
 
         public float AbsoluteX
@@ -102,8 +111,8 @@ namespace FrogWorks
 
         public Vector2 Center
         {
-            get { return (Upper + Lower) / 2f; }
-            set { Upper = value - (Upper - Lower) / 2f; }
+            get { return (Upper + Lower) * .5f; }
+            set { Upper = value - (Upper - Lower) * .5f; }
         }
 
         public float CenterX
@@ -119,18 +128,30 @@ namespace FrogWorks
         }
 
         public Rectangle Bounds
-            => new Rectangle(Upper.ToPoint(), (Lower - Upper).ToPoint());
+        {
+            get
+            {
+                return new Rectangle(
+                    Upper.ToPoint(),
+                    (Lower - Upper).ToPoint());
+            }
+        }
 
         protected Collider(Vector2 position)
         {
             _position = position;
         }
 
-        public virtual void Draw(RendererBatch batch, Color stroke, Color? fill = null) { }
+        public virtual void Draw(RendererBatch batch, Color stroke, Color? fill = null)
+        {
+        }
 
         public abstract bool Collide(Vector2 point);
 
-        public bool Collide(float x, float y) => Collide(new Vector2(x, y));
+        public bool Collide(float x, float y)
+        {
+            return Collide(new Vector2(x, y));
+        }
 
         public abstract bool Collide(Ray2D ray);
 
@@ -139,58 +160,74 @@ namespace FrogWorks
         public abstract bool Collide(Collider collider);
 
         public bool Collide(Entity entity)
-            => entity?.Collider != null ? Collide(entity.Collider) : false;
+        {
+            return entity?.Collider != null
+                ? Collide(entity.Collider)
+                : false;
+        }
 
         public abstract Collider Clone();
 
-        internal void OnInternalAdded(Entity parent)
+        internal void OnAddedAsComponent(CollidableComponent component)
         {
-            if (Parent != null)
-                throw new Exception($"{GetType().Name} is already assigned to an instance of {Parent.GetType().Name}.");
+            Component = component;
+            OnAddedInternally(Component.Parent);
+        }
 
-            Parent = parent;
+        internal void OnRemovedAsComponent()
+        {
+            OnRemovedInternally();
+            Component = null;
+        }
+
+        internal void OnAddedInternally(Entity entity)
+        {
+            Entity = entity;
             OnAdded();
         }
 
-        internal void OnInternalRemoved()
+        internal void OnRemovedInternally()
         {
             OnRemoved();
-            Parent = null;
+            Entity = null;
+        }
+
+        internal void OnEntityAddedInternally()
+        {
+            OnEntityAdded();
+        }
+
+        internal void OnEntityRemovedInternally()
+        {
+            OnEntityRemoved();
+        }
+
+        internal void OnLayerAddedInternally()
+        {
+            OnLayerAdded();
+        }
+
+        internal void OnLayerRemovedInternally()
+        {
+            OnLayerRemoved();
+        }
+
+        internal void OnTransformedInternally()
+        {
+            OnTransformed();
         }
 
         protected virtual void OnAdded() { }
 
         protected virtual void OnRemoved() { }
 
-        internal void OnAddedAsComponent(CollidableComponent component)
-        {
-            Component = component;
-            OnInternalAdded(Component.Parent);
-        }
-
-        internal void OnRemovedAsComponent()
-        {
-            OnInternalRemoved();
-            Component = null;
-        }
-
-        internal void OnInternalEntityAdded() => OnEntityAdded();
-
-        internal void OnInternalEntityRemoved() => OnEntityRemoved();
-
         protected virtual void OnEntityAdded() { }
 
         protected virtual void OnEntityRemoved() { }
 
-        internal void OnInternalLayerAdded() => OnLayerAdded();
-
-        internal void OnInternalLayerRemoved() => OnLayerRemoved();
-
         protected virtual void OnLayerAdded() { }
 
         protected virtual void OnLayerRemoved() { }
-
-        internal void OnInternalTransformed() => OnTransformed();
 
         protected virtual void OnTransformed() { }
     }

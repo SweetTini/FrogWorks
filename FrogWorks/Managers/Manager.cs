@@ -4,18 +4,19 @@ using System.Collections.Generic;
 
 namespace FrogWorks
 {
-    public abstract class Manager<T, TT> : IManager<T>
-        where T : Manageable<TT> where TT : class
+    public abstract class Manager<C, P> : IEnumerable<C>, IEnumerable
+        where C : Manageable<P>
+        where P : class
     {
-        private ManagerState _state;
+        ManagerState _state;
 
-        protected TT Container { get; private set; }
+        protected P Parent { get; private set; }
 
-        protected List<T> Items { get; private set; }
+        protected List<C> Children { get; private set; }
 
-        protected Queue<ManagedQueueCommand<T, TT>> Commands { get; private set; }
+        protected Queue<ManagerCommand<C, P>> Commands { get; private set; }
 
-        protected ManagerState State
+        public ManagerState State
         {
             get { return _state; }
             set
@@ -25,28 +26,39 @@ namespace FrogWorks
             }
         }
 
-        public T this[int index] => Items[index];
-
-        public int Count => Items.Count;
-
-        protected Manager(TT container)
+        public C this[int index]
         {
-            Container = container;
-            Items = new List<T>();
-            Commands = new Queue<ManagedQueueCommand<T, TT>>();
+            get
+            {
+                return Children.WithinRange(index) 
+                    ? Children[index] 
+                    : null;
+            }
         }
 
-        private void ProcessQueues()
+        public int Count => Children.Count;
+
+        protected Manager(P parent)
+        {
+            Parent = parent;
+            Children = new List<C>();
+            Commands = new Queue<ManagerCommand<C, P>>();
+        }
+
+        void ProcessQueues()
         {
             while (Commands.Count > 0)
             {
                 var command = Commands.Dequeue();
 
-                switch (command.Action)
+                switch (command.Type)
                 {
-                    case ManagedQueueAction.Add: TryAdd(command.Item); break;
-                    case ManagedQueueAction.Remove: TryRemove(command.Item); break;
-                    default: break;
+                    case ManagerCommandType.Add: 
+                        TryAdd(command.Child); 
+                        break;
+                    case ManagerCommandType.Remove: 
+                        TryRemove(command.Child); 
+                        break;
                 }
             }
 
@@ -59,9 +71,9 @@ namespace FrogWorks
         {
             State = ManagerState.Queue;
 
-            foreach (var item in Items)
-                if (item.IsEnabled)
-                    item.InternalUpdate(deltaTime);
+            foreach (var child in Children)
+                if (child.IsActive)
+                    child.UpdateInternally(deltaTime);
 
             State = ManagerState.Opened;
         }
@@ -70,93 +82,100 @@ namespace FrogWorks
         {
             State = ManagerState.ThrowError;
 
-            foreach (var item in Items)
-                if (item.IsVisible)
-                    item.InternalDraw(batch);
+            foreach (var child in Children)
+                if (child.IsVisible)
+                    child.DrawInternally(batch);
 
             State = ManagerState.Opened;
         }
 
-        public void Add(T item)
+        public void Add(C child)
         {
             switch (State)
             {
                 case ManagerState.Opened:
-                    TryAdd(item);
+                    TryAdd(child);
                     break;
                 case ManagerState.Queue:
-                    Commands.Enqueue(new ManagedQueueCommand<T, TT>(item, ManagedQueueAction.Add));
+                    var command = new ManagerCommand<C, P>(child, ManagerCommandType.Add);
+                    Commands.Enqueue(command);
                     break;
                 case ManagerState.ThrowError:
-                    throw new Exception($"Cannot add {typeof(T).Name} at this time.");
+                    throw new Exception($"Cannot add {typeof(C).Name} at this time.");
             }
         }
 
-        public void Add(params T[] items)
+        public void Add(params C[] children)
         {
-            foreach (var item in items)
+            foreach (var item in children)
                 Add(item);
         }
 
-        public void Add(IEnumerable<T> items)
+        public void Add(IEnumerable<C> children)
         {
-            foreach (var item in items)
+            foreach (var item in children)
                 Add(item);
         }
 
-        public void Remove(T item)
+        public void Remove(C child)
         {
             switch (State)
             {
                 case ManagerState.Opened:
-                    TryRemove(item);
+                    TryRemove(child);
                     break;
                 case ManagerState.Queue:
-                    Commands.Enqueue(new ManagedQueueCommand<T, TT>(item, ManagedQueueAction.Remove));
+                    var command = new ManagerCommand<C, P>(child, ManagerCommandType.Remove);
+                    Commands.Enqueue(command);
                     break;
                 case ManagerState.ThrowError:
-                    throw new Exception($"Cannot remove {typeof(T).Name} at this time.");
+                    throw new Exception($"Cannot remove {typeof(C).Name} at this time.");
             }
         }
 
-        public void Remove(params T[] items)
+        public void Remove(params C[] children)
         {
-            foreach (var item in items)
+            foreach (var item in children)
                 Remove(item);
         }
 
-        public void Remove(IEnumerable<T> items)
+        public void Remove(IEnumerable<C> children)
         {
-            foreach (var item in items)
+            foreach (var item in children)
                 Remove(item);
         }
 
-        protected void TryAdd(T item)
+        protected void TryAdd(C child)
         {
-            if (!Items.Contains(item))
+            if (!Children.Contains(child))
             {
-                Items.Add(item);
-                item.OnInternalAdded(Container);
+                Children.Add(child);
+                child.OnAddedInternally(Parent);
             }
         }
 
-        protected void TryRemove(T item)
+        protected void TryRemove(C child)
         {
-            if (Items.Contains(item))
+            if (Children.Contains(child))
             {
-                Items.Remove(item);
-                item.OnInternalRemoved();
+                Children.Remove(child);
+                child.OnRemovedInternally();
             }
         }
 
-        public T[] ToArray()
+        public bool Contains(C child)
         {
-            return Items.ToArray();
+            return Children.Contains(child);
         }
 
-        public IEnumerator<T> GetEnumerator()
+        public int IndexOf(C child)
         {
-            return Items.GetEnumerator();
+            return Children.IndexOf(child);
+        }
+
+        public IEnumerator<C> GetEnumerator()
+        {
+            return Children.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -165,25 +184,20 @@ namespace FrogWorks
         }
     }
 
-    public struct ManagedQueueCommand<T, TT> : IManagedQueueCommand<T, ManagedQueueAction>
-        where T : Manageable<TT> where TT : class
+    public struct ManagerCommand<C, P>
+        where C : Manageable<P>
+        where P : class
     {
-        public T Item { get; }
+        public C Child { get; }
 
-        public ManagedQueueAction Action { get; }
+        public ManagerCommandType Type { get; }
 
-        internal ManagedQueueCommand(T item, ManagedQueueAction action)
+        internal ManagerCommand(C child, ManagerCommandType type)
             : this()
         {
-            Item = item;
-            Action = action;
+            Child = child;
+            Type = type;
         }
-    }
-
-    public enum ManagedQueueAction
-    {
-        Add,
-        Remove
     }
 
     public enum ManagerState
@@ -192,5 +206,10 @@ namespace FrogWorks
         Queue,
         ThrowError
     }
-}
 
+    public enum ManagerCommandType
+    {
+        Add,
+        Remove
+    }
+}

@@ -6,7 +6,7 @@ namespace FrogWorks
 {
     public class ShakerSet : Component
     {
-        private bool _isActive;
+        private bool _isOngoing;
 
         internal static Stack<ShakerSet> Cache { get; } = new Stack<ShakerSet>();
 
@@ -16,15 +16,15 @@ namespace FrogWorks
 
         public float TimeLeft { get; private set; }
 
-        public bool IsActive
+        public bool IsOngoing
         {
-            get { return _isActive; }
+            get { return _isOngoing; }
             set
             {
-                if (value == _isActive) return;
-                _isActive = value;
+                if (value == _isOngoing) return;
+                _isOngoing = value;
 
-                if (!_isActive)
+                if (!_isOngoing)
                 {
                     ResetValues();
                     OnShake?.Invoke(Values);
@@ -50,14 +50,14 @@ namespace FrogWorks
             TimeLeft = 0f;
             OnShake = onShake;
             RemoveOnCompletion = removeOnCompletion;
-            _isActive = false;
+            _isOngoing = false;
 
             if (canActivate) Activate();
         }
 
         protected override void Update(float deltaTime)
         {
-            if (!_isActive) return;
+            if (!_isOngoing) return;
 
             TimeLeft -= deltaTime;
 
@@ -81,7 +81,7 @@ namespace FrogWorks
         public void Activate()
         {
             TimeLeft = Duration;
-            _isActive = true;
+            _isOngoing = true;
         }
 
         public void Activate(float duration, bool removeOnCompletion)

@@ -1,43 +1,54 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace FrogWorks
 {
-    public abstract class Scene : IManagerAccessor<Layer>
+    public abstract class Scene : IManager<Entity>
     {
-        protected internal AABBTree Colliders { get; private set; }
+        Layer _activeLayer;
 
-        public LayerManager Layers { get; private set; }
+        internal LayerManager Layers { get; private set; }
+
+        internal EntityManager Entities { get; private set; }
 
         public Camera Camera { get; private set; }
 
-        public Color BackgroundColor { get; set; } = Color.White;
+        public Color ClearColor { get; set; }
 
         public float TimeActive { get; private set; }
 
-        public bool IsEnabled { get; set; } = true;
+        public bool IsActive { get; private set; }
 
         protected Scene()
         {
-            Colliders = new AABBTree(4f);
             Layers = new LayerManager(this);
+            Entities = new EntityManager(this);
             Camera = new Camera();
+
+            var defaultLayer = new Layer();
+            Add(defaultLayer);
         }
 
-        internal void InternalBegin()
+        internal void ResetDisplay()
+        {
+            Camera.UpdateViewport();
+            Layers.Reset();
+        }
+
+        internal void BeginInternally()
         {
             Begin();
 
-            foreach (var layer in Layers)
-                layer.OnInternalSceneBegan();
+            foreach (var entity in Entities)
+                entity.OnSceneBeganInternally();
         }
 
-        internal void InternalEnd()
+        internal void EndInternally()
         {
-            foreach (var layer in Layers)
-                layer.OnInternalSceneEnded();
+            foreach (var entity in Entities)
+                entity.OnSceneEndedInternally();
 
             End();
 
@@ -52,8 +63,9 @@ namespace FrogWorks
         {
             BeforeUpdate(deltaTime);
 
-            if (IsEnabled)
+            if (IsActive)
             {
+                Entities.Update(deltaTime);
                 Layers.Update(deltaTime);
                 TimeActive += deltaTime;
             }
@@ -61,80 +73,197 @@ namespace FrogWorks
             AfterUpdate(deltaTime);
         }
 
-        protected virtual void BeforeUpdate(float deltaTime) { }
+        protected virtual void BeforeUpdate(float deltaTime) 
+        {
+        }
 
-        protected virtual void AfterUpdate(float deltaTime) { }
+        protected virtual void AfterUpdate(float deltaTime) 
+        { 
+        }
 
         internal RenderTarget2D Draw(DisplayAdapter display, RendererBatch batch)
         {
+            var renderTarget = (RenderTarget2D)null;
+            var first = true;
+
+            batch.Configure(camera: Camera);
             batch.Begin();
             BeforeDraw(batch);
             batch.End();
 
-            var buffer = null as RenderTarget2D;
-            var first = true;
+            Layers.State = ManagerState.ThrowError;
 
             foreach (var layer in Layers)
             {
-                var clearColor = first ? BackgroundColor : Color.TransparentBlack;
+                var clearColor = first ? ClearColor : Color.Transparent;
+                var viewBounds = new Rectangle(Point.Zero, Runner.Application.Display.Size);
+                var clearOptions = ClearOptions.Target
+                    | ClearOptions.Stencil
+                    | ClearOptions.DepthBuffer;
 
-                display.GraphicsDevice.SetRenderTarget(layer.Buffer);
-                display.GraphicsDevice.Viewport = new Viewport(0, 0, display.Width, display.Height);
-                display.GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.Stencil, clearColor, 0, 0);
+                display.GraphicsDevice.SetRenderTarget(layer.RenderTarget);
+                display.GraphicsDevice.Viewport = new Viewport(viewBounds);
+                display.GraphicsDevice.Clear(clearOptions, clearColor, 0, 0);
 
-                if (buffer != null)
+                if (renderTarget != null)
                 {
                     batch.Sprite.Begin(samplerState: SamplerState.PointClamp);
-                    batch.Sprite.Draw(buffer, Vector2.Zero, Color.White);
+                    batch.Sprite.Draw(renderTarget, Vector2.Zero, Color.White);
                     batch.Sprite.End();
                 }
 
-                layer.InternalDraw(batch);
-                buffer = layer.Buffer;
+                if (layer.IsVisible)
+                    layer.DrawInternally(batch);
+
+                renderTarget = layer.RenderTarget;
                 first = false;
             }
 
+            Layers.State = ManagerState.Opened;
+
+            batch.Configure(camera: Camera);
             batch.Begin();
             AfterDraw(batch);
             batch.End();
 
-            return buffer;
+            return renderTarget;
         }
 
-        protected virtual void BeforeDraw(RendererBatch batch) { }
+        protected virtual void BeforeDraw(RendererBatch batch)
+        { 
+        }
 
-        protected virtual void AfterDraw(RendererBatch batch) { }
+        protected virtual void AfterDraw(RendererBatch batch) 
+        { 
+        }
 
-        internal void OnDisplayReset()
+        #region Layers
+        protected void Add(Layer layer)
         {
-            Camera.UpdateViewport();
-            Layers.Reset();
+            var first = Layers.Count == 0;
+            
+            Layers.Add(layer);
+
+            if (first)
+                SetActiveLayer(0);
         }
 
-        #region Manager Shortcuts
-        public void Add(Layer item) => Layers.Add(item);
+        protected void Add(params Layer[] layers)
+        {
+            foreach (var layer in layers)
+                Add(layer);
+        }
 
-        public void Add(params Layer[] items) => Layers.Add(items);
+        protected void Add(IEnumerable<Layer> layers)
+        {
+            foreach (var layer in layers)
+                Add(layer);
+        }
 
-        public void Add(IEnumerable<Layer> items) => Layers.Add(items);
+        protected void Remove(Layer layer)
+        {
+            if (Layers.Count > 1)
+            {
+                var index = Layers.IndexOf(layer);
+                
+                Layers.Remove(layer);
 
-        public void Remove(Layer item) => Layers.Remove(item);
+                if (layer == _activeLayer)
+                    SetActiveLayer(index);
+            }
+        }
 
-        public void Remove(params Layer[] items) => Layers.Remove(items);
+        protected void Remove(params Layer[] layers)
+        {
+            foreach (var layer in layers)
+                Remove(layer);
+        }
 
-        public void Remove(IEnumerable<Layer> items) => Layers.Remove(items);
+        protected void Remove(IEnumerable<Layer> layers)
+        {
+            foreach (var layer in layers)
+                Remove(layer);
+        }
 
-        public void MoveToTop(Layer item) => Layers.MoveToTop(item);
+        protected void SetActiveLayer(Layer layer)
+        {
+            if (Layers.Contains(layer))
+                _activeLayer = layer;
+        }
 
-        public void MoveToBottom(Layer item) => Layers.MoveToBottom(item);
+        public void SetActiveLayer(int index)
+        {
+            if (Layers.Count > 0)
+            {
+                index = index.Clamp(0, Layers.Count - 1);
+                _activeLayer = Layers[index];
+            }
+        }
+        #endregion
 
-        public void MoveAbove(Layer item, Layer other) => Layers.MoveAbove(item, other);
+        #region Entities
+        protected void Add(Layer layer, Entity entity)
+        {
+            Entities.Add(entity);
 
-        public void MoveBelow(Layer item, Layer other) => Layers.MoveBelow(item, other);
+            if (Layers.Contains(layer) && Entities.Contains(entity))
+                entity.Layer = layer;
+        }
 
-        public IEnumerator<Layer> GetEnumerator() => Layers.GetEnumerator();
+        protected void Add(Layer layer, params Entity[] entities)
+        {
+            foreach (var entity in entities)
+                Add(layer, entity);
+        }
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        protected void Add(Layer layer, IEnumerable<Entity> entities)
+        {
+            foreach (var entity in entities)
+                Add(layer, entity);
+        }
+
+        public void Add(Entity entity)
+        {
+            Add(_activeLayer, entity);
+        }
+
+        public void Add(params Entity[] entities)
+        {
+            Add(_activeLayer, entities);
+        }
+
+        public void Add(IEnumerable<Entity> entities)
+        {
+            Add(_activeLayer, entities);
+        }
+
+        public void Remove(Entity entity)
+        {
+            entity.Layer = null;
+            Entities.Remove(entity);
+        }
+
+        public void Remove(params Entity[] entities)
+        {
+            foreach (var entity in entities)
+                Remove(entity);
+        }
+
+        public void Remove(IEnumerable<Entity> entities)
+        {
+            foreach (var entity in entities)
+                Remove(entity);
+        }
+
+        public IEnumerator<Entity> GetEnumerator()
+        {
+            return Entities.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
         #endregion
     }
 }

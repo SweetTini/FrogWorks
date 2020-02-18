@@ -124,12 +124,7 @@ namespace FrogWorks
 
         public Camera()
         {
-            var size = Runner.Application.Size;
-            var projectionView = new Rectangle(Point.Zero, size);
-
-            Position = size.ToVector2() * .5f;
-            _projectionMatrix = Matrix.CreateOrthographicOffCenter(projectionView, -1000f, 1000f);
-
+            Position = Runner.Application.Size.ToVector2() * .5f;
             UpdateViewport();
         }
 
@@ -166,9 +161,11 @@ namespace FrogWorks
         internal void UpdateViewport()
         {
             var display = Runner.Application.Display;
-
-            _viewport = new Viewport(0, 0, display.Width, display.Height);
-            _origin = _viewport.Bounds.Size.ToVector2() * .5f;
+            var projection = new Rectangle(Point.Zero, display.Size);
+            
+            _viewport = new Viewport(projection);
+            _projectionMatrix = Matrix.CreateOrthographicOffCenter(projection, -1000f, 1000f);
+            _origin = _viewport.Bounds.Center.ToVector2();
             _isDirty = true;
 
             UpdateMatrices();

@@ -16,7 +16,7 @@ namespace FrogWorks
                 value = value.Abs();
                 if (value == _size) return;
                 _size = value;
-                OnInternalTransformed();
+                OnTransformedInternally();
             }
         }
 
