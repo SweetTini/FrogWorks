@@ -7,7 +7,8 @@ namespace FrogWorks
 {
     public abstract class Scene : IManager<Entity>
     {
-        Layer _activeLayer;
+        RenderTarget2D _renderTarget;
+        Layer _currentLayer;
 
         internal LayerManager Layers { get; private set; }
 
@@ -26,15 +27,29 @@ namespace FrogWorks
             Layers = new LayerManager(this);
             Entities = new EntityManager(this);
             Camera = new Camera();
-
-            var defaultLayer = new Layer();
-            Add(defaultLayer);
         }
 
         internal void ResetDisplay()
         {
             Camera.UpdateViewport();
+            ResetRenderTarget();
             Layers.Reset();
+        }
+
+        internal void ResetRenderTarget(bool dispose = false)
+        {
+            _renderTarget?.Dispose();
+
+            if (!dispose)
+            {
+                _renderTarget = new RenderTarget2D(
+                    Runner.Application.Game.GraphicsDevice,
+                    Runner.Application.Display.Width,
+                    Runner.Application.Display.Height,
+                    false,
+                    SurfaceFormat.Color,
+                    DepthFormat.Depth24Stencil8);
+            }
         }
 
         internal void BeginInternally()
@@ -55,10 +70,6 @@ namespace FrogWorks
             Layers.Reset();
         }
 
-        protected virtual void Begin() { }
-
-        protected virtual void End() { }
-
         internal void Update(float deltaTime)
         {
             BeforeUpdate(deltaTime);
@@ -73,50 +84,53 @@ namespace FrogWorks
             AfterUpdate(deltaTime);
         }
 
-        protected virtual void BeforeUpdate(float deltaTime) 
+        internal void Draw(
+            DisplayAdapter display, 
+            RendererBatch batch, 
+            out RenderTarget2D renderTarget)
         {
-        }
+            renderTarget = _renderTarget;
 
-        protected virtual void AfterUpdate(float deltaTime) 
-        { 
-        }
+            var resolution = Runner.Application.Display.Size;
+            var projection = new Rectangle(Point.Zero, resolution);
+            var clearOptions = ClearOptions.Target 
+                | ClearOptions.Stencil 
+                | ClearOptions.DepthBuffer;
 
-        internal RenderTarget2D Draw(DisplayAdapter display, RendererBatch batch)
-        {
-            var renderTarget = (RenderTarget2D)null;
-            var first = true;
+            display.GraphicsDevice.SetRenderTarget(renderTarget);
+            display.GraphicsDevice.Viewport = new Viewport(projection);
+            display.GraphicsDevice.Clear(clearOptions, ClearColor, 0, 0);
 
             batch.Configure(camera: Camera);
             batch.Begin();
             BeforeDraw(batch);
             batch.End();
 
+            Entities.State = ManagerState.ThrowError;
+            batch.Begin();
+
+            foreach (var entity in Entities.OnLayer(null))
+                if (entity.IsVisible)
+                    entity.DrawInternally(batch);
+
+            batch.End();
+            Entities.State = ManagerState.Opened;
             Layers.State = ManagerState.ThrowError;
 
             foreach (var layer in Layers)
             {
-                var clearColor = first ? ClearColor : Color.Transparent;
-                var viewBounds = new Rectangle(Point.Zero, Runner.Application.Display.Size);
-                var clearOptions = ClearOptions.Target
-                    | ClearOptions.Stencil
-                    | ClearOptions.DepthBuffer;
-
                 display.GraphicsDevice.SetRenderTarget(layer.RenderTarget);
-                display.GraphicsDevice.Viewport = new Viewport(viewBounds);
-                display.GraphicsDevice.Clear(clearOptions, clearColor, 0, 0);
+                display.GraphicsDevice.Viewport = new Viewport(projection);
+                display.GraphicsDevice.Clear(clearOptions, Color.Transparent, 0, 0);
 
-                if (renderTarget != null)
-                {
-                    batch.Sprite.Begin(samplerState: SamplerState.PointClamp);
-                    batch.Sprite.Draw(renderTarget, Vector2.Zero, Color.White);
-                    batch.Sprite.End();
-                }
+                batch.Sprite.Begin(samplerState: SamplerState.PointClamp);
+                batch.Sprite.Draw(renderTarget, Vector2.Zero, Color.White);
+                batch.Sprite.End();
 
                 if (layer.IsVisible)
                     layer.DrawInternally(batch);
 
                 renderTarget = layer.RenderTarget;
-                first = false;
             }
 
             Layers.State = ManagerState.Opened;
@@ -125,9 +139,23 @@ namespace FrogWorks
             batch.Begin();
             AfterDraw(batch);
             batch.End();
-
-            return renderTarget;
         }
+
+        protected virtual void Begin() 
+        { 
+        }
+
+        protected virtual void End() 
+        { 
+        }
+
+        protected virtual void BeforeUpdate(float deltaTime) 
+        {
+        }
+
+        protected virtual void AfterUpdate(float deltaTime) 
+        { 
+        } 
 
         protected virtual void BeforeDraw(RendererBatch batch)
         { 
@@ -140,64 +168,43 @@ namespace FrogWorks
         #region Layers
         protected void Add(Layer layer)
         {
-            var first = Layers.Count == 0;
-            
             Layers.Add(layer);
-
-            if (first)
-                SetActiveLayer(0);
         }
 
         protected void Add(params Layer[] layers)
         {
-            foreach (var layer in layers)
-                Add(layer);
+            Layers.Add(layers);
         }
 
         protected void Add(IEnumerable<Layer> layers)
         {
-            foreach (var layer in layers)
-                Add(layer);
+            Layers.Add(layers);
         }
 
         protected void Remove(Layer layer)
         {
-            if (Layers.Count > 1)
-            {
-                var index = Layers.IndexOf(layer);
-                
-                Layers.Remove(layer);
-
-                if (layer == _activeLayer)
-                    SetActiveLayer(index);
-            }
+            Layers.Remove(layer);
         }
 
         protected void Remove(params Layer[] layers)
         {
-            foreach (var layer in layers)
-                Remove(layer);
+            Layers.Remove(layers);
         }
 
         protected void Remove(IEnumerable<Layer> layers)
         {
-            foreach (var layer in layers)
-                Remove(layer);
+            Layers.Remove(layers);
         }
 
-        protected void SetActiveLayer(Layer layer)
+        protected void SetCurrentLayer(Layer layer)
         {
-            if (Layers.Contains(layer))
-                _activeLayer = layer;
+            if (layer == null || Layers.Contains(layer))
+                _currentLayer = layer;
         }
 
-        public void SetActiveLayer(int index)
+        public void SetCurrentLayer(int index)
         {
-            if (Layers.Count > 0)
-            {
-                index = index.Clamp(0, Layers.Count - 1);
-                _activeLayer = Layers[index];
-            }
+            _currentLayer = Layers[index];
         }
         #endregion
 
@@ -206,7 +213,7 @@ namespace FrogWorks
         {
             Entities.Add(entity);
 
-            if (Layers.Contains(layer) && Entities.Contains(entity))
+            if (Layers.Contains(layer))
                 entity.Layer = layer;
         }
 
@@ -224,17 +231,17 @@ namespace FrogWorks
 
         public void Add(Entity entity)
         {
-            Add(_activeLayer, entity);
+            Add(_currentLayer, entity);
         }
 
         public void Add(params Entity[] entities)
         {
-            Add(_activeLayer, entities);
+            Add(_currentLayer, entities);
         }
 
         public void Add(IEnumerable<Entity> entities)
         {
-            Add(_activeLayer, entities);
+            Add(_currentLayer, entities);
         }
 
         public void Remove(Entity entity)

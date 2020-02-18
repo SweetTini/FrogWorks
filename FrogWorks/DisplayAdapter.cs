@@ -69,17 +69,21 @@ namespace FrogWorks
         {
             Reset(scene);
 
-            var renderTarget = scene?.Draw(this, _batch);
+            var renderTarget = (RenderTarget2D)null;
+            scene?.Draw(this, _batch, out renderTarget);
 
             GraphicsDevice.SetRenderTarget(null);
             GraphicsDevice.Viewport = _viewport;
             GraphicsDevice.Clear(ClearColor);
 
-            if (renderTarget == null) return;
-
-            _batch.Sprite.Begin(samplerState: SamplerState.PointClamp, transformMatrix: _matrix);
-            _batch.Sprite.Draw(renderTarget, Vector2.Zero, Color.White);
-            _batch.Sprite.End();
+            if (renderTarget != null) 
+            {
+                _batch.Sprite.Begin(
+                    samplerState: SamplerState.PointClamp, 
+                    transformMatrix: _matrix);
+                _batch.Sprite.Draw(renderTarget, Vector2.Zero, Color.White);
+                _batch.Sprite.End();
+            }
         }
 
         public void ToFixedScale(int scale = 1)
