@@ -54,8 +54,7 @@ namespace FrogWorks
         {
             if (Scene?.Entities == null) return;
 
-            Scene.Entities.State = ManagerState.ThrowError;
-            
+            Scene.Entities.State = ManagerState.ThrowError;           
             batch.Configure(BlendState, DepthStencilState, Effect, Camera);
             batch.Begin();
 
@@ -63,8 +62,7 @@ namespace FrogWorks
                 if (entity.IsVisible)
                     entity.DrawInternally(batch);
 
-            batch.End();
-            
+            batch.End();           
             Scene.Entities.State = ManagerState.Opened;
         }
 

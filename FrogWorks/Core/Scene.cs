@@ -123,6 +123,7 @@ namespace FrogWorks
 
             batch.End();
             Entities.State = ManagerState.Opened;
+            
             Layers.State = ManagerState.ThrowError;
 
             foreach (var layer in Layers)

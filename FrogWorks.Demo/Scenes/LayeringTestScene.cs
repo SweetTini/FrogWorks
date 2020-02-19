@@ -4,6 +4,8 @@ namespace FrogWorks.Demo
 {
     public class LayeringTestScene : Scene
     {
+        WaveShader _waveShader;
+
         public LayeringTestScene()
             : base()
         {
@@ -11,7 +13,9 @@ namespace FrogWorks.Demo
 
         protected override void Begin()
         {
-            Add(new Layer() { RenderBeforeMerge = true });
+            _waveShader = Shader.Load<WaveShader>(@"Shaders\Wave");
+
+            Add(new ShaderLayer(_waveShader) { RenderBeforeMerge = true });
             Add(new Layer());
 
             SetCurrentLayer(1);
@@ -22,6 +26,11 @@ namespace FrogWorks.Demo
             Add(new Apple() { X = 176f, Y = 128f });
 
             ClearColor = Color.HotPink;
+        }
+
+        protected override void AfterUpdate(float deltaTime)
+        {
+            _waveShader.Timer += deltaTime;
         }
     }
 }
