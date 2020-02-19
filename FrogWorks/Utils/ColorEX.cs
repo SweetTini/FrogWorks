@@ -3,17 +3,23 @@ using System;
 
 namespace FrogWorks
 {
-    public static class ColorConvert
+    public static class ColorEX
     {
-        public static Color FromRgb(int red, int green, int blue)
+        public static Color FromRGB(int red, int green, int blue, int alpha)
         {
             return new Color(
                 MathHelper.Clamp(red, 0, 255),
                 MathHelper.Clamp(green, 0, 255),
-                MathHelper.Clamp(blue, 0, 255));
+                MathHelper.Clamp(blue, 0, 255),
+                MathHelper.Clamp(alpha, 0, 255));
         }
 
-        public static Color FromHsl(int hue, int saturation, int lightness)
+        public static Color FromRGB(int red, int green, int blue)
+        {
+            return FromRGB(red, green, blue, 255);
+        }
+
+        public static Color FromHSL(int hue, int saturation, int lightness, int alpha)
         {
             hue = hue.Mod(360);
 
@@ -37,10 +43,16 @@ namespace FrogWorks
             return new Color(
                 (int)Math.Round(r * 255f),
                 (int)Math.Round(g * 255f),
-                (int)Math.Round(b * 255f));
+                (int)Math.Round(b * 255f),
+                alpha.Clamp(0, 255));
         }
 
-        public static Color FromHsv(int hue, int saturation, int value)
+        public static Color FromHSL(int hue, int saturation, int lightness)
+        {
+            return FromHSL(hue, saturation, lightness, 255);
+        }
+
+        public static Color FromHSV(int hue, int saturation, int value, int alpha)
         {
             hue = hue.Mod(360);
 
@@ -65,10 +77,16 @@ namespace FrogWorks
             return new Color(
                 (int)Math.Round(r * 255f),
                 (int)Math.Round(g * 255f),
-                (int)Math.Round(b * 255f));
+                (int)Math.Round(b * 255f),
+                alpha.Clamp(0, 255));
         }
 
-        public static Color FromCmyk(int cyan, int magneta, int yellow, int black)
+        public static Color FromHSV(int hue, int saturation, int value)
+        {
+            return FromHSV(hue, saturation, value, 255);
+        }
+
+        public static Color FromCMYK(int cyan, int magneta, int yellow, int black, int alpha)
         {
             var c = MathHelper.Clamp(cyan, 0, 100) / 100f;
             var m = MathHelper.Clamp(magneta, 0, 100) / 100f;
@@ -79,7 +97,12 @@ namespace FrogWorks
             var g = (int)Math.Round(255f * (1f - m) * (1f - k));
             var b = (int)Math.Round(255f * (1f - y) * (1f - k));
 
-            return new Color(r, g, b);
+            return new Color(r, g, b, alpha.Clamp(0, 255));
+        }
+
+        public static Color FromCMYK(int cyan, int magneta, int yellow, int black)
+        {
+            return FromCMYK(cyan, magneta, yellow, black, 255);
         }
 
         public static Color FromHex(string hex)
@@ -89,8 +112,12 @@ namespace FrogWorks
                 var r = hex[0].HexToByte() * 16 + hex[1].HexToByte();
                 var g = hex[2].HexToByte() * 16 + hex[3].HexToByte();
                 var b = hex[4].HexToByte() * 16 + hex[5].HexToByte();
+                var a = 255;
 
-                return new Color(r, g, b);
+                if (hex.Length >= 8)
+                    a = hex[6].HexToByte() * 16 + hex[7].HexToByte();
+
+                return new Color(r, g, b, a);
             }
 
             return Color.Black;

@@ -11,11 +11,16 @@ namespace FrogWorks.Demo
 
         protected override void Begin()
         {
-            var display = Runner.Application.Size.ToVector2();
-            var apple = new Apple() { Position = display };
+            var resolution = Runner.Application.Size.ToVector2();
+            var apple = new Apple() { Position = resolution * .5f };
             Add(apple);
-            
-            ClearColor = Color.DarkGray;
+
+            ClearColor = Color.DarkSlateGray;
+        }
+
+        protected override void End()
+        {
+            Runner.Application.SetDisplay(ScalingType.Fit);
         }
 
         protected override void BeforeUpdate(float deltaTime)
@@ -43,9 +48,9 @@ namespace FrogWorks.Demo
             batch.DrawPrimitives(b =>
             {
                 b.DrawRectangle(Vector2.Zero, size, Color.Red);
-                b.DrawRectangle(Vector2.UnitX * offset.X, size, Color.Purple);
-                b.DrawRectangle(Vector2.UnitY * offset.Y, size, Color.Purple);
-                b.DrawRectangle(offset, size, Color.Red);
+                b.DrawRectangle(Vector2.UnitX * offset.X, size, Color.Yellow);
+                b.DrawRectangle(Vector2.UnitY * offset.Y, size, Color.LimeGreen);
+                b.DrawRectangle(offset, size, Color.Cyan);
             });
         }
     }

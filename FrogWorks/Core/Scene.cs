@@ -7,7 +7,7 @@ namespace FrogWorks
 {
     public abstract class Scene : IManager<Entity>
     {
-        RenderTarget2D _renderTarget;
+        RenderTarget2D _renderTarget, _backupRenderTarget;
         Layer _currentLayer;
 
         internal LayerManager Layers { get; private set; }
@@ -39,10 +39,19 @@ namespace FrogWorks
         internal void ResetRenderTarget(bool dispose = false)
         {
             _renderTarget?.Dispose();
+            _backupRenderTarget?.Dispose();
 
             if (!dispose)
             {
                 _renderTarget = new RenderTarget2D(
+                    Runner.Application.Game.GraphicsDevice,
+                    Runner.Application.Display.Width,
+                    Runner.Application.Display.Height,
+                    false,
+                    SurfaceFormat.Color,
+                    DepthFormat.Depth24Stencil8);
+
+                _backupRenderTarget = new RenderTarget2D(
                     Runner.Application.Game.GraphicsDevice,
                     Runner.Application.Display.Width,
                     Runner.Application.Display.Height,
@@ -91,8 +100,7 @@ namespace FrogWorks
         {
             renderTarget = _renderTarget;
 
-            var resolution = Runner.Application.Display.Size;
-            var projection = new Rectangle(Point.Zero, resolution);
+            var projection = new Rectangle(Point.Zero, display.Size);
             var clearOptions = ClearOptions.Target 
                 | ClearOptions.Stencil 
                 | ClearOptions.DepthBuffer;
@@ -120,15 +128,37 @@ namespace FrogWorks
             foreach (var layer in Layers)
             {
                 display.GraphicsDevice.SetRenderTarget(layer.RenderTarget);
-                display.GraphicsDevice.Viewport = new Viewport(projection);
                 display.GraphicsDevice.Clear(clearOptions, Color.Transparent, 0, 0);
 
-                batch.Sprite.Begin(samplerState: SamplerState.PointClamp);
-                batch.Sprite.Draw(renderTarget, Vector2.Zero, Color.White);
-                batch.Sprite.End();
+                if (layer.RenderBeforeMerge)
+                {
+                    if (layer.IsVisible)
+                        layer.DrawInternally(batch);
 
-                if (layer.IsVisible)
-                    layer.DrawInternally(batch);
+                    display.GraphicsDevice.SetRenderTarget(_backupRenderTarget);
+                    display.GraphicsDevice.Clear(clearOptions, Color.Transparent, 0, 0);
+
+                    batch.Sprite.Begin(samplerState: SamplerState.PointClamp);
+                    batch.Sprite.Draw(renderTarget, Vector2.Zero, Color.White);
+                    batch.Sprite.Draw(layer.RenderTarget, Vector2.Zero, Color.White);
+                    batch.Sprite.End();
+
+                    display.GraphicsDevice.SetRenderTarget(layer.RenderTarget);
+                    display.GraphicsDevice.Clear(clearOptions, Color.Transparent, 0, 0);
+
+                    batch.Sprite.Begin(samplerState: SamplerState.PointClamp);
+                    batch.Sprite.Draw(_backupRenderTarget, Vector2.Zero, Color.White);
+                    batch.Sprite.End();
+                }
+                else
+                {
+                    batch.Sprite.Begin(samplerState: SamplerState.PointClamp);
+                    batch.Sprite.Draw(renderTarget, Vector2.Zero, Color.White);
+                    batch.Sprite.End();
+
+                    if (layer.IsVisible)
+                        layer.DrawInternally(batch);    
+                }
 
                 renderTarget = layer.RenderTarget;
             }

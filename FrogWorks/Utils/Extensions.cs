@@ -819,7 +819,7 @@ namespace FrogWorks
             Color defaultValue = default(Color))
         {
             return element.Attributes[name] != null
-                ? ColorConvert.FromHex(element.Attributes[name].InnerText.Replace("#", ""))
+                ? ColorEX.FromHex(element.Attributes[name].InnerText.Replace("#", ""))
                 : defaultValue;
         }
 
