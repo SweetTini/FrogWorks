@@ -1,6 +1,6 @@
 ﻿namespace FrogWorks
 {
-    public sealed class LayerManager : Manager<Layer, Scene>
+    public sealed class LayerManager : SortingManager<Layer, Scene>
     {
         internal LayerManager(Scene scene)
             : base(scene)

@@ -117,6 +117,7 @@
     <Compile Include="Managers\LayerManager.cs" />
     <Compile Include="Managers\Manager.cs" />
     <Compile Include="Managers\ManagerEX.cs" />
+    <Compile Include="Managers\SortingManager.cs" />
     <Compile Include="Runners\DesktopRunner.cs" />
     <Compile Include="GameAdapter.cs" />
     <Compile Include="Assets\Graphics\Animation.cs" />

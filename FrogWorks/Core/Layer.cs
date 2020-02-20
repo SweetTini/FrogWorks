@@ -104,5 +104,27 @@ namespace FrogWorks
         {
             Parent?.Layers.Remove(this);
         }
+
+        #region Ordering
+        public void MoveToTop()
+        {
+            Scene?.Layers.MoveToTop(this);
+        }
+
+        public void MoveToBottom()
+        {
+            Scene?.Layers.MoveToBottom(this);
+        }
+
+        public void MoveAbove(Layer layer)
+        {
+            Scene?.Layers.MoveAbove(this, layer);
+        }
+
+        public void MoveBelow(Layer layer)
+        {
+            Scene?.Layers.MoveBelow(this, layer);
+        }
+        #endregion
     }
 }

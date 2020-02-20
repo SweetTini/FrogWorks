@@ -9,6 +9,7 @@ namespace FrogWorks
         Layer _layer;
         Collider _collider;
         Vector2 _position;
+        int _priority;
 
         protected Scene Scene => Parent;
 
@@ -43,6 +44,19 @@ namespace FrogWorks
         }
 
         public bool IsCollidable { get; set; } = true;
+
+        public int Priority
+        {
+            get { return _priority; }
+            set
+            {
+                if (_priority != value)
+                {
+                    _priority = value;
+                    Scene?.Entities.MarkAsUnsorted();
+                }
+            }
+        }
 
         public Vector2 Position
         {
@@ -269,6 +283,33 @@ namespace FrogWorks
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+        #endregion
+
+        #region Ordering
+        public void MoveToTop()
+        {
+            Scene?.Entities.MoveToTop(this);
+        }
+
+        public void MoveToBottom()
+        {
+            Scene?.Entities.MoveToBottom(this);
+        }
+
+        public void MoveAbove(Entity entity)
+        {
+            Scene?.Entities.MoveAbove(this, entity);
+        }
+
+        public void MoveBelow(Entity entity)
+        {
+            Scene?.Entities.MoveBelow(this, entity);
+        }
+
+        public void MoveToLayer(int index)
+        {
+            Layer = Scene?.Layers[index];
         }
         #endregion
     }

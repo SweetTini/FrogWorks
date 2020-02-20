@@ -30,8 +30,8 @@ namespace FrogWorks
         {
             get
             {
-                return Children.WithinRange(index) 
-                    ? Children[index] 
+                return Children.WithinRange(index)
+                    ? Children[index]
                     : null;
             }
         }
@@ -53,11 +53,11 @@ namespace FrogWorks
 
                 switch (command.Type)
                 {
-                    case ManagerCommandType.Add: 
-                        TryAdd(command.Child); 
+                    case ManagerCommandType.Add:
+                        TryAdd(command.Child);
                         break;
-                    case ManagerCommandType.Remove: 
-                        TryRemove(command.Child); 
+                    case ManagerCommandType.Remove:
+                        TryRemove(command.Child);
                         break;
                 }
             }
@@ -65,7 +65,9 @@ namespace FrogWorks
             PostProcessQueues();
         }
 
-        protected virtual void PostProcessQueues() { }
+        protected virtual void PostProcessQueues()
+        {
+        }
 
         internal virtual void Update(float deltaTime)
         {
@@ -151,6 +153,7 @@ namespace FrogWorks
             {
                 Children.Add(child);
                 child.OnAddedInternally(Parent);
+                OnChildrenUpdated();
             }
         }
 
@@ -160,7 +163,12 @@ namespace FrogWorks
             {
                 Children.Remove(child);
                 child.OnRemovedInternally();
+                OnChildrenUpdated();
             }
+        }
+
+        protected virtual void OnChildrenUpdated()
+        {
         }
 
         public bool Contains(C child)
