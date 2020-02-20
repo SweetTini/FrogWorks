@@ -112,6 +112,7 @@ namespace FrogWorks
             BeforeDraw(batch);
 
             Entities.State = ManagerState.ThrowError;
+            batch.Configure(camera: Camera);
             batch.Begin();
 
             foreach (var entity in Entities.OnLayer(null))
@@ -120,7 +121,7 @@ namespace FrogWorks
 
             batch.End();
             Entities.State = ManagerState.Opened;
-            
+
             Layers.State = ManagerState.ThrowError;
 
             foreach (var layer in Layers)

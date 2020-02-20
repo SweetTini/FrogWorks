@@ -45,6 +45,8 @@ namespace FrogWorks.Demo
             var offset = display - Vector2.One * 17f;
             var size = Vector2.One * 16f;
 
+            batch.Configure(camera: Camera);
+            batch.Begin();
             batch.DrawPrimitives(b =>
             {
                 b.DrawRectangle(Vector2.Zero, size, Color.Red);
@@ -52,6 +54,7 @@ namespace FrogWorks.Demo
                 b.DrawRectangle(Vector2.UnitY * offset.Y, size, Color.LimeGreen);
                 b.DrawRectangle(offset, size, Color.Cyan);
             });
+            batch.End();
         }
     }
 }

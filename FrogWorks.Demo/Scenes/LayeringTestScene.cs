@@ -23,6 +23,8 @@ namespace FrogWorks.Demo
             SetCurrentLayer(0);
             Add(new Apple(128, 112));       
             SetCurrentLayer(-1);
+            Add(new Apple(176, 160));
+            Add(new Apple(176, 96));
             Add(new Apple(176, 128));
 
             ClearColor = Color.HotPink;
