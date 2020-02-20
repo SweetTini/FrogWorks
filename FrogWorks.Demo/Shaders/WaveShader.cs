@@ -40,8 +40,8 @@ namespace FrogWorks.Demo
 
         protected override void Initialize()
         {
-            Wavelength = .03f;
-            Frequency = 40f;
+            Wavelength = 40f;
+            Frequency = .04f;
         }
 
         public override Shader Clone()

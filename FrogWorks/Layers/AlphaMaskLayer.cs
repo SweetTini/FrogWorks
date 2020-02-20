@@ -9,7 +9,7 @@ namespace FrogWorks
         private DepthStencilState _alwaysStencil, _keepIfZeroStencil;
         private AlphaTestEffect _alphaTestEffect;
 
-        public Color BackgroundColor { get; set; } = Color.Black;
+        public Color ClearColor { get; set; } = Color.Black;
 
         public AlphaMaskLayer(bool reverse = false)
             : base()
@@ -64,7 +64,7 @@ namespace FrogWorks
                 primitive.FillRectangle(
                     Camera.View.Location.ToVector2(),
                     Camera.View.Size.ToVector2(),
-                    BackgroundColor);
+                    ClearColor);
             });
             batch.End();
         }

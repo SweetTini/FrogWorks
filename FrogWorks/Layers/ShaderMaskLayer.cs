@@ -52,7 +52,6 @@ namespace FrogWorks
         {
             BlendState = null;
             DepthStencilState = _keepIfZeroStencil;
-            Effect = null;
 
             base.AfterDraw(batch);
         }

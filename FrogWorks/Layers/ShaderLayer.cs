@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework.Graphics;
 
 namespace FrogWorks
 {
@@ -12,19 +12,14 @@ namespace FrogWorks
             Shader = shader;
         }
 
+        protected override void BeforeDraw(RendererBatch batch)
+        {
+            Effect = null;
+        }
+
         protected override void AfterDraw(RendererBatch batch)
         {
-            if (Shader == null) return;
-
-            var lastEffect = Effect;
-            Effect = Shader.Effect;
-
-            batch.Configure(BlendState, DepthStencilState, Effect);
-            batch.Begin();
-            batch.DrawSprites(sprite => sprite.Draw(RenderTarget, Vector2.Zero, Color.White));
-            batch.End();
-
-            Effect = lastEffect;
+            Effect = Shader?.Effect;
         }
     }
 }

@@ -12,7 +12,7 @@ namespace FrogWorks.Demo
         protected override void Begin()
         {
             var resolution = Runner.Application.Size.ToVector2();
-            var apple = new Apple() { Position = resolution * .5f };
+            var apple = new Apple(resolution * .5f);
             Add(apple);
 
             ClearColor = Color.DarkSlateGray;

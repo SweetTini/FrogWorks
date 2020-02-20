@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace FrogWorks
 {
@@ -18,6 +19,8 @@ namespace FrogWorks
 
         public Effect Effect { get; protected set; }
 
+        public Color Color { get; set; } = Color.White;
+
         public float Zoom
         {
             get { return Camera.Zoom; }
@@ -36,7 +39,7 @@ namespace FrogWorks
             set { Camera.AngleInDegrees = value; }
         }
 
-        public bool RenderBeforeMerge { get; set; }
+        public bool RenderBeforeMerge { get; set; } = true;
 
         public Layer()
         {
@@ -54,7 +57,7 @@ namespace FrogWorks
         {
             if (Scene?.Entities == null) return;
 
-            Scene.Entities.State = ManagerState.ThrowError;           
+            Scene.Entities.State = ManagerState.ThrowError;
             batch.Configure(BlendState, DepthStencilState, Effect, Camera);
             batch.Begin();
 
@@ -62,7 +65,7 @@ namespace FrogWorks
                 if (entity.IsVisible)
                     entity.DrawInternally(batch);
 
-            batch.End();           
+            batch.End();
             Scene.Entities.State = ManagerState.Opened;
         }
 

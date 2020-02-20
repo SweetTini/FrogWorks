@@ -15,15 +15,15 @@ namespace FrogWorks.Demo
         {
             _waveShader = Shader.Load<WaveShader>(@"Shaders\Wave");
 
-            Add(new ShaderLayer(_waveShader) { RenderBeforeMerge = true });
-            Add(new Layer());
+            Add(new ShaderLayer(_waveShader));
+            Add(new Layer() { Color = Color.Purple });
 
             SetCurrentLayer(1);
-            Add(new Apple() { X = 80f, Y = 96f });
+            Add(new Apple(80, 96));
             SetCurrentLayer(0);
-            Add(new Apple() { X = 128f, Y = 112f });
+            Add(new Apple(128, 112));       
             SetCurrentLayer(-1);
-            Add(new Apple() { X = 176f, Y = 128f });
+            Add(new Apple(176, 128));
 
             ClearColor = Color.HotPink;
         }

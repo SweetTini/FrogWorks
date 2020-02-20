@@ -6,7 +6,7 @@ float frequency;
 
 float4 PixelShaderFunction(float2 coords: TEXCOORD0) : COLOR0
 {
-	coords.x += sin(timer + (offset + coords.y) * frequency) * wavelength;
+	coords.x += sin(timer + (offset + coords.y) * wavelength) * frequency;
 	float4 color = tex2D(s0, coords);
 	return color;
 }
