@@ -26,9 +26,9 @@ namespace FrogWorks
             AfterDraw(batch);
         }
 
-        internal void OnAddedInternally(T instance)
+        internal void OnAddedInternally(T parent)
         {
-            Parent = instance;
+            Parent = parent;
             OnAdded();
         }
 

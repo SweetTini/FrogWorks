@@ -20,7 +20,7 @@ namespace FrogWorks
 
         public float TimeActive { get; private set; }
 
-        public bool IsActive { get; private set; }
+        public bool IsActive { get; private set; } = true;
 
         protected Scene()
         {

@@ -40,7 +40,10 @@ namespace FrogWorks
             get
             {
                 UpdateMatrices();
-                return Vector2.Transform(Vector2.Zero, _inverseMatrix).Round();
+                return Vector2.Transform(
+                        Vector2.Zero, 
+                        _inverseMatrix)
+                    .Round();
             }
         }
 
@@ -53,7 +56,10 @@ namespace FrogWorks
             get
             {
                 UpdateMatrices();
-                return Vector2.Transform(_viewport.Bounds.Size.ToVector2(), _inverseMatrix).Round();
+                return Vector2.Transform(
+                        _viewport.Bounds.Size.ToVector2(), 
+                        _inverseMatrix)
+                    .Round();
             }
         }
 
@@ -74,9 +80,11 @@ namespace FrogWorks
                     value = value.Clamp(center, _zone.Value.Size.ToVector2() - center);
                 }
 
-                if (value == _position) return;
-                _position = value;
-                _isDirty = true;
+                if (_position != value)
+                {
+                    _position = value;
+                    _isDirty = true;
+                }
             }
         }
 
@@ -99,9 +107,11 @@ namespace FrogWorks
             {
                 value = MathHelper.Clamp(value, .1f, 5f);
 
-                if (value == _zoom) return;
-                _zoom = value;
-                _isDirty = true;
+                if (_zoom != value)
+                {
+                    _zoom = value;
+                    _isDirty = true;
+                }
             }
         }
 
@@ -110,9 +120,11 @@ namespace FrogWorks
             get { return _angle; }
             set
             {
-                if (value == _angle) return;
-                _angle = value;
-                _isDirty = true;
+                if (_angle != value)
+                {
+                    _angle = value;
+                    _isDirty = true;
+                }
             }
         }
 
@@ -128,11 +140,20 @@ namespace FrogWorks
             UpdateViewport();
         }
 
-        public Vector2 ViewToWorld(Vector2 position) => Vector2.Transform(position, InverseMatrix);
+        public Vector2 ViewToWorld(Vector2 position)
+        {
+            return Vector2.Transform(position, InverseMatrix);
+        }
 
-        public Vector2 WorldToView(Vector2 position) => Vector2.Transform(position, TransformMatrix);
+        public Vector2 WorldToView(Vector2 position)
+        {
+            return Vector2.Transform(position, TransformMatrix);
+        }
 
-        public void Approach(Vector2 position, float rate) => Position += (position - Position) * rate;
+        public void Approach(Vector2 position, float rate)
+        {
+            Position += (position - Position) * rate;
+        }
 
         public void Approach(Vector2 position, float rate, float maxDistance)
         {
@@ -150,11 +171,20 @@ namespace FrogWorks
             _zone = new Rectangle(Point.Zero, size);
         }
 
-        public void SetZone(Vector2 size) => SetZone(size.Round().ToPoint());
+        public void SetZone(Vector2 size)
+        {
+            SetZone(size.Round().ToPoint());
+        }
 
-        public void SetZone(int width, int height) => SetZone(new Point(width, height));
+        public void SetZone(int width, int height)
+        {
+            SetZone(new Point(width, height));
+        }
 
-        public void SetZone(float width, float height) => SetZone(new Vector2(width, height).Round().ToPoint());
+        public void SetZone(float width, float height)
+        {
+            SetZone(new Vector2(width, height).Round().ToPoint());
+        }
 
         public void ResetZone() => _zone = null;
 
@@ -184,7 +214,12 @@ namespace FrogWorks
                 _inverseMatrix = Matrix.Invert(_transformMatrix);
                 _isDirty = false;
 
-                View = _viewport.Bounds.Transform(_position, _origin, Vector2.One / _zoom, _angle);
+                View = _viewport.Bounds.Transform(
+                    _position, 
+                    _origin, 
+                    Vector2.One / _zoom, 
+                    _angle);
+                
                 OnChanged?.Invoke(this);
             }
         }
