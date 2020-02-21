@@ -22,9 +22,11 @@ namespace FrogWorks
             {
                 if (_layer != value)
                 {
-                    OnLayerRemovedInternally();
+                    if (_layer != null)
+                        OnLayerRemovedInternally();
                     _layer = value;
-                    OnLayerAddedInternally();
+                    if (_layer != null)
+                        OnLayerAddedInternally();
                 }
             }
         }

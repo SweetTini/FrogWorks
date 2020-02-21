@@ -93,17 +93,20 @@ namespace FrogWorks
 
         public void Add(C child)
         {
-            switch (State)
+            if (child != null)
             {
-                case ManagerState.Opened:
-                    TryAdd(child);
-                    break;
-                case ManagerState.Queue:
-                    var command = new ManagerCommand<C, P>(child, ManagerCommandType.Add);
-                    Commands.Enqueue(command);
-                    break;
-                case ManagerState.ThrowError:
-                    throw new Exception($"Cannot add {typeof(C).Name} at this time.");
+                switch (State)
+                {
+                    case ManagerState.Opened:
+                        TryAdd(child);
+                        break;
+                    case ManagerState.Queue:
+                        var command = new ManagerCommand<C, P>(child, ManagerCommandType.Add);
+                        Commands.Enqueue(command);
+                        break;
+                    case ManagerState.ThrowError:
+                        throw new Exception($"Cannot add {typeof(C).Name} at this time.");
+                }
             }
         }
 
@@ -121,17 +124,20 @@ namespace FrogWorks
 
         public void Remove(C child)
         {
-            switch (State)
+            if (child != null)
             {
-                case ManagerState.Opened:
-                    TryRemove(child);
-                    break;
-                case ManagerState.Queue:
-                    var command = new ManagerCommand<C, P>(child, ManagerCommandType.Remove);
-                    Commands.Enqueue(command);
-                    break;
-                case ManagerState.ThrowError:
-                    throw new Exception($"Cannot remove {typeof(C).Name} at this time.");
+                switch (State)
+                {
+                    case ManagerState.Opened:
+                        TryRemove(child);
+                        break;
+                    case ManagerState.Queue:
+                        var command = new ManagerCommand<C, P>(child, ManagerCommandType.Remove);
+                        Commands.Enqueue(command);
+                        break;
+                    case ManagerState.ThrowError:
+                        throw new Exception($"Cannot remove {typeof(C).Name} at this time.");
+                }
             }
         }
 
