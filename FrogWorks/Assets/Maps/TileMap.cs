@@ -5,11 +5,11 @@ using System.Collections.ObjectModel;
 
 namespace FrogWorks
 {
-    public sealed class TileMapCollection
+    public sealed class TileMap
     {
-        internal List<TileMapCollectionTileMap> _tileMaps;
-        internal List<TileMapCollectionTile> _unusedTiles;
-        internal List<TileMapCollectionObject> _objects;
+        internal List<TileMapLayout> _layouts;
+        internal List<TileMapTile> _tiles;
+        internal List<TileMapObject> _objects;
 
         public Point Size { get; internal set; }
 
@@ -25,43 +25,43 @@ namespace FrogWorks
 
         public Color BackgroundColor { get; internal set; }
 
-        public ReadOnlyCollection<TileMapCollectionTileMap> TileMaps { get; private set; }
+        public ReadOnlyCollection<TileMapLayout> Layouts { get; private set; }
 
-        public ReadOnlyCollection<TileMapCollectionTile> UnusedTiles { get; private set; }
+        public ReadOnlyCollection<TileMapTile> Tiles { get; private set; }
 
-        public ReadOnlyCollection<TileMapCollectionObject> Objects { get; private set; }
+        public ReadOnlyCollection<TileMapObject> Objects { get; private set; }
 
-        internal TileMapCollection()
+        internal TileMap()
             : base()
         {
-            _tileMaps = new List<TileMapCollectionTileMap>();
-            _unusedTiles = new List<TileMapCollectionTile>();
-            _objects = new List<TileMapCollectionObject>();
-            TileMaps = new ReadOnlyCollection<TileMapCollectionTileMap>(_tileMaps);
-            UnusedTiles = new ReadOnlyCollection<TileMapCollectionTile>(_unusedTiles);
-            Objects = new ReadOnlyCollection<TileMapCollectionObject>(_objects);
+            _layouts = new List<TileMapLayout>();
+            _tiles = new List<TileMapTile>();
+            _objects = new List<TileMapObject>();
+            Layouts = new ReadOnlyCollection<TileMapLayout>(_layouts);
+            Tiles = new ReadOnlyCollection<TileMapTile>(_tiles);
+            Objects = new ReadOnlyCollection<TileMapObject>(_objects);
         }
     }
 
-    public class TileMapCollectionTileMap
+    public class TileMapLayout
     {
         internal Dictionary<string, object> _properties;
 
         public string GroupName { get; internal set; }
 
-        public TileMap Component { get; internal set; }
+        public TileMapRenderer Renderer { get; internal set; }
 
-        public TileMapCollectionProperties Properties { get; private set; }
+        public TileMapProperties Properties { get; private set; }
 
-        internal TileMapCollectionTileMap()
+        internal TileMapLayout()
             : base()
         {
             _properties = new Dictionary<string, object>();
-            Properties = new TileMapCollectionProperties(_properties);
+            Properties = new TileMapProperties(_properties);
         }
     }
 
-    public class TileMapCollectionTile
+    public class TileMapTile
     {
         public int Gid { get; internal set; }
 
@@ -73,13 +73,13 @@ namespace FrogWorks
 
         public int Y => Position.Y;
 
-        internal TileMapCollectionTile()
+        internal TileMapTile()
             : base()
         {
         }
     }
 
-    public class TileMapCollectionObject
+    public class TileMapObject
     {
         internal Dictionary<string, object> _properties;
 
@@ -101,20 +101,19 @@ namespace FrogWorks
 
         public int Height => Region.Height;
 
-        public TileMapCollectionProperties Properties { get; private set; }
+        public TileMapProperties Properties { get; private set; }
 
-        internal TileMapCollectionObject()
+        internal TileMapObject()
             : base()
         {
             _properties = new Dictionary<string, object>();
-            Properties = new TileMapCollectionProperties(_properties);
+            Properties = new TileMapProperties(_properties);
         }
     }
 
-    public class TileMapCollectionProperties
-        : ReadOnlyDictionary<string, object>
+    public class TileMapProperties : ReadOnlyDictionary<string, object>
     {
-        public TileMapCollectionProperties(IDictionary<string, object> dictionary) 
+        public TileMapProperties(IDictionary<string, object> dictionary) 
             : base(dictionary)
         {
         }

@@ -192,7 +192,7 @@ namespace FrogWorks
                 _index++;
 
                 if (IsPlaying)
-                    _randomIndex = Randomizer
+                    _randomIndex = RandomEX
                         .Current.Next(_frames.Length);
 
                 if (_index >= MaxFrames)
@@ -223,7 +223,7 @@ namespace FrogWorks
                 .Floor().Mod(maxFrames);
 
             if (_index != lastIndex)
-                _randomIndex = Randomizer
+                _randomIndex = RandomEX
                     .Current.Next(_frames.Length);
         }
 

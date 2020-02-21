@@ -30,6 +30,21 @@ namespace FrogWorks.Demo
             ClearColor = Color.HotPink;
         }
 
+        protected override void BeforeUpdate(float deltaTime)
+        {
+            var mousePosition = Input.Mouse.Position;
+
+            foreach (var apple in this.OnLayer(null).OfType<Apple>())
+            {
+                if (apple.IsOverlapping(mousePosition) 
+                    && Input.Mouse.IsClicked(MouseButton.Left))
+                {
+                    apple.MoveToTop();
+                    break;
+                }
+            }
+        }
+
         protected override void AfterUpdate(float deltaTime)
         {
             _waveShader.Timer += deltaTime;

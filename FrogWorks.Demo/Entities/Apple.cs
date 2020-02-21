@@ -18,6 +18,12 @@ namespace FrogWorks.Demo
             Add(image);
 
             Position = position;
+            Collider = new RectangleCollider(48f, 48f, -24f, -20f);
+        }
+
+        public bool IsOverlapping(Vector2 position)
+        {
+            return Collider?.Collide(position) ?? false;
         }
     }
 }

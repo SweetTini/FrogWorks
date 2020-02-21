@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace FrogWorks
 {
-    public static class Randomizer
+    public static class RandomEX
     {
         internal static Stack<Random> Cache { get; } = new Stack<Random>();
 

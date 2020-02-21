@@ -56,7 +56,7 @@
     <Compile Include="Assets\Graphics\Shader.cs" />
     <Compile Include="Assets\Graphics\TextureAtlas.cs" />
     <Compile Include="Assets\Loaders\TexturePacker.cs" />
-    <Compile Include="Assets\Maps\TileMapCollection.cs" />
+    <Compile Include="Assets\Maps\TileMap.cs" />
     <Compile Include="Collision\Broad\AABB.cs" />
     <Compile Include="Collision\Broad\AABBTree.cs" />
     <Compile Include="Collision\Colliders\BitFlagMapCollider.cs" />
@@ -68,7 +68,7 @@
     <Compile Include="Collision\Colliders\ShapeCollider.cs" />
     <Compile Include="Collision\Colliders\SimpleMapCollider.cs" />
     <Compile Include="Components\Graphics\AnimatedPattern.cs" />
-    <Compile Include="Components\Graphics\AnimatedTileMap.cs" />
+    <Compile Include="Components\Graphics\AnimatedTileMapRenderer.cs" />
     <Compile Include="Components\Graphics\AnimatedBackPattern.cs" />
     <Compile Include="Components\Graphics\AtlasImage.cs" />
     <Compile Include="Components\Graphics\AtlasSprite.cs" />
@@ -90,7 +90,7 @@
     <Compile Include="Components\Graphics\Image.cs" />
     <Compile Include="Components\Graphics\Sprite.cs" />
     <Compile Include="Components\Graphics\SpriteText.cs" />
-    <Compile Include="Components\Graphics\TileMap.cs" />
+    <Compile Include="Components\Graphics\TileMapRenderer.cs" />
     <Compile Include="Components\Logic\Alarm.cs" />
     <Compile Include="Components\Logic\Coroutine.cs" />
     <Compile Include="Components\Logic\CoroutineCollection.cs" />
@@ -165,7 +165,7 @@
     <Compile Include="Utils\Extensions.cs" />
     <Compile Include="Utils\Map.cs" />
     <Compile Include="Utils\PrimitiveBatch.cs" />
-    <Compile Include="Utils\Randomizer.cs" />
+    <Compile Include="Utils\RandomEx.cs" />
     <Compile Include="Utils\RendererBatch.cs" />
   </ItemGroup>
   <ItemGroup>

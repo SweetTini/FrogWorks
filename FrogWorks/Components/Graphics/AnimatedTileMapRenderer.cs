@@ -2,16 +2,16 @@
 
 namespace FrogWorks
 {
-    public class AnimatedTileMap : TileMap
+    public class AnimatedTileMapRenderer : TileMapRenderer
     {
         private float _timer;
 
-        public AnimatedTileMap(Point size, Point tileSize)
+        public AnimatedTileMapRenderer(Point size, Point tileSize)
             : base(size, tileSize, true)
         {
         }
 
-        public AnimatedTileMap(int columns, int rows, int tileWidth, int tileHeight)
+        public AnimatedTileMapRenderer(int columns, int rows, int tileWidth, int tileHeight)
             : base(new Point(columns, rows), new Point(tileWidth, tileHeight), true)
         {
         }
@@ -42,7 +42,7 @@ namespace FrogWorks
                 var x = location.X + (i % area.X);
                 var y = location.Y + (i / area.X);
 
-                Map[x, y] = new TileMapTile(tileSet, animation);
+                Map[x, y] = new Tile(tileSet, animation);
             }
         }
 

@@ -50,7 +50,7 @@ namespace FrogWorks
 
         public SineWave Randomize()
         {
-            Counter = Randomizer.Current.NextFloat() * MathHelper.TwoPi * 2f;
+            Counter = RandomEX.Current.NextFloat() * MathHelper.TwoPi * 2f;
             return this;
         }
     }

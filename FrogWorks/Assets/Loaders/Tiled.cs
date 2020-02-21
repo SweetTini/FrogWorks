@@ -10,12 +10,12 @@ namespace FrogWorks
 {
     public sealed class Tiled
     {
-        public static TileMapCollection Load(string filePath)
+        public static TileMap Load(string filePath)
         {
             return AssetManager.GetFromCache(filePath, FromStream);
         }
 
-        static TileMapCollection FromStream(string filePath)
+        static TileMap FromStream(string filePath)
         {
             var stream = AssetManager.GetStream(filePath, ".tmx");
 
@@ -23,7 +23,7 @@ namespace FrogWorks
             {
                 using (stream)
                 {
-                    var collection = new TileMapCollection();
+                    var collection = new TileMap();
                     var xmlDoc = new XmlDocument();
 
                     xmlDoc.Load(stream);
@@ -36,7 +36,7 @@ namespace FrogWorks
             return null;
         }
 
-        static void ReadMap(TileMapCollection collection, XmlDocument xmlDoc, string rootDirectory)
+        static void ReadMap(TileMap collection, XmlDocument xmlDoc, string rootDirectory)
         {
             var xmlRoot = xmlDoc["map"];
 
@@ -48,11 +48,11 @@ namespace FrogWorks
             var layers = ReadLayers(collection, xmlRoot, tileSets);
             var objects = ReadObjectGroups(xmlRoot);
 
-            layers.ForEach(x => BuildTileMap(collection, tileSets, x));
+            layers.ForEach(x => BuildLayout(collection, tileSets, x));
             objects.ForEach(x => BuildObject(collection, x));
         }
 
-        static List<TiledTileSet> ReadTileSets(TileMapCollection collection, XmlElement xmlRoot, string rootDirectory)
+        static List<TiledTileSet> ReadTileSets(TileMap collection, XmlElement xmlRoot, string rootDirectory)
         {
             var tileSets = new List<TiledTileSet>();
 
@@ -74,7 +74,7 @@ namespace FrogWorks
             return tileSets;
         }
 
-        static List<TiledLayer> ReadLayers(TileMapCollection collection, XmlElement xmlRoot, List<TiledTileSet> tileSets)
+        static List<TiledLayer> ReadLayers(TileMap collection, XmlElement xmlRoot, List<TiledTileSet> tileSets)
         {
             var layers = new List<TiledLayer>();
 
@@ -91,7 +91,7 @@ namespace FrogWorks
             return layers;
         }
 
-        static int[] ReadLayer(TileMapCollection collection, XmlElement xmlRoot)
+        static int[] ReadLayer(TileMap collection, XmlElement xmlRoot)
         {
             var gidMap = new int[collection.Columns * collection.Rows];
             var hasEncoding = !string.IsNullOrEmpty(xmlRoot.AttrToString("encoding"));
@@ -189,9 +189,9 @@ namespace FrogWorks
         }
 
         #region Import Methods
-        static void BuildTileMap(TileMapCollection collection, List<TiledTileSet> tileSets, TiledLayer layer)
+        static void BuildLayout(TileMap collection, List<TiledTileSet> tileSets, TiledLayer layer)
         {
-            var tileMap = null as TileMap;
+            var renderer = null as TileMapRenderer;
 
             for (int i = 0; i < layer.GidMap.Length; i++)
             {
@@ -202,35 +202,36 @@ namespace FrogWorks
 
                 if (tileSet.TileSet == null)
                 {
-                    BuildUnusedTile(collection, layer, i, gid);
+                    BuildTile(collection, layer, i, gid);
                 }
                 else
                 {
-                    if (tileMap == null) tileMap = new TileMap(collection.Size, collection.TileSize);
+                    if (renderer == null) 
+                        renderer = new TileMapRenderer(collection.Size, collection.TileSize);
                     var position = new Point(i % collection.Columns, i / collection.Columns);
                     var texture = tileSet.TileSet[gid];
-                    tileMap.Fill(texture, position, new Point(1, 1));
+                    renderer.Fill(texture, position, new Point(1, 1));
                 }
             }
 
-            if (tileMap != null)
+            if (renderer != null)
             {
-                var newTileMap = new TileMapCollectionTileMap()
+                var layout = new TileMapLayout()
                 {
                     GroupName = layer.Name,
-                    Component = tileMap,
+                    Renderer = renderer,
                 };
 
                 layer.Properties.ToList()
-                    .ForEach(x => newTileMap._properties.Add(x.Key, x.Value));
+                    .ForEach(x => layout._properties.Add(x.Key, x.Value));
 
-                collection._tileMaps.Add(newTileMap);
+                collection._layouts.Add(layout);
             }
         }
 
-        static void BuildUnusedTile(TileMapCollection collection, TiledLayer layer, int index, int gid)
+        static void BuildTile(TileMap collection, TiledLayer layer, int index, int gid)
         {
-            var newTile = new TileMapCollectionTile()
+            var newTile = new TileMapTile()
             {
                 Gid = gid,
                 GroupName = layer.Name,
@@ -239,12 +240,12 @@ namespace FrogWorks
                     index / collection.Columns)
             };
 
-            collection._unusedTiles.Add(newTile);
+            collection._tiles.Add(newTile);
         }
 
-        static void BuildObject(TileMapCollection collection, TiledObject obj)
+        static void BuildObject(TileMap collection, TiledObject obj)
         {
-            var newObj = new TileMapCollectionObject()
+            var newObj = new TileMapObject()
             {
                 Name = obj.Name,
                 Type = obj.Type,
