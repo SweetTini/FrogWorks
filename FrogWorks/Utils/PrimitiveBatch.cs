@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Diagnostics;
+using System.Linq;
 using XnaPrimitiveType = Microsoft.Xna.Framework.Graphics.PrimitiveType;
 
 namespace FrogWorks
@@ -23,10 +24,13 @@ namespace FrogWorks
             get { return _type; }
             private set
             {
-                if (value == _type) return;
-                Flush();
-                _type = value;
-                _bufferIndex = 0;
+                if (_type != value)
+                {
+                    Flush();
+
+                    _type = value;
+                    _bufferIndex = 0;
+                }
             }
         }
 
@@ -39,19 +43,21 @@ namespace FrogWorks
                    - (bufferSize % VertsPerTriangle);
 
             _graphicsDevice = graphicsDevice;
-            _basicEffect = new BasicEffect(_graphicsDevice) { VertexColorEnabled = true };
+            _basicEffect = new BasicEffect(_graphicsDevice);
+            _basicEffect.VertexColorEnabled = true;
             _vertices = new VertexPositionColor[fixedSize];
         }
 
-        public void Begin(BlendState blendState = null, 
-                          SamplerState samplerState = null, 
-                          DepthStencilState depthStencilState = null,
-                          RasterizerState rasterizerState = null,
-                          Effect effect = null,
-                          Matrix? projectionMatrix = null, 
-                          Matrix? viewMatrix = null)
+        public void Begin(
+            BlendState blendState = null,
+            SamplerState samplerState = null,
+            DepthStencilState depthStencilState = null,
+            RasterizerState rasterizerState = null,
+            Effect effect = null,
+            Matrix? projectionMatrix = null,
+            Matrix? viewMatrix = null)
         {
-            ValidateAfterDraw();
+            CheckAfterDraw();
 
             _graphicsDevice.BlendState = blendState ?? BlendState.AlphaBlend;
             _graphicsDevice.SamplerStates[0] = samplerState ?? SamplerState.PointClamp;
@@ -71,51 +77,143 @@ namespace FrogWorks
 
         public void End()
         {
-            ValidateBeforeDraw();
+            CheckBeforeDraw();
             Flush();
 
             _hasBegun = false;
         }
 
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool isDisposing)
+        {
+            if (isDisposing && !IsDisposed)
+            {
+                _basicEffect?.Dispose();
+                IsDisposed = true;
+            }
+        }
+
+        private void Flush()
+        {
+            CheckBeforeDraw();
+
+            var perAmount = _type == PrimitiveType.Line
+                ? VertsPerLine
+                : VertsPerTriangle;
+
+            var primitiveType = _type == PrimitiveType.Line
+                ? XnaPrimitiveType.LineList
+                : XnaPrimitiveType.TriangleList;
+
+            if (_bufferIndex >= perAmount)
+            {
+                var count = _bufferIndex / perAmount;
+
+                foreach (var pass in _effect.CurrentTechnique.Passes)
+                {
+                    pass.Apply();
+                    _graphicsDevice.DrawUserPrimitives(primitiveType, _vertices, 0, count);
+                }
+
+                _bufferIndex -= count * perAmount;
+            }
+        }
+
+        #region Validation
+        private void CheckBeforeDraw()
+        {
+            CheckIfDisposed();
+
+            if (!_hasBegun)
+            {
+                var stackTrace = new StackTrace();
+                var parentMethod = stackTrace.GetFrame(1).GetMethod();
+                throw new Exception($"Begin must be called before {parentMethod.Name}.");
+            }
+        }
+
+        private void CheckAfterDraw()
+        {
+            CheckIfDisposed();
+
+            if (_hasBegun)
+                throw new Exception("End must be called before Begin.");
+        }
+
+        private void CheckIfDisposed()
+        {
+            if (IsDisposed)
+                throw new Exception("Cannot draw with disposed primitive batch.");
+        }
+        #endregion
+
         #region Plotting
-        public void AddVertex(Vector2 position, Color color, PrimitiveType type)
-        {
-            AddVertex(new Vector3(position, 0f), color, type);
-        }
-
-        public void AddVertex(float x, float y, Color color, PrimitiveType type)
-        {
-            AddVertex(new Vector3(x, y, 0f), color, type);
-        }
-
-        public void AddVertex(Vector3 position, Color color, PrimitiveType type)
-        {
-            ValidateBeforeDraw();
-            PrimitiveType = type;
-
-            if (_bufferIndex >= _vertices.Length) Flush();
-            _vertices[_bufferIndex++] = new VertexPositionColor(position, color);
-        }
-
         public void AddVertex(float x, float y, float z, Color color, PrimitiveType type)
         {
             AddVertex(new Vector3(x, y, z), color, type);
         }
+
+        public void AddVertex(Vector3 position, Color color, PrimitiveType type)
+        {
+            CheckBeforeDraw();
+            PrimitiveType = type;
+
+            if (_bufferIndex >= _vertices.Length)
+                Flush();
+
+            var vertexPositionColor = new VertexPositionColor(position, color);
+            _vertices[_bufferIndex++] = vertexPositionColor;
+        }
         #endregion
 
-        #region Dots & Lines
-        public void DrawDot(Vector2 position, Color color)
-        {
-            AddVertex(position, color, PrimitiveType.Line);
-            AddVertex(position + Vector2.UnitX, color, PrimitiveType.Line);
-        }
-
+        #region Dots
         public void DrawDot(float x, float y, Color color)
         {
-            DrawDot(new Vector2(x, y), color);
+            DrawDot(new Vector3(x, y, 0f), color);
+        }
+
+        public void DrawDot(float x, float y, float z, Color color)
+        {
+            DrawDot(new Vector3(x, y, z), color);
+        }
+
+        public void DrawDot(Vector2 position, Color color)
+        {
+            DrawDot(new Vector3(position, 0f), color);
+        }
+
+        public void DrawDot(Vector3 position, Color color)
+        {
+            AddVertex(position, color, PrimitiveType.Line);
+            AddVertex(position + Vector3.UnitX, color, PrimitiveType.Line);
+        }
+        #endregion
+
+        #region Lines
+        public void DrawLine(float x1, float y1, float x2, float y2, Color color)
+        {
+            DrawLine(new Vector3(x1, y1, 0f), new Vector3(x2, y2, 0f), color);
+        }
+
+        public void DrawLine(
+            float x1, float y1, float z1,
+            float x2, float y2, float z2,
+            Color color)
+        {
+            DrawLine(new Vector3(x1, y1, z1), new Vector3(x2, y2, z2), color);
         }
 
         public void DrawLine(Vector2 p1, Vector2 p2, Color color)
+        {
+            DrawLine(new Vector3(p1, 0f), new Vector3(p2, 0f), color);
+        }
+
+        public void DrawLine(Vector3 p1, Vector3 p2, Color color)
         {
             if (p1 == p2)
             {
@@ -127,15 +225,45 @@ namespace FrogWorks
                 AddVertex(p2, color, PrimitiveType.Line);
             }
         }
-
-        public void DrawLine(float x1, float y1, float x2, float y2, Color color)
-        {
-            DrawLine(new Vector2(x1, y1), new Vector2(x2, y2), color);
-        }
         #endregion
 
         #region Triangles
+        public void DrawTriangle(
+            float x1, float y1,
+            float x2, float y2,
+            float x3, float y3,
+            Color color)
+        {
+            DrawTriangle(
+                new Vector3(x1, y1, 0f),
+                new Vector3(x2, y2, 0f),
+                new Vector3(x3, y3, 0f),
+                color);
+        }
+
+        public void DrawTriangle(
+            float x1, float y1, float z1,
+            float x2, float y2, float z2,
+            float x3, float y3, float z3,
+            Color color)
+        {
+            DrawTriangle(
+                new Vector3(x1, y1, z1),
+                new Vector3(x2, y2, z2),
+                new Vector3(x3, y3, z3),
+                color);
+        }
+
         public void DrawTriangle(Vector2 p1, Vector2 p2, Vector2 p3, Color color)
+        {
+            DrawTriangle(
+                new Vector3(p1, 0f),
+                new Vector3(p2, 0f),
+                new Vector3(p3, 0f),
+                color);
+        }
+
+        public void DrawTriangle(Vector3 p1, Vector3 p2, Vector3 p3, Color color)
         {
             if (p1 == p2 && p1 == p3)
             {
@@ -149,12 +277,42 @@ namespace FrogWorks
             }
         }
 
-        public void DrawTriangle(float x1, float y1, float x2, float y2, float x3, float y3, Color color)
+        public void FillTriangle(
+            float x1, float y1,
+            float x2, float y2,
+            float x3, float y3,
+            Color color)
         {
-            DrawTriangle(new Vector2(x1, y1), new Vector2(x2, y2), new Vector2(x3, y3), color);
+            FillTriangle(
+                new Vector3(x1, y1, 0f),
+                new Vector3(x2, y2, 0f),
+                new Vector3(x3, y3, 0f),
+                color);
+        }
+
+        public void FillTriangle(
+            float x1, float y1, float z1,
+            float x2, float y2, float z2,
+            float x3, float y3, float z3,
+            Color color)
+        {
+            FillTriangle(
+                new Vector3(x1, y1, z1),
+                new Vector3(x2, y2, z2),
+                new Vector3(x3, y3, z3),
+                color);
         }
 
         public void FillTriangle(Vector2 p1, Vector2 p2, Vector2 p3, Color color)
+        {
+            FillTriangle(
+                new Vector3(p1, 0f),
+                new Vector3(p2, 0f),
+                new Vector3(p3, 0f),
+                color);
+        }
+
+        public void FillTriangle(Vector3 p1, Vector3 p2, Vector3 p3, Color color)
         {
             if (p1 == p2 && p1 == p3)
             {
@@ -171,15 +329,15 @@ namespace FrogWorks
                 AddVertex(p3, color, PrimitiveType.Triangle);
             }
         }
-
-        public void FillTriangle(float x1, float y1, float x2, float y2, float x3, float y3, Color color)
-        {
-            FillTriangle(new Vector2(x1, y1), new Vector2(x2, y2), new Vector2(x3, y3), color);
-        }
         #endregion
 
         #region Polygons
         public void DrawPolygon(Vector2[] vertices, Color color)
+        {
+            DrawPolygon(vertices.Select(v => new Vector3(v, 0f)).ToArray(), color);
+        }
+
+        public void DrawPolygon(Vector3[] vertices, Color color)
         {
             for (int i = 0; i < vertices.Length; i++)
             {
@@ -188,25 +346,12 @@ namespace FrogWorks
             }
         }
 
-        public void DrawPolygon(float[] coords, Color color)
+        public void FillPolygon(Vector2[] vertices, Color color)
         {
-            var count = coords.Length / 2;
-
-            if (count > 0)
-            {
-                var vertices = new Vector2[count];
-
-                for (int i = 0; i < count; i++)
-                {
-                    var j = i * 2;
-                    vertices[i] = new Vector2(coords[j], coords[j + 1]);
-                }
-
-                DrawPolygon(vertices, color);
-            }
+            FillPolygon(vertices.Select(v => new Vector3(v, 0f)).ToArray(), color);
         }
 
-        public void FillPolygon(Vector2[] vertices, Color color)
+        public void FillPolygon(Vector3[] vertices, Color color)
         {
             if (vertices.Length < 3)
             {
@@ -221,65 +366,56 @@ namespace FrogWorks
                 }
             }
         }
-
-        public void FillPolygon(float[] coords, Color color)
-        {
-            var count = coords.Length / 2;
-
-            if (count > 0)
-            {
-                var vertices = new Vector2[count];
-
-                for (int i = 0; i < count; i++)
-                {
-                    var j = i * 2;
-                    vertices[i] = new Vector2(coords[j], coords[j + 1]);
-                }
-
-                FillPolygon(vertices, color);
-            }
-        }
         #endregion
 
         #region Rectangles
-        public void DrawRectangle(Vector2 location, Vector2 size, Color color)
-        {
-            var vertices = new[]
-            {
-                location,
-                new Vector2(location.X + size.X, location.Y),
-                location + size,
-                new  Vector2(location.X, location.Y + size.Y)
-            };
-
-            DrawPolygon(vertices, color);
-        }
-
         public void DrawRectangle(float x, float y, float width, float height, Color color)
         {
             DrawRectangle(new Vector2(x, y), new Vector2(width, height), color);
         }
 
-        public void FillRectangle(Vector2 location, Vector2 size, Color color)
+        public void DrawRectangle(Vector2 position, Vector2 size, Color color)
         {
-            var vertices = new[] 
+            var vertices = new[]
             {
-                location,
-                new Vector2(location.X + size.X, location.Y),
-                location + size,
-                new  Vector2(location.X, location.Y + size.Y)
+                position,
+                position + Vector2.UnitX * size,
+                position + size,
+                position + Vector2.UnitY * size
             };
 
-            FillPolygon(vertices, color);
+            DrawPolygon(vertices, color);
         }
 
         public void FillRectangle(float x, float y, float width, float height, Color color)
         {
             FillRectangle(new Vector2(x, y), new Vector2(width, height), color);
         }
+
+        public void FillRectangle(Vector2 position, Vector2 size, Color color)
+        {
+            var vertices = new[]
+            {
+                position,
+                position + Vector2.UnitX * size,
+                position + size,
+                position + Vector2.UnitY * size
+            };
+
+            FillPolygon(vertices, color);
+        }
         #endregion
 
         #region Ellipses
+        public void DrawEllipse(
+            float cx, float cy,
+            float rx, float ry,
+            Color color,
+            int segments = 16)
+        {
+            DrawEllipse(new Vector2(cx, cy), new Vector2(rx, ry), color, segments);
+        }
+
         public void DrawEllipse(Vector2 center, Vector2 radii, Color color, int segments = 16)
         {
             var vertices = new Vector2[segments];
@@ -296,9 +432,13 @@ namespace FrogWorks
             DrawPolygon(vertices, color);
         }
 
-        public void DrawEllipse(float x, float y, float rx, float ry, Color color, int segments = 16)
+        public void FillEllipse(
+            float cx, float cy,
+            float rx, float ry,
+            Color color,
+            int segments = 16)
         {
-            DrawEllipse(new Vector2(x, y), new Vector2(rx, ry), color, segments);
+            FillEllipse(new Vector2(cx, cy), new Vector2(rx, ry), color, segments);
         }
 
         public void FillEllipse(Vector2 center, Vector2 radii, Color color, int segments = 16)
@@ -320,101 +460,37 @@ namespace FrogWorks
 
             FillPolygon(vertices, color);
         }
-
-        public void FillEllipse(float x, float y, float rx, float ry, Color color, int segments = 16)
-        {
-            FillEllipse(new Vector2(x, y), new Vector2(rx, ry), color, segments);
-        }
         #endregion
 
         #region Circles
-        public void DrawCircle(Vector2 center, float radius, Color color, int segments = 16)
+        public void DrawCircle(
+            float cx, float cy,
+            float radius,
+            Color color,
+            int segments = 16)
         {
-            DrawEllipse(center, radius * Vector2.One, color, segments);
+            DrawEllipse(new Vector2(cx, cy), Vector2.One * radius, color, segments);
         }
 
-        public void DrawCircle(float x, float y, float radius, Color color, int segments = 16)
+        public void DrawCircle(Vector2 center, float radius, Color color, int segments = 16)
         {
-            DrawEllipse(new Vector2(x, y), radius * Vector2.One, color, segments);
+            DrawEllipse(center, Vector2.One * radius, color, segments);
+        }
+
+        public void FillCircle(
+            float cx, float cy,
+            float radius,
+            Color color,
+            int segments = 16)
+        {
+            FillEllipse(new Vector2(cx, cy), Vector2.One * radius, color, segments);
         }
 
         public void FillCircle(Vector2 center, float radius, Color color, int segments = 16)
         {
-            FillEllipse(center, radius * Vector2.One, color, segments);
-        }
-
-        public void FillCircle(float x, float y, float radius, Color color, int segments = 16)
-        {
-            FillEllipse(new Vector2(x, y), radius * Vector2.One, color, segments);
+            FillEllipse(center, Vector2.One * radius, color, segments);
         }
         #endregion
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool isDisposing)
-        {
-            if (isDisposing && !IsDisposed)
-            {
-                _basicEffect?.Dispose();
-                IsDisposed = true;
-            }
-        }
-
-        private void Flush()
-        {
-            ValidateBeforeDraw();
-
-            var perAmount = _type == PrimitiveType.Line 
-                ? VertsPerLine 
-                : VertsPerTriangle;
-
-            var primitiveType = _type == PrimitiveType.Line
-                ? XnaPrimitiveType.LineList
-                : XnaPrimitiveType.TriangleList;
-
-            if (_bufferIndex >= perAmount)
-            {
-                var count = _bufferIndex / perAmount;
-
-                foreach (var pass in _effect.CurrentTechnique.Passes)
-                {
-                    pass.Apply();
-                    _graphicsDevice.DrawUserPrimitives(primitiveType, _vertices, 0, count);
-                }
-
-                _bufferIndex -= count * perAmount;
-            }
-        }
-
-        private void ValidateBeforeDraw()
-        {
-            ValidateDisposed();
-
-            if (!_hasBegun)
-            {
-                var stackTrace = new StackTrace();
-                var parentMethod = stackTrace.GetFrame(1).GetMethod();
-                throw new Exception($"Begin must be called before {parentMethod.Name}.");
-            }
-        }
-
-        private void ValidateAfterDraw()
-        {
-            ValidateDisposed();
-
-            if (_hasBegun)
-                throw new Exception("End must be called before Begin.");
-        }
-
-        private void ValidateDisposed()
-        {
-            if (IsDisposed)
-                throw new Exception("Cannot draw with disposed primitive batch.");
-        }
     }
 
     public enum PrimitiveType
