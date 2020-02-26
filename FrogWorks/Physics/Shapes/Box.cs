@@ -60,6 +60,12 @@ namespace FrogWorks
             return new Rectangle(Position.ToPoint(), Size.ToPoint());
         }
 
+        protected override bool Contains(Vector2 point)
+        {
+            return Min.X <= point.X && point.X < Max.X
+                && Min.Y <= point.Y && point.Y < Max.Y;
+        }
+
         public override void Draw(
             RendererBatch batch,
             Color strokeColor,
@@ -77,6 +83,44 @@ namespace FrogWorks
         public override Shape Clone()
         {
             return new Box(Position, Size);
+        }
+
+        Vector2[] GetVertices()
+        {
+            return new Vector2[]
+            {
+                Position,
+                Position + Size * Vector2.UnitX,
+                Position + Size,
+                Position + Size * Vector2.UnitY
+            };
+        }
+
+        internal override Vector2[] GetAxes()
+        {
+            return GetVertices().Normalize();
+        }
+
+        internal override void Project(Vector2 axis, out float min, out float max)
+        {
+            var vertices = GetVertices();
+            var dotProd = Vector2.Dot(axis, vertices[0]);
+
+            min = dotProd;
+            max = dotProd;
+
+            for (int i = 1; i < vertices.Length; i++)
+            {
+                dotProd = Vector2.Dot(axis, vertices[i]);
+
+                if (min > dotProd) min = dotProd;
+                else if (max < dotProd) max = dotProd;
+            }
+        }
+
+        internal override Vector2 GetClosestPoint(Vector2 point)
+        {
+            return point.Clamp(Min, Max);
         }
     }
 }

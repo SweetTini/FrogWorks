@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
 
 namespace FrogWorks
 {
@@ -89,6 +90,26 @@ namespace FrogWorks
             return new Rectangle(min.ToPoint(), (max - min).ToPoint());
         }
 
+        protected override bool Contains(Vector2 point)
+        {
+            var inPoly = false;
+
+            for (int i = 0; i < Count; i++)
+            {
+                var p1 = this[i];
+                var p2 = this[(i + 1).Mod(Count)];
+                var edge = p2 - p1;
+
+                if ((p1.Y > point.Y) != (edge.Y > point.Y))
+                {
+                    var area = edge.X * (point.Y - p1.Y) / edge.Y + p1.X;
+                    if (point.X < area) inPoly = !inPoly;
+                }
+            }
+
+            return inPoly;
+        }
+
         public override void Draw(
             RendererBatch batch,
             Color strokeColor,
@@ -111,6 +132,48 @@ namespace FrogWorks
         protected override void OnTranslated()
         {
             RecalculateVertices();
+        }
+
+        internal override Vector2[] GetAxes()
+        {
+            return _transformed.Normalize();
+        }
+
+        internal override void Project(Vector2 axis, out float min, out float max)
+        {
+            var dotProd = Vector2.Dot(axis, this[0]);
+
+            min = dotProd;
+            max = dotProd;
+
+            for (int i = 1; i < Count; i++)
+            {
+                dotProd = Vector2.Dot(axis, this[i]);
+
+                if (min > dotProd) min = dotProd;
+                else if (max < dotProd) max = dotProd;
+            }
+        }
+
+        internal override Vector2 GetClosestPoint(Vector2 point)
+        {
+            var closest = Vector2.Zero;
+            var lowestDepth = float.PositiveInfinity;
+
+            for (int i = 0; i < Count; i++)
+            {
+                var j = (i + 1).Mod(Count);
+                var closestToLine = GetClosestPointOnLine(this[i], this[j], point);
+                var depth = Vector2.Dot(point, closestToLine);
+
+                if (lowestDepth > depth)
+                {
+                    lowestDepth = depth;
+                    closest = closestToLine;
+                }
+            }
+
+            return closest;
         }
     }
 }

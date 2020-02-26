@@ -57,7 +57,9 @@
     <Compile Include="Assets\Graphics\TextureAtlas.cs" />
     <Compile Include="Assets\Loaders\TexturePacker.cs" />
     <Compile Include="Assets\Maps\TileMap.cs" />
+    <Compile Include="Physics\Manifold.cs" />
     <Compile Include="Physics\Ray2D.cs" />
+    <Compile Include="Physics\Raycast.cs" />
     <Compile Include="Physics\Shapes\Box.cs" />
     <Compile Include="Physics\Shapes\Circle.cs" />
     <Compile Include="Physics\Shapes\Polygon.cs" />
