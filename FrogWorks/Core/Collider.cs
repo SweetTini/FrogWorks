@@ -16,11 +16,16 @@ namespace FrogWorks
 
         protected internal bool IsCollidable
         {
+            get { return Component?.IsCollidable ?? Entity?.IsCollidable ?? true; }
+        }
+
+        public Rectangle Bounds
+        {
             get
             {
-                return Component?.IsCollidable
-                    ?? Entity?.IsCollidable
-                    ?? true;
+                var location = Min.ToPoint();
+                var size = (Max - Min).ToPoint();
+                return new Rectangle(location, size);
             }
         }
 
@@ -81,38 +86,38 @@ namespace FrogWorks
             set { Size = new Vector2(Size.X, value); }
         }
 
-        public abstract Vector2 Upper { get; set; }
+        public abstract Vector2 Min { get; set; }
 
         public float Left
         {
-            get { return Upper.X; }
-            set { Upper = new Vector2(value, Upper.Y); }
+            get { return Min.X; }
+            set { Min = new Vector2(value, Min.Y); }
         }
 
         public float Top
         {
-            get { return Upper.Y; }
-            set { Upper = new Vector2(Upper.X, value); }
+            get { return Min.Y; }
+            set { Min = new Vector2(Min.X, value); }
         }
 
-        public abstract Vector2 Lower { get; set; }
+        public abstract Vector2 Max { get; set; }
 
         public float Right
         {
-            get { return Lower.X; }
-            set { Lower = new Vector2(value, Lower.Y); }
+            get { return Max.X; }
+            set { Max = new Vector2(value, Max.Y); }
         }
 
         public float Bottom
         {
-            get { return Lower.Y; }
-            set { Lower = new Vector2(Lower.X, value); }
+            get { return Max.Y; }
+            set { Max = new Vector2(Max.X, value); }
         }
 
         public Vector2 Center
         {
-            get { return (Upper + Lower) * .5f; }
-            set { Upper = value - (Upper - Lower) * .5f; }
+            get { return (Min + Max) * .5f; }
+            set { Min = value - (Min - Max) * .5f; }
         }
 
         public float CenterX
@@ -127,56 +132,18 @@ namespace FrogWorks
             set { Center = new Vector2(Center.X, value); }
         }
 
-        public Rectangle Bounds
-        {
-            get
-            {
-                return new Rectangle(
-                    Upper.ToPoint(),
-                    (Lower - Upper).ToPoint());
-            }
-        }
-
         protected Collider(Vector2 position)
         {
             _position = position;
         }
 
-        public virtual void Draw(RendererBatch batch, Color stroke, Color? fill = null)
-        {
-        }
-
-        public abstract bool Collide(Vector2 point);
-
-        public bool Collide(float x, float y)
-        {
-            return Collide(new Vector2(x, y));
-        }
-
-        public abstract bool Collide(Ray2D ray);
-
-        public abstract bool Collide(Shape shape);
-
-        public abstract bool Collide(Collider collider);
-
-        public bool Collide(Entity entity)
-        {
-            return entity?.Collider != null
-                ? Collide(entity.Collider)
-                : false;
-        }
-
-        public abstract Collider Clone();
-
         internal void OnAddedAsComponent(CollidableComponent component)
         {
             Component = component;
-            OnAddedInternally(Component.Parent);
         }
 
         internal void OnRemovedAsComponent()
         {
-            OnRemovedInternally();
             Component = null;
         }
 
@@ -217,18 +184,32 @@ namespace FrogWorks
             OnTransformed();
         }
 
-        protected virtual void OnAdded() { }
+        protected virtual void OnAdded()
+        {
+        }
 
-        protected virtual void OnRemoved() { }
+        protected virtual void OnRemoved()
+        {
+        }
 
-        protected virtual void OnEntityAdded() { }
+        protected virtual void OnEntityAdded()
+        {
+        }
 
-        protected virtual void OnEntityRemoved() { }
+        protected virtual void OnEntityRemoved()
+        {
+        }
 
-        protected virtual void OnLayerAdded() { }
+        protected virtual void OnLayerAdded()
+        {
+        }
 
-        protected virtual void OnLayerRemoved() { }
+        protected virtual void OnLayerRemoved()
+        {
+        }
 
-        protected virtual void OnTransformed() { }
+        protected virtual void OnTransformed()
+        {
+        }
     }
 }

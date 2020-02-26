@@ -38,12 +38,12 @@ namespace FrogWorks
 
         public static int Divide(this int number, int divider)
         {
-            return divider != 0f ? number / divider : divider;
+            return divider == 0 ? divider : number / divider;
         }
 
         public static float Divide(this float number, float divider)
         {
-            return divider != 0f ? number / divider : divider;
+            return divider.Abs() < float.Epsilon ? 0f : number / divider;
         }
 
         public static float Floor(this float number)
@@ -58,7 +58,7 @@ namespace FrogWorks
 
         public static float Inverse(this float number)
         {
-            return number != 0f ? 1f / number : number;
+            return 1f / number;
         }
 
         public static int Lerp(this int number, int target, float amount)
@@ -285,13 +285,22 @@ namespace FrogWorks
             return new Rectangle(upper, lower - upper);
         }
 
-        public static Rectangle Transform(this Rectangle rect, Vector2? position = null, Vector2? origin = null, Vector2? scale = null, float angle = 0f)
+        public static Rectangle Transform(
+            this Rectangle rect, 
+            Vector2? position = null, 
+            Vector2? origin = null, 
+            Vector2? scale = null, 
+            float angle = 0f)
         {
             var result = rect.ToVertices().Transform(position, origin, scale, angle);
             var lowest = result.Min().Round().ToPoint();
             var highest = result.Max().Round().ToPoint();
 
-            return new Rectangle(lowest.X, lowest.Y, highest.X - lowest.X, highest.Y - lowest.Y);
+            return new Rectangle(
+                lowest.X, 
+                lowest.Y,
+                highest.X - lowest.X, 
+                highest.Y - lowest.Y);
         }
 
         public static Vector2[] ToVertices(this Rectangle rect)
@@ -322,8 +331,8 @@ namespace FrogWorks
         public static Point Divide(this Point point, Point divider)
         {
             return new Point(
-                divider.X != 0 ? point.X / divider.X : 0,
-                divider.Y != 0 ? point.Y / divider.Y : 0);
+                point.X.Divide(divider.X),
+                point.Y.Divide(divider.Y));
         }
 
         public static Point Max(this Point point, Point other)
@@ -466,13 +475,15 @@ namespace FrogWorks
         public static Vector2 Divide(this Vector2 vector, Vector2 divider)
         {
             return new Vector2(
-                divider.X != 0f ? vector.X / divider.X : 0f,
-                divider.Y != 0f ? vector.Y / divider.Y : 0f);
+                vector.X.Divide(divider.X),
+                vector.Y.Divide(divider.Y));
         }
 
         public static Vector2 Divide(this Vector2 vector, float divider)
         {
-            return divider != 0f ? vector / divider : Vector2.Zero;
+            return new Vector2(
+                vector.X.Divide(divider),
+                vector.Y.Divide(divider));
         }
 
         public static Vector2 Floor(this Vector2 vector)
@@ -482,9 +493,7 @@ namespace FrogWorks
 
         public static Vector2 Inverse(this Vector2 vector)
         {
-            return new Vector2(
-                vector.X != 0f ? 1f / vector.X : 0f,
-                vector.Y != 0f ? 1f / vector.Y : 0f);
+            return Vector2.One / vector;
         }
 
         public static Vector2 Max(this Vector2 vector, Vector2 other)
@@ -545,7 +554,7 @@ namespace FrogWorks
             return result;
         }
 
-        public static Vector2 Perpendicular(this Vector2 vector, bool counterClockwise = false)
+        public static Vector2 Perpendicular(this Vector2 vector, bool counterClockwise = true)
         {
             return counterClockwise
                 ? new Vector2(-vector.Y, vector.X)
@@ -610,23 +619,33 @@ namespace FrogWorks
 
             for (int i = 0; i < vertices.Length; i++)
             {
-                var j = (i + 1) % vertices.Length;
-                modified[i] = Vector2.Normalize((vertices[j] - vertices[i]).Perpendicular());
+                var j = (i + 1).Mod(vertices.Length);
+                var edge = Vector2.Normalize(vertices[i] - vertices[j]);
+                modified[i] = edge.Perpendicular();
             }
 
             return modified;
         }
 
-        public static Vector2[] Transform(this Vector2[] vertices, Vector2? position = null, Vector2? origin = null, Vector2? scale = null, float angle = 0f)
+        public static Vector2[] Transform(
+            this Vector2[] vertices, 
+            Vector2? position = null, 
+            Vector2? origin = null, 
+            Vector2? scale = null, 
+            float angle = 0f,
+            bool offsetToOrigin = true)
         {
             var result = new Vector2[vertices.Length];
-            var original = vertices.Min();
-            var absolute = original + (origin ?? Vector2.Zero);
+            var location = vertices.Min();
+            var offset = location + origin.GetValueOrDefault();
+            var absolute = offsetToOrigin
+                ? position ?? location
+                : position.GetValueOrDefault() + offset;
 
-            var transformMatrix = Matrix.CreateTranslation(new Vector3(-absolute, 0f))
+            var transformMatrix = Matrix.CreateTranslation(new Vector3(-offset, 0f))
                 * Matrix.CreateRotationZ(angle)
                 * Matrix.CreateScale(new Vector3(scale ?? Vector2.One, 1f))
-                * Matrix.CreateTranslation(new Vector3(position ?? original, 0f));
+                * Matrix.CreateTranslation(new Vector3(absolute, 0f));
 
             Vector2.Transform(vertices, ref transformMatrix, result);
 
@@ -638,6 +657,12 @@ namespace FrogWorks
             var location = vertices.Min().Round();
             var size = vertices.Max().Round() - location;
             return new Rectangle(location.ToPoint(), size.ToPoint());
+        }
+
+        public static Vector2[] ToOrigin(this Vector2[] vertices)
+        {
+            var origin = -vertices.Min();
+            return vertices.Transform(origin);
         }
 
         public static Vector2[] ToConvexHull(this Vector2[] vertices, int segments = 8)

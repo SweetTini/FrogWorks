@@ -2,9 +2,9 @@
 
 namespace FrogWorks.Demo
 {
-    public class DisplayTestScene : Scene
+    public class DisplayScene : Scene
     {
-        public DisplayTestScene()
+        public DisplayScene()
             : base()
         {
         }

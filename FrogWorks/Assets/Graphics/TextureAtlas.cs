@@ -102,7 +102,7 @@ namespace FrogWorks
         {
             Texture = texture;
             RealSize = isRotated
-                ? texture.Size.ToVector2().Perpendicular().Abs()
+                ? texture.Size.ToVector2().Perpendicular(false).Abs()
                 : texture.Size.ToVector2();
             Size = size;
             Origin = origin;
@@ -117,8 +117,8 @@ namespace FrogWorks
 
             if (IsRotated)
             {
-                offset = offset.Perpendicular(true) - Texture.Width * Vector2.UnitX;
-                origin = origin.Perpendicular(true);
+                offset = offset.Perpendicular() - Texture.Width * Vector2.UnitX;
+                origin = origin.Perpendicular();
                 angle -= MathHelper.PiOver2;
 
                 switch (effects)

@@ -48,8 +48,8 @@
     <Compile Include="Entities\Apple.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Scenes\DisplayTestScene.cs" />
-    <Compile Include="Scenes\LayeringTestScene.cs" />
+    <Compile Include="Scenes\DisplayScene.cs" />
+    <Compile Include="Scenes\LayerScene.cs" />
     <Compile Include="Shaders\WaveShader.cs" />
   </ItemGroup>
   <ItemGroup>

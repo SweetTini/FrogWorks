@@ -11,21 +11,24 @@ namespace FrogWorks
             get { return _collider; }
             set
             {
-                if (value == _collider)
-                    return;
+                if (_collider != value)
+                {
+                    if (value?.Component != null)
+                    {
+                        throw new Exception($"{value.GetType().Name} is already assigned "
+                            + $"to an instance of {GetType().Name}.");
+                    }
 
-                if (value?.Component != null)
-                    throw new Exception($"{value.GetType().Name} is already assigned to an instance of {GetType().Name}.");
-
-                _collider?.OnRemovedAsComponent();
-                _collider = value;
-                _collider?.OnAddedAsComponent(this);
+                    _collider?.OnRemovedAsComponent();
+                    _collider = value;
+                    _collider?.OnAddedAsComponent(this);
+                }
             }
         }
 
         public bool IsCollidable { get; set; }
 
-        public CollidableComponent(bool isEnabled, bool isVisible, bool isCollidable) 
+        public CollidableComponent(bool isEnabled, bool isVisible, bool isCollidable)
             : base(isEnabled, isVisible)
         {
             IsCollidable = isCollidable;
@@ -33,7 +36,7 @@ namespace FrogWorks
 
         protected override void OnAdded()
         {
-            if (Parent != null)
+            if (Entity != null)
                 Collider?.OnAddedInternally(Parent);
         }
 

@@ -2,7 +2,7 @@
 
 namespace FrogWorks
 {
-    public class ShaderMaskLayer : ShaderLayer
+    public sealed class ShaderMaskLayer : ShaderLayer
     {
         private BlendState _nonColorWriteBlend;
         private DepthStencilState _alwaysStencil, _keepIfZeroStencil;

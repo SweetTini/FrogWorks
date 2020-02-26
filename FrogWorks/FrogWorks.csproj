@@ -57,16 +57,11 @@
     <Compile Include="Assets\Graphics\TextureAtlas.cs" />
     <Compile Include="Assets\Loaders\TexturePacker.cs" />
     <Compile Include="Assets\Maps\TileMap.cs" />
-    <Compile Include="Collision\Broad\AABB.cs" />
-    <Compile Include="Collision\Broad\AABBTree.cs" />
-    <Compile Include="Collision\Colliders\BitFlagMapCollider.cs" />
-    <Compile Include="Collision\Colliders\CircleCollider.cs" />
-    <Compile Include="Collision\Colliders\MapCollider.cs" />
-    <Compile Include="Collision\Colliders\OrientedRectangleCollider.cs" />
-    <Compile Include="Collision\Colliders\PolygonCollider.cs" />
-    <Compile Include="Collision\Colliders\RectangleCollider.cs" />
-    <Compile Include="Collision\Colliders\ShapeCollider.cs" />
-    <Compile Include="Collision\Colliders\SimpleMapCollider.cs" />
+    <Compile Include="Physics\Ray2D.cs" />
+    <Compile Include="Physics\Shapes\Box.cs" />
+    <Compile Include="Physics\Shapes\Circle.cs" />
+    <Compile Include="Physics\Shapes\Polygon.cs" />
+    <Compile Include="Physics\Shapes\Shape.cs" />
     <Compile Include="Components\Graphics\AnimatedPattern.cs" />
     <Compile Include="Components\Graphics\AnimatedTileMapRenderer.cs" />
     <Compile Include="Components\Graphics\AnimatedBackPattern.cs" />
@@ -77,15 +72,6 @@
     <Compile Include="Components\Graphics\TiledGraphicsComponent.cs" />
     <Compile Include="Components\Logic\CollidableComponent.cs" />
     <Compile Include="Components\Logic\SineWave.cs" />
-    <Compile Include="Collision\Collision.cs" />
-    <Compile Include="Collision\Geometry\Circle.cs" />
-    <Compile Include="Collision\Geometry\Ray2D.cs" />
-    <Compile Include="Collision\Geometry\Shape.cs" />
-    <Compile Include="Collision\Geometry\Polygon.cs" />
-    <Compile Include="Collision\Geometry\RectangleF.cs" />
-    <Compile Include="Collision\GJK.cs" />
-    <Compile Include="Collision\Response\Manifold.cs" />
-    <Compile Include="Collision\Response\Raycast.cs" />
     <Compile Include="Components\Graphics\GraphicsComponent.cs" />
     <Compile Include="Components\Graphics\Image.cs" />
     <Compile Include="Components\Graphics\Sprite.cs" />
@@ -110,6 +96,7 @@
     <Compile Include="DisplayAdapter.cs" />
     <Compile Include="Assets\Loaders\Tiled.cs" />
     <Compile Include="Layers\AlphaMaskLayer.cs" />
+    <Compile Include="Layers\AlphaBlendLayer.cs" />
     <Compile Include="Layers\ShaderLayer.cs" />
     <Compile Include="Layers\ShaderMaskLayer.cs" />
     <Compile Include="Managers\ComponentManager.cs" />
@@ -179,7 +166,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Physics\Colliders\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

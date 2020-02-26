@@ -19,17 +19,17 @@ namespace FrogWorks
 
         public int Height => Size.Y;
 
-        public Vector2 UpperUV { get; private set; }
+        public Vector2 MinUV { get; private set; }
 
-        public Vector2 LowerUV { get; private set; }
+        public float LeftUV => MinUV.X;
 
-        public float LeftUV => UpperUV.X;
+        public float TopUV => MaxUV.Y;
 
-        public float TopUV => LowerUV.Y;
+        public Vector2 MaxUV { get; private set; }
 
-        public float RightUV => LowerUV.X;
+        public float RightUV => MaxUV.X;
 
-        public float BottomUV => LowerUV.Y;
+        public float BottomUV => MaxUV.Y;
 
         public Texture(Texture texture)
             : this(texture.XnaTexture, texture.Bounds)
@@ -61,8 +61,8 @@ namespace FrogWorks
             Size = bounds.Size;
 
             var size = XnaTexture.Bounds.Size.ToVector2();
-            UpperUV = Bounds.Location.ToVector2().Divide(size);
-            LowerUV = (Bounds.Location + Bounds.Size).ToVector2().Divide(size);
+            MinUV = Bounds.Location.ToVector2().Divide(size);
+            MaxUV = (Bounds.Location + Bounds.Size).ToVector2().Divide(size);
         }        
 
         internal Texture(Texture2D xnaTexture, Point location, Point size)

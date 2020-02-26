@@ -103,40 +103,40 @@ namespace FrogWorks
             set { Size = new Vector2(Size.X, value); }
         }
 
-        public Vector2 Upper
+        public Vector2 Min
         {
-            get { return Collider?.Upper ?? Position; }
-            set { Position = value - ((Collider?.Upper ?? Position) - Position); }
+            get { return Collider?.Min ?? Position; }
+            set { Position = value - ((Collider?.Min ?? Position) - Position); }
         }
 
         public float Left
         {
-            get { return Upper.X; }
-            set { Upper = new Vector2(value, Upper.Y); }
+            get { return Min.X; }
+            set { Min = new Vector2(value, Min.Y); }
         }
 
         public float Top
         {
-            get { return Upper.Y; }
-            set { Upper = new Vector2(Upper.X, value); }
+            get { return Min.Y; }
+            set { Min = new Vector2(Min.X, value); }
         }
 
-        public Vector2 Lower
+        public Vector2 Max
         {
-            get { return Collider?.Lower ?? Position; }
-            set { Position = value - ((Collider?.Lower ?? Position) - Position); }
+            get { return Collider?.Max ?? Position; }
+            set { Position = value - ((Collider?.Max ?? Position) - Position); }
         }
 
         public float Right
         {
-            get { return Lower.X; }
-            set { Lower = new Vector2(value, Lower.Y); }
+            get { return Max.X; }
+            set { Max = new Vector2(value, Max.Y); }
         }
 
         public float Bottom
         {
-            get { return Lower.Y; }
-            set { Lower = new Vector2(Lower.X, value); }
+            get { return Max.Y; }
+            set { Max = new Vector2(Max.X, value); }
         }
 
         public Vector2 Center

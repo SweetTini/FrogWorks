@@ -2,11 +2,11 @@
 
 namespace FrogWorks.Demo
 {
-    public class LayeringTestScene : Scene
+    public class LayerScene : Scene
     {
         WaveShader _waveShader;
 
-        public LayeringTestScene()
+        public LayerScene()
             : base()
         {
         }
@@ -20,8 +20,10 @@ namespace FrogWorks.Demo
 
             SetCurrentLayer(1);
             Add(new Apple(80, 96));
+            
             SetCurrentLayer(0);
             Add(new Apple(128, 112));       
+            
             SetCurrentLayer(-1);
             Add(new Apple(176, 160));
             Add(new Apple(176, 96));

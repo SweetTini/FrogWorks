@@ -35,7 +35,7 @@ namespace FrogWorks
             }
         }
 
-        public Vector2 Upper
+        public Vector2 Min
         {
             get
             {
@@ -47,11 +47,11 @@ namespace FrogWorks
             }
         }
 
-        public float Left => Upper.X;
+        public float Left => Min.X;
 
-        public float Top => Upper.Y;
+        public float Top => Min.Y;
 
-        public Vector2 Lower
+        public Vector2 Max
         {
             get
             {
@@ -63,9 +63,9 @@ namespace FrogWorks
             }
         }
 
-        public float Right => Lower.X;
+        public float Right => Max.X;
 
-        public float Bottom => Lower.Y;
+        public float Bottom => Max.Y;
 
         public Rectangle View { get; private set; }
 
