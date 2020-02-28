@@ -79,6 +79,16 @@ namespace FrogWorks
 
         public abstract bool Contains(Vector2 point);
 
+        public bool Raycast(float x1, float y1, float x2, float y2, out Raycast hit)
+        {
+            return Raycast(new Vector2(x1, y1), new Vector2(x2, y2), out hit);
+        }
+
+        public bool Raycast(Vector2 start, Vector2 end, out Raycast hit)
+        {
+            return Collision.Raycast(start, end, this, out hit);
+        }
+
         public bool Overlaps(Shape shape)
         {
             return Collision.Overlaps(this, shape);
@@ -105,25 +115,29 @@ namespace FrogWorks
         {
         }
 
-        internal abstract Vector2[] GetFocis();
-
-        internal abstract Vector2[] GetAxes(Vector2[] focis);
-
-        internal abstract void Project(Vector2 axis, out float min, out float max);
-
-        #region Static Methods
-        internal static Vector2[] GetAxes(Vector2[] vertices, Vector2[] focis)
+        internal virtual Vector2[] GetVertices()
         {
-            var fociCount = focis?.Length ?? 0;
-            var axes = new Vector2[vertices.Length + fociCount];
+            return null;
+        }
 
-            Array.Copy(vertices.Normalize(), 0, axes, 0, vertices.Length);
+        internal virtual Vector2[] GetFocis()
+        {
+            return null;
+        }
+
+        internal virtual Vector2[] GetAxes(Vector2[] focis)
+        {
+            var normals = GetVertices().Normalize();
+            var fociCount = focis?.Length ?? 0;
+            var axes = new Vector2[normals.Length + fociCount];
+
+            Array.Copy(normals, 0, axes, 0, normals.Length);
 
             for (int i = 0; i < fociCount; i++)
             {
                 var foci = focis[i];
-                var offset = vertices.Length + i;
-                var closest = GetClosestPoint(vertices, foci);
+                var offset = normals.Length + i;
+                var closest = GetClosestPoint(foci);
 
                 axes[offset] = Vector2.Normalize(foci - closest);
             }
@@ -131,38 +145,15 @@ namespace FrogWorks
             return axes;
         }
 
-        internal static Vector2 GetClosestPoint(Vector2[] vertices, Vector2 point)
+        internal virtual void Project(Vector2 axis, out float min, out float max)
         {
-            var closest = vertices[0];
-            var minDistSq = (point - closest).LengthSquared();
+            min = float.PositiveInfinity;
+            max = float.NegativeInfinity;
 
-            for (int i = 1; i < vertices.Length; i++)
-            {
-                var next = vertices[i];
-                var distSq = (point - next).LengthSquared();
+            var vertices = GetVertices();
+            float dotProd;
 
-                if (minDistSq > distSq)
-                {
-                    closest = next;
-                    minDistSq = distSq;
-                }
-            }
-
-            return closest;
-        }
-
-        internal static void Project(
-            Vector2[] vertices, 
-            Vector2 axis, 
-            out float min, 
-            out float max)
-        {
-            var dotProd = Vector2.Dot(vertices[0], axis);
-
-            min = dotProd;
-            max = dotProd;
-
-            for (int i = 1; i < vertices.Length; i++)
+            for (int i = 0; i < vertices.Length; i++)
             {
                 dotProd = Vector2.Dot(vertices[i], axis);
 
@@ -170,11 +161,32 @@ namespace FrogWorks
                 if (max < dotProd) max = dotProd;
             }
         }
+        Vector2 GetClosestPoint(Vector2 point)
+        {
+            var vertices = GetVertices();
+            var minDistSq = float.PositiveInfinity;
+            var closest = Vector2.Zero;
 
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                var next = vertices[i];
+                var distSq = (point - next).LengthSquared();
+
+                if (minDistSq > distSq)
+                {
+                    minDistSq = distSq;
+                    closest = next;
+                }
+            }
+
+            return closest;
+        }
+
+        #region Static Methods
         internal static float GetIntervalDepth(
-            float minA, 
-            float maxA, 
-            float minB, 
+            float minA,
+            float maxA,
+            float minB,
             float maxB)
         {
             if (!(minA > maxB || minB > maxA))

@@ -134,19 +134,9 @@ namespace FrogWorks
             RecalculateVertices();
         }
 
-        internal override Vector2[] GetFocis()
+        internal override Vector2[] GetVertices()
         {
-            return null;
-        }
-
-        internal override Vector2[] GetAxes(Vector2[] focis)
-        {
-            return GetAxes(_transformed, focis);
-        }
-
-        internal override void Project(Vector2 axis, out float min, out float max)
-        {
-            Project(_transformed, axis, out min, out max);
+            return _transformed;
         }
     }
 }

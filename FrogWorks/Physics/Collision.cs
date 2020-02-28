@@ -4,7 +4,86 @@ namespace FrogWorks
 {
     public class Collision
     {
-        #region SAT Method
+        #region Raycasting
+        public static bool Raycast(
+            Vector2 start,
+            Vector2 end,
+            Shape shape,
+            out Raycast hit)
+        {
+            if (IsCircle(shape))
+                return RaycastOnCircle(start, end, shape as Circle, out hit);
+
+            hit = default;
+
+            var ray = new Ray2D(start, end);
+            var vertices = shape.GetVertices();
+            var normals = vertices.Normalize();
+            var min = 0f;
+            var max = ray.Length;
+            var normal = Vector2.Zero;
+
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                var num = Vector2.Dot(normals[i], vertices[i] - ray.Start);
+                var den = Vector2.Dot(normals[i], ray.Normal);
+                if (den == 0f && num < 0f) return false;
+
+                if (den < 0f && num < min * den)
+                {
+                    min = num / den;
+                    normal = normals[i];
+                }
+                else if (den > 0f && num < max * den)
+                {
+                    max = num / den;
+                }
+
+                if (max < min) return false;
+            }
+
+            if (normal != Vector2.Zero)
+            {
+                hit.Contact = ray.Start + ray.Normal * min;
+                hit.Normal = normal;
+                hit.Depth = min;
+                return true;
+            }
+
+            return false;
+        }
+
+        static bool RaycastOnCircle(
+            Vector2 start,
+            Vector2 end,
+            Circle circle,
+            out Raycast hit)
+        {
+            hit = default;
+
+            var ray = new Ray2D(start, end);
+            var m = circle.Center - ray.Start;
+            var c = Vector2.Dot(m, m) - circle.Radius * circle.Radius;
+            var b = Vector2.Dot(m, ray.Normal);
+            var distSq = b * b - c;
+            if (distSq < 0f) return false;
+
+            var dist = -b - distSq.Sqrt();
+
+            if (dist.Between(0f, ray.Length))
+            {
+                var contact = ray.Start + ray.Normal * dist;
+                hit.Contact = contact;
+                hit.Depth = dist;
+                hit.Normal = Vector2.Normalize(contact - circle.Center);
+                return true;
+            }
+
+            return false;
+        }
+        #endregion
+
+        #region Separate Axis Test
         public static bool Overlaps(Shape shapeA, Shape shapeB)
         {
             if (IsCircle(shapeA) && IsCircle(shapeB))
@@ -120,7 +199,9 @@ namespace FrogWorks
 
             return false;
         }
+        #endregion
 
+        #region Helper Methods
         static bool IsCircle(Shape shape)
         {
             return shape is Circle;

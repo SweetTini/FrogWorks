@@ -85,7 +85,7 @@ namespace FrogWorks
             return new Box(Position, Size);
         }
 
-        Vector2[] GetVertices()
+        internal override Vector2[] GetVertices()
         {
             return new Vector2[]
             {
@@ -94,21 +94,6 @@ namespace FrogWorks
                 Position + Size,
                 Position + Size * Vector2.UnitY
             };
-        }
-
-        internal override Vector2[] GetFocis()
-        {
-            return null;
-        }
-
-        internal override Vector2[] GetAxes(Vector2[] focis)
-        {
-            return GetAxes(GetVertices(), focis);
-        }
-
-        internal override void Project(Vector2 axis, out float min, out float max)
-        {
-            Project(GetVertices(), axis, out min, out max);
         }
     }
 }
