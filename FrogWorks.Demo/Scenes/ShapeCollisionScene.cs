@@ -1,25 +1,25 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FrogWorks.Demo
 {
     public class ShapeCollisionScene : Scene
     {
         List<Shape> _shapes;
-        List<Manifold> _results;
+        List<Raycast> _raycasts;
+        List<Manifold> _manifolds;
         Shape _shapeSelected;
-        Vector2 _mouseOffset;
-        bool _isDragging, _isColliding;
+        Vector2 _mouseOffset, _rayStart, _rayEnd;
+        bool _isDragging, _isColliding, 
+            _isRaycasting, _isRayHit;
 
         public ShapeCollisionScene()
             : base()
         {
             _shapes = new List<Shape>();
-            _results = new List<Manifold>();
+            _raycasts = new List<Raycast>();
+            _manifolds = new List<Manifold>();
         }
 
         protected override void Begin()
@@ -32,47 +32,83 @@ namespace FrogWorks.Demo
 
         protected override void BeforeUpdate(float deltaTime)
         {
-            _results.Clear();
+            if (_raycasts.Any()) _raycasts.Clear();
+            if (_manifolds.Any()) _manifolds.Clear();
 
             var mouse = Input.Mouse.Position;
 
-            if (!_isDragging)
+            if (!_isRaycasting)
             {
-                foreach (var shape in _shapes)
+                if (Input.Mouse.IsClicked(MouseButton.Right))
                 {
-                    if (Input.Mouse.IsClicked(MouseButton.Left) && shape.Contains(mouse))
+                    _isRaycasting = true;
+                    _rayStart = mouse;
+                    _rayEnd = _rayStart;
+                    return;
+                }
+
+                if (!_isDragging)
+                {
+                    foreach (var shape in _shapes)
                     {
-                        _shapeSelected = shape;
-                        _mouseOffset = mouse - shape.Position;
-                        _isDragging = true;
-                        break;
+                        if (Input.Mouse.IsClicked(MouseButton.Left) && shape.Contains(mouse))
+                        {
+                            _shapeSelected = shape;
+                            _mouseOffset = mouse - shape.Position;
+                            _isDragging = true;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    if (!Input.Mouse.IsDown(MouseButton.Left))
+                    {
+                        _shapeSelected = null;
+                        _mouseOffset = Vector2.Zero;
+                        _isDragging = false;
+                        _isColliding = false;
+                        return;
+                    }
+
+                    _shapeSelected.Position = mouse - _mouseOffset;
+                    _isColliding = false;
+
+                    foreach (var shape in _shapes)
+                    {
+                        if (shape == _shapeSelected)
+                            continue;
+
+                        Manifold hit;
+                        if (_shapeSelected.Overlaps(shape, out hit))
+                        {
+                            _isColliding = true;
+                            _manifolds.Add(hit);
+                        }
                     }
                 }
             }
             else
             {
-                if (!Input.Mouse.IsDown(MouseButton.Left))
+                if (!Input.Mouse.IsDown(MouseButton.Right))
                 {
-                    _shapeSelected = null;
-                    _mouseOffset = Vector2.Zero;
-                    _isDragging = false;
-                    _isColliding = false;
+                    _rayStart = Vector2.Zero;
+                    _rayEnd = _rayStart;
+                    _isRaycasting = false;
+                    _isRayHit = false;
                     return;
                 }
 
-                _shapeSelected.Position = mouse - _mouseOffset;
-                _isColliding = false;
+                _rayEnd = mouse;
+                _isRayHit = false;
 
                 foreach (var shape in _shapes)
                 {
-                    if (shape == _shapeSelected) 
-                        continue;
-
-                    Manifold hit;
-                    if (_shapeSelected.Overlaps(shape, out hit))
+                    Raycast hit;
+                    if (shape.Raycast(_rayStart, _rayEnd, out hit))
                     {
-                        _isColliding = true;
-                        _results.Add(hit);
+                        _isRayHit = true;
+                        _raycasts.Add(hit);
                     }
                 }
             }
@@ -98,10 +134,10 @@ namespace FrogWorks.Demo
                     {
                         var lastPos = shape.Position;
 
-                        foreach (var result in _results)
+                        foreach (var result in _manifolds)
                         {
                             shape.Position = lastPos + result.Translation;
-                            shape.Draw(batch, Color.Lime);
+                            shape.Draw(batch, Color.Blue);
                         }
 
                         shape.Position = lastPos;
@@ -109,6 +145,27 @@ namespace FrogWorks.Demo
                 }
                 
                 shape.Draw(batch, color);
+            }
+
+            if (_isRaycasting)
+            {
+                batch.DrawPrimitives(p =>
+                {
+                    var color = _isRayHit
+                        ? Color.Cyan
+                        : Color.Blue;
+
+                    p.DrawLine(_rayStart, _rayEnd, color);
+
+                    if (_isRayHit)
+                    {
+                        foreach (var result in _raycasts)
+                        {
+                            p.DrawDot(result.Contact, Color.Yellow);
+                            p.DrawCircle(result.Contact, 3f, Color.Yellow);
+                        }
+                    }
+                });
             }
 
             batch.End();

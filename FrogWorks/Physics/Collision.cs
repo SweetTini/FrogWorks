@@ -12,48 +12,48 @@ namespace FrogWorks
             out Raycast hit)
         {
             if (IsCircle(shape))
-                return RaycastOnCircle(start, end, shape as Circle, out hit);
+                return RaycastCircle(start, end, shape as Circle, out hit);
 
             hit = default;
 
             var ray = new Ray2D(start, end);
             var vertices = shape.GetVertices();
             var normals = vertices.Normalize();
-            var min = 0f;
-            var max = ray.Length;
+            var minDepth = 0f;
+            var maxDepth = ray.Length;
             var normal = Vector2.Zero;
 
             for (int i = 0; i < vertices.Length; i++)
             {
                 var num = Vector2.Dot(normals[i], vertices[i] - ray.Start);
-                var den = Vector2.Dot(normals[i], ray.Normal);
-                if (den == 0f && num < 0f) return false;
+                var denom = Vector2.Dot(normals[i], ray.Normal);
+                if (denom == 0f && num < 0f) return false;
 
-                if (den < 0f && num < min * den)
+                if (denom < 0f && num < minDepth * denom)
                 {
-                    min = num / den;
+                    minDepth = num / denom;
                     normal = normals[i];
                 }
-                else if (den > 0f && num < max * den)
+                else if (denom > 0f && num < maxDepth * denom)
                 {
-                    max = num / den;
+                    maxDepth = num / denom;
                 }
 
-                if (max < min) return false;
+                if (maxDepth < minDepth) return false;
             }
 
             if (normal != Vector2.Zero)
             {
-                hit.Contact = ray.Start + ray.Normal * min;
+                hit.Contact = ray.Start + ray.Normal * minDepth;
                 hit.Normal = normal;
-                hit.Depth = min;
+                hit.Depth = minDepth;
                 return true;
             }
 
             return false;
         }
 
-        static bool RaycastOnCircle(
+        static bool RaycastCircle(
             Vector2 start,
             Vector2 end,
             Circle circle,
@@ -62,19 +62,21 @@ namespace FrogWorks
             hit = default;
 
             var ray = new Ray2D(start, end);
-            var m = circle.Center - ray.Start;
-            var c = Vector2.Dot(m, m) - circle.Radius * circle.Radius;
+            var m = ray.Start - circle.Center;
             var b = Vector2.Dot(m, ray.Normal);
-            var distSq = b * b - c;
-            if (distSq < 0f) return false;
+            var c = Vector2.Dot(m, m) - circle.Radius * circle.Radius;
+            if (b > 0f && c > 0f) return false;
 
-            var dist = -b - distSq.Sqrt();
+            var discr = b * b - c;
+            if (discr < 0f) return false;
 
-            if (dist.Between(0f, ray.Length))
+            var depth = -b - discr.Sqrt();
+
+            if (depth.Between(0f, ray.Length))
             {
-                var contact = ray.Start + ray.Normal * dist;
+                var contact = ray.Start + ray.Normal * depth;
                 hit.Contact = contact;
-                hit.Depth = dist;
+                hit.Depth = depth;
                 hit.Normal = Vector2.Normalize(contact - circle.Center);
                 return true;
             }
@@ -83,7 +85,7 @@ namespace FrogWorks
         }
         #endregion
 
-        #region Separate Axis Test
+        #region SAT Method
         public static bool Overlaps(Shape shapeA, Shape shapeB)
         {
             if (IsCircle(shapeA) && IsCircle(shapeB))
@@ -141,11 +143,7 @@ namespace FrogWorks
                     var dist = Shape.GetIntervalDepth(minA, maxA, minB, maxB);
                     if (dist == 0) return false;
 
-                    var contained =
-                        Shape.IsIntervalContained(minA, maxA, minB, maxB) ||
-                        Shape.IsIntervalContained(minB, maxB, minA, maxA);
-
-                    if (contained)
+                    if (Shape.IntervalsContained(minA, maxA, minB, maxB))
                     {
                         var min = (minA - minB).Abs();
                         var max = (maxA - maxB).Abs();

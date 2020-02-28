@@ -199,13 +199,14 @@ namespace FrogWorks
             return 0f;
         }
 
-        internal static bool IsIntervalContained(
+        internal static bool IntervalsContained(
             float minA,
             float maxA,
             float minB,
             float maxB)
         {
-            return minA > minB && maxA < maxB;
+            return (minA > minB && maxA < maxB) 
+                || (minB > minA && maxB < maxA);
         }
         #endregion
     }
