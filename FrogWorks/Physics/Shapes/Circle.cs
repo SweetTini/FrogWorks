@@ -45,11 +45,9 @@ namespace FrogWorks
             return new Rectangle(position, size);
         }
 
-        protected override bool Contains(Vector2 point)
+        public override bool Contains(Vector2 point)
         {
-            var distSq = (point - Center).LengthSquared();
-            var radiSq = Radius * Radius;
-            return distSq < radiSq;
+            return (point - Center).LengthSquared() < Radius * Radius;
         }
 
         public override void Draw(
@@ -71,22 +69,22 @@ namespace FrogWorks
             return new Circle(Position, _radius);
         }
 
-        internal override Vector2[] GetAxes()
+        internal override Vector2[] GetFocis()
+        {
+            return new Vector2[] { Center };
+        }
+
+        internal override Vector2[] GetAxes(Vector2[] focis)
         {
             return new Vector2[] { Vector2.Zero };
         }
 
         internal override void Project(Vector2 axis, out float min, out float max)
         {
-            var dotProd = Vector2.Dot(axis, Center);
-            
+            var dotProd = Vector2.Dot(Center, axis);
+
             min = dotProd - Radius;
             max = dotProd + Radius;
-        }
-
-        internal override Vector2 GetClosestPoint(Vector2 point)
-        {
-            return Center + Vector2.Normalize(point) * Radius;
         }
     }
 }

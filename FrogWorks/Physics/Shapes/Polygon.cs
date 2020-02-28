@@ -90,7 +90,7 @@ namespace FrogWorks
             return new Rectangle(min.ToPoint(), (max - min).ToPoint());
         }
 
-        protected override bool Contains(Vector2 point)
+        public override bool Contains(Vector2 point)
         {
             var inPoly = false;
 
@@ -134,46 +134,19 @@ namespace FrogWorks
             RecalculateVertices();
         }
 
-        internal override Vector2[] GetAxes()
+        internal override Vector2[] GetFocis()
         {
-            return _transformed.Normalize();
+            return null;
+        }
+
+        internal override Vector2[] GetAxes(Vector2[] focis)
+        {
+            return GetAxes(_transformed, focis);
         }
 
         internal override void Project(Vector2 axis, out float min, out float max)
         {
-            var dotProd = Vector2.Dot(axis, this[0]);
-
-            min = dotProd;
-            max = dotProd;
-
-            for (int i = 1; i < Count; i++)
-            {
-                dotProd = Vector2.Dot(axis, this[i]);
-
-                if (min > dotProd) min = dotProd;
-                else if (max < dotProd) max = dotProd;
-            }
-        }
-
-        internal override Vector2 GetClosestPoint(Vector2 point)
-        {
-            var closest = Vector2.Zero;
-            var lowestDepth = float.PositiveInfinity;
-
-            for (int i = 0; i < Count; i++)
-            {
-                var j = (i + 1).Mod(Count);
-                var closestToLine = GetClosestPointOnLine(this[i], this[j], point);
-                var depth = Vector2.Dot(point, closestToLine);
-
-                if (lowestDepth > depth)
-                {
-                    lowestDepth = depth;
-                    closest = closestToLine;
-                }
-            }
-
-            return closest;
+            Project(_transformed, axis, out min, out max);
         }
     }
 }

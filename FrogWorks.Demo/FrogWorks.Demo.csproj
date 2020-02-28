@@ -50,6 +50,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scenes\DisplayScene.cs" />
     <Compile Include="Scenes\LayerScene.cs" />
+    <Compile Include="Scenes\ShapeCollisionScene.cs" />
     <Compile Include="Shaders\WaveShader.cs" />
   </ItemGroup>
   <ItemGroup>
