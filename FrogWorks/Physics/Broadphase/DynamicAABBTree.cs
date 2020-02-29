@@ -15,6 +15,34 @@ namespace FrogWorks
             _padding = padding.Abs();
         }
 
+        public IEnumerable<Collider> Query(AABB aabb)
+        {
+            var colliders = new List<Collider>();
+            var nodes = new Stack<Node>();
+
+            nodes.Push(_root);
+
+            while (nodes.Count > 0)
+            {
+                var node = nodes.Pop();
+
+                if (node != null && node.AABB.Overlaps(aabb))
+                {
+                    if (node.IsLeaf && node.Collider != null)
+                    {
+                        colliders.Add(node.Collider);
+                    }
+                    else
+                    {
+                        nodes.Push(node.Left);
+                        nodes.Push(node.Right);
+                    }
+                }
+            }
+
+            return colliders;
+        }
+
         public void Add(Collider collider)
         {
             if (collider != null)
