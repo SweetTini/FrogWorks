@@ -11,7 +11,7 @@ namespace FrogWorks
             Shape shape,
             out Raycast hit)
         {
-            if (IsCircle(shape))
+            if (shape is Circle)
                 return RaycastCircle(start, end, shape as Circle, out hit);
 
             hit = default;
@@ -88,7 +88,7 @@ namespace FrogWorks
         #region SAT Method
         public static bool Overlaps(Shape shapeA, Shape shapeB)
         {
-            if (IsCircle(shapeA) && IsCircle(shapeB))
+            if (shapeA is Circle && shapeB is Circle)
                 return CirclesOverlap(shapeA as Circle, shapeB as Circle);
 
             var axesA = shapeA.GetAxes(shapeB.GetFocis());
@@ -117,7 +117,7 @@ namespace FrogWorks
 
         public static bool Overlaps(Shape shapeA, Shape shapeB, out Manifold hit)
         {
-            if (IsCircle(shapeA) && IsCircle(shapeB))
+            if (shapeA is Circle && shapeB is Circle)
                 return CirclesOverlap(shapeA as Circle, shapeB as Circle, out hit);
 
             hit = default;
@@ -196,13 +196,6 @@ namespace FrogWorks
             }
 
             return false;
-        }
-        #endregion
-
-        #region Helper Methods
-        static bool IsCircle(Shape shape)
-        {
-            return shape is Circle;
         }
         #endregion
     }

@@ -24,10 +24,19 @@ namespace FrogWorks.Demo
 
         protected override void Begin()
         {
+            var polyVerts = new Vector2[]
+            {
+                new Vector2(0, 0),
+                new Vector2(48, 0),
+                new Vector2(24, 40)
+            };
+
             _shapes.Add(new Box(10, 10, 40, 24));
             _shapes.Add(new Box(60, 40, 48, 60));
             _shapes.Add(new Circle(120, 24, 16));
             _shapes.Add(new Circle(80, 108, 40));
+            _shapes.Add(new Polygon(160, 64, polyVerts));
+            _shapes.Add(new Polygon(180, 120, 1.5f, 1.5f, .5f, polyVerts));
         }
 
         protected override void BeforeUpdate(float deltaTime)
