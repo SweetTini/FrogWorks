@@ -54,27 +54,35 @@ namespace FrogWorks
         }
 
         public Polygon(Vector2[] vertices)
-            : this(vertices.Min(), vertices, Vector2.One, 0f)
+            : this(vertices.Min(), Vector2.One, 0f, vertices)
         {
         }
 
         public Polygon(float x, float y, Vector2[] vertices)
-            : this(new Vector2(x, y), vertices, Vector2.One, 0f)
+            : this(new Vector2(x, y), Vector2.One, 0f, vertices)
         {
         }
 
         public Polygon(Vector2 position, Vector2[] vertices)
-            : this(position, vertices, Vector2.One, 0f)
+            : this(position, Vector2.One, 0f, vertices)
         {
         }
 
-        public Polygon(Vector2 position, Vector2[] vertices, Vector2 scale, float angle)
+        public Polygon(
+            float x, float y, float xScale, float yScale, 
+            float angle, Vector2[] vertices)
+            : this(new Vector2(x, y), new Vector2(xScale, yScale), angle, vertices)
+        {
+        }
+
+        public Polygon(Vector2 position, Vector2 scale, float angle, Vector2[] vertices)
             : base(position)
         {
-            _vertices = vertices.ToOrigin().ToConvexHull();
-            _origin = (_vertices.Max() - _vertices.Min()) * .5f;
             _scale = scale;
             _angle = angle;
+            _vertices = vertices.ToOrigin().ToConvexHull();
+            _origin = (_vertices.Max() - _vertices.Min()) * .5f;
+            RecalculateVertices();
         }
 
         void RecalculateVertices()
@@ -100,7 +108,7 @@ namespace FrogWorks
                 var p2 = this[(i + 1).Mod(Count)];
                 var edge = p2 - p1;
 
-                if ((p1.Y > point.Y) != (edge.Y > point.Y))
+                if ((p1.Y > point.Y) != (p2.Y > point.Y))
                 {
                     var area = edge.X * (point.Y - p1.Y) / edge.Y + p1.X;
                     if (point.X < area) inPoly = !inPoly;
@@ -126,7 +134,7 @@ namespace FrogWorks
 
         public override Shape Clone()
         {
-            return new Polygon(Position, _vertices, _scale, _angle);
+            return new Polygon(Position, _scale, _angle, _vertices);
         }
 
         protected override void OnTranslated()
