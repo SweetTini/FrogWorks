@@ -8,7 +8,7 @@ namespace FrogWorks
         where T : struct
     {
         private T? _key;
-        private Dictionary<T, State<T>> _states;
+        private Dictionary<T, State> _states;
         private Coroutine _coroutine;
 
         public T? CurrentState
@@ -29,13 +29,13 @@ namespace FrogWorks
         public StateMachine()
             : base(true, false)
         {
-            _states = new Dictionary<T, State<T>>();
+            _states = new Dictionary<T, State>();
             _coroutine = new Coroutine(false);
         }
 
         protected override void Update(float deltaTime)
         {
-            State<T> state;
+            State state;
 
             if (_key.HasValue && _states.TryGetValue(_key.Value, out state))
             {
@@ -59,7 +59,7 @@ namespace FrogWorks
             else
             {
                 var isFirst = _states.Count == 0;
-                _states.Add(key, new State<T>(update, coroutine, begin, end));
+                _states.Add(key, new State(update, coroutine, begin, end));
 
                 if (isFirst)
                     CurrentState = key;
@@ -94,8 +94,8 @@ namespace FrogWorks
             LastState = _key;
             _key = key;
 
-            State<T> lastState = null;
-            State<T> currentState = null;
+            State lastState = null;
+            State currentState = null;
             if (LastState.HasValue) _states.TryGetValue(LastState.Value, out lastState);
             if (_key.HasValue) _states.TryGetValue(_key.Value, out currentState);
 
