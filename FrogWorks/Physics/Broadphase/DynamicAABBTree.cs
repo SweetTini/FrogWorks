@@ -68,8 +68,7 @@ namespace FrogWorks
             }
             else
             {
-                var tree = GetTree(leaf);
-                var sibling = tree;
+                var sibling = GetTree(leaf);
                 var oldParent = sibling.Parent;
                 var newParent = new Node()
                 {
@@ -93,8 +92,7 @@ namespace FrogWorks
                     else oldParent.Right = newParent;
                 }
 
-                tree = leaf.Parent;
-                UpdateTree(tree);
+                UpdateTree(leaf.Parent);
             }
         }
 
