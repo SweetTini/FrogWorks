@@ -161,6 +161,7 @@ namespace FrogWorks
                 if (max < dotProd) max = dotProd;
             }
         }
+
         Vector2 GetClosestPoint(Vector2 point)
         {
             var vertices = GetVertices();

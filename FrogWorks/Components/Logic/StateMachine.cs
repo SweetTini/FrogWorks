@@ -111,25 +111,30 @@ namespace FrogWorks
         {
             return stateMachine.CurrentState;
         }
-    }
 
-    internal class State<T>
-        where T : struct
-    {
-        public Func<float, T?> Update { get; set; }
-
-        public Func<IEnumerator> Coroutine { get; set; }
-
-        public Action Begin { get; set; }
-
-        public Action End { get; set; }
-
-        public State(Func<float, T?> update, Func<IEnumerator> coroutine = null, Action begin = null, Action end = null)
+        #region State
+        class State
         {
-            Update = update;
-            Coroutine = coroutine;
-            Begin = begin;
-            End = end;
+            public Func<float, T?> Update { get; set; }
+
+            public Func<IEnumerator> Coroutine { get; set; }
+
+            public Action Begin { get; set; }
+
+            public Action End { get; set; }
+
+            public State(
+                Func<float, T?> update, 
+                Func<IEnumerator> coroutine = null, 
+                Action begin = null, 
+                Action end = null)
+            {
+                Update = update;
+                Coroutine = coroutine;
+                Begin = begin;
+                End = end;
+            }
         }
+        #endregion
     }
 }

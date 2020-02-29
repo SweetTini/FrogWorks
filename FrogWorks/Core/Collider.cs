@@ -137,6 +137,11 @@ namespace FrogWorks
             _position = position;
         }
 
+        internal AABB CreateAABB()
+        {
+            return new AABB(Min, Max);
+        }
+
         internal void OnAddedAsComponent(CollidableComponent component)
         {
             Component = component;

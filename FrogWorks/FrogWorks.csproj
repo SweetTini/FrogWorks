@@ -57,6 +57,8 @@
     <Compile Include="Assets\Graphics\TextureAtlas.cs" />
     <Compile Include="Assets\Loaders\TexturePacker.cs" />
     <Compile Include="Assets\Maps\TileMap.cs" />
+    <Compile Include="Physics\Broadphase\AABB.cs" />
+    <Compile Include="Physics\Broadphase\DynamicAABBTree.cs" />
     <Compile Include="Physics\Collision.cs" />
     <Compile Include="Physics\Manifold.cs" />
     <Compile Include="Physics\Ray2D.cs" />
