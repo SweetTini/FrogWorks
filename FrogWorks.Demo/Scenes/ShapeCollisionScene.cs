@@ -31,12 +31,12 @@ namespace FrogWorks.Demo
                 new Vector2(24, 40)
             };
 
-            _shapes.Add(new Box(10, 10, 40, 24));
-            _shapes.Add(new Box(60, 40, 48, 60));
-            _shapes.Add(new Circle(120, 24, 16));
-            _shapes.Add(new Circle(80, 108, 40));
-            _shapes.Add(new Polygon(160, 64, polyVerts));
-            _shapes.Add(new Polygon(180, 120, 1.5f, 1.5f, .5f, polyVerts));
+            _shapes.Add(new Box(82, 18, 40, 24));
+            _shapes.Add(new Box(20, 60, 48, 60));
+            _shapes.Add(new Circle(112, 72, 16));
+            _shapes.Add(new Circle(62, 126, 40));
+            _shapes.Add(new Polygon(170, 36, polyVerts));
+            _shapes.Add(new Polygon(168, 126, 1.5f, 1.5f, .5f, polyVerts));
         }
 
         protected override void BeforeUpdate(float deltaTime)

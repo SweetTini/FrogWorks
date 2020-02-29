@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace FrogWorks
 {
@@ -75,7 +76,8 @@ namespace FrogWorks
                     AABB = leaf.AABB.Merge(sibling.AABB).Expand(_padding),
                     Parent = sibling.Parent,
                     Left = sibling,
-                    Right = leaf
+                    Right = leaf,
+                    Height = sibling.Height + 1
                 };
 
                 sibling.Parent = newParent;
@@ -157,9 +159,7 @@ namespace FrogWorks
                 if (parentCost < leftCost && parentCost < rightCost)
                     break;
 
-                tree = leftCost < rightCost
-                    ? left
-                    : right;
+                tree = leftCost < rightCost ? left : right;
             }
 
             return tree;
@@ -169,12 +169,68 @@ namespace FrogWorks
         {
             while (tree != null)
             {
+                tree = BalanceTree(tree);
+
                 var left = tree.Left;
                 var right = tree.Right;
 
                 tree.AABB = left.AABB.Merge(right.AABB).Expand(_padding);
+                tree.Height = Math.Max(left.Height, right.Height) + 1;
                 tree = tree.Parent;
             }
+        }
+
+        Node BalanceTree(Node tree)
+        {
+            if (!tree.IsLeaf && tree.Height > 1)
+            {
+                var left = tree.Left;
+                var right = tree.Right;
+                var balance = right.Height - left.Height;
+
+                if (balance.Abs() > 1)
+                {
+                    var fixLeft = balance.Sign() < 0;
+                    var node = fixLeft ? left : right;
+                    var oNode = fixLeft ? right : left;
+
+                    var lNode = node.Left;
+                    var rNode = node.Right;
+
+                    node.Left = tree;
+                    node.Parent = tree.Parent;
+                    tree.Parent = node;
+
+                    if (node.Parent != null)
+                    {
+                        if (node.Parent.Left == tree)
+                            node.Parent.Left = node;
+                        else node.Parent.Right = node;
+                    }
+                    else
+                    {
+                        _root = node;
+                    }
+
+                    fixLeft = lNode.Height > rNode.Height;
+                    var hiNode = fixLeft ? lNode : rNode;
+                    var loNode = fixLeft ? rNode : lNode;
+
+                    node.Right = hiNode;
+                    tree.Right = loNode;
+                    loNode.Parent = tree;
+
+                    tree.AABB = oNode.AABB.Merge(loNode.AABB).Expand(_padding);
+                    node.AABB = tree.AABB.Merge(hiNode.AABB).Expand(_padding);
+
+                    tree.Height = Math.Max(oNode.Height, loNode.Height) + 1;
+                    node.Height = Math.Max(tree.Height, hiNode.Height) + 1;
+
+                    return node;
+                }
+            }
+
+            return tree;
         }
 
         #region Node
