@@ -27,6 +27,13 @@ namespace FrogWorks
                 Vector2.Max(Max, aabb.Max));
         }
 
+        public AABB Expand(float amount)
+        {
+            return new AABB(
+                Min - Vector2.One * amount,
+                Max + Vector2.One * amount);
+        }
+
         public bool Contains(AABB aabb)
         {
             return aabb.Min.X >= Min.X

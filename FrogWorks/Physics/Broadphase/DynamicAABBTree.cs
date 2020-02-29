@@ -6,10 +6,12 @@ namespace FrogWorks
     {
         Dictionary<Collider, Node> _nodes;
         Node _root;
+        float _padding;
 
-        internal DynamicAABBTree()
+        internal DynamicAABBTree(float padding = 0f)
         {
             _nodes = new Dictionary<Collider, Node>();
+            _padding = padding.Abs();
         }
 
         public void Add(Collider collider)
@@ -21,7 +23,7 @@ namespace FrogWorks
                     var node = new Node()
                     {
                         Collider = collider,
-                        AABB = collider.CreateAABB()
+                        AABB = collider.CreateAABB().Expand(_padding)
                     };
 
                     _nodes.Add(collider, node);
@@ -38,9 +40,8 @@ namespace FrogWorks
         {
             if (collider != null && _nodes.ContainsKey(collider))
             {
-                UpdateLeaf(
-                    _nodes[collider],
-                    collider.CreateAABB());
+                var aabb = collider.CreateAABB().Expand(_padding);
+                UpdateLeaf(_nodes[collider], aabb);
             }
         }
 
@@ -72,7 +73,7 @@ namespace FrogWorks
                 var oldParent = sibling.Parent;
                 var newParent = new Node()
                 {
-                    AABB = leaf.AABB.Merge(sibling.AABB),
+                    AABB = leaf.AABB.Merge(sibling.AABB).Expand(_padding),
                     Parent = sibling.Parent,
                     Left = sibling,
                     Right = leaf
@@ -141,16 +142,16 @@ namespace FrogWorks
             {
                 var left = tree.Left;
                 var right = tree.Right;
-                var merge = tree.AABB.Merge(leaf.AABB);
+                var merge = tree.AABB.Merge(leaf.AABB).Expand(_padding);
                 var parentCost = 2f * merge.Area;
                 var minCost = 2f * (merge.Area - tree.AABB.Area);
 
-                var leftMerge = leaf.AABB.Merge(left.AABB);
+                var leftMerge = leaf.AABB.Merge(left.AABB).Expand(_padding);
                 var leftCost = left.IsLeaf
                     ? leftMerge.Area + minCost
                     : leftMerge.Area - left.AABB.Area + minCost;
 
-                var rightMerge = leaf.AABB.Merge(right.AABB);
+                var rightMerge = leaf.AABB.Merge(right.AABB).Expand(_padding);
                 var rightCost = right.IsLeaf
                     ? rightMerge.Area + minCost
                     : rightMerge.Area - right.AABB.Area + minCost;
@@ -173,7 +174,7 @@ namespace FrogWorks
                 var left = tree.Left;
                 var right = tree.Right;
 
-                tree.AABB = left.AABB.Merge(right.AABB);
+                tree.AABB = left.AABB.Merge(right.AABB).Expand(_padding);
                 tree = tree.Parent;
             }
         }
