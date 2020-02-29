@@ -593,6 +593,20 @@ namespace FrogWorks
         #endregion
 
         #region Vertices
+        public static Vector2 Center(this Vector2[] vertices)
+        {
+            var sum = Vector2.Zero;
+
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                var j = (i + 1).Mod(vertices.Length);
+                var center = (vertices[i] + vertices[j]) * .5f;
+                sum += center;
+            }
+
+            return sum.Divide(vertices.Length);
+        }
+
         public static Vector2 Min(this Vector2[] vertices)
         {
             Vector2 lowest = vertices[0];

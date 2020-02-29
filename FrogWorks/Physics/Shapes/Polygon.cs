@@ -81,7 +81,7 @@ namespace FrogWorks
             _scale = scale;
             _angle = angle;
             _vertices = vertices.ToOrigin().ToConvexHull();
-            _origin = (_vertices.Max() - _vertices.Min()) * .5f;
+            _origin = _vertices.Center();
             RecalculateVertices();
         }
 
@@ -129,6 +129,7 @@ namespace FrogWorks
                     p.FillPolygon(_transformed, fillColor.Value);
 
                 p.DrawPolygon(_transformed, strokeColor);
+                p.DrawDot(Center, strokeColor);
             });
         }
 

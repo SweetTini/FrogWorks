@@ -160,8 +160,9 @@ namespace FrogWorks
                 }
             }
 
-            var center = Vector2.Dot(shapeA.Center - shapeB.Center, normal);
-            if (center <= 0) normal = -normal;
+            var center = shapeA.Center - shapeB.Center;
+            var offset = Vector2.Dot(center, normal);
+            if (offset < 0) normal = -normal;
 
             hit.Depth = depth;
             hit.Normal = normal;

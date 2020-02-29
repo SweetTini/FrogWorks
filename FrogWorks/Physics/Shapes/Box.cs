@@ -77,6 +77,7 @@ namespace FrogWorks
                     p.FillRectangle(Position, Size, fillColor.Value);
 
                 p.DrawRectangle(Position, Size, strokeColor);
+                p.DrawDot(Center, strokeColor);
             });
         }
 

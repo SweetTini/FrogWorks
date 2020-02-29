@@ -61,6 +61,7 @@ namespace FrogWorks
                     p.FillCircle(Center, _radius, fillColor.Value);
 
                 p.DrawCircle(Center, _radius, strokeColor);
+                p.DrawDot(Center, strokeColor);
             });
         }
 
