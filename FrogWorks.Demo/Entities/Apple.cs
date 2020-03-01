@@ -20,12 +20,12 @@ namespace FrogWorks.Demo
             Add(_image);
 
             Position = position;
-            //Collider = new RectangleCollider(48f, 48f, -24f, -20f);
+            Collider = new BoxCollider(-24, -20, 48, 48);
         }
 
-        public bool IsOverlapping(Vector2 position)
+        public bool Contains(Vector2 position)
         {
-            return false; //return Collider?.Collide(position) ?? false;
+            return Collider.Contains(position);
         }
     }
 }

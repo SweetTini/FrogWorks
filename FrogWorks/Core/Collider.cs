@@ -137,6 +137,26 @@ namespace FrogWorks
             _position = position;
         }
 
+        public bool Contains(float x, float y)
+        {
+            return Contains(new Vector2(x, y));
+        }
+
+        public abstract bool Contains(Vector2 point);
+
+        public bool Raycast(float x1, float y1, float x2, float y2, out Raycast hit)
+        {
+            return Raycast(new Vector2(x1, y1), new Vector2(x2, y2), out hit);
+        }
+
+        public abstract bool Raycast(Vector2 start, Vector2 end, out Raycast hit);
+
+        public abstract bool Overlaps(Shape shape);
+
+        public abstract bool Overlaps(Shape shape, out Manifold hit);
+
+        public abstract Collider Clone();
+
         internal AABB CreateAABB()
         {
             return new AABB(Min, Max);
@@ -156,12 +176,14 @@ namespace FrogWorks
         {
             Entity = entity;
             OnAdded();
+            OnTransformedInternally();
         }
 
         internal void OnRemovedInternally()
         {
             OnRemoved();
-            Entity = null;
+            Entity = null;          
+            OnTransformedInternally();
         }
 
         internal void OnEntityAddedInternally()

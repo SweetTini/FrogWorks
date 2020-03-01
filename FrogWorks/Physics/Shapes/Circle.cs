@@ -35,7 +35,7 @@ namespace FrogWorks
         public Circle(Vector2 position, float radius)
             : base(position)
         {
-            _radius = radius;
+            _radius = radius.Abs();
         }
 
         protected override Rectangle RecalculateBounds()

@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
 
 namespace FrogWorks
 {
@@ -52,7 +51,7 @@ namespace FrogWorks
         public Box(Vector2 position, Vector2 size)
             : base(position)
         {
-            _size = size;
+            _size = size.Abs();
         }
 
         protected override Rectangle RecalculateBounds()

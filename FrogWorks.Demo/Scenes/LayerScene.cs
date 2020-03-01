@@ -20,10 +20,10 @@ namespace FrogWorks.Demo
 
             SetCurrentLayer(1);
             Add(new Apple(80, 96));
-            
+
             SetCurrentLayer(0);
-            Add(new Apple(128, 112));       
-            
+            Add(new Apple(128, 112));
+
             SetCurrentLayer(-1);
             Add(new Apple(176, 160));
             Add(new Apple(176, 96));
@@ -38,8 +38,8 @@ namespace FrogWorks.Demo
 
             foreach (var apple in this.OnLayer(null).OfType<Apple>())
             {
-                if (apple.IsOverlapping(mousePosition) 
-                    && Input.Mouse.IsClicked(MouseButton.Left))
+                if (apple.Contains(mousePosition) && 
+                    Input.Mouse.IsClicked(MouseButton.Left))
                 {
                     apple.MoveToTop();
                     break;

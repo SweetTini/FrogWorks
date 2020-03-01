@@ -59,6 +59,10 @@
     <Compile Include="Assets\Maps\TileMap.cs" />
     <Compile Include="Physics\Broadphase\AABB.cs" />
     <Compile Include="Physics\Broadphase\DynamicAABBTree.cs" />
+    <Compile Include="Physics\Colliders\BoxCollider.cs" />
+    <Compile Include="Physics\Colliders\CircleCollider.cs" />
+    <Compile Include="Physics\Colliders\PolyCollider.cs" />
+    <Compile Include="Physics\Colliders\ShapeCollider.cs" />
     <Compile Include="Physics\Collision.cs" />
     <Compile Include="Physics\Manifold.cs" />
     <Compile Include="Physics\Ray2D.cs" />
@@ -171,9 +175,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Physics\Colliders\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
