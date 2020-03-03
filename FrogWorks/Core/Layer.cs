@@ -5,7 +5,7 @@ namespace FrogWorks
 {
     public class Layer : Manageable<Scene>
     {
-        protected Scene Scene => Parent;
+        protected internal Scene Scene => Parent;
 
         protected GraphicsDevice GraphicsDevice { get; private set; }
 

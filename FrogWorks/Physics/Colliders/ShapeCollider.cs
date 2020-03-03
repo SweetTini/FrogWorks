@@ -31,6 +31,11 @@ namespace FrogWorks
             return Shape.Overlaps(shape, out hit);
         }
 
+        public sealed override void Draw(RendererBatch batch, Color color)
+        {
+            Shape.Draw(batch, color);
+        }
+
         protected sealed override void OnTransformed()
         {
             Shape.Position = AbsolutePosition;

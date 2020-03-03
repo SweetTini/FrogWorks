@@ -14,6 +14,8 @@ namespace FrogWorks
 
         internal EntityManager Entities { get; private set; }
 
+        internal World World { get; private set; }
+
         public Camera Camera { get; private set; }
 
         public Color ClearColor { get; set; }
@@ -26,6 +28,7 @@ namespace FrogWorks
         {
             Layers = new LayerManager(this);
             Entities = new EntityManager(this);
+            World = new World();
             Camera = new Camera();
         }
 
@@ -77,6 +80,7 @@ namespace FrogWorks
             End();
 
             Layers.Reset();
+            World.Reset();
         }
 
         internal void Update(float deltaTime)
@@ -94,15 +98,15 @@ namespace FrogWorks
         }
 
         internal void Draw(
-            DisplayAdapter display, 
-            RendererBatch batch, 
+            DisplayAdapter display,
+            RendererBatch batch,
             out RenderTarget2D renderTarget)
         {
             renderTarget = _renderTarget;
 
             var projection = new Rectangle(Point.Zero, display.Size);
-            var clearOptions = ClearOptions.Target 
-                | ClearOptions.Stencil 
+            var clearOptions = ClearOptions.Target
+                | ClearOptions.Stencil
                 | ClearOptions.DepthBuffer;
 
             display.GraphicsDevice.SetRenderTarget(renderTarget);
@@ -150,7 +154,7 @@ namespace FrogWorks
                 }
 
                 batch.Sprite.Begin(
-                    samplerState: SamplerState.PointClamp, 
+                    samplerState: SamplerState.PointClamp,
                     effect: layer.Effect);
                 batch.Sprite.Draw(layer.RenderTarget, Vector2.Zero, layer.Color);
                 batch.Sprite.End();
@@ -170,28 +174,28 @@ namespace FrogWorks
             AfterDraw(batch);
         }
 
-        protected virtual void Begin() 
-        { 
-        }
-
-        protected virtual void End() 
-        { 
-        }
-
-        protected virtual void BeforeUpdate(float deltaTime) 
+        protected virtual void Begin()
         {
         }
 
-        protected virtual void AfterUpdate(float deltaTime) 
-        { 
-        } 
-
-        protected virtual void BeforeDraw(RendererBatch batch)
-        { 
+        protected virtual void End()
+        {
         }
 
-        protected virtual void AfterDraw(RendererBatch batch) 
-        { 
+        protected virtual void BeforeUpdate(float deltaTime)
+        {
+        }
+
+        protected virtual void AfterUpdate(float deltaTime)
+        {
+        }
+
+        protected virtual void BeforeDraw(RendererBatch batch)
+        {
+        }
+
+        protected virtual void AfterDraw(RendererBatch batch)
+        {
         }
 
         #region Layers

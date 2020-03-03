@@ -2,11 +2,11 @@
 {
     public abstract class Component : Manageable<Entity>
     {
-        protected Entity Entity => Parent;
+        protected internal Entity Entity => Parent;
 
-        protected Scene Scene => Parent?.Parent;
+        protected internal Scene Scene => Parent?.Parent;
 
-        protected Layer Layer => Parent?.Layer;
+        protected internal Layer Layer => Parent?.Layer;
 
         protected Component(bool isActive, bool isVisible)
         {

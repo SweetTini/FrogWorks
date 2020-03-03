@@ -11,7 +11,7 @@ namespace FrogWorks
         Vector2 _position;
         int _priority;
 
-        protected Scene Scene => Parent;
+        protected internal Scene Scene => Parent;
 
         internal ComponentManager Components { get; private set; }
 
@@ -174,6 +174,8 @@ namespace FrogWorks
 
         protected override void OnAdded()
         {
+            Collider?.OnEntityAddedInternally();
+
             foreach (var component in Components)
                 component.OnEntityAddedInternally();
         }
@@ -182,6 +184,8 @@ namespace FrogWorks
         {
             foreach (var component in Components)
                 component.OnEntityRemovedInternally();
+
+            Collider?.OnEntityRemovedInternally();
         }
 
         internal void OnSceneBeganInternally()

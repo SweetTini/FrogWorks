@@ -10,9 +10,9 @@ namespace FrogWorks
 
         protected internal Entity Entity { get; private set; }
 
-        protected internal Scene Scene => Entity?.Parent;
+        protected internal Scene Scene => Component?.Scene ?? Entity?.Parent;
 
-        protected internal Layer Layer => Entity?.Layer;
+        protected internal Layer Layer => Component?.Layer ?? Entity?.Layer;
 
         protected internal bool IsCollidable
         {
@@ -155,6 +155,8 @@ namespace FrogWorks
 
         public abstract bool Overlaps(Shape shape, out Manifold hit);
 
+        public abstract void Draw(RendererBatch batch, Color color);
+
         public abstract Collider Clone();
 
         internal AABB CreateAABB()
@@ -165,35 +167,47 @@ namespace FrogWorks
         internal void OnAddedAsComponent(CollidableComponent component)
         {
             Component = component;
+            
+            OnTransformedInternally();
+            Scene?.World.AddCollider(this);
         }
 
         internal void OnRemovedAsComponent()
         {
+            OnTransformedInternally();
+            Scene?.World.RemoveCollider(this);
+
             Component = null;
         }
 
         internal void OnAddedInternally(Entity entity)
         {
             Entity = entity;
+            
             OnAdded();
             OnTransformedInternally();
+            Scene?.World.AddCollider(this);
         }
 
         internal void OnRemovedInternally()
         {
             OnRemoved();
-            Entity = null;          
             OnTransformedInternally();
+            Scene?.World.RemoveCollider(this);
+            
+            Entity = null;
         }
 
         internal void OnEntityAddedInternally()
         {
             OnEntityAdded();
+            Scene?.World.AddCollider(this);
         }
 
         internal void OnEntityRemovedInternally()
         {
             OnEntityRemoved();
+            Scene?.World.RemoveCollider(this);
         }
 
         internal void OnLayerAddedInternally()
@@ -209,6 +223,7 @@ namespace FrogWorks
         internal void OnTransformedInternally()
         {
             OnTransformed();
+            Scene?.World.UpdateCollider(this);
         }
 
         protected virtual void OnAdded()
