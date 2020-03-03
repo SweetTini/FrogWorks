@@ -305,5 +305,12 @@ namespace FrogWorks
             return GetEnumerator();
         }
         #endregion
+
+        #region Collision
+        protected void DrawBroadphase(RendererBatch batch, Color treeColor, Color leafColor)
+        {
+            World.DrawBroadphase(batch, treeColor, leafColor);
+        }
+        #endregion
     }
 }

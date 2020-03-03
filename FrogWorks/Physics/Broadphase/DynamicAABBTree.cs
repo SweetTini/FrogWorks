@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 
 namespace FrogWorks
@@ -44,6 +45,39 @@ namespace FrogWorks
             }
 
             return colliders;
+        }
+
+        public void Draw(RendererBatch batch, Color treeColor, Color leafColor)
+        {
+            var treeNodes = new Stack<Node>();
+
+            treeNodes.Push(_root);
+
+            while (treeNodes.Count > 0)
+            {
+                var treeNode = treeNodes.Pop();
+
+                if (treeNode != null && !treeNode.IsLeaf) 
+                {
+                    batch.DrawPrimitives(p =>
+                    {
+                        var aabb = treeNode.AABB;
+                        p.DrawRectangle(aabb.Min, aabb.Size, treeColor);
+                    });
+
+                    treeNodes.Push(treeNode.Left);
+                    treeNodes.Push(treeNode.Right);
+                }
+            }
+
+            foreach (var leafNode in _nodes.Values)
+            {
+                batch.DrawPrimitives(p =>
+                {
+                    var aabb = leafNode.AABB;
+                    p.DrawRectangle(aabb.Min, aabb.Size, leafColor);
+                });
+            }
         }
 
         public void Add(Collider collider)

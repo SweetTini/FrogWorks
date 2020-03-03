@@ -201,12 +201,14 @@ namespace FrogWorks
         internal void OnEntityAddedInternally()
         {
             OnEntityAdded();
+            OnTransformedInternally();
             Scene?.World.AddCollider(this);
         }
 
         internal void OnEntityRemovedInternally()
         {
             OnEntityRemoved();
+            OnTransformedInternally();
             Scene?.World.RemoveCollider(this);
         }
 

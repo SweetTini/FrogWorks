@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,6 +29,11 @@ namespace FrogWorks
         internal void RemoveCollider(Collider collider)
         {
             _broadphaseTree.Remove(collider);
+        }
+
+        internal void DrawBroadphase(RendererBatch batch, Color treeColor, Color leafColor)
+        {
+            _broadphaseTree.Draw(batch, treeColor, leafColor);
         }
 
         internal void Reset()
