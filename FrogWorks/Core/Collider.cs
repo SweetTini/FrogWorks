@@ -167,16 +167,12 @@ namespace FrogWorks
         internal void OnAddedAsComponent(CollidableComponent component)
         {
             Component = component;
-            
-            OnTransformedInternally();
-            Scene?.World.AddCollider(this);
+            OnAddedInternally(component?.Entity);
         }
 
         internal void OnRemovedAsComponent()
         {
-            OnTransformedInternally();
-            Scene?.World.RemoveCollider(this);
-
+            OnRemovedInternally();
             Component = null;
         }
 
