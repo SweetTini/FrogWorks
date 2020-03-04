@@ -175,28 +175,38 @@ namespace FrogWorks
 
         void RemoveLeaf(Node leaf)
         {
-            var parent = leaf.Parent;
-            var grandparent = parent.Parent;
-            var sibling = parent.Left != leaf
-                ? parent.Left
-                : parent.Right;
-
-            if (grandparent != null)
+            if (_root != null)
             {
-                if (grandparent.Left == parent)
-                    grandparent.Left = sibling;
-                else grandparent.Right = sibling;
+                if (_root == leaf)
+                {
+                    _root = null;
+                }
+                else
+                {
+                    var parent = leaf.Parent;
+                    var grandparent = parent.Parent;
+                    var sibling = parent.Left != leaf
+                        ? parent.Left
+                        : parent.Right;
 
-                sibling.Parent = grandparent;
-                UpdateTree(grandparent);
-            }
-            else
-            {
-                _root = sibling;
-                sibling.Parent = null;
-            }
+                    if (grandparent != null)
+                    {
+                        if (grandparent.Left == parent)
+                            grandparent.Left = sibling;
+                        else grandparent.Right = sibling;
 
-            leaf.Parent = null;
+                        sibling.Parent = grandparent;
+                        UpdateTree(grandparent);
+                    }
+                    else
+                    {
+                        _root = sibling;
+                        sibling.Parent = null;
+                    }
+
+                    leaf.Parent = null;
+                }
+            }
         }
 
         Node GetTree(Node leaf)
