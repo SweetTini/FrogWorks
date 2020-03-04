@@ -58,6 +58,26 @@ namespace FrogWorks
             return _broadphaseTree.Query(aabb, onCollide);
         }
 
+        public IDictionary<Collider, Raycast> RaycastWithHits(Vector2 start, Vector2 end)
+        {
+            var results = new Dictionary<Collider, Raycast>();
+            var min = Vector2.Min(start, end);
+            var max = Vector2.Max(start, end);
+            var aabb = new AABB(min, max);
+
+            Func<Collider, bool> onCollide = c =>
+            {
+                Raycast hit;
+                var collide = c.Raycast(start, end, out hit);
+                if (collide) results.Add(c, hit);
+                return collide;
+            };
+
+            _broadphaseTree.Query(aabb, onCollide);
+
+            return results;
+        }
+
         public IEnumerable<Collider> Overlaps(Shape shape)
         {
             var min = shape.Bounds.Location.ToVector2();
@@ -67,6 +87,26 @@ namespace FrogWorks
             Func<Collider, bool> onCollide = c => c.Overlaps(shape);
 
             return _broadphaseTree.Query(aabb, onCollide);
+        }
+
+        public IDictionary<Collider, Manifold> OverlapWithHits(Shape shape)
+        {
+            var results = new Dictionary<Collider, Manifold>();
+            var min = shape.Bounds.Location.ToVector2();
+            var max = min + shape.Bounds.Size.ToVector2();
+            var aabb = new AABB(min, max);
+
+            Func<Collider, bool> onCollide = c =>
+            {
+                Manifold hit;
+                var collide = c.Overlaps(shape, out hit);
+                if (collide) results.Add(c, hit);
+                return collide;
+            };
+
+            _broadphaseTree.Query(aabb, onCollide);
+
+            return results;
         }
         #endregion
     }
