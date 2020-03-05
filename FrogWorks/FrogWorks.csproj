@@ -64,6 +64,7 @@
     <Compile Include="Physics\Colliders\PolyCollider.cs" />
     <Compile Include="Physics\Colliders\ShapeCollider.cs" />
     <Compile Include="Physics\Collision.cs" />
+    <Compile Include="Physics\CollisionResult.cs" />
     <Compile Include="Physics\Manifold.cs" />
     <Compile Include="Physics\Ray2D.cs" />
     <Compile Include="Physics\Raycast.cs" />

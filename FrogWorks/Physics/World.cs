@@ -52,15 +52,14 @@ namespace FrogWorks
             var max = Vector2.Max(start, end);
             var aabb = new AABB(min, max);
 
-            Func<Collider, bool> onCollide =
-                c => c.Raycast(start, end, out _);
+            Func<Collider, bool> onCollide = c => c.Raycast(start, end, out _);
 
             return _broadphaseTree.Query(aabb, onCollide);
         }
 
-        public IDictionary<Collider, Raycast> RaycastWithHits(Vector2 start, Vector2 end)
+        public IEnumerable<Raycast> RaycastWithHits(Vector2 start, Vector2 end)
         {
-            var results = new Dictionary<Collider, Raycast>();
+            var results = new List<Raycast>();
             var min = Vector2.Min(start, end);
             var max = Vector2.Max(start, end);
             var aabb = new AABB(min, max);
@@ -68,9 +67,15 @@ namespace FrogWorks
             Func<Collider, bool> onCollide = c =>
             {
                 Raycast hit;
-                var collide = c.Raycast(start, end, out hit);
-                if (collide) results.Add(c, hit);
-                return collide;
+
+                if (c.Raycast(start, end, out hit))
+                {
+                    hit.Collider = c;
+                    results.Add(hit);
+                    return true;
+                }
+                
+                return false;
             };
 
             _broadphaseTree.Query(aabb, onCollide);
@@ -89,9 +94,9 @@ namespace FrogWorks
             return _broadphaseTree.Query(aabb, onCollide);
         }
 
-        public IDictionary<Collider, Manifold> OverlapWithHits(Shape shape)
+        public IEnumerable<Manifold> OverlapsWithHits(Shape shape)
         {
-            var results = new Dictionary<Collider, Manifold>();
+            var results = new List<Manifold>();
             var min = shape.Bounds.Location.ToVector2();
             var max = min + shape.Bounds.Size.ToVector2();
             var aabb = new AABB(min, max);
@@ -99,9 +104,15 @@ namespace FrogWorks
             Func<Collider, bool> onCollide = c =>
             {
                 Manifold hit;
-                var collide = c.Overlaps(shape, out hit);
-                if (collide) results.Add(c, hit);
-                return collide;
+                
+                if (c.Overlaps(shape, out hit))
+                {
+                    hit.Collider = c;
+                    results.Add(hit);
+                    return true;
+                }
+
+                return false;
             };
 
             _broadphaseTree.Query(aabb, onCollide);

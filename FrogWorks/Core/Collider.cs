@@ -142,18 +142,65 @@ namespace FrogWorks
             return Contains(new Vector2(x, y));
         }
 
-        public abstract bool Contains(Vector2 point);
+        public virtual bool Contains(Vector2 point)
+        {
+            return IsCollidable;
+        }
 
         public bool Raycast(float x1, float y1, float x2, float y2, out Raycast hit)
         {
             return Raycast(new Vector2(x1, y1), new Vector2(x2, y2), out hit);
         }
 
-        public abstract bool Raycast(Vector2 start, Vector2 end, out Raycast hit);
+        public virtual bool Raycast(Vector2 start, Vector2 end, out Raycast hit)
+        {
+            hit = default;
+            return IsCollidable;
+        }
 
-        public abstract bool Overlaps(Shape shape);
+        public virtual bool Overlaps(Shape shape)
+        {
+            return shape != null && IsCollidable;
+        }
 
-        public abstract bool Overlaps(Shape shape, out Manifold hit);
+        public virtual bool Overlaps(Shape shape, out Manifold hit)
+        {
+            hit = default;
+            return shape != null && IsCollidable;
+        }
+
+        public virtual bool Overlaps(Collider collider)
+        {
+            return collider != null
+                && collider != this
+                && IsCollidable
+                && collider.IsCollidable;
+        }
+
+        public virtual bool Overlaps(Collider collider, out CollisionResult result)
+        {
+            result = new CollisionResult(this);
+            return collider != null
+                && collider != this
+                && IsCollidable
+                && collider.IsCollidable;
+        }
+
+        public bool Overlaps(Entity entity)
+        {
+            return entity != null
+                && entity != Entity
+                && Overlaps(entity.Collider);
+        }
+
+        public bool Overlaps(Entity entity, out CollisionResult result)
+        {
+            result = new CollisionResult(this);
+
+            return entity != null
+                && entity != Entity
+                && Overlaps(entity.Collider, out result);
+        }
 
         public abstract void Draw(RendererBatch batch, Color color);
 
@@ -179,7 +226,7 @@ namespace FrogWorks
         internal void OnAddedInternally(Entity entity)
         {
             Entity = entity;
-            
+
             OnAdded();
             OnTransformedInternally();
             Scene?.World.AddCollider(this);
@@ -190,7 +237,7 @@ namespace FrogWorks
             OnRemoved();
             OnTransformedInternally();
             Scene?.World.RemoveCollider(this);
-            
+
             Entity = null;
         }
 
