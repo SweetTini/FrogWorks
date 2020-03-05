@@ -74,7 +74,7 @@ namespace FrogWorks
                     results.Add(hit);
                     return true;
                 }
-                
+
                 return false;
             };
 
@@ -94,6 +94,20 @@ namespace FrogWorks
             return _broadphaseTree.Query(aabb, onCollide);
         }
 
+        public IEnumerable<Collider> Overlaps(Collider collider)
+        {
+            var aabb = new AABB(collider.Min, collider.Max);
+            Func<Collider, bool> onCollide = c => c.Overlaps(collider);
+            return _broadphaseTree.Query(aabb, onCollide);
+        }
+
+        public IEnumerable<Collider> Overlaps(Entity entity)
+        {
+            var aabb = new AABB(entity.Min, entity.Max);
+            Func<Collider, bool> onCollide = c => c.Overlaps(entity);
+            return _broadphaseTree.Query(aabb, onCollide);
+        }
+
         public IEnumerable<Manifold> OverlapsWithHits(Shape shape)
         {
             var results = new List<Manifold>();
@@ -104,11 +118,57 @@ namespace FrogWorks
             Func<Collider, bool> onCollide = c =>
             {
                 Manifold hit;
-                
+
                 if (c.Overlaps(shape, out hit))
                 {
                     hit.Collider = c;
                     results.Add(hit);
+                    return true;
+                }
+
+                return false;
+            };
+
+            _broadphaseTree.Query(aabb, onCollide);
+
+            return results;
+        }
+
+        public IEnumerable<CollisionResult> OverlapsWithHits(Collider collider)
+        {
+            var results = new List<CollisionResult>();
+            var aabb = new AABB(collider.Min, collider.Max);
+
+            Func<Collider, bool> onCollide = c =>
+            {
+                CollisionResult result;
+
+                if (c.Overlaps(collider, out result))
+                {
+                    results.Add(result);
+                    return true;
+                }
+
+                return false;
+            };
+
+            _broadphaseTree.Query(aabb, onCollide);
+
+            return results;
+        }
+
+        public IEnumerable<CollisionResult> OverlapsWithHits(Entity entity)
+        {
+            var results = new List<CollisionResult>();
+            var aabb = new AABB(entity.Min, entity.Max);
+
+            Func<Collider, bool> onCollide = c =>
+            {
+                CollisionResult result;
+
+                if (c.Overlaps(entity, out result))
+                {
+                    results.Add(result);
                     return true;
                 }
 
