@@ -40,9 +40,7 @@ namespace FrogWorks
             if (base.Overlaps(collider))
             {
                 if (collider is ShapeCollider)
-                {
-                    Overlaps((collider as ShapeCollider).Shape);
-                }
+                    return Overlaps((collider as ShapeCollider).Shape);
             }
 
             return false;
