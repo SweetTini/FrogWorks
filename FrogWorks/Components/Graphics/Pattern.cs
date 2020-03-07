@@ -4,7 +4,7 @@ namespace FrogWorks
 {
     public class Pattern : Image
     {
-        private Point _size, _mapSize, _remaining;
+        Point _size, _mapSize, _remaining;
 
         public override Rectangle Bounds => new Rectangle(Point.Zero, Size);
 
@@ -47,7 +47,7 @@ namespace FrogWorks
         {
         }
 
-        protected Pattern(Texture texture, Point size, bool isEnabled) 
+        protected Pattern(Texture texture, Point size, bool isEnabled)
             : base(texture, isEnabled)
         {
             Size = size;
@@ -59,12 +59,32 @@ namespace FrogWorks
             {
                 var x = i % _mapSize.X;
                 var y = i / _mapSize.X;
-                var origin = Origin - new Vector2(x * Texture.Width, y * Texture.Height);
-                var width = x < _mapSize.X - 1 || _remaining.X == 0 ? Texture.Width : _remaining.X;
-                var height = y < _mapSize.Y - 1 || _remaining.Y == 0 ? Texture.Height : _remaining.Y;
-                var bounds = new Rectangle(Texture.Bounds.X, Texture.Bounds.Y, width, height);
+                var origin = Origin - new Vector2(
+                    x * Texture.Width,
+                    y * Texture.Height);
 
-                Texture.Draw(batch, DrawPosition, bounds, origin, Scale, Angle, Color * Opacity.Clamp(0f, 1f), SpriteEffects);
+                var width = x < _mapSize.X - 1 || _remaining.X == 0
+                    ? Texture.Width
+                    : _remaining.X;
+                var height = y < _mapSize.Y - 1 || _remaining.Y == 0
+                    ? Texture.Height
+                    : _remaining.Y;
+
+                var bounds = new Rectangle(
+                    Texture.Bounds.X,
+                    Texture.Bounds.Y,
+                    width,
+                    height);
+
+                Texture.Draw(
+                    batch,
+                    DrawPosition,
+                    bounds,
+                    origin,
+                    Scale,
+                    Angle,
+                    Color * Opacity.Clamp(0f, 1f),
+                    SpriteEffects);
             }
         }
 

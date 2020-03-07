@@ -1,104 +1,104 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace FrogWorks
 {
-    public abstract class TiledGraphicsComponent : Component
+    public abstract class TileMapCollider : Collider
     {
         Camera _camera;
         Rectangle _drawRegion;
-        Vector2 _position;
+        Point _tileSize;
 
-        public Texture Texture { get; protected set; }
+        protected Map<int> Map { get; private set; }
 
-        public Point TileSize { get; protected set; }
-
-        public int TileWidth => TileSize.X;
-
-        public int TileHeight => TileSize.Y;
-
-        public Vector2 Position
+        public Point MapSize
         {
-            get { return _position; }
+            get { return Map.Size; }
             set
             {
-                if (_position != value)
+                value = value.Abs();
+
+                if (Map.Size != value)
                 {
-                    _position = value;
+                    Map.Resize(value);
                     OnTransformedInternally();
                 }
             }
         }
 
-        public float X
+        public int MapWidth
         {
-            get { return Position.X; }
-            set { Position = new Vector2(value, Position.Y); }
+            get { return MapSize.X; }
+            set { MapSize = new Point(value, MapSize.Y); }
         }
 
-        public float Y
+        public int MapHeight
         {
-            get { return Position.Y; }
-            set { Position = new Vector2(Position.X, value); }
+            get { return MapSize.Y; }
+            set { MapSize = new Point(MapSize.X, value); }
         }
 
-        public Vector2 DrawPosition
+        public Point TileSize
         {
-            get { return Position + (Parent?.Position ?? Vector2.Zero); }
-            set { Position = value - (Parent?.Position ?? Vector2.Zero); }
-        }
-
-        public Color Color { get; set; } = Color.White;
-
-        public float Opacity { get; set; } = 1f;
-
-        public SpriteEffects SpriteEffects { get; set; }
-
-        public bool FlipHorizontally
-        {
-            get { return SpriteEffects.HasFlag(SpriteEffects.FlipHorizontally); }
+            get { return _tileSize; }
             set
             {
-                SpriteEffects = value
-                    ? (SpriteEffects | SpriteEffects.FlipHorizontally)
-                    : (SpriteEffects & ~SpriteEffects.FlipHorizontally);
+                value = value.Abs();
+
+                if (_tileSize != value)
+                {
+                    _tileSize = value;
+                    OnTransformedInternally();
+                }
             }
         }
 
-        public bool FlipVertically
+        public int TileWidth
         {
-            get { return SpriteEffects.HasFlag(SpriteEffects.FlipVertically); }
-            set
-            {
-                SpriteEffects = value
-                    ? (SpriteEffects | SpriteEffects.FlipVertically)
-                    : (SpriteEffects & ~SpriteEffects.FlipVertically);
-            }
+            get { return TileSize.X; }
+            set { TileSize = new Point(value, TileSize.Y); }
         }
 
-        public bool WrapHorizontally { get; set; }
-
-        public bool WrapVertically { get; set; }
-
-        protected TiledGraphicsComponent(bool isEnabled)
-            : base(isEnabled, true)
+        public int TileHeight
         {
+            get { return TileSize.Y; }
+            set { TileSize = new Point(TileSize.X, value); }
         }
 
-        protected sealed override void Draw(RendererBatch batch)
+        public sealed override Vector2 Size
+        {
+            get { return (MapSize * TileSize).ToVector2(); }
+            set { MapSize = value.ToPoint().Divide(TileSize); }
+        }
+
+        public sealed override Vector2 Min
+        {
+            get { return AbsolutePosition; }
+            set { AbsolutePosition = value; }
+        }
+
+        public sealed override Vector2 Max
+        {
+            get { return AbsolutePosition + Size; }
+            set { AbsolutePosition = value - Size; }
+        }
+
+        protected TileMapCollider(Vector2 position, Point mapSize, Point tileSize)
+            : base(position)
+        {
+            Map = new Map<int>(mapSize);
+            _tileSize = tileSize.Abs();
+        }
+
+        public sealed override void Draw(RendererBatch batch, Color color)
         {
             for (int i = 0; i < _drawRegion.Width * _drawRegion.Height; i++)
             {
                 var x = _drawRegion.Left + (i % _drawRegion.Width);
                 var y = _drawRegion.Top + (i / _drawRegion.Width);
-                var position = DrawPosition + new Vector2(x * TileWidth, y * TileHeight);
 
-                GetTile(x, y)?.Draw(batch, position, Vector2.Zero, Vector2.One, 0f,
-                                    Color * Opacity.Clamp(0f, 1f), SpriteEffects);
+                // TODO: Get shapes to draw map.
             }
         }
-
-        protected abstract Texture GetTile(int x, int y);
 
         protected sealed override void OnAdded()
         {
@@ -176,17 +176,20 @@ namespace FrogWorks
 
         void UpdateDrawRegion(Camera camera)
         {
-            if (camera != null)
+            var min = Point.Zero;
+            var max = MapSize;
+
+            if (_camera != null)
             {
                 var cameraMin = camera.View.Location.ToVector2();
                 var cameraMax = cameraMin + camera.View.Size.ToVector2();
                 var tileSize = TileSize.ToVector2();
 
-                var min = (cameraMin - DrawPosition).Divide(tileSize).Floor().ToPoint();
-                var max = (cameraMax + DrawPosition).Divide(tileSize).Ceiling().ToPoint();
-
-                _drawRegion = new Rectangle(min, max - min);
+                min = (cameraMin - AbsolutePosition).Divide(tileSize).Floor().ToPoint();
+                max = (cameraMax + AbsolutePosition).Divide(tileSize).Ceiling().ToPoint();
             }
+
+            _drawRegion = new Rectangle(min, max - min);
         }
     }
 }

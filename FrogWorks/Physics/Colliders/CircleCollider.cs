@@ -64,7 +64,7 @@ namespace FrogWorks
 
         public override Collider Clone()
         {
-            return new CircleCollider(Position, 0f);
+            return new CircleCollider(Position, Radius);
         }
     }
 }

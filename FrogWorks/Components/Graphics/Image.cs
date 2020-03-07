@@ -6,9 +6,15 @@ namespace FrogWorks
     {
         public Texture Texture { get; protected set; }
 
-        public virtual Rectangle Bounds => new Rectangle(Point.Zero, Texture.Size);
+        public virtual Rectangle Bounds
+        {
+            get { return new Rectangle(Point.Zero, Texture.Size); }
+        }
 
-        public Rectangle AbsoluteBounds => Bounds.Transform(DrawPosition, Origin, Scale, Angle);
+        public Rectangle AbsoluteBounds
+        {
+            get { return Bounds.Transform(DrawPosition, Origin, Scale, Angle); }
+        }
 
         public Image(Texture texture, bool isEnabled)
             : base(isEnabled)
@@ -18,7 +24,14 @@ namespace FrogWorks
 
         protected override void Draw(RendererBatch batch)
         {
-            Texture.Draw(batch, DrawPosition, Origin, Scale, Angle, Color * Opacity.Clamp(0f, 1f), SpriteEffects);
+            Texture.Draw(
+                batch,
+                DrawPosition,
+                Origin,
+                Scale,
+                Angle,
+                Color * Opacity.Clamp(0f, 1f),
+                SpriteEffects);
         }
 
         public void SetOrigin(Origin origin)
