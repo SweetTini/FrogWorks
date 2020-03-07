@@ -286,10 +286,10 @@ namespace FrogWorks
         }
 
         public static Rectangle Transform(
-            this Rectangle rect, 
-            Vector2? position = null, 
-            Vector2? origin = null, 
-            Vector2? scale = null, 
+            this Rectangle rect,
+            Vector2? position = null,
+            Vector2? origin = null,
+            Vector2? scale = null,
             float angle = 0f)
         {
             var result = rect.ToVertices().Transform(position, origin, scale, angle);
@@ -297,9 +297,9 @@ namespace FrogWorks
             var highest = result.Max().Round().ToPoint();
 
             return new Rectangle(
-                lowest.X, 
+                lowest.X,
                 lowest.Y,
-                highest.X - lowest.X, 
+                highest.X - lowest.X,
                 highest.Y - lowest.Y);
         }
 
@@ -642,10 +642,10 @@ namespace FrogWorks
         }
 
         public static Vector2[] Transform(
-            this Vector2[] vertices, 
-            Vector2? position = null, 
-            Vector2? origin = null, 
-            Vector2? scale = null, 
+            this Vector2[] vertices,
+            Vector2? position = null,
+            Vector2? origin = null,
+            Vector2? scale = null,
             float angle = 0f,
             bool offsetToOrigin = true)
         {
@@ -787,6 +787,15 @@ namespace FrogWorks
             {
                 return null;
             }
+        }
+        #endregion
+
+        #region Misc.
+        public static void Swap<T>(ref T left, ref T right)
+        {
+            var temp = left;
+            left = right;
+            right = temp;
         }
         #endregion
 

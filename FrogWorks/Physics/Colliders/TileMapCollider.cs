@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 
 namespace FrogWorks
 {
@@ -89,6 +90,41 @@ namespace FrogWorks
             _tileSize = tileSize.Abs();
         }
 
+        public sealed override bool Contains(Vector2 point)
+        {
+            if (base.Contains(point))
+            {
+                var location = point.SnapToGrid(
+                        _tileSize.ToVector2(),
+                        AbsolutePosition)
+                    .ToPoint();
+
+                var shape = GetTileShape(location);
+                return shape?.Contains(point) ?? false;
+            }
+
+            return false;
+        }
+
+        public sealed override bool Raycast(Vector2 start, Vector2 end, out Raycast hit)
+        {
+            if (base.Raycast(start, end, out hit))
+            {
+                var tileSize = TileSize.ToVector2();
+                start = start.SnapToGrid(tileSize, AbsolutePosition);
+                end = end.SnapToGrid(tileSize, AbsolutePosition);
+
+                foreach (var position in PlotLine(start, end))
+                {
+                    var shape = GetTileShape(position.ToPoint());
+                    if (shape?.Raycast(start, end, out hit) ?? false)
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
         public sealed override void Draw(RendererBatch batch, Color color)
         {
             for (int i = 0; i < _drawRegion.Width * _drawRegion.Height; i++)
@@ -96,8 +132,19 @@ namespace FrogWorks
                 var x = _drawRegion.Left + (i % _drawRegion.Width);
                 var y = _drawRegion.Top + (i / _drawRegion.Width);
 
-                // TODO: Get shapes to draw map.
+                DrawTileShape(batch, color, new Point(x, y));
             }
+        }
+
+        protected abstract Shape GetTileShape(Point position);
+
+        protected virtual void DrawTileShape(
+            RendererBatch batch,
+            Color color,
+            Point position)
+        {
+            var shape = GetTileShape(position);
+            shape?.Draw(batch, color);
         }
 
         protected sealed override void OnAdded()
@@ -190,6 +237,44 @@ namespace FrogWorks
             }
 
             _drawRegion = new Rectangle(min, max - min);
+        }
+
+        IEnumerable<Vector2> PlotLine(Vector2 start, Vector2 end)
+        {
+            var steep = (end.Y - start.Y).Abs() > (end.X - start.X).Abs();
+
+            if (steep)
+            {
+                Extensions.Swap(ref start.X, ref start.Y);
+                Extensions.Swap(ref end.X, ref end.Y);
+            }
+
+            if (start.X > end.X)
+            {
+                Extensions.Swap(ref start.X, ref end.X);
+                Extensions.Swap(ref start.Y, ref end.Y);
+            }
+
+            var dx = end.X - start.X;
+            var dy = (end.Y - start.Y).Abs();
+            var error = (dx * .5f).Floor();
+            var yStep = start.Y < end.Y ? 1f : -1f;
+            var y = start.Y;
+
+            for (float x = start.X; x <= end.X; x++)
+            {
+                yield return steep
+                    ? new Vector2(y, x)
+                    : new Vector2(x, y);
+
+                error -= dy;
+
+                if (error < 0f)
+                {
+                    y += yStep;
+                    error += dx;
+                }
+            }
         }
     }
 }
