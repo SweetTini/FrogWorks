@@ -94,12 +94,11 @@ namespace FrogWorks
         {
             if (base.Contains(point))
             {
-                var location = point.SnapToGrid(
-                        _tileSize.ToVector2(),
-                        AbsolutePosition)
-                    .ToPoint();
+                var gridPosition = point.SnapToGrid(
+                    _tileSize.ToVector2(),
+                    AbsolutePosition);
 
-                var shape = GetTileShape(location);
+                var shape = GetTileShape(gridPosition.ToPoint());
                 return shape?.Contains(point) ?? false;
             }
 
@@ -111,10 +110,10 @@ namespace FrogWorks
             if (base.Raycast(start, end, out hit))
             {
                 var tileSize = TileSize.ToVector2();
-                start = start.SnapToGrid(tileSize, AbsolutePosition);
-                end = end.SnapToGrid(tileSize, AbsolutePosition);
+                var gridStart = start.SnapToGrid(tileSize, AbsolutePosition);
+                var gridEnd = end.SnapToGrid(tileSize, AbsolutePosition);
 
-                foreach (var position in PlotLine(start, end))
+                foreach (var position in PlotLine(gridStart, gridEnd))
                 {
                     var shape = GetTileShape(position.ToPoint());
                     if (shape?.Raycast(start, end, out hit) ?? false)
