@@ -29,10 +29,20 @@ namespace FrogWorks
                 && Shape.Overlaps(shape);
         }
 
-        public sealed override bool Overlaps(Shape shape, out Manifold hit)
+        public sealed override bool Overlaps(Shape shape, out CollisionResult result)
         {
-            return base.Overlaps(shape, out hit)
-                && Shape.Overlaps(shape, out hit);
+            if (base.Overlaps(shape, out result))
+            {
+                Manifold hit;
+
+                if (Shape.Overlaps(shape, out hit))
+                {
+                    result.Add(hit);
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public sealed override bool Overlaps(Collider collider)
@@ -40,7 +50,15 @@ namespace FrogWorks
             if (base.Overlaps(collider))
             {
                 if (collider is ShapeCollider)
-                    return Overlaps((collider as ShapeCollider).Shape);
+                {
+                    var shape = (collider as ShapeCollider).Shape;
+                    return Shape.Overlaps(shape);
+                }
+                else if (collider is TileMapCollider)
+                {
+                    var tileMapCollider = collider as TileMapCollider;
+                    return tileMapCollider.Overlaps(this);
+                }
             }
 
             return false;
@@ -53,12 +71,18 @@ namespace FrogWorks
                 if (collider is ShapeCollider)
                 {
                     Manifold hit;
+                    var shape = (collider as ShapeCollider).Shape;
 
-                    if (Overlaps((collider as ShapeCollider).Shape, out hit))
+                    if (Shape.Overlaps(shape, out hit))
                     {
                         result.Add(hit);
                         return true;
                     }
+                }
+                else if (collider is TileMapCollider)
+                {
+                    var tileMapCollider = collider as TileMapCollider;
+                    return tileMapCollider.Overlaps(this, out result);
                 }
             }
 

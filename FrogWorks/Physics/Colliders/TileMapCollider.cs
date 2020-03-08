@@ -94,12 +94,11 @@ namespace FrogWorks
         {
             if (base.Contains(point))
             {
-                var gridPosition = point.SnapToGrid(
-                    _tileSize.ToVector2(),
-                    AbsolutePosition);
+                var tileSize = TileSize.ToVector2();
+                var gridPosition = point.SnapToGrid(tileSize, AbsolutePosition);
 
-                var shape = GetTileShape(gridPosition.ToPoint());
-                return shape?.Contains(point) ?? false;
+                var tile = GetTileShape(gridPosition.ToPoint());
+                return tile?.Contains(point) ?? false;
             }
 
             return false;
@@ -115,9 +114,108 @@ namespace FrogWorks
 
                 foreach (var position in PlotLine(gridStart, gridEnd))
                 {
-                    var shape = GetTileShape(position.ToPoint());
-                    if (shape?.Raycast(start, end, out hit) ?? false)
-                        return true;
+                    var tile = GetTileShape(position.ToPoint());
+                    var hitDetected = tile?.Raycast(start, end, out hit) ?? false;
+                    if (hitDetected) return true;
+                }
+            }
+
+            return false;
+        }
+
+        public sealed override bool Overlaps(Shape shape)
+        {
+            if (base.Overlaps(shape))
+            {
+                var tileSize = TileSize.ToVector2();
+                var gridRegion = shape.Bounds.SnapToGrid(tileSize, AbsolutePosition);
+
+                foreach (var position in PlotRegion(gridRegion))
+                {
+                    var tile = GetTileShape(position.ToPoint());
+                    var overlaps = tile?.Overlaps(shape) ?? false;
+                    if (overlaps) return true;
+                }
+            }
+
+            return false;
+        }
+
+        public sealed override bool Overlaps(Shape shape, out CollisionResult result)
+        {
+            var collide = false;
+
+            if (base.Overlaps(shape, out result))
+            {
+                var tileSize = TileSize.ToVector2();
+                var gridRegion = shape.Bounds.SnapToGrid(tileSize, AbsolutePosition);
+
+                foreach (var position in PlotRegion(gridRegion))
+                {
+                    Manifold hit = default;
+                    var tile = GetTileShape(position.ToPoint());
+                    var overlaps = tile?.Overlaps(shape, out hit) ?? false;
+
+                    if (overlaps)
+                    {
+                        hit.Normal = -hit.Normal;
+                        result.Add(hit);
+                        collide = true;
+                    }
+                }
+            }
+
+            return collide;
+        }
+
+        public sealed override bool Overlaps(Collider collider)
+        {
+            if (base.Overlaps(collider))
+            {
+                if (collider is ShapeCollider)
+                {
+                    var shape = (collider as ShapeCollider).Shape;
+                    var tileSize = TileSize.ToVector2();
+                    var gridRegion = shape.Bounds.SnapToGrid(tileSize, AbsolutePosition);
+
+                    foreach (var position in PlotRegion(gridRegion))
+                    {
+                        var tile = GetTileShape(position.ToPoint());
+                        var overlaps = tile?.Overlaps(shape) ?? false;
+                        if (overlaps) return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        public sealed override bool Overlaps(Collider collider, out CollisionResult result)
+        {
+            if (base.Overlaps(collider, out result))
+            {
+                if (collider is ShapeCollider)
+                {
+                    var collide = false;
+                    var shape = (collider as ShapeCollider).Shape;
+                    var tileSize = TileSize.ToVector2();
+                    var gridRegion = shape.Bounds.SnapToGrid(tileSize, AbsolutePosition);
+
+                    foreach (var position in PlotRegion(gridRegion))
+                    {
+                        Manifold hit = default;
+                        var tile = GetTileShape(position.ToPoint());
+                        var overlaps = tile?.Overlaps(shape, out hit) ?? false;
+
+                        if (overlaps)
+                        {
+                            hit.Normal = -hit.Normal;
+                            result.Add(hit);
+                            collide = true;
+                        }
+                    }
+
+                    if (collide) return true;
                 }
             }
 
@@ -273,6 +371,17 @@ namespace FrogWorks
                     y += yStep;
                     error += dx;
                 }
+            }
+        }
+
+        IEnumerable<Vector2> PlotRegion(Rectangle region)
+        {
+            for (int i = 0; i < region.Width * region.Height; i++)
+            {
+                var x = region.Left + (i % region.Width);
+                var y = region.Top + (i / region.Width);
+
+                yield return new Vector2(x, y);
             }
         }
     }

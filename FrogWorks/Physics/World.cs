@@ -108,21 +108,20 @@ namespace FrogWorks
             return _broadphaseTree.Query(aabb, onCollide);
         }
 
-        public IEnumerable<Manifold> OverlapsWithHits(Shape shape)
+        public IEnumerable<CollisionResult> OverlapsWithHits(Shape shape)
         {
-            var results = new List<Manifold>();
+            var results = new List<CollisionResult>();
             var min = shape.Bounds.Location.ToVector2();
             var max = min + shape.Bounds.Size.ToVector2();
             var aabb = new AABB(min, max);
 
             Func<Collider, bool> onCollide = c =>
             {
-                Manifold hit;
+                CollisionResult result;
 
-                if (c.Overlaps(shape, out hit))
+                if (c.Overlaps(shape, out result))
                 {
-                    hit.Collider = c;
-                    results.Add(hit);
+                    results.Add(result);
                     return true;
                 }
 

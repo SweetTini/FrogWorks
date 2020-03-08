@@ -163,9 +163,9 @@ namespace FrogWorks
             return shape != null && IsCollidable;
         }
 
-        public virtual bool Overlaps(Shape shape, out Manifold hit)
+        public virtual bool Overlaps(Shape shape, out CollisionResult result)
         {
-            hit = default;
+            result = new CollisionResult(this);
             return shape != null && IsCollidable;
         }
 
