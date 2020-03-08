@@ -5,16 +5,19 @@ namespace FrogWorks
 {
     public sealed class AlphaMaskLayer : Layer
     {
-        private BlendState _nonColorWriteBlend;
-        private DepthStencilState _alwaysStencil, _keepIfZeroStencil;
-        private AlphaTestEffect _alphaTestEffect;
+        BlendState _nonColorWriteBlend;
+        DepthStencilState _alwaysStencil, _keepIfZeroStencil;
+        AlphaTestEffect _alphaTestEffect;
 
         public Color ClearColor { get; set; } = Color.Black;
 
         public AlphaMaskLayer(bool reverse = false)
             : base()
         {
-            _nonColorWriteBlend = new BlendState() { ColorWriteChannels = ColorWriteChannels.None };
+            _nonColorWriteBlend = new BlendState() 
+            { 
+                ColorWriteChannels = ColorWriteChannels.None 
+            };
 
             _alphaTestEffect = new AlphaTestEffect(GraphicsDevice)
             {

@@ -312,5 +312,30 @@ namespace FrogWorks
             World.DrawBroadphase(batch, treeColor, leafColor);
         }
         #endregion
+
+        #region Intervals
+        public bool ForEvery(float seconds)
+        {
+            var deltaTime = Runner.Application.Game.DeltaTime;
+            var lastElapsed = (int)((TimeActive - deltaTime) / seconds);
+            var elapsed = (int)(TimeActive / seconds);
+
+            return lastElapsed < elapsed;
+        }
+
+        public bool ForEvery(float seconds, float offset)
+        {
+            var deltaTime = Runner.Application.Game.DeltaTime;
+            var lastElapsed = (int)((TimeActive - offset - deltaTime) / seconds);
+            var elapsed = (int)((TimeActive - offset) / seconds);
+
+            return lastElapsed < elapsed;
+        }
+
+        public bool BetweenEvery(float seconds)
+        {
+            return (TimeActive % (seconds * 2f)) > seconds;
+        }
+        #endregion
     }
 }

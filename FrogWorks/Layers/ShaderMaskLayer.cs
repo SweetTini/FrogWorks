@@ -4,14 +4,17 @@ namespace FrogWorks
 {
     public sealed class ShaderMaskLayer : ShaderLayer
     {
-        private BlendState _nonColorWriteBlend;
-        private DepthStencilState _alwaysStencil, _keepIfZeroStencil;
-        private AlphaTestEffect _alphaTestEffect;
+        BlendState _nonColorWriteBlend;
+        DepthStencilState _alwaysStencil, _keepIfZeroStencil;
+        AlphaTestEffect _alphaTestEffect;
 
         public ShaderMaskLayer(Shader shader, bool reverse = false)
             : base(shader)
         {
-            _nonColorWriteBlend = new BlendState() { ColorWriteChannels = ColorWriteChannels.None };
+            _nonColorWriteBlend = new BlendState() 
+            { 
+                ColorWriteChannels = ColorWriteChannels.None 
+            };
 
             _alphaTestEffect = new AlphaTestEffect(GraphicsDevice)
             {

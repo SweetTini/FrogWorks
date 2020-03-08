@@ -1,6 +1,4 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-
-namespace FrogWorks
+﻿namespace FrogWorks
 {
     public class ShaderLayer : Layer
     {
