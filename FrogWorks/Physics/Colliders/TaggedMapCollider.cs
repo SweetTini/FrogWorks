@@ -41,6 +41,9 @@ namespace FrogWorks
             Point tileSize)
             : base(position, mapSize, tileSize)
         {
+            if (!typeof(T).IsEnum)
+                throw new NotSupportedException("Generic type must be an Enum.");
+
             Colors = new Dictionary<T, Color>();
         }
 

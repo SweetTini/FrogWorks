@@ -61,6 +61,7 @@
     <Compile Include="Physics\Broadphase\DynamicAABBTree.cs" />
     <Compile Include="Physics\Colliders\BoxCollider.cs" />
     <Compile Include="Physics\Colliders\CircleCollider.cs" />
+    <Compile Include="Physics\Colliders\ComplexMapCollider.cs" />
     <Compile Include="Physics\Colliders\PolyCollider.cs" />
     <Compile Include="Physics\Colliders\SimpleMapCollider.cs" />
     <Compile Include="Physics\Colliders\ShapeCollider.cs" />
