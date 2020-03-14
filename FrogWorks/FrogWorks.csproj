@@ -62,7 +62,9 @@
     <Compile Include="Physics\Colliders\BoxCollider.cs" />
     <Compile Include="Physics\Colliders\CircleCollider.cs" />
     <Compile Include="Physics\Colliders\PolyCollider.cs" />
+    <Compile Include="Physics\Colliders\SimpleMapCollider.cs" />
     <Compile Include="Physics\Colliders\ShapeCollider.cs" />
+    <Compile Include="Physics\Colliders\TaggedMapCollider.cs" />
     <Compile Include="Physics\Colliders\TileMapCollider.cs" />
     <Compile Include="Physics\Collision.cs" />
     <Compile Include="Physics\CollisionResult.cs" />

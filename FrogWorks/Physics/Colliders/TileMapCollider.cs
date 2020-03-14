@@ -9,7 +9,7 @@ namespace FrogWorks
         Rectangle _drawRegion;
         Point _tileSize;
 
-        protected Map<int> Map { get; private set; }
+        protected internal Map<int> Map { get; internal set; }
 
         public Point MapSize
         {
@@ -233,6 +233,11 @@ namespace FrogWorks
             }
         }
 
+        public void Reset()
+        {
+            Map.Clear();
+        }
+
         protected abstract Shape GetTileShape(Point position);
 
         protected virtual void DrawTileShape(
@@ -384,5 +389,24 @@ namespace FrogWorks
                 yield return new Vector2(x, y);
             }
         }
+    }
+
+    public interface IMapManager<T>
+    {
+        void Fill(T tile, int x, int y);
+
+        void Fill(T tile, Point location);
+
+        void Fill(T tile, int x, int y, int width, int height);
+
+        void Fill(T tile, Point location, Point size);
+
+        void Populate(T[,] tiles, int offsetX, int offsetY);
+
+        void Populate(T[,] tiles, Point offset);
+
+        void Overlay(T[,] tiles, int offsetX, int offsetY);
+
+        void Overlay(T[,] tiles, Point offset);
     }
 }

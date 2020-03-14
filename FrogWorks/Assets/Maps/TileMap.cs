@@ -145,7 +145,7 @@ namespace FrogWorks
                 : defaultValue;
         }
 
-        public T GetAsEnum<T>(string key, T defaultValue = default(T))
+        public T GetAsEnum<T>(string key, T defaultValue = default)
             where T : struct
         {
             object result;
@@ -155,7 +155,7 @@ namespace FrogWorks
                 : defaultValue;
         }
 
-        public Color GetAsColor(string key, Color defaultValue = default(Color))
+        public Color GetAsColor(string key, Color defaultValue = default)
         {
             object result;
             TryGetValue(key, out result);
@@ -168,7 +168,7 @@ namespace FrogWorks
             string keyR,
             string keyG,
             string keyB,
-            Color defaultValue = default(Color))
+            Color defaultValue = default)
         {
             return new Color(
                 GetAsInt32(keyR, defaultValue.R),
@@ -182,7 +182,7 @@ namespace FrogWorks
             string keyG, 
             string keyB,
             string keyA,
-            Color defaultValue = default(Color))
+            Color defaultValue = default)
         {
             return new Color(
                 GetAsInt32(keyR, defaultValue.R),
@@ -194,7 +194,7 @@ namespace FrogWorks
         public Point GetAsPoint(
             string keyX, 
             string keyY, 
-            Point defaultValue = default(Point))
+            Point defaultValue = default)
         {
             return new Point(
                 GetAsInt32(keyX, defaultValue.X),
@@ -204,7 +204,7 @@ namespace FrogWorks
         public Vector2 GetAsVector2(
             string keyX, 
             string keyY, 
-            Vector2 defaultValue = default(Vector2))
+            Vector2 defaultValue = default)
         {
             return new Vector2(
                 GetAsSingle(keyX, defaultValue.X),
@@ -215,7 +215,7 @@ namespace FrogWorks
             string keyX, 
             string keyY, 
             string keyZ,
-            Vector3 defaultValue = default(Vector3))
+            Vector3 defaultValue = default)
         {
             return new Vector3(
                 GetAsSingle(keyX, defaultValue.X),
@@ -228,7 +228,7 @@ namespace FrogWorks
             string keyY,
             string keyZ,
             string keyW,
-            Vector4 defaultValue = default(Vector4))
+            Vector4 defaultValue = default)
         {
             return new Vector4(
                 GetAsSingle(keyX, defaultValue.X),
@@ -242,7 +242,7 @@ namespace FrogWorks
             string keyY,
             string keyW,
             string keyH,
-            Rectangle defaultValue = default(Rectangle))
+            Rectangle defaultValue = default)
         {
             return new Rectangle(
                 GetAsPoint(keyX, keyY, defaultValue.Location),

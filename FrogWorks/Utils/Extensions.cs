@@ -235,10 +235,16 @@ namespace FrogWorks
             return 0 <= index && index < array.Length;
         }
 
-        public static bool WithinRange<T>(this T[,] array, int columnIndex, int rowIndex)
+        public static bool WithinRange<T>(this T[,] array, int x, int y)
         {
-            return columnIndex >= 0 && columnIndex < array.GetLength(0)
-                && rowIndex >= 0 && rowIndex < array.GetLength(1);
+            return x >= 0 && x < array.GetLength(0)
+                && y >= 0 && y < array.GetLength(1);
+        }
+
+        public static bool WithinRange<T>(this T[,] array, Point point)
+        {
+            return point.X >= 0 && point.X < array.GetLength(0)
+                && point.Y >= 0 && point.Y < array.GetLength(1);
         }
 
         public static bool WithinRange<T>(this IEnumerable<T> list, int index)

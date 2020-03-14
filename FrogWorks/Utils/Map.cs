@@ -12,10 +12,20 @@ namespace FrogWorks
             get { return _region.WithinRange(x, y) ? _region[x, y] : Empty; }
             set
             {
-                if (!_region.WithinRange(x, y)) return;
-                if (value == null && !value.Equals(Empty)) value = Empty;
-                _region[x, y] = value;
+                if (_region.WithinRange(x, y))
+                {
+                    if (value == null && !value.Equals(Empty))
+                        value = Empty;
+
+                    _region[x, y] = value;
+                }
             }
+        }
+
+        public T this[Point point]
+        {
+            get { return this[point.X, point.Y]; }
+            set { this[point.X, point.Y] = value; }
         }
 
         public Point Size { get; private set; }
