@@ -4,8 +4,11 @@ using System.Collections.Generic;
 
 namespace FrogWorks
 {
-    public sealed class TaggedMapCollider<T>
-        : TileMapCollider, IMapModifier<T>, IMapAccessor<TaggedTile<T>>
+    public sealed class TaggedMapCollider<T> :
+        TileMapCollider,
+        ITaggedMapCollisionHandler<T>,
+        IMapModifier<T>,
+        IMapAccessor<TaggedTile<T>>
         where T : struct
     {
         Dictionary<T, Color> Colors { get; set; }
@@ -99,6 +102,191 @@ namespace FrogWorks
             collider.Colors = new Dictionary<T, Color>(Colors);
             collider.Map = Map.Clone();
             return collider;
+        }
+
+        public bool Contains(float x, float y, T attributes)
+        {
+            return Contains(new Vector2(x, y), attributes);
+        }
+
+        public bool Contains(Vector2 point, T attributes)
+        {
+            if (IsCollidable)
+            {
+                var location = point
+                    .SnapToGrid(TileSize.ToVector2(), AbsolutePosition)
+                    .ToPoint();
+
+                var tile = GetTileShape(location);
+                var collide = tile?.Contains(point) ?? false;
+                return collide && HasAttributes(location, attributes);
+            }
+
+            return false;
+        }
+
+        public bool Raycast(
+            float x1,
+            float y1,
+            float x2,
+            float y2,
+            T attributes,
+            out Raycast hit)
+        {
+            return Raycast(new Vector2(x1, y1), new Vector2(x2, y2), attributes, out hit);
+        }
+
+        public bool Raycast(Vector2 start, Vector2 end, T attributes, out Raycast hit)
+        {
+            hit = default;
+
+            if (IsCollidable)
+            {
+                var tileSize = TileSize.ToVector2();
+                var gStart = start.SnapToGrid(tileSize, AbsolutePosition);
+                var gEnd = end.SnapToGrid(tileSize, AbsolutePosition);
+
+                foreach (var location in PlotLine(gStart, gEnd))
+                {
+                    var tile = GetTileShape(location);
+                    var hitDetected = tile?.Raycast(start, end, out hit) ?? false;
+                    if (hitDetected && HasAttributes(location, attributes))
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool Overlaps(Shape shape, T attributes)
+        {
+            if (IsCollidable && shape != null)
+            {
+                var region = shape.Bounds
+                    .SnapToGrid(TileSize.ToVector2(), AbsolutePosition);
+
+                foreach (var location in PlotRegion(region))
+                {
+                    var tile = GetTileShape(location);
+                    var overlaps = tile?.Overlaps(shape) ?? false;
+                    if (overlaps && HasAttributes(location, attributes))
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool Overlaps(Shape shape, T attributes, out CollisionResult result)
+        {
+            result = new CollisionResult(this);
+
+            var collide = false;
+
+            if (IsCollidable && shape != null)
+            {
+                var region = shape.Bounds
+                    .SnapToGrid(TileSize.ToVector2(), AbsolutePosition);
+
+                foreach (var location in PlotRegion(region))
+                {
+                    Manifold hit = default;
+                    var tile = GetTileShape(location);
+                    var overlaps = tile?.Overlaps(shape, out hit) ?? false;
+
+                    if (overlaps && HasAttributes(location, attributes))
+                    {
+                        hit.Normal = -hit.Normal;
+                        result.Add(hit);
+                        collide = true;
+                    }
+                }
+            }
+
+            return collide;
+        }
+
+        public bool Overlaps(Collider collider, T attributes)
+        {
+            var canCollide = collider != null
+                && collider != this
+                && IsCollidable
+                && collider.IsCollidable;
+
+            if (canCollide)
+            {
+                if (collider is ShapeCollider)
+                {
+                    var shape = (collider as ShapeCollider).Shape;
+                    var region = shape.Bounds
+                        .SnapToGrid(TileSize.ToVector2(), AbsolutePosition);
+
+                    foreach (var location in PlotRegion(region))
+                    {
+                        var tile = GetTileShape(location);
+                        var overlaps = tile?.Overlaps(shape) ?? false;
+                        if (overlaps && HasAttributes(location, attributes)) 
+                            return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        public bool Overlaps(Collider collider, T attributes, out CollisionResult result)
+        {
+            result = new CollisionResult(this);
+
+            var canCollide = collider != null
+                && collider != this
+                && IsCollidable
+                && collider.IsCollidable;
+
+            if (canCollide)
+            {
+                if (collider is ShapeCollider)
+                {
+                    var collide = false;
+                    var shape = (collider as ShapeCollider).Shape;
+                    var region = shape.Bounds
+                        .SnapToGrid(TileSize.ToVector2(), AbsolutePosition);
+
+                    foreach (var location in PlotRegion(region))
+                    {
+                        Manifold hit = default;
+                        var tile = GetTileShape(location);
+                        var overlaps = tile?.Overlaps(shape, out hit) ?? false;
+
+                        if (overlaps && HasAttributes(location, attributes))
+                        {
+                            hit.Normal = -hit.Normal;
+                            result.Add(hit);
+                            collide = true;
+                        }
+                    }
+
+                    if (collide) return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool Overlaps(Entity entity, T attributes)
+        {
+            return entity != null 
+                && entity != Entity 
+                && Overlaps(entity.Collider, attributes);
+        }
+
+        public bool Overlaps(Entity entity, T attributes, out CollisionResult result)
+        {
+            result = new CollisionResult(this);
+
+            return entity != null 
+                && entity != Entity
+                && Overlaps(entity.Collider, attributes, out result);
         }
 
         public void Fill(T tile, int x, int y)
@@ -231,6 +419,40 @@ namespace FrogWorks
             return entity != null && entity != Entity
                 ? GetTiles(entity.Collider) : null;
         }
+
+        bool HasAttributes(Point location, T attributes)
+        {
+            var enumValue = (Enum)(ValueType)Map[location];
+            var searchValue = (Enum)(ValueType)attributes;
+            var hasFlagAttribute = typeof(T).IsDefined(typeof(FlagsAttribute), false);
+
+            return hasFlagAttribute
+                ? enumValue.HasFlag(searchValue)
+                : enumValue == searchValue;
+        }
+    }
+
+    public interface ITaggedMapCollisionHandler<T>
+    {
+        bool Contains(float x, float y, T attributes);
+
+        bool Contains(Vector2 point, T attributes);
+
+        bool Raycast(float x1, float y1, float x2, float y2, T attributes, out Raycast hit);
+
+        bool Raycast(Vector2 start, Vector2 end, T attributes, out Raycast hit);
+
+        bool Overlaps(Shape shape, T attributes);
+
+        bool Overlaps(Shape shape, T attributes, out CollisionResult result);
+
+        bool Overlaps(Collider collider, T attributes);
+
+        bool Overlaps(Collider collider, T attributes, out CollisionResult result);
+
+        bool Overlaps(Entity entity, T attributes);
+
+        bool Overlaps(Entity entity, T attributes, out CollisionResult result);
     }
 
     public struct TaggedTile<T>
