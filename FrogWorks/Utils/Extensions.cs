@@ -747,6 +747,40 @@ namespace FrogWorks
 
             return hullVertices;
         }
+
+        public static Vector2[] Truncate(this Vector2[] vertices)
+        {
+            var location = vertices.Min();
+            var size = vertices.Max() - location;
+
+            return vertices.Truncate(location, size);
+        }
+
+        public static Vector2[] Truncate(this Vector2[] vertices, Vector2 size)
+        {
+            return vertices.Truncate(Vector2.Zero, size);
+        }
+
+        public static Vector2[] Truncate(
+            this Vector2[] vertices,
+            Vector2 location,
+            Vector2 size)
+        {
+            size = size.Abs();
+
+            var results = new List<Vector2>();
+            Vector2 vertex;
+
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                vertex = vertices[i];
+
+                if (vertex == vertex.Clamp(location, location + size))
+                    results.Add((vertex - location).Divide(size));
+            }
+
+            return results.ToArray();
+        }
         #endregion
 
         #region Inputs

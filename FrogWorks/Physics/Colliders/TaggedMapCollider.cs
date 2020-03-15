@@ -4,7 +4,8 @@ using System.Collections.Generic;
 
 namespace FrogWorks
 {
-    public sealed class TaggedMapCollider<T> : TileMapCollider, IMapManager<T>
+    public sealed class TaggedMapCollider<T>
+        : TileMapCollider, IMapModifier<T>, IMapAccessor<TaggedTile<T>>
         where T : struct
     {
         Dictionary<T, Color> Colors { get; set; }
@@ -84,6 +85,14 @@ namespace FrogWorks
             else Colors.Add(tile, color);
         }
 
+        public override void Reset(bool hardReset = false)
+        {
+            if (hardReset)
+                Colors.Clear();
+
+            base.Reset(hardReset);
+        }
+
         public override Collider Clone()
         {
             var collider = new TaggedMapCollider<T>(Position, MapSize, TileSize);
@@ -161,6 +170,86 @@ namespace FrogWorks
                     Map[mapOffset] = Convert.ToInt32(tiles[x, y]);
                 }
             }
+        }
+
+        public TaggedTile<T> GetTile(float x, float y)
+        {
+            return GetTile(new Vector2(x, y));
+        }
+
+        public TaggedTile<T> GetTile(Vector2 point)
+        {
+            var location = point
+                .SnapToGrid(TileSize.ToVector2(), AbsolutePosition)
+                .ToPoint();
+
+            return new TaggedTile<T>(location, Map[location]);
+        }
+
+        public IEnumerable<TaggedTile<T>> GetTiles(float x1, float y1, float x2, float y2)
+        {
+            return GetTiles(new Vector2(x1, y1), new Vector2(x2, y2));
+        }
+
+        public IEnumerable<TaggedTile<T>> GetTiles(Vector2 start, Vector2 end)
+        {
+            var tileSize = TileSize.ToVector2();
+
+            start = start.SnapToGrid(tileSize, AbsolutePosition);
+            end = end.SnapToGrid(tileSize, AbsolutePosition);
+
+            foreach (var location in PlotLine(start, end))
+                yield return new TaggedTile<T>(location, Map[location]);
+        }
+
+        public IEnumerable<TaggedTile<T>> GetTiles(Shape shape)
+        {
+            var region = shape.Bounds
+                .SnapToGrid(TileSize.ToVector2(), AbsolutePosition);
+
+            foreach (var location in PlotRegion(region))
+                yield return new TaggedTile<T>(location, Map[location]);
+        }
+
+        public IEnumerable<TaggedTile<T>> GetTiles(Collider collider)
+        {
+            if (collider != null && collider != this)
+            {
+                if (collider is ShapeCollider)
+                {
+                    var region = collider.Bounds
+                        .SnapToGrid(TileSize.ToVector2(), AbsolutePosition);
+
+                    foreach (var location in PlotRegion(region))
+                        yield return new TaggedTile<T>(location, Map[location]);
+                }
+            }
+        }
+
+        public IEnumerable<TaggedTile<T>> GetTiles(Entity entity)
+        {
+            return entity != null && entity != Entity
+                ? GetTiles(entity.Collider) : null;
+        }
+    }
+
+    public struct TaggedTile<T>
+    {
+        public Point Location { get; internal set; }
+
+        public int X => Location.X;
+
+        public int Y => Location.Y;
+
+        public T Attributes { get; internal set; }
+
+        public bool HasAttributes => !Attributes.Equals(default(T));
+
+        public TaggedTile(Point location, int index)
+            : this()
+        {
+            Location = location;
+            Attributes = (T)Enum.ToObject(typeof(T), index);
         }
     }
 }

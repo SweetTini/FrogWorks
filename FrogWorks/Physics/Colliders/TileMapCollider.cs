@@ -21,6 +21,7 @@ namespace FrogWorks
                 if (Map.Size != value)
                 {
                     Map.Resize(value);
+                    OnMapResized();
                     OnTransformedInternally();
                 }
             }
@@ -94,10 +95,11 @@ namespace FrogWorks
         {
             if (base.Contains(point))
             {
-                var tileSize = TileSize.ToVector2();
-                var gridPosition = point.SnapToGrid(tileSize, AbsolutePosition);
+                var location = point
+                    .SnapToGrid(TileSize.ToVector2(), AbsolutePosition)
+                    .ToPoint();
 
-                var tile = GetTileShape(gridPosition.ToPoint());
+                var tile = GetTileShape(location);
                 return tile?.Contains(point) ?? false;
             }
 
@@ -109,12 +111,12 @@ namespace FrogWorks
             if (base.Raycast(start, end, out hit))
             {
                 var tileSize = TileSize.ToVector2();
-                var gridStart = start.SnapToGrid(tileSize, AbsolutePosition);
-                var gridEnd = end.SnapToGrid(tileSize, AbsolutePosition);
+                var gStart = start.SnapToGrid(tileSize, AbsolutePosition);
+                var gEnd = end.SnapToGrid(tileSize, AbsolutePosition);
 
-                foreach (var position in PlotLine(gridStart, gridEnd))
+                foreach (var location in PlotLine(gStart, gEnd))
                 {
-                    var tile = GetTileShape(position.ToPoint());
+                    var tile = GetTileShape(location);
                     var hitDetected = tile?.Raycast(start, end, out hit) ?? false;
                     if (hitDetected) return true;
                 }
@@ -127,12 +129,12 @@ namespace FrogWorks
         {
             if (base.Overlaps(shape))
             {
-                var tileSize = TileSize.ToVector2();
-                var gridRegion = shape.Bounds.SnapToGrid(tileSize, AbsolutePosition);
+                var region = shape.Bounds
+                    .SnapToGrid(TileSize.ToVector2(), AbsolutePosition);
 
-                foreach (var position in PlotRegion(gridRegion))
+                foreach (var location in PlotRegion(region))
                 {
-                    var tile = GetTileShape(position.ToPoint());
+                    var tile = GetTileShape(location);
                     var overlaps = tile?.Overlaps(shape) ?? false;
                     if (overlaps) return true;
                 }
@@ -147,13 +149,13 @@ namespace FrogWorks
 
             if (base.Overlaps(shape, out result))
             {
-                var tileSize = TileSize.ToVector2();
-                var gridRegion = shape.Bounds.SnapToGrid(tileSize, AbsolutePosition);
+                var region = shape.Bounds
+                    .SnapToGrid(TileSize.ToVector2(), AbsolutePosition);
 
-                foreach (var position in PlotRegion(gridRegion))
+                foreach (var location in PlotRegion(region))
                 {
                     Manifold hit = default;
-                    var tile = GetTileShape(position.ToPoint());
+                    var tile = GetTileShape(location);
                     var overlaps = tile?.Overlaps(shape, out hit) ?? false;
 
                     if (overlaps)
@@ -175,12 +177,12 @@ namespace FrogWorks
                 if (collider is ShapeCollider)
                 {
                     var shape = (collider as ShapeCollider).Shape;
-                    var tileSize = TileSize.ToVector2();
-                    var gridRegion = shape.Bounds.SnapToGrid(tileSize, AbsolutePosition);
+                    var region = shape.Bounds
+                        .SnapToGrid(TileSize.ToVector2(), AbsolutePosition);
 
-                    foreach (var position in PlotRegion(gridRegion))
+                    foreach (var location in PlotRegion(region))
                     {
-                        var tile = GetTileShape(position.ToPoint());
+                        var tile = GetTileShape(location);
                         var overlaps = tile?.Overlaps(shape) ?? false;
                         if (overlaps) return true;
                     }
@@ -198,13 +200,13 @@ namespace FrogWorks
                 {
                     var collide = false;
                     var shape = (collider as ShapeCollider).Shape;
-                    var tileSize = TileSize.ToVector2();
-                    var gridRegion = shape.Bounds.SnapToGrid(tileSize, AbsolutePosition);
+                    var region = shape.Bounds
+                        .SnapToGrid(TileSize.ToVector2(), AbsolutePosition);
 
-                    foreach (var position in PlotRegion(gridRegion))
+                    foreach (var location in PlotRegion(region))
                     {
                         Manifold hit = default;
-                        var tile = GetTileShape(position.ToPoint());
+                        var tile = GetTileShape(location);
                         var overlaps = tile?.Overlaps(shape, out hit) ?? false;
 
                         if (overlaps)
@@ -233,7 +235,7 @@ namespace FrogWorks
             }
         }
 
-        public void Reset()
+        public virtual void Reset(bool hardReset = false)
         {
             Map.Clear();
         }
@@ -296,6 +298,10 @@ namespace FrogWorks
             UpdateDrawRegion(_camera);
         }
 
+        protected virtual void OnMapResized()
+        {
+        }
+
         void AddLinkToCamera(Camera camera)
         {
             if (camera != null)
@@ -341,37 +347,39 @@ namespace FrogWorks
             _drawRegion = new Rectangle(min, max - min);
         }
 
-        IEnumerable<Vector2> PlotLine(Vector2 start, Vector2 end)
+        protected IEnumerable<Point> PlotLine(Vector2 start, Vector2 end)
         {
-            var steep = (end.Y - start.Y).Abs() > (end.X - start.X).Abs();
+            var p1 = start.ToPoint();
+            var p2 = end.ToPoint();
+            var steep = (p2.Y - p1.Y).Abs() > (p2.X - p1.X).Abs();
 
             if (steep)
             {
-                Extensions.Swap(ref start.X, ref start.Y);
-                Extensions.Swap(ref end.X, ref end.Y);
+                Extensions.Swap(ref p1.X, ref p1.Y);
+                Extensions.Swap(ref p2.X, ref p2.Y);
             }
 
-            if (start.X > end.X)
+            if (p1.X > p2.X)
             {
-                Extensions.Swap(ref start.X, ref end.X);
-                Extensions.Swap(ref start.Y, ref end.Y);
+                Extensions.Swap(ref p1.X, ref p2.X);
+                Extensions.Swap(ref p1.Y, ref p2.Y);
             }
 
-            var dx = end.X - start.X;
-            var dy = (end.Y - start.Y).Abs();
-            var error = (dx * .5f).Floor();
-            var yStep = start.Y < end.Y ? 1f : -1f;
-            var y = start.Y;
+            var dx = p2.X - p1.X;
+            var dy = (p2.Y - p1.Y).Abs();
+            var error = dx / 2;
+            var yStep = p1.Y < p2.Y ? 1 : -1;
+            var y = p1.Y;
 
-            for (float x = start.X; x <= end.X; x++)
+            for (int x = p1.X; x <= p2.X; x++)
             {
                 yield return steep
-                    ? new Vector2(y, x)
-                    : new Vector2(x, y);
+                    ? new Point(y, x)
+                    : new Point(x, y);
 
                 error -= dy;
 
-                if (error < 0f)
+                if (error < 0)
                 {
                     y += yStep;
                     error += dx;
@@ -379,19 +387,19 @@ namespace FrogWorks
             }
         }
 
-        IEnumerable<Vector2> PlotRegion(Rectangle region)
+        protected IEnumerable<Point> PlotRegion(Rectangle region)
         {
             for (int i = 0; i < region.Width * region.Height; i++)
             {
                 var x = region.Left + (i % region.Width);
                 var y = region.Top + (i / region.Width);
 
-                yield return new Vector2(x, y);
+                yield return new Point(x, y);
             }
         }
     }
 
-    public interface IMapManager<T>
+    public interface IMapModifier<T>
     {
         void Fill(T tile, int x, int y);
 
@@ -408,5 +416,22 @@ namespace FrogWorks
         void Overlay(T[,] tiles, int offsetX, int offsetY);
 
         void Overlay(T[,] tiles, Point offset);
+    }
+
+    public interface IMapAccessor<T>
+    {
+        T GetTile(float x, float y);
+
+        T GetTile(Vector2 point);
+
+        IEnumerable<T> GetTiles(float x1, float y1, float x2, float y2);
+
+        IEnumerable<T> GetTiles(Vector2 start, Vector2 end);
+
+        IEnumerable<T> GetTiles(Shape shape);
+
+        IEnumerable<T> GetTiles(Collider collider);
+
+        IEnumerable<T> GetTiles(Entity entity);
     }
 }
