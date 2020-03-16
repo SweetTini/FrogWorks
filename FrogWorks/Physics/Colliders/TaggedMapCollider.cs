@@ -360,6 +360,16 @@ namespace FrogWorks
             }
         }
 
+        public TaggedTile<T> GetTileAt(int x, int y)
+        {
+            return GetTileAt(new Point(x, y));
+        }
+
+        public TaggedTile<T> GetTileAt(Point location)
+        {
+            return new TaggedTile<T>(location, Map[location]);
+        }
+
         public TaggedTile<T> GetTile(float x, float y)
         {
             return GetTile(new Vector2(x, y));

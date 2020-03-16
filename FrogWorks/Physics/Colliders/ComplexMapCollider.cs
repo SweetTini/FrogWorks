@@ -490,6 +490,19 @@ namespace FrogWorks
             }
         }
 
+        public ComplexTile<T> GetTileAt(int x, int y)
+        {
+            return GetTileAt(new Point(x, y));
+        }
+
+        public ComplexTile<T> GetTileAt(Point location)
+        {
+            return new ComplexTile<T>(
+                location,
+                GetTileShape(location),
+                AttributeMap[location]);
+        }
+
         public ComplexTile<T> GetTile(float x, float y)
         {
             return GetTile(new Vector2(x, y));

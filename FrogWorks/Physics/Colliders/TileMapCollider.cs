@@ -420,6 +420,10 @@ namespace FrogWorks
 
     public interface IMapAccessor<T>
     {
+        T GetTileAt(int x, int y);
+
+        T GetTileAt(Point location);
+
         T GetTile(float x, float y);
 
         T GetTile(Vector2 point);

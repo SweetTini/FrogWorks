@@ -133,6 +133,16 @@ namespace FrogWorks
             }
         }
 
+        public SimpleTile GetTileAt(int x, int y)
+        {
+            return GetTileAt(new Point(x, y));
+        }
+
+        public SimpleTile GetTileAt(Point location)
+        {
+            return new SimpleTile(location, Map[location]);
+        }
+
         public SimpleTile GetTile(float x, float y)
         {
             return GetTile(new Vector2(x, y));
