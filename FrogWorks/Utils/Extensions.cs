@@ -811,22 +811,19 @@ namespace FrogWorks
         #endregion
 
         #region Reflection
-        public static Delegate GetMethod<T>(object obj, string name)
+        public static Delegate GetMethod<T>(object instance, string name)
             where T : class
         {
-            var flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-            var method = obj.GetType().GetMethod(name, flags);
+            var flags = BindingFlags.Instance 
+                | BindingFlags.Public 
+                | BindingFlags.NonPublic;
 
-            try
-            {
-                return method != null
-                    ? Delegate.CreateDelegate(typeof(T), obj, name)
-                    : null;
-            }
-            catch
-            {
-                return null;
-            }
+            var method = instance.GetType().GetMethod(name, flags);
+
+            return method != null
+                ? Delegate.CreateDelegate(
+                    typeof(T), instance, method, false)
+                : null;
         }
         #endregion
 
