@@ -163,7 +163,7 @@ namespace FrogWorks
 
                 var tile = GetTileShape(location);
                 var collide = tile?.Contains(point) ?? false;
-                return collide && HasAttributes(location, attributes);
+                return collide && HasTags(location, attributes);
             }
 
             return false;
@@ -194,7 +194,7 @@ namespace FrogWorks
                 {
                     var tile = GetTileShape(location);
                     var hitDetected = tile?.Raycast(start, end, out hit) ?? false;
-                    if (hitDetected && HasAttributes(location, attributes))
+                    if (hitDetected && HasTags(location, attributes))
                         return true;
                 }
             }
@@ -213,7 +213,7 @@ namespace FrogWorks
                 {
                     var tile = GetTileShape(location);
                     var overlaps = tile?.Overlaps(shape) ?? false;
-                    if (overlaps && HasAttributes(location, attributes))
+                    if (overlaps && HasTags(location, attributes))
                         return true;
                 }
             }
@@ -238,7 +238,7 @@ namespace FrogWorks
                     var tile = GetTileShape(location);
                     var overlaps = tile?.Overlaps(shape, out hit) ?? false;
 
-                    if (overlaps && HasAttributes(location, attributes))
+                    if (overlaps && HasTags(location, attributes))
                     {
                         hit.Normal = -hit.Normal;
                         result.Add(hit);
@@ -269,7 +269,7 @@ namespace FrogWorks
                     {
                         var tile = GetTileShape(location);
                         var overlaps = tile?.Overlaps(shape) ?? false;
-                        if (overlaps && HasAttributes(location, attributes))
+                        if (overlaps && HasTags(location, attributes))
                             return true;
                     }
                 }
@@ -302,7 +302,7 @@ namespace FrogWorks
                         var tile = GetTileShape(location);
                         var overlaps = tile?.Overlaps(shape, out hit) ?? false;
 
-                        if (overlaps && HasAttributes(location, attributes))
+                        if (overlaps && HasTags(location, attributes))
                         {
                             hit.Normal = -hit.Normal;
                             result.Add(hit);
@@ -331,6 +331,92 @@ namespace FrogWorks
             return entity != null
                 && entity != Entity
                 && Overlaps(entity.Collider, attributes, out result);
+        }
+
+        public bool ContainsTags(float x, float y, T attributes)
+        {
+            return ContainsTags(new Vector2(x, y), attributes);
+        }
+
+        public bool ContainsTags(Vector2 point, T attributes)
+        {
+            if (IsCollidable)
+            {
+                var location = point
+                    .SnapToGrid(TileSize.ToVector2(), AbsolutePosition)
+                    .ToPoint();
+
+                return HasTags(location, attributes);
+            }
+
+            return false;
+        }
+
+        public bool ContainsTags(float x1, float y1, float x2, float y2, T attributes)
+        {
+            return ContainsTags(new Vector2(x1, y1), new Vector2(x2, y2), attributes);
+        }
+
+        public bool ContainsTags(Vector2 start, Vector2 end, T attributes)
+        {
+            if (IsCollidable)
+            {
+                var tileSize = TileSize.ToVector2();
+                var gStart = start.SnapToGrid(tileSize, AbsolutePosition);
+                var gEnd = end.SnapToGrid(tileSize, AbsolutePosition);
+
+                foreach (var location in PlotLine(gStart, gEnd))
+                    if (HasTags(location, attributes))
+                        return true;
+            }
+
+            return false;
+        }
+
+        public bool ContainsTags(Shape shape, T attributes)
+        {
+            if (IsCollidable && shape != null)
+            {
+                var region = shape.Bounds
+                    .SnapToGrid(TileSize.ToVector2(), AbsolutePosition);
+
+                foreach (var location in PlotRegion(region))
+                    if (HasTags(location, attributes))
+                        return true;
+            }
+
+            return false;
+        }
+
+        public bool ContainsTags(Collider collider, T attributes)
+        {
+            var canCollide = collider != null
+                && collider != this
+                && IsCollidable
+                && collider.IsCollidable;
+
+            if (canCollide)
+            {
+                if (collider is ShapeCollider)
+                {
+                    var shape = (collider as ShapeCollider).Shape;
+                    var region = shape.Bounds
+                        .SnapToGrid(TileSize.ToVector2(), AbsolutePosition);
+
+                    foreach (var location in PlotRegion(region))
+                        if (HasTags(location, attributes))
+                            return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool ContainsTags(Entity entity, T attributes)
+        {
+            return entity != null
+                && entity != Entity
+                && ContainsTags(entity.Collider, attributes);
         }
 
         public void Fill(int tile, int x, int y)
@@ -531,15 +617,20 @@ namespace FrogWorks
             }
         }
 
-        bool HasAttributes(Point location, T attributes)
+        bool HasTags(Point location, T attributes)
         {
-            var enumValue = (Enum)(ValueType)AttributeMap[location];
-            var searchValue = (Enum)(ValueType)attributes;
-            var hasFlagAttribute = typeof(T).IsDefined(typeof(FlagsAttribute), false);
+            if (!attributes.Equals(Map.Empty))
+            {
+                var enumValue = (Enum)(ValueType)AttributeMap[location];
+                var searchValue = (Enum)(ValueType)attributes;
+                var hasFlagAttribute = typeof(T).IsDefined(typeof(FlagsAttribute), false);
 
-            return hasFlagAttribute
-                ? enumValue.HasFlag(searchValue)
-                : enumValue == searchValue;
+                return hasFlagAttribute
+                    ? enumValue.HasFlag(searchValue)
+                    : enumValue == searchValue;
+            }
+
+            return false;
         }
         #endregion
 

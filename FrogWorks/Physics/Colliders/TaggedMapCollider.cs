@@ -422,13 +422,18 @@ namespace FrogWorks
 
         bool HasAttributes(Point location, T attributes)
         {
-            var enumValue = (Enum)(ValueType)Map[location];
-            var searchValue = (Enum)(ValueType)attributes;
-            var hasFlagAttribute = typeof(T).IsDefined(typeof(FlagsAttribute), false);
+            if (!attributes.Equals(Map.Empty))
+            {
+                var enumValue = (Enum)(ValueType)Map[location];
+                var searchValue = (Enum)(ValueType)attributes;
+                var hasFlagAttribute = typeof(T).IsDefined(typeof(FlagsAttribute), false);
 
-            return hasFlagAttribute
-                ? enumValue.HasFlag(searchValue)
-                : enumValue == searchValue;
+                return hasFlagAttribute
+                    ? enumValue.HasFlag(searchValue)
+                    : enumValue == searchValue;
+            }
+
+            return false;
         }
     }
 
