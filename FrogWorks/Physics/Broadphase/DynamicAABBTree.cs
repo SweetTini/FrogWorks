@@ -138,7 +138,7 @@ namespace FrogWorks
                 var oldParent = sibling.Parent;
                 var newParent = new Node()
                 {
-                    AABB = leaf.AABB.Merge(sibling.AABB).Expand(_padding),
+                    AABB = sibling.AABB.Merge(leaf.AABB).Expand(_padding),
                     Parent = sibling.Parent,
                     Left = sibling,
                     Right = leaf,
@@ -148,15 +148,15 @@ namespace FrogWorks
                 sibling.Parent = newParent;
                 leaf.Parent = newParent;
 
-                if (oldParent == null)
-                {
-                    _root = newParent;
-                }
-                else
+                if (oldParent != null)
                 {
                     if (oldParent.Left == sibling)
                         oldParent.Left = newParent;
                     else oldParent.Right = newParent;
+                }
+                else
+                {
+                    _root = newParent;
                 }
 
                 UpdateTree(leaf.Parent);
@@ -185,9 +185,9 @@ namespace FrogWorks
                 {
                     var parent = leaf.Parent;
                     var grandparent = parent.Parent;
-                    var sibling = parent.Left != leaf
-                        ? parent.Left
-                        : parent.Right;
+                    var sibling = parent.Left == leaf
+                        ? parent.Right
+                        : parent.Left;
 
                     if (grandparent != null)
                     {
@@ -292,7 +292,7 @@ namespace FrogWorks
                     var loNode = fixLeft ? rNode : lNode;
 
                     node.Right = hiNode;
-                    tree.Right = loNode;
+                    tree.Left = loNode;
                     loNode.Parent = tree;
 
                     tree.AABB = oNode.AABB.Merge(loNode.AABB).Expand(_padding);

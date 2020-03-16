@@ -434,13 +434,13 @@ namespace FrogWorks
         {
             if (!attributes.Equals(Map.Empty))
             {
-                var enumValue = (Enum)(ValueType)Map[location];
-                var searchValue = (Enum)(ValueType)attributes;
+                var enumValue = (Enum)Enum.ToObject(typeof(T), Map[location]);
+                var searchValue = (Enum)(object)attributes;
                 var hasFlagAttribute = typeof(T).IsDefined(typeof(FlagsAttribute), false);
 
                 return hasFlagAttribute
                     ? enumValue.HasFlag(searchValue)
-                    : enumValue == searchValue;
+                    : enumValue.Equals(searchValue);
             }
 
             return false;
