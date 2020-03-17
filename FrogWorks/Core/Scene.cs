@@ -311,6 +311,58 @@ namespace FrogWorks
         {
             World.DrawBroadphase(batch, treeColor, leafColor);
         }
+
+        public IEnumerable<Entity> Contains(float x, float y)
+        {
+            return Contains(new Vector2(x, y));
+        }
+
+        public IEnumerable<Entity> Contains(Vector2 point)
+        {
+            return World.Contains(point).ToEntityList();
+        }
+
+        public IEnumerable<Entity> Raycast(float x1, float y1, float x2, float y2)
+        {
+            return Raycast(new Vector2(x1, y1), new Vector2(x2, y2));
+        }
+
+        public IEnumerable<Entity> Raycast(Vector2 start, Vector2 end)
+        {
+            return World.Raycast(start, end).ToEntityList();
+        }
+
+        public IEnumerable<EntityHitPair<Raycast>> RaycastEx(
+            float x1, float y1, float x2, float y2)
+        {
+            return RaycastEx(new Vector2(x1, y1), new Vector2(x2, y2));
+        }
+
+        public IEnumerable<EntityHitPair<Raycast>> RaycastEx(
+            Vector2 start, Vector2 end)
+        {
+            return World.RaycastEx(start, end).ToEntityList();
+        }
+
+        public IEnumerable<Entity> Overlaps(Shape shape)
+        {
+            return World.Overlaps(shape).ToEntityList();
+        }
+
+        public IEnumerable<Entity> Overlaps(Entity entity)
+        {
+            return World.Overlaps(entity).ToEntityList();
+        }
+
+        public IEnumerable<EntityHitPair<CollisionResult>> OverlapsEx(Shape shape)
+        {
+            return World.OverlapsEx(shape).ToEntityList();
+        }
+
+        public IEnumerable<EntityHitPair<CollisionResult>> OverlapsEx(Entity entity)
+        {
+            return World.OverlapsEx(entity).ToEntityList();
+        }
         #endregion
 
         #region Intervals

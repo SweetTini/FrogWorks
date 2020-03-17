@@ -26,7 +26,6 @@ namespace FrogWorks
 
         internal void Add(Manifold hit)
         {
-            hit.Collider = Collider;
             _hits.Add(hit);
         }
     }
