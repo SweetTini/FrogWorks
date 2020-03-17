@@ -265,9 +265,9 @@ namespace FrogWorks
 
                 if (balance.Abs() > 1)
                 {
-                    var fixLeft = balance.Sign() < 0;
-                    var node = fixLeft ? left : right;
-                    var oNode = fixLeft ? right : left;
+                    var updateLeftTree = balance.Sign() < 0;
+                    var node = updateLeftTree ? left : right;
+                    var oNode = updateLeftTree ? right : left;
 
                     var lNode = node.Left;
                     var rNode = node.Right;
@@ -287,12 +287,14 @@ namespace FrogWorks
                         _root = node;
                     }
 
-                    fixLeft = lNode.Height > rNode.Height;
-                    var hiNode = fixLeft ? lNode : rNode;
-                    var loNode = fixLeft ? rNode : lNode;
+                    var updateLeftNode = lNode.Height > rNode.Height;
+                    var hiNode = updateLeftNode ? lNode : rNode;
+                    var loNode = updateLeftNode ? rNode : lNode;
 
                     node.Right = hiNode;
-                    tree.Left = loNode;
+                    if (updateLeftTree) 
+                        tree.Left = loNode;
+                    else tree.Right = loNode;
                     loNode.Parent = tree;
 
                     tree.AABB = oNode.AABB.Merge(loNode.AABB).Expand(_padding);
