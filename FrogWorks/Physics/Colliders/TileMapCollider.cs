@@ -27,13 +27,13 @@ namespace FrogWorks
             }
         }
 
-        public int MapWidth
+        public int Columns
         {
             get { return MapSize.X; }
             set { MapSize = new Point(value, MapSize.Y); }
         }
 
-        public int MapHeight
+        public int Rows
         {
             get { return MapSize.Y; }
             set { MapSize = new Point(MapSize.X, value); }

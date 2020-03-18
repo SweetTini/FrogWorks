@@ -14,22 +14,22 @@ namespace FrogWorks
         Dictionary<T, Color> Colors { get; set; }
 
         public TaggedMapCollider(
-            int mapWidth, int mapHeight,
+            int columns, int rows,
             int tileWidth, int tileHeight)
             : this(
                   Vector2.Zero,
-                  new Point(mapWidth, mapHeight),
+                  new Point(columns, rows),
                   new Point(tileWidth, tileHeight))
         {
         }
 
         public TaggedMapCollider(
             float x, float y,
-            int mapWidth, int mapHeight,
+            int columns, int rows,
             int tileWidth, int tileHeight)
             : this(
                   new Vector2(x, y),
-                  new Point(mapWidth, mapHeight),
+                  new Point(columns, rows),
                   new Point(tileWidth, tileHeight))
         {
         }

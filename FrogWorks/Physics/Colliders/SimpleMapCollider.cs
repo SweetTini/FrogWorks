@@ -8,22 +8,22 @@ namespace FrogWorks
         : TileMapCollider, IMapModifier<bool>, IMapAccessor<SimpleTile>
     {
         public SimpleMapCollider(
-            int mapWidth, int mapHeight,
+            int columns, int rows,
             int tileWidth, int tileHeight)
             : this(
                   Vector2.Zero,
-                  new Point(mapWidth, mapHeight),
+                  new Point(columns, rows),
                   new Point(tileWidth, tileHeight))
         {
         }
 
         public SimpleMapCollider(
             float x, float y,
-            int mapWidth, int mapHeight,
+            int columns, int rows,
             int tileWidth, int tileHeight)
             : this(
                   new Vector2(x, y),
-                  new Point(mapWidth, mapHeight),
+                  new Point(columns, rows),
                   new Point(tileWidth, tileHeight))
         {
         }
