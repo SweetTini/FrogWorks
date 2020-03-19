@@ -71,7 +71,7 @@ namespace FrogWorks
             if (disposing)
             {
                 _scene?.Layers.Dispose();
-                _scene.ResetRenderTarget(true);
+                _scene?.ResetRenderTarget(true);
                 Input.Dispose();
                 AssetManager.ClearCache();
                 AudioMgr.Unload();
