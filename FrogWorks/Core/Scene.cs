@@ -327,9 +327,24 @@ namespace FrogWorks
             return Raycast(new Vector2(x1, y1), new Vector2(x2, y2));
         }
 
+        public IEnumerable<Entity> Raycast(
+            float x, float y,
+            float xNormal, float yNormal,
+            float distance)
+        {
+            var start = new Vector2(x, y);
+            var normal = new Vector2(xNormal, yNormal);
+            return Raycast(start, start + normal * distance);
+        }
+
         public IEnumerable<Entity> Raycast(Vector2 start, Vector2 end)
         {
             return World.Raycast(start, end).ToEntityList();
+        }
+
+        public IEnumerable<Entity> Raycast(Vector2 start, Vector2 normal, float distance)
+        {
+            return World.Raycast(start, start + normal * distance).ToEntityList();
         }
 
         public IEnumerable<EntityHitPair<Raycast>> RaycastEx(
@@ -339,9 +354,25 @@ namespace FrogWorks
         }
 
         public IEnumerable<EntityHitPair<Raycast>> RaycastEx(
+            float x, float y,
+            float xNormal, float yNormal,
+            float distance)
+        {
+            var start = new Vector2(x, y);
+            var normal = new Vector2(xNormal, yNormal);
+            return RaycastEx(start, start + normal * distance);
+        }
+
+        public IEnumerable<EntityHitPair<Raycast>> RaycastEx(
             Vector2 start, Vector2 end)
         {
             return World.RaycastEx(start, end).ToEntityList();
+        }
+
+        public IEnumerable<EntityHitPair<Raycast>> RaycastEx(
+            Vector2 start, Vector2 normal, float distance)
+        {
+            return World.RaycastEx(start, start + normal * distance).ToEntityList();
         }
 
         public IEnumerable<Entity> Overlaps(Shape shape)

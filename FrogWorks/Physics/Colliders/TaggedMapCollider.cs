@@ -136,6 +136,18 @@ namespace FrogWorks
             return Raycast(new Vector2(x1, y1), new Vector2(x2, y2), attributes, out hit);
         }
 
+        public bool Raycast(
+            float x, float y,
+            float xNormal, float yNormal,
+            float distance,
+            T attributes,
+            out Raycast hit)
+        {
+            var start = new Vector2(x, y);
+            var normal = new Vector2(xNormal, yNormal);
+            return Raycast(start, start + normal * distance, attributes, out hit);
+        }
+
         public bool Raycast(Vector2 start, Vector2 end, T attributes, out Raycast hit)
         {
             hit = default;
@@ -156,6 +168,16 @@ namespace FrogWorks
             }
 
             return false;
+        }
+
+        public bool Raycast(
+            Vector2 start,
+            Vector2 normal,
+            float distance,
+            T attributes,
+            out Raycast hit)
+        {
+            return Raycast(start, start + normal * distance, attributes, out hit);
         }
 
         public bool Overlaps(Shape shape, T attributes)
@@ -225,7 +247,7 @@ namespace FrogWorks
                     {
                         var tile = GetTileShape(location);
                         var overlaps = tile?.Overlaps(shape) ?? false;
-                        if (overlaps && HasAttributes(location, attributes)) 
+                        if (overlaps && HasAttributes(location, attributes))
                             return true;
                     }
                 }
@@ -275,8 +297,8 @@ namespace FrogWorks
 
         public bool Overlaps(Entity entity, T attributes)
         {
-            return entity != null 
-                && entity != Entity 
+            return entity != null
+                && entity != Entity
                 && Overlaps(entity.Collider, attributes);
         }
 
@@ -284,7 +306,7 @@ namespace FrogWorks
         {
             result = new CollisionResult(this);
 
-            return entity != null 
+            return entity != null
                 && entity != Entity
                 && Overlaps(entity.Collider, attributes, out result);
         }
@@ -455,7 +477,21 @@ namespace FrogWorks
 
         bool Raycast(float x1, float y1, float x2, float y2, T attributes, out Raycast hit);
 
+        bool Raycast(
+            float x, float y,
+            float xNormal, float yNormal,
+            float distance,
+            T attributes,
+            out Raycast hit);
+
         bool Raycast(Vector2 start, Vector2 end, T attributes, out Raycast hit);
+
+        bool Raycast(
+            Vector2 start,
+            Vector2 normal,
+            float distance,
+            T attributes,
+            out Raycast hit);
 
         bool Overlaps(Shape shape, T attributes);
 

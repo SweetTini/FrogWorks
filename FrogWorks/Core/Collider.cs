@@ -152,10 +152,26 @@ namespace FrogWorks
             return Raycast(new Vector2(x1, y1), new Vector2(x2, y2), out hit);
         }
 
+        public bool Raycast(
+            float x, float y,
+            float xNormal, float yNormal,
+            float distance,
+            out Raycast hit)
+        {
+            var start = new Vector2(x, y);
+            var normal = new Vector2(xNormal, yNormal);
+            return Raycast(start, start + normal * distance, out hit);
+        }
+
         public virtual bool Raycast(Vector2 start, Vector2 end, out Raycast hit)
         {
             hit = default;
             return IsCollidable;
+        }
+
+        public bool Raycast(Vector2 start, Vector2 normal, float distance, out Raycast hit)
+        {
+            return Raycast(start, start + normal * distance, out hit);
         }
 
         public virtual bool Overlaps(Shape shape)

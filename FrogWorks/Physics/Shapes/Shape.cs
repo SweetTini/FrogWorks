@@ -84,9 +84,25 @@ namespace FrogWorks
             return Raycast(new Vector2(x1, y1), new Vector2(x2, y2), out hit);
         }
 
+        public bool Raycast(
+            float x, float y,
+            float xNormal, float yNormal,
+            float distance,
+            out Raycast hit)
+        {
+            var start = new Vector2(x, y);
+            var normal = new Vector2(xNormal, yNormal);
+            return Raycast(start, start + normal * distance, out hit);
+        }
+
         public bool Raycast(Vector2 start, Vector2 end, out Raycast hit)
         {
             return Collision.Raycast(start, end, this, out hit);
+        }
+
+        public bool Raycast(Vector2 start, Vector2 normal, float distance, out Raycast hit)
+        {
+            return Collision.Raycast(start, start + normal * distance, this, out hit);
         }
 
         public bool Overlaps(Shape shape)
@@ -206,7 +222,7 @@ namespace FrogWorks
             float minB,
             float maxB)
         {
-            return (minA > minB && maxA < maxB) 
+            return (minA > minB && maxA < maxB)
                 || (minB > minA && maxB < maxA);
         }
         #endregion

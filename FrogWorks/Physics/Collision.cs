@@ -53,6 +53,16 @@ namespace FrogWorks
             return false;
         }
 
+        public static bool Raycast(
+            Vector2 start,
+            Vector2 normal,
+            float distance,
+            Shape shape,
+            out Raycast hit)
+        {
+            return Raycast(start, start + normal * distance, shape, out hit);
+        }
+
         static bool RaycastCircle(
             Vector2 start,
             Vector2 end,

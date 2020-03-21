@@ -165,6 +165,16 @@ namespace FrogWorks
             return (number % divisor + divisor) % divisor;
         }
 
+        public static int Pow(this int number, int exponent)
+        {
+            return (int)Math.Pow(number, exponent);
+        }
+
+        public static float Pow(this float number, float exponent)
+        {
+            return (float)Math.Pow(number, exponent);
+        }
+
         public static float Round(this float number)
         {
             return (float)Math.Round(number);
