@@ -73,7 +73,7 @@ namespace FrogWorks
                 var extension = Path.GetExtension(fullPath);
                 var rootDirectory = Runner.Application.Game.Content.RootDirectory;
                 fullPath = Path.Combine(rootDirectory, Path.ChangeExtension(filePath, extension));
-                return AudioMgr.LoadSound(fullPath);
+                //return AudioMgr.LoadSound(fullPath);
             }
 
             return null;
@@ -88,7 +88,7 @@ namespace FrogWorks
                 var extension = Path.GetExtension(fullPath);
                 var rootDirectory = Runner.Application.Game.Content.RootDirectory;
                 fullPath = Path.Combine(rootDirectory, Path.ChangeExtension(filePath, extension));
-                return AudioMgr.LoadStreamedSound(fullPath);
+                //return AudioMgr.LoadStreamedSound(fullPath);
             }
 
             return null;

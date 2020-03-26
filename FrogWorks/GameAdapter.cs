@@ -26,7 +26,7 @@ namespace FrogWorks
             Graphics.GraphicsProfile = GraphicsProfile.Reach;
 
             Input.Initialize();
-            AudioMgr.Init(string.Empty);
+            //AudioMgr.Init(string.Empty);
 
             Content.RootDirectory = "Content";
         }
@@ -45,7 +45,7 @@ namespace FrogWorks
                 FramesPerSecond = (int)Math.Round(1f / DeltaTime);
 
             Input.Update(IsActive, DeltaTime);
-            AudioMgr.Update();
+            //AudioMgr.Update();
 
             _scene?.Update(DeltaTime);
 
@@ -74,7 +74,7 @@ namespace FrogWorks
                 _scene?.ResetRenderTarget(true);
                 Input.Dispose();
                 AssetManager.ClearCache();
-                AudioMgr.Unload();
+                //AudioMgr.Unload();
             }
 
             base.Dispose(disposing);
