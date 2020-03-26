@@ -3,8 +3,6 @@ using Microsoft.Xna.Framework.Content.Pipeline.Processors;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Framework.Content.Pipeline.Builder;
 using System;
-using System.Collections.Generic;
-using System.IO;
 
 namespace FrogWorks
 {
@@ -64,7 +62,7 @@ namespace FrogWorks
                 var pipelineManager = new PipelineManager(string.Empty, string.Empty, string.Empty)
                 {
                     Profile = Runner.Application.Game.Graphics.GraphicsProfile,
-                    Platform = TargetPlatform.DesktopGL
+                    Platform = GetTargetPlatform()
                 };
 
                 var processorContext = new PipelineProcessorContext(pipelineManager, new PipelineBuildEvent());
@@ -76,6 +74,13 @@ namespace FrogWorks
             }
 
             return null;
+        }
+
+        static TargetPlatform GetTargetPlatform()
+        {
+            // TODO: Will expand on this later when there are more 
+            //       runner types to work with.
+            return TargetPlatform.DesktopGL;
         }
         #endregion
     }

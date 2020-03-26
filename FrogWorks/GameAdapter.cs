@@ -1,5 +1,4 @@
-﻿using ChaiFoxes.FMODAudio;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
@@ -26,7 +25,6 @@ namespace FrogWorks
             Graphics.GraphicsProfile = GraphicsProfile.Reach;
 
             Input.Initialize();
-            //AudioMgr.Init(string.Empty);
 
             Content.RootDirectory = "Content";
         }
@@ -40,12 +38,11 @@ namespace FrogWorks
         protected override void Update(GameTime gameTime)
         {
             DeltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            
-            if (DeltaTime > 0f) 
+
+            if (DeltaTime > 0f)
                 FramesPerSecond = (int)Math.Round(1f / DeltaTime);
 
             Input.Update(IsActive, DeltaTime);
-            //AudioMgr.Update();
 
             _scene?.Update(DeltaTime);
 
@@ -74,7 +71,6 @@ namespace FrogWorks
                 _scene?.ResetRenderTarget(true);
                 Input.Dispose();
                 AssetManager.ClearCache();
-                //AudioMgr.Unload();
             }
 
             base.Dispose(disposing);

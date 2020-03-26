@@ -33,10 +33,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ChaiFoxes.FMODAudio.Desktop, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\ChaiFoxes.FMODAudio.Desktop.1.0.3\lib\net45\ChaiFoxes.FMODAudio.Desktop.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="MonoGame.Framework, Version=3.6.0.1625, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\MonoGame.Framework.DesktopGL.3.6.0.1625\lib\net40\MonoGame.Framework.dll</HintPath>
       <Private>True</Private>
@@ -51,8 +47,8 @@
   <ItemGroup>
     <Compile Include="Assets\AssetManager.cs" />
     <Compile Include="Assets\Audio\Audio.cs" />
-    <Compile Include="Assets\Audio\SoundTrack.cs" />
     <Compile Include="Assets\Audio\SoundEffect.cs" />
+    <Compile Include="Assets\Audio\SoundTrack.cs" />
     <Compile Include="Assets\Graphics\Shader.cs" />
     <Compile Include="Assets\Graphics\TextureAtlas.cs" />
     <Compile Include="Assets\Loaders\TexturePacker.cs" />

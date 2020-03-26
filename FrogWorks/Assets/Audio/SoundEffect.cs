@@ -1,19 +1,16 @@
-﻿using ChaiFoxes.FMODAudio;
-
-namespace FrogWorks
+﻿namespace FrogWorks
 {
-    public class SoundEffect : Audio
+    public sealed class SoundEffect : Audio
     {
-        protected SoundEffect(Sound sound) 
-            : base(sound)
+        internal SoundEffect()
+            : base()
         {
         }
 
         #region Static Methods
         public static SoundEffect Load(string filePath)
         {
-            var sound = AssetManager.GetFromCache(filePath, LoadSound);
-            return sound != null ? new SoundEffect(sound) : null;
+            return null;
         }
         #endregion
     }
