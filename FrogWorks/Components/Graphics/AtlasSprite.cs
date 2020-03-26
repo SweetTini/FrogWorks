@@ -35,6 +35,16 @@ namespace FrogWorks
             }
         }
 
+        public float FrameStep
+        {
+            get { return Current?.FrameStep ?? 0f; }
+            set
+            {
+                if (Current != null)
+                    Current.FrameStep = value;
+            }
+        }
+
         public float DelayPerFrame
         {
             get { return Current?.DelayPerFrame ?? 0f; }

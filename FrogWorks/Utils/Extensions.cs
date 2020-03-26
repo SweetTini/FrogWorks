@@ -579,12 +579,16 @@ namespace FrogWorks
 
         public static Vector2 Round(this Vector2 vector)
         {
-            return new Vector2((float)Math.Round(vector.X), (float)Math.Round(vector.Y));
+            return new Vector2(
+                (float)Math.Round(vector.X), 
+                (float)Math.Round(vector.Y));
         }
 
         public static Vector2 Round(this Vector2 vector, int digits)
         {
-            return new Vector2((float)Math.Round(vector.X, digits), (float)Math.Round(vector.Y, digits));
+            return new Vector2(
+                (float)Math.Round(vector.X, digits), 
+                (float)Math.Round(vector.Y, digits));
         }
 
         public static Vector2 SnapToGrid(this Vector2 vector, Vector2 size, Vector2 offset = default(Vector2))

@@ -54,7 +54,7 @@ namespace FrogWorks
 
         public TextureAtlasTexture[] Get(params string[] keys)
         {
-            return keys.Distinct()
+            return keys
                 .Where(k => _textures.ContainsKey(k))
                 .Select(k => _textures[k])
                 .ToArray();
@@ -66,7 +66,7 @@ namespace FrogWorks
                 .Select((kv, i) => new { Index = i, Pair = kv })
                 .ToDictionary(k => k.Pair.Key, v => v.Index);
 
-            return keys.Distinct()
+            return keys
                 .Where(k => indexes.ContainsKey(k))
                 .Select(k => indexes[k])
                 .ToArray();
