@@ -5,6 +5,7 @@ namespace FrogWorks.Demo
     public class MiniApple : Entity
     {
         Image _image;
+        bool _isControllable;
 
         public MiniApple(float x, float y)
             : this(new Vector2(x, y))
@@ -23,9 +24,17 @@ namespace FrogWorks.Demo
             Collider = new CircleCollider(-13, -10, 12);
         }
 
-        public void MarkAsMain()
+        protected override void BeforeUpdate(float deltaTime)
         {
-            _image.Color = Color.Purple;
+            if (_isControllable)
+            {
+
+            }
+        }
+
+        public void MarkAsControllable()
+        {
+            _isControllable = true;
         }
     }
 }

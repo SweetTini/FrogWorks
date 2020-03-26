@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using System.Linq;
 
 namespace FrogWorks.Demo
 {
@@ -14,9 +13,12 @@ namespace FrogWorks.Demo
 
         protected override void Begin()
         {
+            ClearColor = ColorEX.FromRGB(96, 96, 96);
+
             _apple = new MiniApple(64, 64);
-            _apple.MarkAsMain();
+            _apple.MarkAsControllable();
             Add(_apple);
+            
             SpawnApples();
         }
 
@@ -34,22 +36,16 @@ namespace FrogWorks.Demo
                 SpawnApples();
         }
 
-        protected override void BeforeDraw(RendererBatch batch)
-        {
-            batch.Configure(camera: Camera);
-            batch.Begin();
-            DrawBroadphase(batch, Color.Teal * .5f, Color.Cyan * .5f);
-            batch.End();
-        }
-
         void SpawnApples()
         {
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < 50; i++)
             {
                 Add(new MiniApple(
                     RandomEX.Current.Next(16, 240),
                     RandomEX.Current.Next(16, 208)));
             }
+
+            _apple.MoveToTop();
         }
     }
 }
