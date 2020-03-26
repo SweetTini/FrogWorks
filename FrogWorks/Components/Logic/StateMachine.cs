@@ -47,7 +47,12 @@ namespace FrogWorks
             }
         }
 
-        protected void AddOrUpdate(T key, Func<float, T?> update = null, Func<IEnumerator> coroutine = null, Action begin = null, Action end = null)
+        protected void AddOrUpdate(
+            T key, 
+            Func<float, T?> update = null, 
+            Func<IEnumerator> coroutine = null, 
+            Action begin = null, 
+            Action end = null)
         {
             if (_states.ContainsKey(key))
             {
@@ -66,7 +71,12 @@ namespace FrogWorks
             }
         }
 
-        public void SetCallbacks(T key, Func<float, T?> update, Func<IEnumerator> coroutine = null, Action begin = null, Action end = null)
+        public void SetCallbacks(
+            T key, 
+            Func<float, T?> update, 
+            Func<IEnumerator> coroutine = null, 
+            Action begin = null, 
+            Action end = null)
         {
             AddOrUpdate(key, update, coroutine, begin, end);
         }
@@ -80,8 +90,10 @@ namespace FrogWorks
 
             if (Parent != null)
             {
-                update = (Func<float, T?>)Extensions.GetMethod<Func<float, T?>>(Parent, $"Update{name}");
-                coroutine = (Func<IEnumerator>)Extensions.GetMethod<Func<IEnumerator>>(Parent, $"Coroutine{name}");
+                update = (Func<float, T?>)Extensions.GetMethod<Func<float, T?>>(
+                    Parent, $"Update{name}");
+                coroutine = (Func<IEnumerator>)Extensions.GetMethod<Func<IEnumerator>>(
+                    Parent, $"Coroutine{name}");
                 begin = (Action)Extensions.GetMethod<Action>(Parent, $"Begin{name}");
                 end = (Action)Extensions.GetMethod<Action>(Parent, $"End{name}");
             }

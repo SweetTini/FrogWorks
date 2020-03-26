@@ -34,6 +34,12 @@ namespace FrogWorks
 
                 if (callback.MoveNext())
                 {
+                    if (callback.Current is int)
+                        coroutine.Enumerators.Push(
+                            Coroutine.WaitForTicks((int)callback.Current));
+                    if (callback.Current is float)
+                        coroutine.Enumerators.Push(
+                            Coroutine.WaitForSeconds((float)callback.Current));
                     if (callback.Current is IEnumerator)
                         coroutine.Enumerators.Push(callback.Current as IEnumerator);
                 }

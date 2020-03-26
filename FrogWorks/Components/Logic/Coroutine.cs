@@ -7,7 +7,6 @@ namespace FrogWorks
     public class Coroutine : Component
     {
         private Stack<IEnumerator> _enumerators;
-        private float _timer;
         private bool _hasEnded;
 
         public bool IsFinished { get; private set; }
@@ -32,36 +31,31 @@ namespace FrogWorks
         protected override void Update(float deltaTime)
         {
             _hasEnded = false;
-            _timer -= deltaTime;
 
-            if (_timer <= 0f)
+            if (_enumerators.Count > 0)
             {
-                _timer = 0f;
+                var callback = _enumerators.Peek();
 
-                if (_enumerators.Count > 0)
+                if (callback.MoveNext() && !_hasEnded)
                 {
-                    var callback = _enumerators.Peek();
+                    if (callback.Current is int)
+                        _enumerators.Push(WaitForTicks((int)callback.Current));
+                    else if (callback.Current is float)
+                        _enumerators.Push(WaitForSeconds((float)callback.Current));
+                    else if (callback.Current is IEnumerator)
+                        _enumerators.Push(callback.Current as IEnumerator);
+                }
+                else if (!_hasEnded)
+                {
+                    _enumerators.Pop();
 
-                    if (callback.MoveNext() && !_hasEnded)
+                    if (_enumerators.Count == 0)
                     {
-                        if (callback.Current is int)
-                            _timer = (int)callback.Current;
-                        else if (callback.Current is float)
-                            _timer = (float)callback.Current;
-                        else if (callback.Current is IEnumerator)
-                            _enumerators.Push(callback.Current as IEnumerator);
-                    }
-                    else if (!_hasEnded)
-                    {
-                        _enumerators.Pop();
+                        IsFinished = true;
+                        IsActive = false;
 
-                        if (_enumerators.Count == 0)
-                        {
-                            IsFinished = true;
-                            IsActive = false;
-                            if (RemoveOnCompletion)
-                                Destroy();
-                        }
+                        if (RemoveOnCompletion)
+                            Destroy();
                     }
                 }
             }
@@ -73,7 +67,6 @@ namespace FrogWorks
         {
             IsActive = _hasEnded = true;
             IsFinished = false;
-            _timer = 0f;
             _enumerators.Clear();
             _enumerators.Push(callback ?? WaitForTicks(0));
         }
@@ -82,7 +75,6 @@ namespace FrogWorks
         {
             IsActive = false;
             IsFinished = _hasEnded = true;
-            _timer = 0f;
             _enumerators.Clear();
         }
 
