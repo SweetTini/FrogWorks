@@ -512,6 +512,11 @@ namespace FrogWorks
             return Vector2.One / vector;
         }
 
+        public static Vector2 Lerp(this Vector2 vector, Vector2 target, float amount)
+        {
+            return Vector2.Lerp(vector, target, amount);
+        }
+
         public static Vector2 Max(this Vector2 vector, Vector2 other)
         {
             return Vector2.Max(vector, other);
@@ -580,14 +585,14 @@ namespace FrogWorks
         public static Vector2 Round(this Vector2 vector)
         {
             return new Vector2(
-                (float)Math.Round(vector.X), 
+                (float)Math.Round(vector.X),
                 (float)Math.Round(vector.Y));
         }
 
         public static Vector2 Round(this Vector2 vector, int digits)
         {
             return new Vector2(
-                (float)Math.Round(vector.X, digits), 
+                (float)Math.Round(vector.X, digits),
                 (float)Math.Round(vector.Y, digits));
         }
 
@@ -828,8 +833,8 @@ namespace FrogWorks
         public static Delegate GetMethod<T>(object instance, string name)
             where T : class
         {
-            var flags = BindingFlags.Instance 
-                | BindingFlags.Public 
+            var flags = BindingFlags.Instance
+                | BindingFlags.Public
                 | BindingFlags.NonPublic;
 
             var method = instance.GetType().GetMethod(name, flags);
