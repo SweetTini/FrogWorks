@@ -21,6 +21,34 @@ namespace FrogWorks
 
         public Color Color { get; set; } = Color.White;
 
+        public Vector2 Position { get; set; }
+
+        public float X
+        {
+            get { return Position.X; }
+            set { Position = new Vector2(value, Position.Y); }
+        }
+
+        public float Y
+        {
+            get { return Position.Y; }
+            set { Position = new Vector2(Position.X, value); }
+        }
+
+        public Vector2 Coefficient { get; set; } = Vector2.One;
+
+        public float XCoefficient
+        {
+            get { return Coefficient.X; }
+            set { Coefficient = new Vector2(value, Coefficient.Y); }
+        }
+
+        public float YCoefficient
+        {
+            get { return Coefficient.Y; }
+            set { Coefficient = new Vector2(Coefficient.X, value); }
+        }
+
         public float Zoom
         {
             get { return Camera.Zoom; }
@@ -50,7 +78,7 @@ namespace FrogWorks
         protected sealed override void Update(float deltaTime)
         {
             if (Parent?.Camera != null)
-                Camera.Position = Parent.Camera.Position;
+                Camera.Position = Position + Parent.Camera.Position * Coefficient;
         }
 
         protected sealed override void Draw(RendererBatch batch)
