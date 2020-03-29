@@ -28,10 +28,16 @@ namespace FrogWorks
 
         public bool IsCollidable { get; set; }
 
-        public CollidableComponent(bool isEnabled, bool isVisible, bool isCollidable)
-            : base(isEnabled, isVisible)
+        public CollidableComponent(bool isCollidable = true)
+            : base(false, true)
         {
             IsCollidable = isCollidable;
+        }
+
+        public CollidableComponent(Collider collider, bool isCollidable = true)
+            : this(isCollidable)
+        {
+            Collider = collider;
         }
 
         protected override void OnAdded()
@@ -43,6 +49,11 @@ namespace FrogWorks
         protected override void OnRemoved()
         {
             Collider?.OnRemovedInternally();
+        }
+
+        protected override void OnTransformed()
+        {
+            Collider?.OnTransformedInternally();
         }
     }
 }
