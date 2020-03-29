@@ -24,7 +24,7 @@ namespace FrogWorks
             : base(true, false)
         {
             _enumerators = new Stack<IEnumerator>();
-            _enumerators.Push(callback ?? WaitForTicks(0));
+            _enumerators.Push(callback);
             RemoveOnCompletion = removeOnCompletion;
         }
 
@@ -36,14 +36,13 @@ namespace FrogWorks
             {
                 var callback = _enumerators.Peek();
 
-                if (callback.MoveNext() && !_hasEnded)
+                if (callback != null && callback.MoveNext() && !_hasEnded)
                 {
-                    if (callback.Current is int)
-                        _enumerators.Push(WaitForTicks((int)callback.Current));
-                    else if (callback.Current is float)
-                        _enumerators.Push(WaitForSeconds((float)callback.Current));
-                    else if (callback.Current is IEnumerator)
-                        _enumerators.Push(callback.Current as IEnumerator);
+                    if (callback.Current is IEnumerator)
+                    {
+                        _enumerators.Push(
+                            callback.Current as IEnumerator);
+                    }
                 }
                 else if (!_hasEnded)
                 {
@@ -82,18 +81,23 @@ namespace FrogWorks
         public static IEnumerator WaitForTicks(int ticks)
         {
             for (int t = 0; t < ticks; t++)
-                yield return 0;
+                yield return null;
         }
 
         public static IEnumerator WaitForSeconds(float seconds)
         {
-            for (float t = 0f; t < seconds; t += Runner.Application.Game.DeltaTime)
-                yield return 0;
+            var time = 0f;
+
+            while (time < seconds)
+            {
+                time += Runner.Application.Game.DeltaTime;
+                yield return null;
+            }
         }
 
         public static IEnumerator WaitUntil(Func<bool> predicate)
         {
-            while (!predicate()) yield return 0;
+            while (!predicate()) yield return null;
         }
 
         public static IEnumerator DoInTicks(int ticks, Action<int, int> action)
@@ -103,7 +107,7 @@ namespace FrogWorks
                 for (int t = 0; t <= ticks; t++)
                 {
                     action(t, ticks);
-                    yield return 0;
+                    yield return null;
                 }
             }
         }
@@ -112,11 +116,22 @@ namespace FrogWorks
         {
             if (seconds > 0f)
             {
-                for (float t = 0f; t <= seconds; t += Runner.Application.Game.DeltaTime)
+                var time = 0f;
+
+                while (true)
                 {
-                    t = t.Min(seconds);
-                    action(t, seconds);
-                    yield return 0;
+                    action(time, seconds);
+                    yield return null;
+
+                    if (time < seconds)
+                    {
+                        time += Runner.Application.Game.DeltaTime;
+                        time = time.Min(seconds);
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
             }
         }

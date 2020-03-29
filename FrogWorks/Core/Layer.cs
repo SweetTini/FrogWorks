@@ -73,12 +73,13 @@ namespace FrogWorks
         {
             GraphicsDevice = Runner.Application.Game.GraphicsDevice;
             Camera = new Camera();
+            Position = Camera.Position;
         }
 
         protected sealed override void Update(float deltaTime)
         {
-            if (Parent?.Camera != null)
-                Camera.Position = Position + Parent.Camera.Position * Coefficient;
+            var offset = Parent?.Camera.Min ?? Vector2.Zero;
+            Camera.Position = Position + offset * Coefficient;
         }
 
         protected sealed override void Draw(RendererBatch batch)

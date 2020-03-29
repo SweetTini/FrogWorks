@@ -32,16 +32,13 @@ namespace FrogWorks
                 var coroutine = _coroutines[i];
                 var callback = coroutine.Enumerators.Peek();
 
-                if (callback.MoveNext())
+                if (callback != null && callback.MoveNext())
                 {
-                    if (callback.Current is int)
-                        coroutine.Enumerators.Push(
-                            Coroutine.WaitForTicks((int)callback.Current));
-                    if (callback.Current is float)
-                        coroutine.Enumerators.Push(
-                            Coroutine.WaitForSeconds((float)callback.Current));
                     if (callback.Current is IEnumerator)
-                        coroutine.Enumerators.Push(callback.Current as IEnumerator);
+                    {
+                        coroutine.Enumerators.Push(
+                            callback.Current as IEnumerator);
+                    }
                 }
                 else
                 {
@@ -83,7 +80,7 @@ namespace FrogWorks
         internal CoroutineItem(IEnumerator callback)
         {
             Enumerators = new Stack<IEnumerator>();
-            Enumerators.Push(callback ?? Coroutine.WaitForTicks(0));
+            Enumerators.Push(callback);
         }
     }
 }
