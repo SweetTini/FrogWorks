@@ -6,9 +6,8 @@ namespace FrogWorks
 {
     public class Camera
     {
-        private Matrix _projectionMatrix, _transformMatrix, _inverseMatrix;
-        private Viewport _viewport;
-        private Rectangle? _zone;
+        private Matrix _projectionMatrix, _transformMatrix;
+        private Rectangle _bounds;
         private Vector2 _position, _origin;
         private float _zoom = 1f, _angle;
         private bool _isDirty = true;
@@ -26,24 +25,13 @@ namespace FrogWorks
             }
         }
 
-        public Matrix InverseMatrix
-        {
-            get
-            {
-                UpdateMatrices();
-                return _inverseMatrix;
-            }
-        }
-
         public Vector2 Min
         {
             get
             {
-                UpdateMatrices();
                 return Vector2.Transform(
-                        Vector2.Zero, 
-                        _inverseMatrix)
-                    .Round();
+                    Vector2.Zero, 
+                    Matrix.Invert(TransformMatrix)).Floor();
             }
         }
 
@@ -57,9 +45,8 @@ namespace FrogWorks
             {
                 UpdateMatrices();
                 return Vector2.Transform(
-                        _viewport.Bounds.Size.ToVector2(), 
-                        _inverseMatrix)
-                    .Round();
+                        _bounds.Size.ToVector2(),
+                        Matrix.Invert(TransformMatrix)).Ceiling();
             }
         }
 
@@ -74,12 +61,6 @@ namespace FrogWorks
             get { return _position; }
             set
             {
-                if (_zone.HasValue)
-                {
-                    var center = Runner.Application.Size.ToVector2() * .5f;
-                    value = value.Clamp(center, _zone.Value.Size.ToVector2() - center);
-                }
-
                 if (_position != value)
                 {
                     _position = value;
@@ -142,7 +123,7 @@ namespace FrogWorks
 
         public Vector2 ViewToWorld(Vector2 position)
         {
-            return Vector2.Transform(position, InverseMatrix);
+            return Vector2.Transform(position, Matrix.Invert(TransformMatrix));
         }
 
         public Vector2 WorldToView(Vector2 position)
@@ -164,62 +145,29 @@ namespace FrogWorks
                 : distanceToMove;
         }
 
-        public void SetZone(Point size)
-        {
-            var application = Runner.Application;
-            size = size.Abs().Max(application.Size);
-            _zone = new Rectangle(Point.Zero, size);
-        }
-
-        public void SetZone(Vector2 size)
-        {
-            SetZone(size.Round().ToPoint());
-        }
-
-        public void SetZone(int width, int height)
-        {
-            SetZone(new Point(width, height));
-        }
-
-        public void SetZone(float width, float height)
-        {
-            SetZone(new Vector2(width, height).Round().ToPoint());
-        }
-
-        public void ResetZone() => _zone = null;
-
         internal void UpdateViewport()
         {
-            var display = Runner.Application.Display;
-            var projection = new Rectangle(Point.Zero, display.Size);
-            
-            _viewport = new Viewport(projection);
-            _projectionMatrix = Matrix.CreateOrthographicOffCenter(projection, -1000f, 1000f);
-            _origin = _viewport.Bounds.Center.ToVector2();
+            _bounds = new Rectangle(Point.Zero, Runner.Application.ActualSize);
+            _projectionMatrix = Matrix.CreateOrthographicOffCenter(_bounds, -1000f, 1000f);
+            _origin = _bounds.Center.ToVector2();
             _isDirty = true;
-
-            UpdateMatrices();
         }
 
         protected void UpdateMatrices()
         {
             if (_isDirty)
             {
-                _position = _position.Round();
                 _transformMatrix = Matrix.CreateTranslation(new Vector3(-_position, 0f)) 
                     * Matrix.CreateRotationZ(_angle) 
                     * Matrix.CreateScale(new Vector3(_zoom * Vector2.One, 1f)) 
                     * Matrix.CreateTranslation(new Vector3(_origin, 0f));
-
-                _inverseMatrix = Matrix.Invert(_transformMatrix);
                 _isDirty = false;
 
-                View = _viewport.Bounds.Transform(
+                View = _bounds.Transform(
                     _position, 
                     _origin, 
-                    Vector2.One / _zoom, 
+                    Vector2.One.Divide(_zoom), 
                     _angle);
-                
                 OnChanged?.Invoke(this);
             }
         }

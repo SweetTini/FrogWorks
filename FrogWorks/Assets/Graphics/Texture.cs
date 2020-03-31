@@ -7,8 +7,6 @@ namespace FrogWorks
 {
     public sealed class Texture
     {
-        private static Dictionary<string, Texture2D> Cache { get; } = new Dictionary<string, Texture2D>();
-
         private Texture2D XnaTexture { get; set; }
 
         public Rectangle Bounds { get; private set; }

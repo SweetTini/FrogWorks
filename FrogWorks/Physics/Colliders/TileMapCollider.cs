@@ -5,11 +5,27 @@ namespace FrogWorks
 {
     public abstract class TileMapCollider : Collider
     {
-        Camera _camera;
-        Rectangle _drawRegion;
         Point _tileSize;
 
         protected internal Map<int> Map { get; internal set; }
+
+        Rectangle DrawRegion
+        {
+            get
+            {
+                var tileSize = TileSize.ToVector2();
+                var camera = Layer?.Camera ?? Scene?.Camera;
+                var min = camera?.Min ?? Vector2.Zero;
+                var max = camera?.Max ?? Runner.Application.ActualSize.ToVector2();
+
+                min = (min - AbsolutePosition).Divide(tileSize).Floor();
+                max = (max + AbsolutePosition).Divide(tileSize).Ceiling();
+
+                return new Rectangle(
+                    min.ToPoint(),
+                    (max - min).ToPoint());
+            }
+        }
 
         public Point MapSize
         {
@@ -226,10 +242,10 @@ namespace FrogWorks
 
         public sealed override void Draw(RendererBatch batch, Color color)
         {
-            for (int i = 0; i < _drawRegion.Width * _drawRegion.Height; i++)
+            for (int i = 0; i < DrawRegion.Width * DrawRegion.Height; i++)
             {
-                var x = _drawRegion.Left + (i % _drawRegion.Width);
-                var y = _drawRegion.Top + (i / _drawRegion.Width);
+                var x = DrawRegion.Left + (i % DrawRegion.Width);
+                var y = DrawRegion.Top + (i / DrawRegion.Width);
 
                 DrawTileShape(batch, color, new Point(x, y));
             }
@@ -251,100 +267,8 @@ namespace FrogWorks
             shape?.Draw(batch, color);
         }
 
-        protected sealed override void OnAdded()
-        {
-            var camera = Layer?.Camera ?? Scene?.Camera;
-            AddLinkToCamera(camera);
-        }
-
-        protected sealed override void OnRemoved()
-        {
-            RemoveLinkToCamera();
-
-            var camera = Layer?.Camera ?? Scene?.Camera;
-            AddLinkToCamera(camera);
-        }
-
-        protected sealed override void OnEntityAdded()
-        {
-            var camera = Layer?.Camera ?? Scene?.Camera;
-            AddLinkToCamera(camera);
-        }
-
-        protected sealed override void OnEntityRemoved()
-        {
-            RemoveLinkToCamera();
-
-            var camera = Layer?.Camera ?? Scene?.Camera;
-            AddLinkToCamera(camera);
-        }
-
-        protected sealed override void OnLayerAdded()
-        {
-            var camera = Layer?.Camera ?? Scene?.Camera;
-            AddLinkToCamera(camera);
-        }
-
-        protected sealed override void OnLayerRemoved()
-        {
-            RemoveLinkToCamera();
-
-            var camera = Layer?.Camera ?? Scene?.Camera;
-            AddLinkToCamera(camera);
-        }
-
-        protected sealed override void OnTransformed()
-        {
-            UpdateDrawRegion(_camera);
-        }
-
         protected virtual void OnMapResized()
         {
-        }
-
-        void AddLinkToCamera(Camera camera)
-        {
-            if (camera != null)
-            {
-                if (_camera == null)
-                {
-                    _camera = camera;
-                    _camera.OnChanged += UpdateDrawRegion;
-                    UpdateDrawRegion(_camera);
-                }
-                else if (_camera != camera)
-                {
-                    RemoveLinkToCamera();
-                    AddLinkToCamera(camera);
-                }
-            }
-        }
-
-        void RemoveLinkToCamera()
-        {
-            if (_camera != null)
-            {
-                _camera.OnChanged -= UpdateDrawRegion;
-                _camera = null;
-            }
-        }
-
-        void UpdateDrawRegion(Camera camera)
-        {
-            var min = Point.Zero;
-            var max = MapSize;
-
-            if (_camera != null)
-            {
-                var cameraMin = camera.View.Location.ToVector2();
-                var cameraMax = cameraMin + camera.View.Size.ToVector2();
-                var tileSize = TileSize.ToVector2();
-
-                min = (cameraMin - AbsolutePosition).Divide(tileSize).Floor().ToPoint();
-                max = (cameraMax + AbsolutePosition).Divide(tileSize).Ceiling().ToPoint();
-            }
-
-            _drawRegion = new Rectangle(min, max - min);
         }
 
         protected IEnumerable<Point> PlotLine(Vector2 start, Vector2 end)

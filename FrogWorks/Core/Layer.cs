@@ -21,20 +21,6 @@ namespace FrogWorks
 
         public Color Color { get; set; } = Color.White;
 
-        public Vector2 Position { get; set; }
-
-        public float X
-        {
-            get { return Position.X; }
-            set { Position = new Vector2(value, Position.Y); }
-        }
-
-        public float Y
-        {
-            get { return Position.Y; }
-            set { Position = new Vector2(Position.X, value); }
-        }
-
         public Vector2 Coefficient { get; set; } = Vector2.One;
 
         public float XCoefficient
@@ -73,13 +59,13 @@ namespace FrogWorks
         {
             GraphicsDevice = Runner.Application.Game.GraphicsDevice;
             Camera = new Camera();
-            Position = Camera.Position;
         }
 
         protected sealed override void Update(float deltaTime)
         {
+            var origin = Runner.Application.Size.ToVector2() * .5f;
             var offset = Parent?.Camera.Min ?? Vector2.Zero;
-            Camera.Position = Position + offset * Coefficient;
+            Camera.Position = origin + offset * Coefficient;
         }
 
         protected sealed override void Draw(RendererBatch batch)
