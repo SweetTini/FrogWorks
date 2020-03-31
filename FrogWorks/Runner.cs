@@ -42,7 +42,15 @@ namespace FrogWorks
 
         public int Height => Size.Y;
 
+        public Point ActualSize => Display.Size;
+
+        public Point ClientSize => Display.ClientSize;
+
+        public Point ViewSize => Display.ViewSize;
+
         public int FramesPerSecond => Game.FramesPerSecond;
+
+        public float DeltaTime => Game.DeltaTime;
 
         public bool IsDisposed { get; protected set; }
 
@@ -68,6 +76,26 @@ namespace FrogWorks
             where T : Scene, new()
         {
             Game.GoTo<T>();
+        }
+
+        public void ToFixedScale(int scale = 1)
+        {
+            Display.ToFixedScale(scale);
+        }
+
+        public void ToFullscreen()
+        {
+            Display.ToFullscreen();
+        }
+
+        public Vector2 ToView(Vector2 position)
+        {
+            return Display.ToView(position);
+        }
+
+        public Vector2 FromView(Vector2 position)
+        {
+            return Display.FromView(position);
         }
 
         public void SetDisplay(ScalingType scaling)

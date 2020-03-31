@@ -19,13 +19,13 @@ namespace FrogWorks
 
         public Color ClearColor { get; set; } = Color.Black;
 
-        public Point Size => _size + ExtendedSize;
+        public Point Size => _size + Extent;
 
         public int Width => Size.X;
 
         public int Height => Size.Y;
 
-        public Point ExtendedSize { get; private set; }
+        public Point Extent { get; private set; }
 
         public Point ViewSize { get; private set; }
 
@@ -51,17 +51,14 @@ namespace FrogWorks
         internal DisplayAdapter(GameAdapter game, Point size, int scale, bool fullscreen)
         {
             _game = game;
-            _size = size;
-
             _game.Graphics.DeviceCreated += OnDeviceChanged;
-            _game.Graphics.DeviceReset += OnDeviceChanged;
             _game.Window.ClientSizeChanged += OnDeviceChanged;
+            _size = size;
 
             if (fullscreen) ToFullscreen();
             else ToFixedScale(scale);
 
             _game.ApplyChanges();
-
             _batch = new RendererBatch(_game.GraphicsDevice);
         }
 
@@ -140,10 +137,10 @@ namespace FrogWorks
         void ApplyScaling()
         {
             var parameters = _game.GraphicsDevice.PresentationParameters;
-            var lastExtendedSize = ExtendedSize;
-            var lastScale = Scale;
+            var origExtent = Extent;
+            var origScale = Scale;
 
-            ExtendedSize = Point.Zero;
+            Extent = Point.Zero;
             ClientSize = new Point(
                 parameters.BackBufferWidth,
                 parameters.BackBufferHeight);
@@ -181,7 +178,7 @@ namespace FrogWorks
                         ? Vector2.UnitX
                         : Vector2.UnitY;
 
-                    ExtendedSize = (scaleUnit * amount.Round()).ToPoint();
+                    Extent = (scaleUnit * amount.Round()).ToPoint();
                 }
 
                 Scale = Vector2.One * ratio;
@@ -194,10 +191,7 @@ namespace FrogWorks
             _matrix = Matrix.CreateScale(new Vector3(Scale, 1f));
 
             if (!_isDirty)
-            {
-                _isDirty = lastExtendedSize != ExtendedSize
-                    || lastScale != Scale;
-            }
+                _isDirty = origExtent != Extent || origScale != Scale;
         }
 
         void Reset(Scene scene)
