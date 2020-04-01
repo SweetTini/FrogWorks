@@ -47,6 +47,9 @@
   <ItemGroup>
     <Compile Include="Assets\AssetManager.cs" />
     <Compile Include="Assets\Audio\Audio.cs" />
+    <Compile Include="Assets\Audio\FMOD\FMod.cs" />
+    <Compile Include="Assets\Audio\FMOD\FModDsp.cs" />
+    <Compile Include="Assets\Audio\FMOD\FModErrors.cs" />
     <Compile Include="Assets\Audio\SoundEffect.cs" />
     <Compile Include="Assets\Audio\SoundTrack.cs" />
     <Compile Include="Assets\Graphics\Shader.cs" />
