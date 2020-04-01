@@ -38,11 +38,11 @@ namespace FrogWorks
                 && LastState.IsKeyDown((XnaKeys)key);
         }
 
-        public int GetAxis(Keys positive, Keys negative, int both = 0)
+        public int GetAxis(Keys negative, Keys positive, int both = 0)
         {
-            var posValue = IsDown(positive) ? 1 : 0;
             var negValue = IsDown(negative) ? 1 : 0;
-            return (posValue + negValue) > 1 ? both : posValue - negValue;
+            var posValue = IsDown(positive) ? 1 : 0;
+            return (negValue + posValue) > 1 ? both : posValue - negValue;
         }
     }
 

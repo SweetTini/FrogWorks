@@ -42,11 +42,11 @@ namespace FrogWorks
                 VirtualInputs[i].Update(deltaTime);
         }
 
-        public static int GetAxis(bool positive, bool negative, int both = 0)
+        public static int GetAxis(bool negative, bool positive, int both = 0)
         {
-            var posValue = positive ? 1 : 0;
             var negValue = negative ? 1 : 0;
-            return (posValue + negValue) > 1 ? both : posValue - negValue;
+            var posValue = positive ? 1 : 0;
+            return (negValue + posValue) > 1 ? both : posValue - negValue;
         }
 
         public static int GetAxis(float analog, float deadZone)
@@ -54,10 +54,10 @@ namespace FrogWorks
             return Math.Abs(analog) >= deadZone ? Math.Sign(analog) : 0;
         }
 
-        public static int GetAxis(bool positive, bool negative, float analog, float deadZone, int both = 0)
+        public static int GetAxis(bool negative, bool positive, float analog, float deadZone, int both = 0)
         {
             var axis = GetAxis(analog, deadZone);
-            return axis == 0 ? GetAxis(positive, negative, both) : axis;
+            return axis == 0 ? GetAxis(negative, positive, both) : axis;
         }
     }
 }

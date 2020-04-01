@@ -9,8 +9,8 @@
             get
             {
                 return Input.GetAxis(
-                    Input.GamePads[PlayerIndex].IsDown(GamePadButton.DPadRight),
-                    Input.GamePads[PlayerIndex].IsDown(GamePadButton.DPadLeft));
+                    Input.GamePads[PlayerIndex].IsDown(GamePadButton.DPadLeft),
+                    Input.GamePads[PlayerIndex].IsDown(GamePadButton.DPadRight));
             }
         }
 

@@ -11,12 +11,12 @@ namespace FrogWorks
             get
             {
                 var xAxis = Input.GetAxis(
-                    Input.GamePads[PlayerIndex].IsDown(GamePadButton.DPadRight),
-                    Input.GamePads[PlayerIndex].IsDown(GamePadButton.DPadLeft));
+                    Input.GamePads[PlayerIndex].IsDown(GamePadButton.DPadLeft),
+                    Input.GamePads[PlayerIndex].IsDown(GamePadButton.DPadRight));
 
                 var yAxis = Input.GetAxis(
-                    Input.GamePads[PlayerIndex].IsDown(GamePadButton.DPadDown),
-                    Input.GamePads[PlayerIndex].IsDown(GamePadButton.DPadUp));
+                    Input.GamePads[PlayerIndex].IsDown(GamePadButton.DPadUp),
+                    Input.GamePads[PlayerIndex].IsDown(GamePadButton.DPadDown));
 
                 return new Vector2(xAxis, yAxis);
             }

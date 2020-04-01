@@ -36,17 +36,17 @@ namespace FrogWorks
         public override void Update(float deltaTime)
         {
             _value = new Vector2(
-                GetAxis(Right, Left, ref _value.X, ref _isFlippedHorizontally),
-                GetAxis(Down, Up, ref _value.Y, ref _isFlippedVertically));
+                GetAxis(Left, Right, ref _value.X, ref _isFlippedHorizontally),
+                GetAxis(Up, Down, ref _value.Y, ref _isFlippedVertically));
         }
 
-        private float GetAxis(Keys positive, Keys negative, ref float nextValue, ref bool isFlipped)
+        private float GetAxis(Keys negative, Keys positive, ref float nextValue, ref bool isFlipped)
         {
             var lastValue = nextValue;
-            var posValue = Input.Keyboard.IsDown(positive) ? 1f : 0f;
             var negValue = Input.Keyboard.IsDown(negative) ? 1f : 0f;
+            var posValue = Input.Keyboard.IsDown(positive) ? 1f : 0f;
 
-            if (posValue + negValue > 1f)
+            if (negValue + posValue > 1f)
             {
                 switch (OverlapMode)
                 {
