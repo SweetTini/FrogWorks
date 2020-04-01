@@ -27,7 +27,31 @@ namespace FrogWorks
 
         public Vector2 Origin { get; set; }
 
+        public float OriginX
+        {
+            get { return Origin.X; }
+            set { Origin = new Vector2(value, Origin.Y); }
+        }
+
+        public float OriginY
+        {
+            get { return Origin.Y; }
+            set { Origin = new Vector2(Origin.X, value); }
+        }
+
         public Vector2 Scale { get; set; } = Vector2.One;
+
+        public float XScale
+        {
+            get { return Scale.X; }
+            set { Scale = new Vector2(value, Scale.Y); }
+        }
+
+        public float YScale
+        {
+            get { return Scale.Y; }
+            set { Scale = new Vector2(Scale.X, value); }
+        }
 
         public float Angle { get; set; }
 

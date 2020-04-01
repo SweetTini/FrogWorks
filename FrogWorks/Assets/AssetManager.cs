@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace FrogWorks
 {
-    public sealed class AssetManager
+    public static class AssetManager
     {
         internal static Dictionary<Type, Dictionary<string, object>> Cache { get; }
 

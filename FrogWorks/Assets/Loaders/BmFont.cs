@@ -6,28 +6,44 @@ using System.Xml;
 
 namespace FrogWorks
 {
-    public sealed class BmFont
+    public static class BmFont
     {
-        public static BitmapFont Load(string filePath)
-        { 
-            return AssetManager.GetFromCache(filePath, FromStream);
+        public static BitmapFont LoadBinary(string filePath)
+        {
+            return AssetManager.GetFromCache(filePath, BinaryFromStream);
         }
 
-        static BitmapFont FromStream(string filePath)
+        public static BitmapFont LoadXml(string filePath)
         {
-            var stream = AssetManager.GetStream(filePath, ".xml", ".bin");
+            return AssetManager.GetFromCache(filePath, XmlFromStream);
+        }
+
+        static BitmapFont BinaryFromStream(string filePath)
+        {
+            var stream = AssetManager.GetStream(filePath, ".fnt");
 
             if (stream != null)
             {
                 using (stream)
                 {
                     var directory = Path.GetDirectoryName(filePath);
+                    return BinaryFile.Read(stream, directory);
+                }
+            }
 
-                    switch (GetFileType(filePath))
-                    {
-                        case BmFontFileType.Binary: return BinaryFile.Read(stream, directory);
-                        case BmFontFileType.Xml: return XmlFile.Read(stream, directory);
-                    }
+            return null;
+        }
+
+        static BitmapFont XmlFromStream(string filePath)
+        {
+            var stream = AssetManager.GetStream(filePath, ".fnt");
+
+            if (stream != null)
+            {
+                using (stream)
+                {
+                    var directory = Path.GetDirectoryName(filePath);
+                    return XmlFile.Read(stream, directory);
                 }
             }
 
@@ -56,14 +72,19 @@ namespace FrogWorks
             {
                 var format = new string(reader.ReadChars(3));
                 var version = reader.ReadByte();
-                
+
                 if (format != "BMF")
                     throw new Exception("Cannot read file. Invalid file format detected.");
 
                 return version;
             }
 
-            static bool ReadBlock(BinaryReader reader, BitmapFont font, List<Texture> textures, string directory, int versionNumber)
+            static bool ReadBlock(
+                BinaryReader reader,
+                BitmapFont font,
+                List<Texture> textures,
+                string directory,
+                int versionNumber)
             {
                 if (reader.BaseStream.Position < reader.BaseStream.Length)
                 {
@@ -73,7 +94,7 @@ namespace FrogWorks
                     switch (blockType)
                     {
                         case 2: ReadCommon(reader, font, blockSize); break;
-                        case 3: ReadPages(reader, font, textures, directory, blockSize); break;
+                        case 3: ReadPages(reader, textures, directory, blockSize); break;
                         case 4: ReadChars(reader, font, textures, blockSize); break;
                         case 5: ReadKerningPairs(reader, font, blockSize); break;
                         default: reader.ReadBytes(blockSize); break;
@@ -91,7 +112,11 @@ namespace FrogWorks
                 reader.ReadBytes(blockSize - 2);
             }
 
-            static void ReadPages(BinaryReader reader, BitmapFont font, List<Texture> textures, string directory, int blockSize)
+            static void ReadPages(
+                BinaryReader reader,
+                List<Texture> textures,
+                string directory,
+                int blockSize)
             {
                 var pageFile = reader.ReadNullTerminatedString();
                 var textSize = pageFile.Length + 1;
@@ -107,15 +132,25 @@ namespace FrogWorks
                 }
             }
 
-            static void ReadChars(BinaryReader reader, BitmapFont font, List<Texture> textures, int blockSize)
+            static void ReadChars(
+                BinaryReader reader,
+                BitmapFont font,
+                List<Texture> textures,
+                int blockSize)
             {
                 var count = blockSize / 20;
 
                 for (int i = 0; i < count; i++)
                 {
                     var ascii = reader.ReadInt32();
-                    var bounds = new Rectangle(reader.ReadInt16(), reader.ReadInt16(), reader.ReadInt16(), reader.ReadInt16());
-                    var offset = new Point(reader.ReadInt16(), reader.ReadInt16());
+                    var bounds = new Rectangle(
+                        reader.ReadInt16(),
+                        reader.ReadInt16(),
+                        reader.ReadInt16(),
+                        reader.ReadInt16());
+                    var offset = new Point(
+                        reader.ReadInt16(),
+                        reader.ReadInt16());
                     var spacing = reader.ReadInt16();
                     var page = (int)reader.ReadByte();
                     var texture = textures[page].ClipRegion(bounds);
@@ -155,7 +190,7 @@ namespace FrogWorks
 
                 var root = document["font"];
                 ReadCommon(root, font);
-                ReadPages(root, font, textures, directory);
+                ReadPages(root, textures, directory);
                 ReadChars(root, font, textures);
                 ReadKerningPairs(root, font);
 
@@ -168,7 +203,10 @@ namespace FrogWorks
                 font.LineHeight = common.AttrToInt32("lineHeight");
             }
 
-            static void ReadPages(XmlElement root, BitmapFont font, List<Texture> textures, string directory)
+            static void ReadPages(
+                XmlElement root,
+                List<Texture> textures,
+                string directory)
             {
                 var pages = root["pages"];
 
@@ -214,24 +252,5 @@ namespace FrogWorks
             }
         }
         #endregion
-
-        #region Misc.
-        static BmFontFileType GetFileType(string path)
-        {
-            var extension = Path.GetExtension(path);
-
-            switch (extension)
-            {
-                case ".xml": return BmFontFileType.Xml;
-                default: return BmFontFileType.Binary;
-            }
-        }
-        #endregion
-    }
-
-    public enum BmFontFileType
-    {
-        Binary,
-        Xml
     }
 }
