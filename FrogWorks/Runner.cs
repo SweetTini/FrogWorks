@@ -78,16 +78,6 @@ namespace FrogWorks
             Game.GoTo<T>();
         }
 
-        public void ToFixedScale(int scale = 1)
-        {
-            Display.ToFixedScale(scale);
-        }
-
-        public void ToFullscreen()
-        {
-            Display.ToFullscreen();
-        }
-
         public Vector2 ToView(Vector2 position)
         {
             return Display.ToView(position);

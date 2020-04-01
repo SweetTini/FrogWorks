@@ -32,7 +32,7 @@
             set { Game.IsMouseVisible = value; }
         }
 
-        public DesktopRunner(int width, int height, bool fullscreen = false) 
+        public DesktopRunner(int width, int height, bool fullscreen = false)
             : base(width, height, 1, fullscreen)
         {
             Title = "New Game";
@@ -42,6 +42,16 @@
             : base(width, height, scale, false)
         {
             Title = "New Game";
+        }
+
+        public void ToFixedScale(int scale = 1)
+        {
+            Display.ToFixedScale(scale);
+        }
+
+        public void ToFullscreen()
+        {
+            Display.ToFullscreen();
         }
     }
 }
