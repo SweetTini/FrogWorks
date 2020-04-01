@@ -2,7 +2,7 @@
 using System.Text;
 using System.Xml;
 
-namespace FrogWorks.Utils
+namespace FrogWorks
 {
     public static class Memory
     {
