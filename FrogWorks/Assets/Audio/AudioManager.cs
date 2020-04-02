@@ -7,7 +7,6 @@ namespace FrogWorks
     using FModSystem = FMOD.System;
     using FModFactory = FMOD.Factory;
     using Sound = FMOD.Sound;
-    using ChannelGroup = FMOD.ChannelGroup;
     using SoundExInfo = FMOD.CREATESOUNDEXINFO;
     using InitFlags = FMOD.INITFLAGS;
     using Mode = FMOD.MODE;
@@ -15,8 +14,6 @@ namespace FrogWorks
     internal static partial class AudioManager
     {
         public static FModSystem System { get; private set; }
-
-        public static ChannelGroup ChannelGroup { get; private set; }
 
         static bool IsActive { get; set; }
 
@@ -33,10 +30,6 @@ namespace FrogWorks
                 System = system;
                 System.setDSPBufferSize(dspBufferLength, dspBufferCount);
                 System.init(channelCount, InitFlags.CHANNEL_LOWPASS, (IntPtr)0);
-
-                ChannelGroup channelGroup;
-                System.createChannelGroup("default", out channelGroup);
-                ChannelGroup = channelGroup;
 
                 IsActive = true;
             }

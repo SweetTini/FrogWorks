@@ -10,15 +10,15 @@ namespace FrogWorks
     {
         public static BitmapFont LoadBinary(string filePath)
         {
-            return AssetManager.GetFromCache(filePath, BinaryFromStream);
+            return AssetManager.GetFromCache(filePath, FromBinaryStream);
         }
 
         public static BitmapFont LoadXml(string filePath)
         {
-            return AssetManager.GetFromCache(filePath, XmlFromStream);
+            return AssetManager.GetFromCache(filePath, FromXmlStream);
         }
 
-        static BitmapFont BinaryFromStream(string filePath)
+        static BitmapFont FromBinaryStream(string filePath)
         {
             var stream = AssetManager.GetStream(filePath, ".fnt");
 
@@ -34,7 +34,7 @@ namespace FrogWorks
             return null;
         }
 
-        static BitmapFont XmlFromStream(string filePath)
+        static BitmapFont FromXmlStream(string filePath)
         {
             var stream = AssetManager.GetStream(filePath, ".fnt");
 

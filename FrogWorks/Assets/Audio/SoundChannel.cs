@@ -22,7 +22,7 @@
 
         public bool Loop
         {
-            get { return MaxLoops != 0; }
+            get { return MaxLoops < 0; }
             set { MaxLoops = value ? -1 : 0; }
         }
 
@@ -80,9 +80,9 @@
         {
             get
             {
-                float gain;
-                _channel.getLowPassGain(out gain);
-                return gain;
+                float lowPass;
+                _channel.getLowPassGain(out lowPass);
+                return lowPass;
             }
             set
             {
@@ -119,8 +119,13 @@
         internal SoundChannel(SoundClip clip, Channel channel)
             : base()
         {
-            Clip = clip;
             _channel = channel;
+
+            Clip = clip;
+            MaxLoops = Clip.MaxLoops;
+            Volume = Clip.Volume;
+            Pitch = Clip.Pitch;
+            LowPass = Clip.LowPass;
         }
 
         public void Pause()
