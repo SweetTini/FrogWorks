@@ -4,7 +4,7 @@ namespace FrogWorks
 {
     using Sound = FMOD.Sound;
 
-    public sealed class SoundTrack : Audio
+    public sealed class SoundTrack : SoundClip
     {
         GCHandle _bufferHandle;
         byte[] _buffer;

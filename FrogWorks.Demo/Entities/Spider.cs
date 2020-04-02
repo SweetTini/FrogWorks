@@ -1,9 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FrogWorks.Demo
 {
@@ -42,8 +37,8 @@ namespace FrogWorks.Demo
 
         void HandleInputs()
         {
-            _velocity.X = Input.Keyboard.GetAxis(Keys.RightArrow, Keys.LeftArrow);
-            _velocity.Y = Input.Keyboard.GetAxis(Keys.DownArrow, Keys.UpArrow);
+            _velocity.X = Input.Keyboard.GetAxis(Keys.LeftArrow, Keys.RightArrow);
+            _velocity.Y = Input.Keyboard.GetAxis(Keys.UpArrow, Keys.DownArrow);
         }
 
         void ResolveHorizontalMovement()

@@ -4,17 +4,19 @@ using System.Runtime.InteropServices;
 
 namespace FrogWorks
 {
-    using FmodSystem = FMOD.System;
-    using FmodFactory = FMOD.Factory;
+    using FModSystem = FMOD.System;
+    using FModFactory = FMOD.Factory;
     using Sound = FMOD.Sound;
     using ChannelGroup = FMOD.ChannelGroup;
     using CreateSoundDexInfo = FMOD.CREATESOUNDEXINFO;
-    using FmodInitFlags = FMOD.INITFLAGS;
-    using FmodMode = FMOD.MODE;
+    using InitFlags = FMOD.INITFLAGS;
+    using Mode = FMOD.MODE;
 
     internal static partial class AudioManager
     {
-        public static FmodSystem System { get; private set; }
+        public static FModSystem System { get; private set; }
+
+        public static ChannelGroup ChannelGroup { get; private set; }
 
         static bool IsActive { get; set; }
 
@@ -26,11 +28,16 @@ namespace FrogWorks
 
             if (TryLoadNativeLiabrary())
             {
-                FmodSystem system;
-                FmodFactory.System_Create(out system);
+                FModSystem system;
+                FModFactory.System_Create(out system);
                 System = system;
                 System.setDSPBufferSize(dspBufferLength, dspBufferCount);
-                System.init(channelCount, FmodInitFlags.CHANNEL_LOWPASS, (IntPtr)0);
+                System.init(channelCount, InitFlags.CHANNEL_LOWPASS, (IntPtr)0);
+
+                ChannelGroup channelGroup;
+                System.createChannelGroup("default", out channelGroup);
+                ChannelGroup = channelGroup;
+
                 IsActive = true;
             }
         }
@@ -50,18 +57,6 @@ namespace FrogWorks
             }
         }
 
-        public static ChannelGroup? CreateChannelGroup(string name)
-        {
-            if (IsActive)
-            {
-                ChannelGroup channelGroup;
-                System.createChannelGroup(name, out channelGroup);
-                return channelGroup;
-            }
-
-            return null;
-        }
-
         public static SoundEffect LoadSoundEffect(string filePath)
         {
             if (IsActive)
@@ -70,7 +65,7 @@ namespace FrogWorks
 
                 if (buffer != null)
                 {
-                    var mode = FmodMode.OPENMEMORY | FmodMode.CREATESAMPLE;
+                    var mode = Mode.OPENMEMORY | Mode.CREATESAMPLE;
                     var info = new CreateSoundDexInfo();
                     info.length = (uint)buffer.Length;
                     info.cbsize = Marshal.SizeOf(info);
@@ -92,7 +87,7 @@ namespace FrogWorks
 
                 if (buffer != null)
                 {
-                    var mode = FmodMode.OPENMEMORY | FmodMode.CREATESTREAM;
+                    var mode = Mode.OPENMEMORY | Mode.CREATESTREAM;
                     var handle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
                     var info = new CreateSoundDexInfo();
                     info.length = (uint)buffer.Length;

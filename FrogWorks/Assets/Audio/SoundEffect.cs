@@ -2,7 +2,7 @@
 {
     using Sound = FMOD.Sound;
 
-    public sealed class SoundEffect : Audio
+    public sealed class SoundEffect : SoundClip
     {
         internal SoundEffect(Sound sound)
             : base(sound)
