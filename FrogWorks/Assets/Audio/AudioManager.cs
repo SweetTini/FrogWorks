@@ -19,12 +19,14 @@ namespace FrogWorks
 
         public static void Initialize()
         {
-            const int dspBufferLength = 256;
-            const int dspBufferCount = 4;
-            const int channelCount = 32;
-
-            if (TryLoadNativeLibrary())
+            try
             {
+                const int dspBufferLength = 256;
+                const int dspBufferCount = 4;
+                const int channelCount = 32;
+
+                LoadNativeLibrary();
+
                 FModSystem system;
                 FModFactory.System_Create(out system);
                 System = system;
@@ -32,6 +34,10 @@ namespace FrogWorks
                 System.init(channelCount, InitFlags.CHANNEL_LOWPASS, (IntPtr)0);
 
                 IsActive = true;
+            }
+            catch
+            {
+                IsActive = false;
             }
         }
 
@@ -117,19 +123,6 @@ namespace FrogWorks
             }
 
             return null;
-        }
-
-        static bool TryLoadNativeLibrary()
-        {
-            try
-            {
-                LoadNativeLibrary();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
         }
     }
 }
