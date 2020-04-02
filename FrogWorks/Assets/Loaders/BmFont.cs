@@ -53,7 +53,7 @@ namespace FrogWorks
         #region Binary
         class BinaryFile
         {
-            public static BitmapFont Read(FileStream stream, string directory)
+            public static BitmapFont Read(Stream stream, string directory)
             {
                 using (var reader = new BinaryReader(stream))
                 {
@@ -181,7 +181,7 @@ namespace FrogWorks
         #region XML
         class XmlFile
         {
-            public static BitmapFont Read(FileStream stream, string directory)
+            public static BitmapFont Read(Stream stream, string directory)
             {
                 var font = new BitmapFont();
                 var textures = new List<Texture>();

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -29,7 +30,7 @@ namespace FrogWorks
 
         internal static T GetFromCache<T>(string fileName, Func<string, T> callback)
         {
-            var loadedAsset = null as object;
+            object loadedAsset;
             var tag = Path.ChangeExtension(fileName, null);
 
             CreateIfNotExist(typeof(T));
@@ -67,7 +68,7 @@ namespace FrogWorks
             }
         }
 
-        public static FileStream GetStream(string path, params string[] fileTypes)
+        public static Stream GetStream(string path, params string[] fileTypes)
         {
             var fullPath = GetFullPath(path, fileTypes);
             return !string.IsNullOrEmpty(fullPath) ? File.OpenRead(fullPath) : null;

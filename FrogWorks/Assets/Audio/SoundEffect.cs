@@ -1,16 +1,18 @@
 ﻿namespace FrogWorks
 {
+    using Sound = FMOD.Sound;
+
     public sealed class SoundEffect : Audio
     {
-        internal SoundEffect()
-            : base()
+        internal SoundEffect(Sound sound)
+            : base(sound)
         {
         }
 
         #region Static Methods
         public static SoundEffect Load(string filePath)
         {
-            return null;
+            return AssetManager.GetFromCache(filePath, AudioManager.LoadSoundEffect);
         }
         #endregion
     }

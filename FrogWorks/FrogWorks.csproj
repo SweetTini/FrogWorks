@@ -47,9 +47,11 @@
   <ItemGroup>
     <Compile Include="Assets\AssetManager.cs" />
     <Compile Include="Assets\Audio\Audio.cs" />
+    <Compile Include="Assets\Audio\AudioManager.cs" />
     <Compile Include="Assets\Audio\FMOD\FMod.cs" />
     <Compile Include="Assets\Audio\FMOD\FModDsp.cs" />
     <Compile Include="Assets\Audio\FMOD\FModErrors.cs" />
+    <Compile Include="Assets\Audio\Platforms\AudioManager.Desktop.cs" />
     <Compile Include="Assets\Audio\SoundEffect.cs" />
     <Compile Include="Assets\Audio\SoundTrack.cs" />
     <Compile Include="Assets\Graphics\Shader.cs" />
@@ -172,9 +174,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="MonoGame.Framework.dll.config" />
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="libmojoshader_64.dll">

@@ -89,7 +89,7 @@ namespace FrogWorks
             GC.SuppressFinalize(this);
         }
 
-        protected virtual void Dispose(bool isDisposing)
+        void Dispose(bool isDisposing)
         {
             if (isDisposing && !IsDisposed)
             {
