@@ -7,10 +7,10 @@ namespace FrogWorks
     internal static partial class AudioManager
     {
         [DllImport("kernel32.dll", EntryPoint = "LoadLibrary")]
-        static extern IntPtr LoadWinLibrary(string filePath);
+        static extern IntPtr LoadForWindows(string filePath);
 
         [DllImport("libdl.so.2", EntryPoint = "dlopen")]
-        static extern IntPtr LoadUnixLibrary(string filename, int flags);
+        static extern IntPtr LoadForUnix(string filename, int flags);
 
         static void LoadNativeLibrary()
         {
@@ -21,11 +21,11 @@ namespace FrogWorks
             {
                 case PlatformID.Unix:
                     fullPath = Path.GetFullPath($"{directory}\\libfmod.so");
-                    LoadUnixLibrary(fullPath, 0x001);
+                    LoadForUnix(fullPath, 0x001);
                     break;
                 default:
                     fullPath = Path.GetFullPath($"{directory}\\fmod.dll");
-                    LoadWinLibrary(fullPath);
+                    LoadForWindows(fullPath);
                     break;
             }
         }

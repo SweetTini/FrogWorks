@@ -8,7 +8,7 @@ namespace FrogWorks
     using FModFactory = FMOD.Factory;
     using Sound = FMOD.Sound;
     using ChannelGroup = FMOD.ChannelGroup;
-    using CreateSoundDexInfo = FMOD.CREATESOUNDEXINFO;
+    using SoundExInfo = FMOD.CREATESOUNDEXINFO;
     using InitFlags = FMOD.INITFLAGS;
     using Mode = FMOD.MODE;
 
@@ -26,7 +26,7 @@ namespace FrogWorks
             const int dspBufferCount = 4;
             const int channelCount = 32;
 
-            if (TryLoadNativeLiabrary())
+            if (TryLoadNativeLibrary())
             {
                 FModSystem system;
                 FModFactory.System_Create(out system);
@@ -61,13 +61,12 @@ namespace FrogWorks
         {
             if (IsActive)
             {
-                var buffer = LoadFileAsBuffer(filePath, ".ogg");
+                var buffer = LoadBuffer(filePath, ".ogg");
 
                 if (buffer != null)
                 {
                     var mode = Mode.OPENMEMORY | Mode.CREATESAMPLE;
-                    var info = new CreateSoundDexInfo();
-                    info.length = (uint)buffer.Length;
+                    var info = new SoundExInfo() { length = (uint)buffer.Length };
                     info.cbsize = Marshal.SizeOf(info);
 
                     Sound sound;
@@ -83,14 +82,13 @@ namespace FrogWorks
         {
             if (IsActive)
             {
-                var buffer = LoadFileAsBuffer(filePath, ".ogg");
+                var buffer = LoadBuffer(filePath, ".ogg");
 
                 if (buffer != null)
                 {
                     var mode = Mode.OPENMEMORY | Mode.CREATESTREAM;
                     var handle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
-                    var info = new CreateSoundDexInfo();
-                    info.length = (uint)buffer.Length;
+                    var info = new SoundExInfo { length = (uint)buffer.Length };
                     info.cbsize = Marshal.SizeOf(info);
 
                     Sound sound;
@@ -102,7 +100,7 @@ namespace FrogWorks
             return null;
         }
 
-        static byte[] LoadFileAsBuffer(string filePath, params string[] fileTypes)
+        static byte[] LoadBuffer(string filePath, params string[] fileTypes)
         {
             var stream = AssetManager.GetStream(filePath, fileTypes);
 
@@ -128,7 +126,7 @@ namespace FrogWorks
             return null;
         }
 
-        static bool TryLoadNativeLiabrary()
+        static bool TryLoadNativeLibrary()
         {
             try
             {
