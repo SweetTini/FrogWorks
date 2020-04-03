@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 
 namespace FrogWorks
@@ -117,6 +118,8 @@ namespace FrogWorks
         static SoundClip LoadClip<T>(string filePath)
             where T : SoundClip
         {
+            filePath = filePath.Replace('.', Path.DirectorySeparatorChar);
+
             var clip = null as SoundClip;
             var type = typeof(T);
 
