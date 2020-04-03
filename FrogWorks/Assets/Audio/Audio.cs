@@ -184,6 +184,8 @@ namespace FrogWorks
         static List<SoundChannel> ToChannelList<T>(string filePath)
             where T : SoundClip
         {
+            filePath = AudioManager.CleanFilePath(filePath);
+
             var channels = Channels?
                 .Where(channel => channel != null
                     && channel.Clip is T
