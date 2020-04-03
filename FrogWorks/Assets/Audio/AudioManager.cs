@@ -65,14 +65,13 @@ namespace FrogWorks
 
                 if (buffer != null)
                 {
-                    var name = CleanFilePath(filePath);
                     var mode = Mode.OPENMEMORY | Mode.CREATESAMPLE;
                     var info = new SoundExInfo() { length = (uint)buffer.Length };
                     info.cbsize = Marshal.SizeOf(info);
 
                     Sound sound;
                     System.createSound(buffer, mode, ref info, out sound);
-                    return new SoundEffect(name, sound);
+                    return new SoundEffect(filePath.CleanPath(), sound);
                 }
             }
 
@@ -87,7 +86,6 @@ namespace FrogWorks
 
                 if (buffer != null)
                 {
-                    var name = CleanFilePath(filePath);
                     var mode = Mode.OPENMEMORY | Mode.CREATESTREAM;
                     var handle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
                     var info = new SoundExInfo { length = (uint)buffer.Length };
@@ -95,18 +93,11 @@ namespace FrogWorks
 
                     Sound sound;
                     System.createSound(buffer, mode, ref info, out sound);
-                    return new SoundTrack(name, sound, handle, buffer);
+                    return new SoundTrack(filePath.CleanPath(), sound, handle, buffer);
                 }
             }
 
             return null;
-        }
-
-        public static string CleanFilePath(string filePath)
-        {
-            return filePath
-                .Replace(Path.DirectorySeparatorChar, '.')
-                .Replace(Path.AltDirectorySeparatorChar, '.');
         }
 
         static byte[] LoadBuffer(string filePath, params string[] fileTypes)

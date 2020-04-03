@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -31,7 +30,7 @@ namespace FrogWorks
         internal static T GetFromCache<T>(string fileName, Func<string, T> callback)
         {
             object loadedAsset;
-            var tag = Path.ChangeExtension(fileName, null);
+            var tag = Path.ChangeExtension(fileName, null).CleanPath();
 
             CreateIfNotExist(typeof(T));
 
@@ -93,6 +92,13 @@ namespace FrogWorks
             }
 
             return null;
+        }
+
+        internal static string CleanPath(this string filePath)
+        {
+            return filePath?.Replace(
+                Path.DirectorySeparatorChar, 
+                Path.AltDirectorySeparatorChar);
         }
     }
 }
