@@ -36,6 +36,20 @@ namespace FrogWorks
             _nextScene = new T();
         }
 
+        protected override void OnActivated(object sender, EventArgs args)
+        {
+            base.OnActivated(sender, args);
+            Audio.ResumeAll();
+            _scene?.ResumeInternally();
+        }
+
+        protected override void OnDeactivated(object sender, EventArgs args)
+        {
+            _scene?.PauseInternally();
+            Audio.PauseAll();
+            base.OnDeactivated(sender, args);
+        }
+
         protected override void Update(GameTime gameTime)
         {
             DeltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;

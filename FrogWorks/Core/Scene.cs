@@ -81,21 +81,30 @@ namespace FrogWorks
 
             Layers.Reset();
             World.Reset();
-            Audio.Unload();
+        }
+
+        internal void PauseInternally()
+        {
+            Pause();
+            IsActive = false;
+        }
+
+        internal void ResumeInternally()
+        {
+            IsActive = true;
+            Resume();
         }
 
         internal void Update(float deltaTime)
         {
-            BeforeUpdate(deltaTime);
-
             if (IsActive)
             {
+                BeforeUpdate(deltaTime);
                 Entities.Update(deltaTime);
                 Layers.Update(deltaTime);
                 TimeActive += deltaTime;
+                AfterUpdate(deltaTime);
             }
-
-            AfterUpdate(deltaTime);
         }
 
         internal void Draw(
@@ -180,6 +189,14 @@ namespace FrogWorks
         }
 
         protected virtual void End()
+        {
+        }
+
+        protected virtual void Pause()
+        {
+        }
+
+        protected virtual void Resume()
         {
         }
 
