@@ -14,10 +14,12 @@ namespace FrogWorks
 
         protected Sound Sound { get; private set; }
 
+        public string Name { get; private set; }
+
         public bool Loop
         {
-            get { return MaxLoops < 0; }
-            set { MaxLoops = value ? -1 : 0; }
+            get { return MaxLoops < 1; }
+            set { MaxLoops = value ? 0 : 1; }
         }
 
         public int MaxLoops
@@ -52,16 +54,17 @@ namespace FrogWorks
 
         public bool IsDisposed { get; private set; }
 
-        protected SoundClip(Sound sound)
+        protected SoundClip(string name, Sound sound)
             : base()
         {
+            Name = name;
             Sound = sound;
         }
 
-        public SoundChannel Play()
+        public SoundChannel Play(bool paused = false)
         {
             Channel channel;
-            AudioManager.System.playSound(Sound, default, false, out channel);
+            AudioManager.System.playSound(Sound, default, paused, out channel);
             return new SoundChannel(this, channel);
         }
 

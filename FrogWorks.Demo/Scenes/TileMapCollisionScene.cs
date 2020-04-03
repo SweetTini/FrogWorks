@@ -23,6 +23,8 @@ namespace FrogWorks.Demo
             _field = new TileMapField(8, 7, 32, 32);
             _spider = new Spider(_field, 40, 40);
             Add(_spider, _field);
+
+            Audio.Play<SoundTrack>("Music\\GameOver");
         }
     }
 }

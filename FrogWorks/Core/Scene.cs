@@ -81,6 +81,7 @@ namespace FrogWorks
 
             Layers.Reset();
             World.Reset();
+            Audio.Unload();
         }
 
         internal void Update(float deltaTime)

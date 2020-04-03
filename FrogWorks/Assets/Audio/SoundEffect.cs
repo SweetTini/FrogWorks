@@ -4,8 +4,8 @@
 
     public sealed class SoundEffect : SoundClip
     {
-        internal SoundEffect(Sound sound)
-            : base(sound)
+        internal SoundEffect(string name, Sound sound)
+            : base(name, sound)
         {
         }
 

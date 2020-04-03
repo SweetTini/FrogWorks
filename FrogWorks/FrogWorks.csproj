@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\AssetManager.cs" />
+    <Compile Include="Assets\Audio\Audio.cs" />
     <Compile Include="Assets\Audio\SoundClip.cs" />
     <Compile Include="Assets\Audio\AudioManager.cs" />
     <Compile Include="Assets\Audio\SoundChannel.cs" />

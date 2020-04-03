@@ -32,6 +32,7 @@ namespace FrogWorks
                 System = system;
                 System.setDSPBufferSize(dspBufferLength, dspBufferCount);
                 System.init(channelCount, InitFlags.CHANNEL_LOWPASS, (IntPtr)0);
+                Audio.Initialize(channelCount);
 
                 IsActive = true;
             }
@@ -70,7 +71,7 @@ namespace FrogWorks
 
                     Sound sound;
                     System.createSound(buffer, mode, ref info, out sound);
-                    return new SoundEffect(sound);
+                    return new SoundEffect(filePath, sound);
                 }
             }
 
@@ -92,7 +93,7 @@ namespace FrogWorks
 
                     Sound sound;
                     System.createSound(buffer, mode, ref info, out sound);
-                    return new SoundTrack(sound, handle, buffer);
+                    return new SoundTrack(filePath, sound, handle, buffer);
                 }
             }
 

@@ -22,8 +22,8 @@
 
         public bool Loop
         {
-            get { return MaxLoops < 0; }
-            set { MaxLoops = value ? -1 : 0; }
+            get { return MaxLoops < 1; }
+            set { MaxLoops = value ? 0 : 1; }
         }
 
         public int MaxLoops
@@ -32,18 +32,18 @@
             {
                 int loopCount;
                 _channel.getLoopCount(out loopCount);
-                return loopCount;
+                return loopCount + 1;
             }
             set
             {
-                value = value.Max(-1);
+                value = value.Abs();
 
-                var mode = value != 0
+                var mode = value != 1
                     ? Mode.LOOP_NORMAL
                     : Mode.LOOP_OFF;
 
                 _channel.setMode(mode);
-                _channel.setLoopCount(value);
+                _channel.setLoopCount(value - 1);
             }
         }
 

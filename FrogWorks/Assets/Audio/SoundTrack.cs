@@ -9,8 +9,8 @@ namespace FrogWorks
         GCHandle _bufferHandle;
         byte[] _buffer;
 
-        internal SoundTrack(Sound sound, GCHandle bufferHandle, byte[] buffer)
-            : base(sound)
+        internal SoundTrack(string name, Sound sound, GCHandle bufferHandle, byte[] buffer)
+            : base(name, sound)
         {
             _bufferHandle = bufferHandle;
             _buffer = buffer;
