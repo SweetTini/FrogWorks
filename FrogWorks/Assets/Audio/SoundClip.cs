@@ -1,11 +1,8 @@
 ﻿using System;
+using FMOD;
 
 namespace FrogWorks
 {
-    using Sound = FMOD.Sound;
-    using Channel = FMOD.Channel;
-    using TimeUnit = FMOD.TIMEUNIT;
-
     public abstract class SoundClip : IDisposable
     {
         int _maxLoops;
@@ -47,7 +44,7 @@ namespace FrogWorks
             get
             {
                 uint length;
-                Sound.getLength(out length, TimeUnit.MS);
+                Sound.getLength(out length, TIMEUNIT.MS);
                 return (int)length;
             }
         }

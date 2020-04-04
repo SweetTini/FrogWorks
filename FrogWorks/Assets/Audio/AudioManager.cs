@@ -1,17 +1,11 @@
-﻿using System;
+﻿using FMOD;
+using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using FModSystem = FMOD.System;
 
 namespace FrogWorks
 {
-    using FModSystem = FMOD.System;
-    using FModFactory = FMOD.Factory;
-    using Sound = FMOD.Sound;
-    using ChannelGroup = FMOD.ChannelGroup;
-    using SoundExInfo = FMOD.CREATESOUNDEXINFO;
-    using InitFlags = FMOD.INITFLAGS;
-    using Mode = FMOD.MODE;
-
     internal static partial class AudioManager
     {
         public static FModSystem System { get; private set; }
@@ -31,10 +25,10 @@ namespace FrogWorks
                 LoadNativeLibrary();
 
                 FModSystem system;
-                FModFactory.System_Create(out system);
+                Factory.System_Create(out system);
                 System = system;
                 System.setDSPBufferSize(dspBufferLength, dspBufferCount);
-                System.init(channelCount, InitFlags.CHANNEL_LOWPASS, (IntPtr)0);
+                System.init(channelCount, INITFLAGS.CHANNEL_LOWPASS, (IntPtr)0);
                 Audio.Initialize(channelCount);
 
                 ChannelGroup channelGroup;
@@ -84,8 +78,8 @@ namespace FrogWorks
 
                 if (buffer != null)
                 {
-                    var mode = Mode.OPENMEMORY | Mode.CREATESAMPLE;
-                    var info = new SoundExInfo() { length = (uint)buffer.Length };
+                    var mode = MODE.OPENMEMORY | MODE.CREATESAMPLE;
+                    var info = new CREATESOUNDEXINFO() { length = (uint)buffer.Length };
                     info.cbsize = Marshal.SizeOf(info);
 
                     Sound sound;
@@ -105,9 +99,9 @@ namespace FrogWorks
 
                 if (buffer != null)
                 {
-                    var mode = Mode.OPENMEMORY | Mode.CREATESTREAM;
+                    var mode = MODE.OPENMEMORY | MODE.CREATESTREAM;
                     var handle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
-                    var info = new SoundExInfo { length = (uint)buffer.Length };
+                    var info = new CREATESOUNDEXINFO { length = (uint)buffer.Length };
                     info.cbsize = Marshal.SizeOf(info);
 
                     Sound sound;

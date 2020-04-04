@@ -1,7 +1,7 @@
-﻿namespace FrogWorks
-{
-    using Sound = FMOD.Sound;
+﻿using FMOD;
 
+namespace FrogWorks
+{
     public sealed class SoundEffect : SoundClip
     {
         internal SoundEffect(string name, Sound sound)

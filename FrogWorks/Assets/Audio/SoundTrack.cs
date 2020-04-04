@@ -1,9 +1,8 @@
-﻿using System.Runtime.InteropServices;
+﻿using FMOD;
+using System.Runtime.InteropServices;
 
 namespace FrogWorks
 {
-    using Sound = FMOD.Sound;
-
     public sealed class SoundTrack : SoundClip
     {
         GCHandle _bufferHandle;

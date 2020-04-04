@@ -1,9 +1,7 @@
-﻿namespace FrogWorks
-{
-    using Channel = FMOD.Channel;
-    using Mode = FMOD.MODE;
-    using TimeUnit = FMOD.TIMEUNIT;
+﻿using FMOD;
 
+namespace FrogWorks
+{
     public sealed class SoundChannel
     {
         Channel _channel;
@@ -39,8 +37,8 @@
                 value = value.Abs();
 
                 var mode = value != 1
-                    ? Mode.LOOP_NORMAL
-                    : Mode.LOOP_OFF;
+                    ? MODE.LOOP_NORMAL
+                    : MODE.LOOP_OFF;
 
                 _channel.setMode(mode);
                 _channel.setLoopCount(value - 1);
@@ -96,13 +94,13 @@
             get
             {
                 uint position;
-                _channel.getPosition(out position, TimeUnit.MS);
+                _channel.getPosition(out position, TIMEUNIT.MS);
                 return (int)position;
             }
             set
             {
                 value = value.Mod(Clip.Length);
-                _channel.setPosition((uint)value, TimeUnit.MS);
+                _channel.setPosition((uint)value, TIMEUNIT.MS);
             }
         }
 
