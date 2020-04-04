@@ -23,7 +23,7 @@ namespace FrogWorks
             Channels = new ReadOnlyCollection<SoundChannel>(_channels);
         }
 
-        internal static void Unload()
+        public static void Unload()
         {
             ClearAllChannels();
             AssetManager.ClearCache<SoundEffect>();
