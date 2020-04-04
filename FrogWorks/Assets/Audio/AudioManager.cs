@@ -7,6 +7,7 @@ namespace FrogWorks
     using FModSystem = FMOD.System;
     using FModFactory = FMOD.Factory;
     using Sound = FMOD.Sound;
+    using ChannelGroup = FMOD.ChannelGroup;
     using SoundExInfo = FMOD.CREATESOUNDEXINFO;
     using InitFlags = FMOD.INITFLAGS;
     using Mode = FMOD.MODE;
@@ -14,6 +15,8 @@ namespace FrogWorks
     internal static partial class AudioManager
     {
         public static FModSystem System { get; private set; }
+
+        public static ChannelGroup ChannelGroup { get; private set; }
 
         static bool IsActive { get; set; }
 
@@ -34,6 +37,10 @@ namespace FrogWorks
                 System.init(channelCount, InitFlags.CHANNEL_LOWPASS, (IntPtr)0);
                 Audio.Initialize(channelCount);
 
+                ChannelGroup channelGroup;
+                System.getMasterChannelGroup(out channelGroup);
+                ChannelGroup = channelGroup;
+
                 IsActive = true;
             }
             catch
@@ -46,6 +53,18 @@ namespace FrogWorks
         {
             if (IsActive)
                 System.update();
+        }
+
+        public static void Suspend()
+        {
+            if (IsActive)
+                ChannelGroup.setPaused(true);
+        }
+
+        public static void Resume()
+        {
+            if (IsActive)
+                ChannelGroup.setPaused(false);
         }
 
         public static void Dispose()

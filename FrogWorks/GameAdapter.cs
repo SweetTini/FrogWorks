@@ -39,14 +39,14 @@ namespace FrogWorks
         protected override void OnActivated(object sender, EventArgs args)
         {
             base.OnActivated(sender, args);
-            Audio.ResumeAll();
+            AudioManager.Resume();
             _scene?.ResumeInternally();
         }
 
         protected override void OnDeactivated(object sender, EventArgs args)
         {
-            _scene?.PauseInternally();
-            Audio.PauseAll();
+            _scene?.SuspendInternally();
+            AudioManager.Suspend();
             base.OnDeactivated(sender, args);
         }
 

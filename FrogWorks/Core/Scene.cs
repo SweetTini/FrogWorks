@@ -83,9 +83,9 @@ namespace FrogWorks
             World.Reset();
         }
 
-        internal void PauseInternally()
+        internal void SuspendInternally()
         {
-            Pause();
+            Suspend();
             IsActive = false;
         }
 
@@ -192,7 +192,7 @@ namespace FrogWorks
         {
         }
 
-        protected virtual void Pause()
+        protected virtual void Suspend()
         {
         }
 
