@@ -26,6 +26,19 @@ namespace FrogWorks
 
         public bool IsLocked { get; set; }
 
+        public bool IsCoroutineFinished
+        {
+            get
+            {
+                State state;
+
+                if (_key.HasValue && _states.TryGetValue(_key.Value, out state))
+                    return state.Coroutine != null && _coroutine.IsFinished;
+
+                return false;
+            }
+        }
+
         public StateMachine()
             : base(true, false)
         {
