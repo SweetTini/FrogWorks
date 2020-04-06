@@ -14,7 +14,7 @@ namespace FrogWorks
 
         protected internal Layer Layer => Component?.Layer ?? Entity?.Layer;
 
-        protected internal bool IsCollidable
+        public bool IsCollidable
         {
             get { return Component?.IsCollidable ?? Entity?.IsCollidable ?? true; }
         }
