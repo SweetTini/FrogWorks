@@ -257,6 +257,16 @@ namespace FrogWorks
         {
             _currentLayer = Layers[index];
         }
+
+        public Layer GetCurrentLayer()
+        {
+            return _currentLayer;
+        }
+
+        public Layer GetLayer(int index)
+        {
+            return Layers[index];
+        }
         #endregion
 
         #region Entities
