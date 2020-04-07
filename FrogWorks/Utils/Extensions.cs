@@ -71,6 +71,36 @@ namespace FrogWorks
             return number + (target - number) * amount;
         }
 
+        public static float Lerp(
+            this int number,
+            int target,
+            float amount,
+            float maxDistance)
+        {
+            var distance = (target - number) * amount;
+
+            distance = distance > maxDistance
+                ? maxDistance
+                : distance;
+
+            return (int)Math.Round(number + distance);
+        }
+
+        public static float Lerp(
+            this float number, 
+            float target, 
+            float amount, 
+            float maxDistance)
+        {
+            var distance = (target - number) * amount;
+
+            distance = distance > maxDistance
+                ? maxDistance
+                : distance;
+
+            return number + distance;
+        }
+
         public static int Max(this int number, int other)
         {
             return Math.Max(number, other);
@@ -458,12 +488,16 @@ namespace FrogWorks
         #region Vector
         public static Vector2 AngleToVector(this float angle, float length)
         {
-            return new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle)) * length;
+            return new Vector2(
+                (float)Math.Cos(angle), 
+                (float)Math.Sin(angle)) * length;
         }
 
         public static Vector2 Abs(this Vector2 vector)
         {
-            return new Vector2(Math.Abs(vector.X), Math.Abs(vector.Y));
+            return new Vector2(
+                Math.Abs(vector.X), 
+                Math.Abs(vector.Y));
         }
 
         public static Vector2 Clamp(this Vector2 vector, Vector2 lowest, Vector2 highest)
@@ -475,7 +509,9 @@ namespace FrogWorks
 
         public static Vector2 Ceiling(this Vector2 vector)
         {
-            return new Vector2((float)Math.Ceiling(vector.X), (float)Math.Ceiling(vector.Y));
+            return new Vector2(
+                (float)Math.Ceiling(vector.X), 
+                (float)Math.Ceiling(vector.Y));
         }
 
         public static float Cross(this Vector2 vector, Vector2 other)
@@ -504,7 +540,9 @@ namespace FrogWorks
 
         public static Vector2 Floor(this Vector2 vector)
         {
-            return new Vector2((float)Math.Floor(vector.X), (float)Math.Floor(vector.Y));
+            return new Vector2(
+                (float)Math.Floor(vector.X), 
+                (float)Math.Floor(vector.Y));
         }
 
         public static Vector2 Inverse(this Vector2 vector)
@@ -514,7 +552,22 @@ namespace FrogWorks
 
         public static Vector2 Lerp(this Vector2 vector, Vector2 target, float amount)
         {
-            return Vector2.Lerp(vector, target, amount);
+            return vector + (target - vector) * amount;
+        }
+
+        public static Vector2 Lerp(
+            this Vector2 vector,
+            Vector2 target, 
+            float amount, 
+            float maxDistance)
+        {
+            var distance = (target - vector) * amount;
+
+            distance = distance.Length() > maxDistance
+                ? Vector2.Normalize(distance) * maxDistance
+                : distance;
+
+            return vector + distance;
         }
 
         public static Vector2 Max(this Vector2 vector, Vector2 other)
@@ -596,7 +649,10 @@ namespace FrogWorks
                 (float)Math.Round(vector.Y, digits));
         }
 
-        public static Vector2 SnapToGrid(this Vector2 vector, Vector2 size, Vector2 offset = default(Vector2))
+        public static Vector2 SnapToGrid(
+            this Vector2 vector, 
+            Vector2 size, 
+            Vector2 offset = default)
         {
             return (vector - offset).Divide(size).Floor();
         }

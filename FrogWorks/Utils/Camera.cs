@@ -29,7 +29,7 @@ namespace FrogWorks
             get
             {
                 return Vector2.Transform(
-                    Vector2.Zero, 
+                    Vector2.Zero,
                     Matrix.Invert(TransformMatrix)).Floor();
             }
         }
@@ -130,18 +130,14 @@ namespace FrogWorks
             return Vector2.Transform(position, TransformMatrix);
         }
 
-        public void Approach(Vector2 position, float rate)
+        public void Approach(Vector2 position, float amount)
         {
-            Position += (position - Position) * rate;
+            Position = Position.Lerp(position, amount);
         }
 
-        public void Approach(Vector2 position, float rate, float maxDistance)
+        public void Approach(Vector2 position, float amount, float maxDistance)
         {
-            var distanceToMove = (position - Position) * rate;
-
-            Position += distanceToMove.Length() > maxDistance
-                ? Vector2.Normalize(distanceToMove) * maxDistance
-                : distanceToMove;
+            Position = Position.Lerp(position, amount, maxDistance);
         }
 
         internal void UpdateViewport()
@@ -156,16 +152,16 @@ namespace FrogWorks
         {
             if (_isDirty)
             {
-                _transformMatrix = Matrix.CreateTranslation(new Vector3(-_position, 0f)) 
-                    * Matrix.CreateRotationZ(_angle) 
-                    * Matrix.CreateScale(new Vector3(_zoom * Vector2.One, 1f)) 
+                _transformMatrix = Matrix.CreateTranslation(new Vector3(-_position, 0f))
+                    * Matrix.CreateRotationZ(_angle)
+                    * Matrix.CreateScale(new Vector3(_zoom * Vector2.One, 1f))
                     * Matrix.CreateTranslation(new Vector3(_origin, 0f));
                 _isDirty = false;
 
                 View = _bounds.Transform(
-                    _position, 
-                    _origin, 
-                    Vector2.One.Divide(_zoom), 
+                    _position,
+                    _origin,
+                    Vector2.One.Divide(_zoom),
                     _angle);
                 OnChanged?.Invoke(this);
             }
