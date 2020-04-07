@@ -11,7 +11,7 @@ namespace FrogWorks
         {
             try
             {
-                var fullPath = Path.Combine(Runner.Application.ContentDirectory, filePath);
+                var fullPath = Path.Combine(Runner.Application.AssemblyDirectory, filePath);
 
                 using (var stream = File.Create(fullPath))
                 {
@@ -32,7 +32,7 @@ namespace FrogWorks
             {
                 instance = default;
 
-                var fullPath = Path.Combine(Runner.Application.ContentDirectory, filePath);
+                var fullPath = Path.Combine(Runner.Application.AssemblyDirectory, filePath);
 
                 if (File.Exists(fullPath))
                 {
