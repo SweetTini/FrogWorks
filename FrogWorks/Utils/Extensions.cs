@@ -229,6 +229,11 @@ namespace FrogWorks
         {
             return (float)Math.Sqrt(number);
         }
+
+        public static float Truncate(this float number)
+        {
+            return (float)Math.Truncate(number);
+        }
         #endregion
 
         #region String
@@ -665,6 +670,13 @@ namespace FrogWorks
         public static Vector2 Sign(this Vector2 vector)
         {
             return new Vector2(Math.Sign(vector.X), Math.Sign(vector.Y));
+        }
+
+        public static Vector2 Truncate(this Vector2 vector)
+        {
+            return new Vector2(
+                (float)Math.Truncate(vector.X),
+                (float)Math.Truncate(vector.Y));
         }
 
         public static float VectorToAngle(this Vector2 vector)
