@@ -207,12 +207,12 @@ namespace FrogWorks
 
         public static float Round(this float number)
         {
-            return (float)Math.Round(number, MidpointRounding.AwayFromZero);
+            return (float)Math.Round(number);
         }
 
         public static float Round(this float number, int decimals)
         {
-            return (float)Math.Round(number, decimals, MidpointRounding.AwayFromZero);
+            return (float)Math.Round(number, decimals);
         }
 
         public static int Sign(this int number)
@@ -643,15 +643,31 @@ namespace FrogWorks
         public static Vector2 Round(this Vector2 vector)
         {
             return new Vector2(
-                (float)Math.Round(vector.X, MidpointRounding.AwayFromZero),
-                (float)Math.Round(vector.Y, MidpointRounding.AwayFromZero));
+                (float)Math.Round(vector.X),
+                (float)Math.Round(vector.Y));
+        }
+
+        public static Vector3 Round(this Vector3 vector)
+        {
+            return new Vector3(
+                (float)Math.Round(vector.X),
+                (float)Math.Round(vector.Y),
+                (float)Math.Round(vector.Z));
         }
 
         public static Vector2 Round(this Vector2 vector, int digits)
         {
             return new Vector2(
-                (float)Math.Round(vector.X, digits, MidpointRounding.AwayFromZero),
-                (float)Math.Round(vector.Y, digits, MidpointRounding.AwayFromZero));
+                (float)Math.Round(vector.X, digits),
+                (float)Math.Round(vector.Y, digits));
+        }
+
+        public static Vector3 Round(this Vector3 vector, int digits)
+        {
+            return new Vector3(
+                (float)Math.Round(vector.X, digits),
+                (float)Math.Round(vector.Y, digits),
+                (float)Math.Round(vector.Z, digits));
         }
 
         public static Vector2 SnapToGrid(

@@ -98,7 +98,7 @@ namespace FrogWorks
             float? zoom = null,
             float? angle = null)
         {
-            var position = Position * (coefficient ?? Vector2.One);
+            var position = (Position * (coefficient ?? Vector2.One)).Round();
             var scale = (zoom ?? Zoom).Clamp(.1f, 5f) * Vector2.One;
             var origin = _view.Size.ToVector2() * .5f;
 
@@ -113,7 +113,7 @@ namespace FrogWorks
             float? zoom = null,
             float? angle = null)
         {
-            var position = Position * (coefficient ?? Vector2.One);
+            var position = (Position * (coefficient ?? Vector2.One)).Round();
             var inversedZoom = Vector2.One.Divide(zoom ?? Zoom);
             var origin = _view.Size.ToVector2() * .5f;
             return _view.Transform(position, origin, inversedZoom, angle ?? Angle);

@@ -170,7 +170,7 @@ namespace FrogWorks
             if (_bufferIndex >= _vertices.Length)
                 Flush();
 
-            var vertexPositionColor = new VertexPositionColor(position, color);
+            var vertexPositionColor = new VertexPositionColor(position.Round(), color);
             _vertices[_bufferIndex++] = vertexPositionColor;
         }
         #endregion

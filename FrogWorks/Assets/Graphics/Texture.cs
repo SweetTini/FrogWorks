@@ -79,8 +79,8 @@ namespace FrogWorks
             batch.DrawSprites((sprite) => 
             {
                 sprite.Draw(
-                    XnaTexture, position, Bounds, color,
-                    angle, origin, scale, effects, 0f);
+                    XnaTexture, position.Round(), Bounds, 
+                    color, angle, origin, scale, effects, 0f);
             });
         }
 
@@ -90,8 +90,8 @@ namespace FrogWorks
             batch.DrawSprites((sprite) => 
             {
                 sprite.Draw(
-                    XnaTexture, position, bounds, color, 
-                    angle, origin, scale, effects, 0f);
+                    XnaTexture, position.Round(), bounds, 
+                    color, angle, origin, scale, effects, 0f);
             }, true);
         }
 
