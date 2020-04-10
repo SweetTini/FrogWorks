@@ -10,10 +10,7 @@
         internal void Reset()
         {
             foreach (var child in Children)
-            {
-                child.Camera.UpdateViewport();
                 child.UpdateRenderTarget();
-            }
         }
 
         internal void Dispose()

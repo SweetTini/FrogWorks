@@ -20,9 +20,9 @@ namespace FrogWorks
             get
             {
                 var tileSize = TileSize.ToVector2();
-                var camera = Layer?.Camera ?? Scene?.Camera;
-                var min = camera?.Min ?? Vector2.Zero;
-                var max = camera?.Max ?? Runner.Application.ActualSize.ToVector2();
+                var viewSize = Runner.Application.ActualSize.ToVector2();
+                var min = Layer?.Min ?? Scene?.Camera.Min ?? Vector2.Zero;
+                var max = Layer?.Max ?? Scene?.Camera.Max ?? viewSize;
 
                 min = (min - DrawPosition).Divide(tileSize).Floor();
                 max = (max + DrawPosition).Divide(tileSize).Ceiling();
@@ -107,7 +107,7 @@ namespace FrogWorks
             {
                 var x = DrawRegion.Left + (i % DrawRegion.Width);
                 var y = DrawRegion.Top + (i / DrawRegion.Width);
-                var position = DrawPosition + new Vector2(x * TileWidth, y * TileHeight);
+                var position = DrawPosition.Floor() + new Vector2(x * TileWidth, y * TileHeight);
 
                 GetTile(x, y)?.Draw(batch, position, Vector2.Zero, Vector2.One, 0f,
                                     Color * Opacity.Clamp(0f, 1f), SpriteEffects);

@@ -16,9 +16,7 @@ namespace FrogWorks
 
         protected Effect Effect { get; set; }
 
-        protected Matrix? ProjectionMatrix { get; set; }
-
-        protected Matrix? TransformMatrix { get; set; }
+        protected Matrix TransformMatrix { get; set; }
 
         protected RenderingMode RenderingMode { get; private set; } = RenderingMode.None;
 
@@ -34,31 +32,36 @@ namespace FrogWorks
             Primitive = new PrimitiveBatch(graphicsDevice);
         }
 
-        public void Configure(BlendState blendState = null, 
-                              DepthStencilState depthStencilState = null, 
-                              Effect effect = null, 
-                              Camera camera = null)
+        public void Configure(
+            BlendState blendState = null, 
+            DepthStencilState depthStencilState = null, 
+            Effect effect = null, 
+            Matrix? transformMatrix = null)
         {
             if (IsDrawing)
-                throw new Exception("Cannot modify setting while the rendering process is active.");
+            {
+                throw new Exception(
+                      "Cannot modify setting while the rendering process is active.");
+            }
 
             BlendState = blendState ?? BlendState.AlphaBlend;
             DepthStencilState = depthStencilState ?? DepthStencilState.None;
             Effect = effect;
-            ProjectionMatrix = camera?.ProjectionMatrix;
-            TransformMatrix = camera?.TransformMatrix;
+            TransformMatrix = transformMatrix ?? Matrix.Identity;
         }
 
         public void Reset()
         {
             if (IsDrawing)
-                throw new Exception("Cannot modify setting while the rendering process is active.");
+            {
+                throw new Exception(
+                    "Cannot modify setting while the rendering process is active.");
+            }
 
             BlendState = BlendState.AlphaBlend;
             DepthStencilState = DepthStencilState.None;
             Effect = null;
-            ProjectionMatrix = null;
-            TransformMatrix = null;
+            TransformMatrix = Matrix.Identity;
         }
 
         public void Begin()
@@ -144,7 +147,6 @@ namespace FrogWorks
                     DepthStencilState,
                     RasterizerState.CullNone,
                     Effect,
-                    ProjectionMatrix, 
                     TransformMatrix);
                 RenderingMode = RenderingMode.Primitives;
             }

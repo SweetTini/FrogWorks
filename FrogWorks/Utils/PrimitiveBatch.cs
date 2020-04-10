@@ -54,10 +54,14 @@ namespace FrogWorks
             DepthStencilState depthStencilState = null,
             RasterizerState rasterizerState = null,
             Effect effect = null,
-            Matrix? projectionMatrix = null,
             Matrix? viewMatrix = null)
         {
             CheckAfterDraw();
+
+            var projectionMatrix = Matrix
+                .CreateOrthographicOffCenter(
+                    new Rectangle(Point.Zero, Runner.Application.ActualSize),
+                    -1000f, 1000f);
 
             _graphicsDevice.BlendState = blendState ?? BlendState.AlphaBlend;
             _graphicsDevice.SamplerStates[0] = samplerState ?? SamplerState.PointClamp;
@@ -68,7 +72,7 @@ namespace FrogWorks
             if (_effect is IEffectMatrices)
             {
                 var effectMatrices = _effect as IEffectMatrices;
-                effectMatrices.Projection = projectionMatrix ?? Matrix.Identity;
+                effectMatrices.Projection = projectionMatrix;
                 effectMatrices.View = viewMatrix ?? Matrix.Identity;
             }
 

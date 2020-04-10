@@ -11,7 +11,9 @@ namespace FrogWorks
 
         protected internal RenderTarget2D RenderTarget { get; private set; }
 
-        protected internal Camera Camera { get; private set; }
+        protected Matrix TransformMatrix { get; private set; }
+
+        protected Rectangle View { get; private set; }
 
         public BlendState BlendState { get; protected set; }
 
@@ -20,6 +22,34 @@ namespace FrogWorks
         public Effect Effect { get; protected set; }
 
         public Color Color { get; set; } = Color.White;
+
+        public Vector2 Min
+        {
+            get
+            {
+                return Vector2.Transform(
+                    Vector2.Zero,
+                    Matrix.Invert(TransformMatrix));
+            }
+        }
+
+        public float Left => Min.X;
+
+        public float Top => Min.Y;
+
+        public Vector2 Max
+        {
+            get
+            {
+                return Vector2.Transform(
+                    View.Size.ToVector2(),
+                    Matrix.Invert(TransformMatrix));
+            }
+        }
+
+        public float Right => Max.X;
+
+        public float Bottom => Max.Y;
 
         public Vector2 Coefficient { get; set; } = Vector2.One;
 
@@ -35,22 +65,14 @@ namespace FrogWorks
             set { Coefficient = new Vector2(Coefficient.X, value); }
         }
 
-        public float Zoom
-        {
-            get { return Camera.Zoom; }
-            set { Camera.Zoom = value; }
-        }
+        public float Zoom { get; set; } = 1f;
 
-        public float Angle
-        {
-            get { return Camera.Angle; }
-            set { Camera.Angle = value; }
-        }
+        public float Angle { get; set; }
 
         public float AngleInDegrees
         {
-            get { return Camera.AngleInDegrees; }
-            set { Camera.AngleInDegrees = value; }
+            get { return MathHelper.ToDegrees(Angle); }
+            set { Angle = MathHelper.ToRadians(value); }
         }
 
         public bool RenderBeforeMerge { get; set; } = true;
@@ -58,14 +80,20 @@ namespace FrogWorks
         public Layer()
         {
             GraphicsDevice = Runner.Application.Game.GraphicsDevice;
-            Camera = new Camera();
         }
 
         protected sealed override void Update(float deltaTime)
         {
-            var origin = Runner.Application.Size.ToVector2() * .5f;
-            var offset = Parent?.Camera.Min ?? Vector2.Zero;
-            Camera.Position = origin + offset * Coefficient;
+            if (Scene?.Camera != null)
+            {
+                TransformMatrix = Scene.Camera.UpdateTransformMatrix(Coefficient, Zoom, Angle);
+                View = Scene.Camera.UpdateView(Coefficient, Zoom, Angle);
+            }
+            else
+            {
+                TransformMatrix = Matrix.Identity;
+                View = new Rectangle(Point.Zero, Runner.Application.ActualSize);
+            }
         }
 
         protected sealed override void Draw(RendererBatch batch)
@@ -73,7 +101,7 @@ namespace FrogWorks
             if (Scene?.Entities == null) return;
 
             Scene.Entities.State = ManagerState.ThrowError;
-            batch.Configure(BlendState, DepthStencilState, Effect, Camera);
+            batch.Configure(BlendState, DepthStencilState, Effect, TransformMatrix);
             batch.Begin();
 
             foreach (var entity in Scene.Entities.OnLayer(this))
@@ -118,6 +146,16 @@ namespace FrogWorks
         public sealed override void Destroy()
         {
             Parent?.Layers.Remove(this);
+        }
+
+        public Vector2 ViewToWorld(Vector2 position)
+        {
+            return Vector2.Transform(position, Matrix.Invert(TransformMatrix));
+        }
+
+        public Vector2 WorldToView(Vector2 position)
+        {
+            return Vector2.Transform(position, TransformMatrix);
         }
 
         #region Ordering

@@ -62,13 +62,13 @@ namespace FrogWorks
             };
             Effect = null;
 
-            batch.Configure(BlendState, DepthStencilState, Effect, Camera);
+            batch.Configure(BlendState, DepthStencilState, Effect, TransformMatrix);
             batch.Begin();
             batch.DrawPrimitives(primitive =>
             {
                 primitive.FillRectangle(
-                    Camera.View.Location.ToVector2(),
-                    Camera.View.Size.ToVector2(),
+                    View.Location.ToVector2(),
+                    View.Size.ToVector2(),
                     ClearColor);
             });
             batch.End();

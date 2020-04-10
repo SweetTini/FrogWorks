@@ -125,7 +125,7 @@ namespace FrogWorks.Demo
 
         protected override void AfterDraw(RendererBatch batch)
         {
-            batch.Configure(camera: Camera);
+            batch.Configure(transformMatrix: Camera.TransformMatrix);
             batch.Begin();
 
             foreach (var shape in _shapes)

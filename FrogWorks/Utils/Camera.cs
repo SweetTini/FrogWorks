@@ -1,28 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
 
 namespace FrogWorks
 {
     public class Camera
     {
-        private Matrix _projectionMatrix, _transformMatrix;
-        private Rectangle _bounds;
-        private Vector2 _position, _origin;
-        private float _zoom = 1f, _angle;
-        private bool _isDirty = true;
+        Rectangle _view;
 
-        public Action<Camera> OnChanged { get; set; }
+        public Matrix TransformMatrix { get; private set; }
 
-        public Matrix ProjectionMatrix => _projectionMatrix;
-
-        public Matrix TransformMatrix
-        {
-            get
-            {
-                UpdateMatrices();
-                return _transformMatrix;
-            }
-        }
+        public Rectangle View { get; private set; }
 
         public Vector2 Min
         {
@@ -30,7 +16,7 @@ namespace FrogWorks
             {
                 return Vector2.Transform(
                     Vector2.Zero,
-                    Matrix.Invert(TransformMatrix)).Floor();
+                    Matrix.Invert(TransformMatrix));
             }
         }
 
@@ -42,10 +28,9 @@ namespace FrogWorks
         {
             get
             {
-                UpdateMatrices();
                 return Vector2.Transform(
-                        _bounds.Size.ToVector2(),
-                        Matrix.Invert(TransformMatrix)).Ceiling();
+                    View.Size.ToVector2(),
+                    Matrix.Invert(TransformMatrix));
             }
         }
 
@@ -53,20 +38,7 @@ namespace FrogWorks
 
         public float Bottom => Max.Y;
 
-        public Rectangle View { get; private set; }
-
-        public Vector2 Position
-        {
-            get { return _position; }
-            set
-            {
-                if (_position != value)
-                {
-                    _position = value;
-                    _isDirty = true;
-                }
-            }
-        }
+        public Vector2 Position { get; set; }
 
         public float X
         {
@@ -80,37 +52,13 @@ namespace FrogWorks
             set { Position = new Vector2(Position.X, value); }
         }
 
-        public float Zoom
-        {
-            get { return _zoom; }
-            set
-            {
-                value = MathHelper.Clamp(value, .1f, 5f);
+        public float Zoom { get; set; } = 1f;
 
-                if (_zoom != value)
-                {
-                    _zoom = value;
-                    _isDirty = true;
-                }
-            }
-        }
-
-        public float Angle
-        {
-            get { return _angle; }
-            set
-            {
-                if (_angle != value)
-                {
-                    _angle = value;
-                    _isDirty = true;
-                }
-            }
-        }
+        public float Angle { get; set; }
 
         public float AngleInDegrees
         {
-            get { return MathHelper.ToDegrees(_angle); }
+            get { return MathHelper.ToDegrees(Angle); }
             set { Angle = MathHelper.ToRadians(value); }
         }
 
@@ -142,29 +90,39 @@ namespace FrogWorks
 
         internal void UpdateViewport()
         {
-            _bounds = new Rectangle(Point.Zero, Runner.Application.ActualSize);
-            _projectionMatrix = Matrix.CreateOrthographicOffCenter(_bounds, -1000f, 1000f);
-            _origin = _bounds.Center.ToVector2();
-            _isDirty = true;
+            _view = new Rectangle(Point.Zero, Runner.Application.ActualSize);
         }
 
-        protected void UpdateMatrices()
+        internal Matrix UpdateTransformMatrix(
+            Vector2? coefficient = null,
+            float? zoom = null,
+            float? angle = null)
         {
-            if (_isDirty)
-            {
-                _transformMatrix = Matrix.CreateTranslation(new Vector3(-_position, 0f))
-                    * Matrix.CreateRotationZ(_angle)
-                    * Matrix.CreateScale(new Vector3(_zoom * Vector2.One, 1f))
-                    * Matrix.CreateTranslation(new Vector3(_origin, 0f));
-                _isDirty = false;
+            var position = Position * (coefficient ?? Vector2.One);
+            var scale = (zoom ?? Zoom).Clamp(.1f, 5f) * Vector2.One;
+            var origin = _view.Size.ToVector2() * .5f;
 
-                View = _bounds.Transform(
-                    _position,
-                    _origin,
-                    Vector2.One.Divide(_zoom),
-                    _angle);
-                OnChanged?.Invoke(this);
-            }
+            return Matrix.CreateTranslation(new Vector3(-position, 0f))
+                * Matrix.CreateRotationZ(angle ?? Angle)
+                * Matrix.CreateScale(new Vector3(scale, 1f))
+                * Matrix.CreateTranslation(new Vector3(origin, 0f));
+        }
+
+        internal Rectangle UpdateView(
+            Vector2? coefficient = null,
+            float? zoom = null,
+            float? angle = null)
+        {
+            var position = Position * (coefficient ?? Vector2.One);
+            var inversedZoom = Vector2.One.Divide(zoom ?? Zoom);
+            var origin = _view.Size.ToVector2() * .5f;
+            return _view.Transform(position, origin, inversedZoom, angle ?? Angle);
+        }
+
+        internal void Update()
+        {
+            TransformMatrix = UpdateTransformMatrix();
+            View = UpdateView();
         }
     }
 }
