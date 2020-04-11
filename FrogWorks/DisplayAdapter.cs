@@ -178,7 +178,7 @@ namespace FrogWorks
                         ? Vector2.UnitX
                         : Vector2.UnitY;
 
-                    Extent = (scaleUnit * amount.Round()).ToPoint();
+                    Extent = (scaleUnit * amount).ToPoint();
                 }
 
                 Scale = Vector2.One * ratio;

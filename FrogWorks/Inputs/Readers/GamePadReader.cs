@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Linq;
 
 namespace FrogWorks
 {
@@ -22,14 +23,17 @@ namespace FrogWorks
         internal void Update(bool isActive)
         {
             LastState = CurrentState;
-            CurrentState = isActive ? GamePad.GetState(PlayerIndex) : new GamePadState();
+            CurrentState = isActive
+                ? GamePad.GetState(PlayerIndex)
+                : new GamePadState();
             IsConnected = GamePad.GetState(PlayerIndex).IsConnected;
         }
 
         #region Buttons
         public bool IsDown(GamePadButton button)
         {
-            return !Input.IsDisabled && CurrentState.IsButtonDown((Buttons)button);
+            return !Input.IsDisabled
+                && CurrentState.IsButtonDown((Buttons)button);
         }
 
         public bool IsPressed(GamePadButton button)
@@ -44,6 +48,14 @@ namespace FrogWorks
             return !Input.IsDisabled
                 && CurrentState.IsButtonUp((Buttons)button)
                 && LastState.IsButtonDown((Buttons)button);
+        }
+
+        public GamePadButton[] GetPressedButtons()
+        {
+            return (Enum.GetValues(typeof(Buttons)) as Buttons[])
+                .Where(b => CurrentState.IsButtonDown(b))
+                .Select(b => (GamePadButton)b)
+                .ToArray();
         }
         #endregion
 

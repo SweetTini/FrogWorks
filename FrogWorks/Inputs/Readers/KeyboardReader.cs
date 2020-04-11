@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Input;
+using System.Linq;
 using XnaKeys = Microsoft.Xna.Framework.Input.Keys;
 
 namespace FrogWorks
@@ -37,6 +38,14 @@ namespace FrogWorks
             return !Input.IsDisabled
                 && CurrentState.IsKeyUp((XnaKeys)key)
                 && LastState.IsKeyDown((XnaKeys)key);
+        }
+
+        public Keys[] GetPressedKeys()
+        {
+            return CurrentState
+                .GetPressedKeys()
+                .Select(k => (Keys)k)
+                .ToArray();
         }
 
         public int GetAxis(Keys negative, Keys positive, int both = 0)

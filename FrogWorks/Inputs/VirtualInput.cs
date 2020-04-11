@@ -8,7 +8,7 @@
                 Input.VirtualInputs.Add(this);
         }
 
-        ~VirtualInput()
+        public void Deregister()
         {
             if (Input.VirtualInputs.Contains(this))
                 Input.VirtualInputs.Remove(this);
