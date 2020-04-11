@@ -73,13 +73,13 @@ namespace FrogWorks
             return axis == 0 ? GetAxis(negative, positive, both) : axis;
         }
 
-        internal static int SignThreshold(this float number, float threshold)
+        internal static int SignThreshold(this float amount, float threshold)
         {
-            return Math.Abs(number) >= threshold
-                ? Math.Sign(number) : 0;
+            return Math.Abs(amount) >= threshold
+                ? Math.Sign(amount) : 0;
         }
 
-        internal static Vector2 SnapAngle(this Vector2 vector, float segments)
+        internal static Vector2 SnapAngle(this Vector2 vec, float segments)
         {
             segments = Math.Abs(segments);
 
@@ -88,12 +88,12 @@ namespace FrogWorks
 
             var divider = MathHelper.Pi / segments;
             var angle = (float)Math.Floor(
-                (vector.ToAngle() + divider * .5f) / divider) * divider;
+                (vec.ToAngle() + divider * .5f) / divider) * divider;
 
-            return angle.FromAngle(vector.Length());
+            return angle.FromAngle(vec.Length());
         }
 
-        internal static Vector2 SnapAndNormalizeAngle(this Vector2 vector, float segments)
+        internal static Vector2 SnapAndNormalizeAngle(this Vector2 vec, float segments)
         {
             segments = Math.Abs(segments);
 
@@ -102,7 +102,7 @@ namespace FrogWorks
 
             var divider = MathHelper.Pi / (segments > 0f ? segments : 1f);
             var angle = (float)Math.Floor(
-                (vector.ToAngle() + divider * .5f) / divider) * divider;
+                (vec.ToAngle() + divider * .5f) / divider) * divider;
 
             return angle.FromAngle(1f);
         }
