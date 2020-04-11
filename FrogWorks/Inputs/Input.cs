@@ -7,10 +7,9 @@ namespace FrogWorks
 {
     public static class Input
     {
-        internal static List<VirtualInput> _virtualInputs;
         static GamePadReader[] _gamePads;
 
-        public static ReadOnlyCollection<VirtualInput> VirtualInputs { get; private set; }
+        internal static List<VirtualInput> VirtualInputs { get; private set; }
 
         public static KeyboardReader Keyboard { get; private set; }
 
@@ -22,10 +21,9 @@ namespace FrogWorks
 
         internal static void Initialize()
         {
-            _virtualInputs = new List<VirtualInput>();
             _gamePads = new GamePadReader[4];
 
-            VirtualInputs = new ReadOnlyCollection<VirtualInput>(_virtualInputs);
+            VirtualInputs = new List<VirtualInput>();
             Keyboard = new KeyboardReader();
             Mouse = new MouseReader();
             GamePads = new ReadOnlyCollection<GamePadReader>(_gamePads);
@@ -46,8 +44,8 @@ namespace FrogWorks
             for (int i = 0; i < _gamePads.Length; i++)
                 _gamePads[i].Update(isActive);
 
-            for (int i = 0; i < _virtualInputs.Count; i++)
-                _virtualInputs[i].Update(deltaTime);
+            for (int i = 0; i < VirtualInputs.Count; i++)
+                VirtualInputs[i].Update(deltaTime);
         }
 
         public static int GetAxis(bool negative, bool positive, int both = 0)
