@@ -115,7 +115,7 @@ namespace FrogWorks
 
         public void DefineTile(int index, Vector2[] vertices, Vector2 size, Color? color = null)
         {
-            var truncated = vertices.Truncate(size);
+            var truncated = vertices.Reduce(size);
 
             if (truncated.Length < 3)
                 throw new ArgumentException("Invalid tile shape provided.");

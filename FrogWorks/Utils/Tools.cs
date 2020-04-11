@@ -1554,6 +1554,41 @@ namespace FrogWorks
             return modified;
         }
 
+        public static Vector2[] Reduce(this Vector2[] verts)
+        {
+            var location = verts.Min();
+            var size = verts.Max() - location;
+
+            return verts.Reduce(location, size);
+        }
+
+        public static Vector2[] Reduce(this Vector2[] verts, Vector2 size)
+        {
+            return verts.Reduce(Vector2.Zero, size);
+        }
+
+        public static Vector2[] Reduce(this Vector2[] verts, Vector2 location, Vector2 size)
+        {
+            var results = new List<Vector2>();
+            var min = Vector2.Min(location, location + size);
+            var max = Vector2.Max(location, location + size);
+            Vector2 vert, clamped, normal;
+
+            for (int i = 0; i < verts.Length; i++)
+            {
+                vert = verts[i];
+                clamped = vert.Clamp(min, max);
+
+                if (vert == clamped)
+                {
+                    normal = (vert - location).Divide(size);
+                    results.Add(normal);
+                }
+            }
+
+            return results.ToArray();
+        }
+
         public static Vector2[] Transform(
             this Vector2[] verts,
             Vector2? position = null,
