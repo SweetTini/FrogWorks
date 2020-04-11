@@ -84,16 +84,7 @@ namespace FrogWorks
 
         protected sealed override void Update(float deltaTime)
         {
-            if (Scene?.Camera != null)
-            {
-                TransformMatrix = Scene.Camera.UpdateTransformMatrix(Coefficient, Zoom, Angle);
-                View = Scene.Camera.UpdateView(Coefficient, Zoom, Angle);
-            }
-            else
-            {
-                TransformMatrix = Matrix.Identity;
-                View = new Rectangle(Point.Zero, Runner.Application.ActualSize);
-            }
+            UpdateTransformMatrixAndView();
         }
 
         protected sealed override void Draw(RendererBatch batch)
@@ -135,6 +126,8 @@ namespace FrogWorks
                     false,
                     SurfaceFormat.Color,
                     DepthFormat.Depth24Stencil8);
+
+                UpdateTransformMatrixAndView();
             }
         }
 
@@ -156,6 +149,15 @@ namespace FrogWorks
         public Vector2 WorldToView(Vector2 position)
         {
             return Vector2.Transform(position, TransformMatrix);
+        }
+
+        void UpdateTransformMatrixAndView()
+        {
+            TransformMatrix = Scene?.Camera?.UpdateTransformMatrix(
+                Coefficient, Zoom, Angle) ?? Matrix.Identity;
+            
+            View = Scene?.Camera?.UpdateView(Coefficient, Zoom, Angle)
+                ?? new Rectangle(Point.Zero, Runner.Application.ActualSize);
         }
 
         #region Ordering

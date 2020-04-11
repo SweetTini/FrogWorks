@@ -1,10 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace FrogWorks.Demo
+namespace FrogWorks.Demo.Scenes
 {
-    public class DisplayScene : Scene
+    public class DisplayTest : Scene
     {
-        public DisplayScene()
+        public DisplayTest()
             : base()
         {
         }

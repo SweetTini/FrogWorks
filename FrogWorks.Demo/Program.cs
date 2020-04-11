@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FrogWorks.Demo.Scenes;
+using System;
 
 namespace FrogWorks.Demo
 {
@@ -9,7 +10,7 @@ namespace FrogWorks.Demo
         {
             using (var runner = new DesktopRunner(256, 224, 2))
             {
-                runner.GoTo<TileMapCollisionScene>();
+                runner.GoTo<DisplayTest>();
                 runner.AllowUserResizing = true;
                 runner.IsMouseVisible = true;
                 runner.Run();

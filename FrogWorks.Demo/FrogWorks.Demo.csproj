@@ -46,16 +46,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Entities\Apple.cs" />
-    <Compile Include="Entities\MiniApple.cs" />
-    <Compile Include="Entities\Spider.cs" />
-    <Compile Include="Entities\TileMapField.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Scenes\DisplayScene.cs" />
-    <Compile Include="Scenes\EntityCollisionScene.cs" />
-    <Compile Include="Scenes\LayerScene.cs" />
-    <Compile Include="Scenes\ShapeCollisionScene.cs" />
-    <Compile Include="Scenes\TileMapCollisionScene.cs" />
+    <Compile Include="Scenes\DisplayTest.cs" />
+    <Compile Include="Scenes\ShapeCollisionTest.cs" />
     <Compile Include="Shaders\WaveShader.cs" />
   </ItemGroup>
   <ItemGroup>

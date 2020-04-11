@@ -90,7 +90,11 @@ namespace FrogWorks
 
         internal void UpdateViewport()
         {
-            _view = new Rectangle(Point.Zero, Runner.Application.ActualSize);
+            _view = new Rectangle(
+                Point.Zero, 
+                Runner.Application.ActualSize);
+            
+            Update();
         }
 
         internal Matrix UpdateTransformMatrix(

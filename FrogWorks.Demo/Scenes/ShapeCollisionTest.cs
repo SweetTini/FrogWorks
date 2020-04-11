@@ -2,19 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace FrogWorks.Demo
+namespace FrogWorks.Demo.Scenes
 {
-    public class ShapeCollisionScene : Scene
+    public class ShapeCollisionTest : Scene
     {
         List<Shape> _shapes;
         List<Raycast> _raycasts;
         List<Manifold> _manifolds;
         Shape _shapeSelected;
-        Vector2 _mouseOffset, _rayStart, _rayEnd;
-        bool _isDragging, _isColliding, 
-            _isRaycasting, _isRayHit;
+        Vector2 _mouseOffset, 
+            _rayStart, 
+            _rayEnd;
+        bool _isDragging, 
+            _isColliding, 
+            _isRaycasting,
+            _isRayHit;
 
-        public ShapeCollisionScene()
+        public ShapeCollisionTest()
             : base()
         {
             _shapes = new List<Shape>();
