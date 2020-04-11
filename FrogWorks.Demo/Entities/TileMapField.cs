@@ -52,8 +52,8 @@ namespace FrogWorks.Demo
                 if (hits.Any())
                 {
                     depth = vector < 0
-                    ? hits.Max()
-                    : hits.Min();
+                    ? MathEX.Max(hits)
+                    : MathEX.Min(hits);
 
                     return true;
                 }

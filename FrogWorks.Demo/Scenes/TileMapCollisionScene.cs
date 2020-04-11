@@ -24,7 +24,7 @@ namespace FrogWorks.Demo
             _spider = new Spider(_field, 40, 40);
             Add(_spider, _field);
 
-            Audio.Play<SoundTrack>("Music/GameOver");
+            Audio.Play<SoundTrack>("Music/GameOver", .2f, 1.5f);
         }
     }
 }
