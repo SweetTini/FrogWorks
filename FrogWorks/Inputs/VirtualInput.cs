@@ -4,14 +4,14 @@
     {
         protected VirtualInput()
         {
-            if (!Input.VirtualInputs.Contains(this))
-                Input.VirtualInputs.Add(this);
+            if (!Input._virtualInputs.Contains(this))
+                Input._virtualInputs.Add(this);
         }
 
         public void Deregister()
         {
-            if (Input.VirtualInputs.Contains(this))
-                Input.VirtualInputs.Remove(this);
+            if (Input._virtualInputs.Contains(this))
+                Input._virtualInputs.Remove(this);
         }
 
         public abstract void Update(float deltaTime);

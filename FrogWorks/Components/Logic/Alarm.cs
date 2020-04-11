@@ -15,12 +15,16 @@ namespace FrogWorks
 
         public Action OnFinished { get; set; }
 
-        private Alarm()
+        Alarm()
             : base(false, false)
         {
         }
 
-        private void Initialize(float duration, AlarmMode mode, Action onFinished, bool canStart)
+        void Initialize(
+            float duration,
+            AlarmMode mode,
+            Action onFinished,
+            bool canStart)
         {
             IsActive = false;
             Duration = Math.Max(Math.Abs(duration), float.Epsilon);
@@ -74,17 +78,26 @@ namespace FrogWorks
         }
 
         #region Static Methods
-        public static Alarm Create(Action onFinished, bool canStart = false)
+        public static Alarm Create(
+            Action onFinished,
+            bool canStart = false)
         {
             return Create(1f, AlarmMode.PlayOnce, onFinished, canStart);
         }
 
-        public static Alarm Create(AlarmMode mode, Action onFinished, bool canStart = false)
+        public static Alarm Create(
+            AlarmMode mode,
+            Action onFinished,
+            bool canStart = false)
         {
             return Create(1f, mode, onFinished, canStart);
         }
 
-        public static Alarm Create(float duration, AlarmMode mode, Action onFinished, bool canStart = false)
+        public static Alarm Create(
+            float duration,
+            AlarmMode mode,
+            Action onFinished,
+            bool canStart = false)
         {
             var alarm = Cache.Count > 0 ? Cache.Pop() : new Alarm();
             alarm.Initialize(duration, mode, onFinished, canStart);
@@ -96,7 +109,11 @@ namespace FrogWorks
             return CreateAndApply(entity, 1f, AlarmMode.PlayOnce, onFinished);
         }
 
-        public static Alarm CreateAndApply(Entity entity, float duration, AlarmMode mode, Action onFinished)
+        public static Alarm CreateAndApply(
+            Entity entity,
+            float duration,
+            AlarmMode mode,
+            Action onFinished)
         {
             var alarm = Create(duration, mode, onFinished, true);
             if (entity != null)

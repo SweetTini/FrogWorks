@@ -18,7 +18,10 @@ namespace FrogWorks
         }
 
         public TileMapRenderer(int columns, int rows, int tileWidth, int tileHeight)
-            : this(new Point(columns, rows), new Point(tileWidth, tileHeight), false)
+            : this(
+                  new Point(columns, rows), 
+                  new Point(tileWidth, tileHeight), 
+                  false)
         {
         }
 
@@ -37,7 +40,11 @@ namespace FrogWorks
             return Map[x, y]?.Texture;
         }
 
-        public void Populate(TileSet tileSet, int[,] tiles, int offsetX = 0, int offsetY = 0)
+        public void Populate(
+            TileSet tileSet, 
+            int[,] tiles, 
+            int offsetX = 0, 
+            int offsetY = 0)
         {
             var columns = tiles.GetLength(0);
             var rows = tiles.GetLength(1);
@@ -52,7 +59,11 @@ namespace FrogWorks
             }
         }
 
-        public void Overlay(TileSet tileSet, int[,] tiles, int offsetX = 0, int offsetY = 0)
+        public void Overlay(
+            TileSet tileSet, 
+            int[,] tiles, 
+            int offsetX = 0, 
+            int offsetY = 0)
         {
             var columns = tiles.GetLength(0);
             var rows = tiles.GetLength(1);
@@ -91,22 +102,37 @@ namespace FrogWorks
             Fill(texture, new Point(x, y), new Point(columns, rows));
         }
 
-        public void Clear() => Map.Clear();
+        public void Clear()
+        {
+            Map.Clear();
+        }
 
-        public void Resize(Point size) => Map.Resize(size);
+        public void Resize(Point size)
+        {
+            Map.Resize(size);
+        }
 
-        public void Resize(int columns, int rows) => Map.Resize(columns, rows);
+        public void Resize(int columns, int rows)
+        {
+            Map.Resize(columns, rows);
+        }
 
-        public void Resize(Point from, Point to) => Map.Resize(from, to);
+        public void Resize(Point from, Point to)
+        {
+            Map.Resize(from, to);
+        }
 
-        public void Resize(int x1, int y1, int x2, int y2) => Map.Resize(x1, y1, x2, y2);
+        public void Resize(int x1, int y1, int x2, int y2)
+        {
+            Map.Resize(x1, y1, x2, y2);
+        }
     }
 
     public class Tile
     {
-        private Texture _texture;
-        private TileSet _tileSet;
-        private Animation _animation;
+        Texture _texture;
+        TileSet _tileSet;
+        Animation _animation;
 
         public Texture Texture => _animation?.GetFrame(_tileSet) ?? _texture;
 
@@ -123,6 +149,9 @@ namespace FrogWorks
             _animation = animation;
         }
 
-        public void OffsetByTimer(float timer) => _animation?.OffsetByTimer(timer);
+        public void OffsetByTimer(float timer)
+        {
+            _animation?.OffsetByTimer(timer);
+        }
     }
 }

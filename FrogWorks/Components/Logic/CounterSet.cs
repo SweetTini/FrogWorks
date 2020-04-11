@@ -6,12 +6,17 @@ namespace FrogWorks
     public class CounterSet<T> : Component
         where T : struct
     {
-        private Dictionary<T, float> _counters;
-        private float _timer;
+        Dictionary<T, float> _counters;
+        float _timer;
 
         public float this[T key]
         {
-            get { return _counters.ContainsKey(key) ? Math.Max(_counters[key] - _timer, 0f) : 0f; }
+            get
+            {
+                return _counters.ContainsKey(key)
+                    ? Math.Max(_counters[key] - _timer, 0f)
+                    : 0f;
+            }
             set { _counters[key] = _timer + value; }
         }
 

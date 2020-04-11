@@ -4,19 +4,29 @@ namespace FrogWorks
 {
     public class AnimatedTileMapRenderer : TileMapRenderer
     {
-        private float _timer;
+        float _timer;
 
         public AnimatedTileMapRenderer(Point size, Point tileSize)
             : base(size, tileSize, true)
         {
         }
 
-        public AnimatedTileMapRenderer(int columns, int rows, int tileWidth, int tileHeight)
-            : base(new Point(columns, rows), new Point(tileWidth, tileHeight), true)
+        public AnimatedTileMapRenderer(
+            int columns,
+            int rows,
+            int tileWidth,
+            int tileHeight)
+            : base(
+                  new Point(columns, rows),
+                  new Point(tileWidth, tileHeight),
+                  true)
         {
         }
 
-        protected override void Update(float deltaTime) => _timer += deltaTime;
+        protected override void Update(float deltaTime)
+        {
+            _timer += deltaTime;
+        }
 
         protected override Texture GetTile(int x, int y)
         {
@@ -28,7 +38,11 @@ namespace FrogWorks
             return tile?.Texture;
         }
 
-        public void Fill(TileSet tileSet, Animation animation, Point location, Point size)
+        public void Fill(
+            TileSet tileSet,
+            Animation animation,
+            Point location,
+            Point size)
         {
             var from = location.Max(Point.Zero);
             var to = (location + size).Min(Size);
@@ -46,24 +60,55 @@ namespace FrogWorks
             }
         }
 
-        public void Fill(TileSet tileSet, Animation animation, int x, int y, int columns, int rows)
+        public void Fill(
+            TileSet tileSet,
+            Animation animation,
+            int x,
+            int y,
+            int columns,
+            int rows)
         {
-            Fill(tileSet, animation, new Point(x, y), new Point(columns, rows));
+            Fill(
+                tileSet,
+                animation,
+                new Point(x, y),
+                new Point(columns, rows));
         }
 
-        public void Fill(TileSet tileSet, int[] frames, float frameStep, AnimationPlayMode playMode,
-                         Point location, Point size)
+        public void Fill(
+            TileSet tileSet,
+            int[] frames,
+            float frameStep,
+            AnimationPlayMode playMode,
+            Point location,
+            Point size)
         {
-            Fill(tileSet, new Animation(frames, frameStep, playMode), location, size);
+            Fill(tileSet,
+                new Animation(frames, frameStep, playMode),
+                location,
+                size);
         }
 
-        public void Fill(TileSet tileSet, int[] frames, float frameStep, AnimationPlayMode playMode,
-                         int x, int y, int columns, int rows)
+        public void Fill(
+            TileSet tileSet,
+            int[] frames,
+            float frameStep,
+            AnimationPlayMode playMode,
+            int x,
+            int y,
+            int columns,
+            int rows)
         {
-            Fill(tileSet, new Animation(frames, frameStep, playMode), 
-                 new Point(x, y), new Point(columns, rows));
+            Fill(
+                tileSet,
+                new Animation(frames, frameStep, playMode),
+                new Point(x, y),
+                new Point(columns, rows));
         }
 
-        public void Reset() => _timer = 0f;
+        public void Reset()
+        {
+            _timer = 0f;
+        }
     }
 }

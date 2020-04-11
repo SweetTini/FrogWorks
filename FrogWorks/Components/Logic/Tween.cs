@@ -7,7 +7,7 @@ namespace FrogWorks
 {
     public class Tween : Component
     {
-        private bool _hasBegunReversed;
+        bool _hasBegunReversed;
 
         internal static Stack<Tween> Cache { get; } = new Stack<Tween>();
 
@@ -31,12 +31,16 @@ namespace FrogWorks
 
         public Action<Tween> OnEnd { get; set; }
 
-        protected Tween()
+        Tween()
             : base(true, false)
         {
         }
 
-        protected void Initialize(Ease ease, float duration, TweenMode mode, bool canStart)
+        void Initialize(
+            Ease ease,
+            float duration,
+            TweenMode mode,
+            bool canStart)
         {
             Ease = ease;
             Duration = Math.Max(Math.Abs(duration), float.Epsilon);
@@ -130,7 +134,11 @@ namespace FrogWorks
         }
 
         #region Static Methods
-        public static Tween Create(Ease ease, float duration, TweenMode mode = TweenMode.Persist, bool canStart = false)
+        public static Tween Create(
+            Ease ease,
+            float duration,
+            TweenMode mode = TweenMode.Persist,
+            bool canStart = false)
         {
             var tween = Cache.Count > 0 ? Cache.Pop() : new Tween();
             tween.OnUpdate = tween.OnBegin = tween.OnEnd = null;
@@ -138,7 +146,14 @@ namespace FrogWorks
             return tween;
         }
 
-        public static Tween CreateAndApply(Entity entity, Ease ease, float duration, TweenMode mode, Action<Tween> onUpdate, Action<Tween> onBegin = null, Action<Tween> onEnd = null)
+        public static Tween CreateAndApply(
+            Entity entity,
+            Ease ease,
+            float duration,
+            TweenMode mode,
+            Action<Tween> onUpdate,
+            Action<Tween> onBegin = null,
+            Action<Tween> onEnd = null)
         {
             var tween = Create(ease, duration, mode, true);
             tween.OnUpdate += onUpdate;
@@ -149,14 +164,24 @@ namespace FrogWorks
             return tween;
         }
 
-        public static Tween Move(Entity entity, Vector2 target, Ease ease, float duration, TweenMode mode = TweenMode.PlayOnce)
+        public static Tween Move(
+            Entity entity,
+            Vector2 target,
+            Ease ease,
+            float duration,
+            TweenMode mode = TweenMode.PlayOnce)
         {
             var tween = Create(ease, duration, mode, true);
 
             if (entity != null)
             {
                 var position = entity.Position;
-                tween.OnUpdate = (t) => entity.Position = Vector2.Lerp(position, target, t.Value);
+
+                tween.OnUpdate = (t) =>
+                {
+                    entity.Position = Vector2.Lerp(position, target, t.Value);
+                };
+
                 entity.Components.Add(tween);
             }
 

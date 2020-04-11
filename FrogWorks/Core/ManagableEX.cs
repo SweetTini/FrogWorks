@@ -8,6 +8,12 @@
             return scene as T;
         }
 
+        public static T As<T>(this Layer layer)
+            where T : Layer
+        {
+            return layer as T;
+        }
+
         public static T As<T>(this Collider collider)
             where T : Collider
         {

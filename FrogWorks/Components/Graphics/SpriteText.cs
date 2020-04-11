@@ -6,11 +6,11 @@ namespace FrogWorks
 {
     public class SpriteText : GraphicsComponent
     {
-        private string _text;
-        private int _width, _height;
-        private HorizontalAlignment _horizAlign;
-        private VerticalAlignment _vertAlign;
-        private bool _wordWrap;
+        string _text;
+        int _width, _height;
+        HorizontalAlignment _horizAlign;
+        VerticalAlignment _vertAlign;
+        bool _wordWrap;
 
         protected List<SpriteTextCharacter> Characters { get; private set; }
 
@@ -18,7 +18,10 @@ namespace FrogWorks
 
         public Rectangle Bounds => new Rectangle(0, 0, Width, Height);
 
-        public Rectangle AbsoluteBounds => Bounds.Transform(DrawPosition, Origin, Scale, Angle);
+        public Rectangle AbsoluteBounds
+        {
+            get { return Bounds.Transform(DrawPosition, Origin, Scale, Angle); }
+        }
 
         protected bool IsDirty { get; private set; }
 
@@ -114,7 +117,11 @@ namespace FrogWorks
             }
         }
 
-        public SpriteText(BitmapFont font, string text, int width = 0, int height = 0)
+        public SpriteText(
+            BitmapFont font, 
+            string text, 
+            int width = 0, 
+            int height = 0)
             : base(true)
         {
             Characters = new List<SpriteTextCharacter>();
@@ -131,7 +138,14 @@ namespace FrogWorks
             for (int i = 0; i < Characters.Count; i++)
             {
                 var origin = Origin - Characters[i].Offset;
-                Characters[i].Source.Texture.Draw(batch, DrawPosition, origin, Scale, Angle, Color * MathHelper.Clamp(Opacity, 0f, 1f), SpriteEffects);
+                Characters[i].Source.Texture.Draw(
+                    batch, 
+                    DrawPosition, 
+                    origin, 
+                    Scale, 
+                    Angle, 
+                    Color * MathHelper.Clamp(Opacity, 0f, 1f), 
+                    SpriteEffects);
             }
         }
 

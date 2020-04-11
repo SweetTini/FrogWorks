@@ -10,7 +10,10 @@ namespace FrogWorks
     {
         Dictionary<string, TextureAtlasTexture> _textures;
 
-        public ReadOnlyDictionary<string, TextureAtlasTexture> Textures { get; private set; }
+        public ReadOnlyDictionary<string, TextureAtlasTexture> Textures
+        {
+            get; private set;
+        }
 
         public TextureAtlasTexture this[int index]
         {
@@ -98,49 +101,73 @@ namespace FrogWorks
 
         public bool IsRotated { get; private set; }
 
-        public TextureAtlasTexture(Texture texture, Vector2 size, Vector2 origin, bool isRotated)
+        public TextureAtlasTexture(
+            Texture texture,
+            Vector2 size,
+            Vector2 origin,
+            bool isRotated)
         {
             Texture = texture;
             RealSize = isRotated
-                ? texture.Size.ToVector2().Perpendicular(false).Abs()
+                ? texture.Size.ToVector2().Rotate().Abs()
                 : texture.Size.ToVector2();
             Size = size;
             Origin = origin;
             IsRotated = isRotated;
         }
 
-        public void Draw(RendererBatch batch, Vector2 position, Vector2 origin,
-            Vector2 scale, float angle, Color color, SpriteEffects effects)
+        public void Draw(
+            RendererBatch batch,
+            Vector2 position,
+            Vector2 origin,
+            Vector2 scale,
+            float angle,
+            Color color,
+            SpriteEffects effects)
         {
             var offset = Origin;
             var origEffects = effects;
 
             if (IsRotated)
             {
-                offset = offset.Perpendicular() - Texture.Width * Vector2.UnitX;
-                origin = origin.Perpendicular();
+                offset = offset.Rotate(true) - Texture.Width * Vector2.UnitX;
+                origin = origin.Rotate(true);
                 angle -= MathHelper.PiOver2;
 
                 switch (effects)
                 {
-                    case SpriteEffects.FlipHorizontally: effects = SpriteEffects.FlipVertically; break;
-                    case SpriteEffects.FlipVertically: effects = SpriteEffects.FlipHorizontally; break;
+                    case SpriteEffects.FlipHorizontally:
+                        effects = SpriteEffects.FlipVertically;
+                        break;
+                    case SpriteEffects.FlipVertically:
+                        effects = SpriteEffects.FlipHorizontally;
+                        break;
                 }
             }
 
             if (origEffects.HasFlag(SpriteEffects.FlipHorizontally))
             {
-                if (IsRotated) offset.Y = (Width - RealWidth) - offset.Y;
+                if (IsRotated)
+                    offset.Y = (Width - RealWidth) - offset.Y;
                 else offset.X = (Width - RealWidth) - offset.X;
             }
 
             if (origEffects.HasFlag(SpriteEffects.FlipVertically))
             {
-                if (IsRotated) offset.X = (Height - RealHeight) - (Height + offset.X) * 2f + offset.X;
+                if (IsRotated)
+                    offset.X = (Height - RealHeight) - (Height + offset.X)
+                        * 2f + offset.X;
                 else offset.Y = (Height - RealHeight) - offset.Y;
             }
 
-            Texture.Draw(batch, position, origin - offset, scale, angle, color, effects);
+            Texture.Draw(
+                batch,
+                position,
+                origin - offset,
+                scale,
+                angle,
+                color,
+                effects);
         }
     }
 }

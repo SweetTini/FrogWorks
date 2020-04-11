@@ -1,29 +1,37 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace FrogWorks
 {
-    public class Input
+    public static class Input
     {
-        public static List<VirtualInput> VirtualInputs { get; private set; }
+        internal static List<VirtualInput> _virtualInputs;
+        static GamePadReader[] _gamePads;
+
+        public static ReadOnlyCollection<VirtualInput> VirtualInputs { get; private set; }
 
         public static KeyboardReader Keyboard { get; private set; }
 
         public static MouseReader Mouse { get; private set; }
 
-        public static GamePadReader[] GamePads { get; private set; }
+        public static ReadOnlyCollection<GamePadReader> GamePads { get; private set; }
 
         public static bool IsDisabled { get; set; }
 
         internal static void Initialize()
         {
-            VirtualInputs = new List<VirtualInput>();
+            _virtualInputs = new List<VirtualInput>();
+            _gamePads = new GamePadReader[4];
+
+            VirtualInputs = new ReadOnlyCollection<VirtualInput>(_virtualInputs);
             Keyboard = new KeyboardReader();
             Mouse = new MouseReader();
-            GamePads = new GamePadReader[4];
+            GamePads = new ReadOnlyCollection<GamePadReader>(_gamePads);
 
-            for (int i = 0; i < GamePads.Length; i++)
-                GamePads[i] = new GamePadReader(i);
+            for (int i = 0; i < _gamePads.Length; i++)
+                _gamePads[i] = new GamePadReader(i);
         }
 
         internal static void Dispose()
@@ -35,11 +43,11 @@ namespace FrogWorks
             Keyboard.Update(isActive);
             Mouse.Update(isActive);
 
-            for (int i = 0; i < GamePads.Length; i++)
-                GamePads[i].Update(isActive);
+            for (int i = 0; i < _gamePads.Length; i++)
+                _gamePads[i].Update(isActive);
 
-            for (int i = 0; i < VirtualInputs.Count; i++)
-                VirtualInputs[i].Update(deltaTime);
+            for (int i = 0; i < _virtualInputs.Count; i++)
+                _virtualInputs[i].Update(deltaTime);
         }
 
         public static int GetAxis(bool negative, bool positive, int both = 0)
@@ -54,10 +62,49 @@ namespace FrogWorks
             return Math.Abs(analog) >= deadZone ? Math.Sign(analog) : 0;
         }
 
-        public static int GetAxis(bool negative, bool positive, float analog, float deadZone, int both = 0)
+        public static int GetAxis(
+            bool negative,
+            bool positive,
+            float analog,
+            float deadZone,
+            int both = 0)
         {
             var axis = GetAxis(analog, deadZone);
             return axis == 0 ? GetAxis(negative, positive, both) : axis;
+        }
+
+        internal static int SignThreshold(this float number, float threshold)
+        {
+            return Math.Abs(number) >= threshold
+                ? Math.Sign(number) : 0;
+        }
+
+        internal static Vector2 SnapAngle(this Vector2 vector, float segments)
+        {
+            segments = Math.Abs(segments);
+
+            if (segments <= float.Epsilon)
+                segments = 1f;
+
+            var divider = MathHelper.Pi / segments;
+            var angle = (float)Math.Floor(
+                (vector.ToAngle() + divider * .5f) / divider) * divider;
+
+            return angle.FromAngle(vector.Length());
+        }
+
+        internal static Vector2 SnapAndNormalizeAngle(this Vector2 vector, float segments)
+        {
+            segments = Math.Abs(segments);
+
+            if (segments <= float.Epsilon)
+                segments = 1f;
+
+            var divider = MathHelper.Pi / (segments > 0f ? segments : 1f);
+            var angle = (float)Math.Floor(
+                (vector.ToAngle() + divider * .5f) / divider) * divider;
+
+            return angle.FromAngle(1f);
         }
     }
 }

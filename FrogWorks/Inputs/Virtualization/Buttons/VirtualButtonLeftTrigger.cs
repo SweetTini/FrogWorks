@@ -6,11 +6,32 @@
 
         public float Threshold { get; private set; }
 
-        public override bool IsDown => Input.GamePads[PlayerIndex].IsLeftTriggerDown(Threshold);
+        public override bool IsDown
+        {
+            get
+            {
+                return Input.GamePads[PlayerIndex]
+                    .IsLeftTriggerDown(Threshold);
+            }
+        }
 
-        public override bool IsPressed => Input.GamePads[PlayerIndex].IsLeftTriggerPressed(Threshold);
+        public override bool IsPressed
+        {
+            get
+            {
+                return Input.GamePads[PlayerIndex]
+                    .IsLeftTriggerPressed(Threshold);
+            }
+        }
 
-        public override bool IsReleased => Input.GamePads[PlayerIndex].IsLeftTriggerReleased(Threshold);
+        public override bool IsReleased
+        {
+            get
+            {
+                return Input.GamePads[PlayerIndex]
+                    .IsLeftTriggerReleased(Threshold);
+            }
+        }
 
         public VirtualButtonLeftTrigger(int playerIndex, float threshold)
         {

@@ -15,24 +15,49 @@ namespace FrogWorks
             Animation = animation;
         }
 
-        public AnimatedPattern(Texture[] textures, int width, int height, Animation animation)
+        public AnimatedPattern(
+            Texture[] textures,
+            int width,
+            int height,
+            Animation animation)
             : this(textures, new Point(width, height), animation)
         {
         }
 
-        public AnimatedPattern(Texture[] textures, Point size, int[] frames, float frameStep, 
-                               AnimationPlayMode playMode, int maxLoops = 0)
-            : this(textures, size, new Animation(frames, frameStep, playMode, maxLoops))
+        public AnimatedPattern(
+            Texture[] textures,
+            Point size,
+            int[] frames,
+            float frameStep,
+            AnimationPlayMode playMode,
+            int maxLoops = 0)
+            : this(
+                  textures,
+                  size,
+                  new Animation(frames, frameStep, playMode, maxLoops))
         {
         }
 
-        public AnimatedPattern(Texture[] textures, int width, int height, int[] frames, float frameStep, 
-                               AnimationPlayMode playMode, int maxLoops = 0)
-            : this(textures, new Point(width, height), new Animation(frames, frameStep, playMode, maxLoops))
+        public AnimatedPattern(
+            Texture[] textures,
+            int width,
+            int height,
+            int[] frames,
+            float frameStep,
+            AnimationPlayMode playMode,
+            int maxLoops = 0)
+            : this(
+                  textures,
+                  new Point(width, height),
+                  new Animation(frames, frameStep, playMode, maxLoops))
         {
         }
 
-        public AnimatedPattern(Texture texture, Point frameSize, Point size, Animation animation)
+        public AnimatedPattern(
+            Texture texture,
+            Point frameSize,
+            Point size,
+            Animation animation)
             : base(texture, size, true)
         {
             Textures = Texture.Split(texture, frameSize);
@@ -41,22 +66,51 @@ namespace FrogWorks
             Resize();
         }
 
-        public AnimatedPattern(Texture texture, int frameWidth, int frameHeight, 
-                               int width, int height, Animation animation)
-            : this(texture, new Point(frameWidth, frameHeight), new Point(width, height), animation)
+        public AnimatedPattern(
+            Texture texture,
+            int frameWidth,
+            int frameHeight,
+            int width,
+            int height,
+            Animation animation)
+            : this(
+                  texture,
+                  new Point(frameWidth, frameHeight),
+                  new Point(width, height), animation)
         {
         }
 
-        public AnimatedPattern(Texture texture, Point frameSize, Point size, int[] frames, 
-                               float frameStep, AnimationPlayMode playMode, int maxLoops = 0)
-            : this(texture, frameSize, size, new Animation(frames, frameStep, playMode, maxLoops))
+        public AnimatedPattern(
+            Texture texture,
+            Point frameSize,
+            Point size,
+            int[] frames,
+            float frameStep,
+            AnimationPlayMode playMode,
+            int maxLoops = 0)
+            : this(
+                  texture,
+                  frameSize,
+                  size,
+                  new Animation(frames, frameStep, playMode, maxLoops))
         {
         }
 
-        public AnimatedPattern(Texture texture, int frameWidth, int frameHeight, int width, int height,
-                               int[] frames, float frameStep, AnimationPlayMode playMode, int maxLoops = 0)
-            : this(texture, new Point(frameWidth, frameHeight), new Point(width, height),
-                   new Animation(frames, frameStep, playMode, maxLoops))
+        public AnimatedPattern(
+            Texture texture,
+            int frameWidth,
+            int frameHeight,
+            int width,
+            int height,
+            int[] frames,
+            float frameStep,
+            AnimationPlayMode playMode,
+            int maxLoops = 0)
+            : this(
+                  texture,
+                  new Point(frameWidth, frameHeight),
+                  new Point(width, height),
+                  new Animation(frames, frameStep, playMode, maxLoops))
         {
         }
 

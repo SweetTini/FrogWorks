@@ -1,13 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
 
 namespace FrogWorks
 {
     public sealed class Texture
     {
-        private Texture2D XnaTexture { get; set; }
+        Texture2D _xnaTexture;
 
         public Rectangle Bounds { get; private set; }
 
@@ -30,22 +29,22 @@ namespace FrogWorks
         public float BottomUV => MaxUV.Y;
 
         public Texture(Texture texture)
-            : this(texture.XnaTexture, texture.Bounds)
+            : this(texture._xnaTexture, texture.Bounds)
         {
         }
 
         public Texture(Texture texture, Rectangle bounds)
-            : this(texture.XnaTexture, bounds)
+            : this(texture._xnaTexture, bounds)
         {
         }
 
         public Texture(Texture texture, Point location, Point size)
-            : this(texture.XnaTexture, new Rectangle(location, size))
+            : this(texture._xnaTexture, new Rectangle(location, size))
         {
         }
 
         public Texture(Texture texture, int x, int y, int width, int height)
-            : this(texture.XnaTexture, new Rectangle(x, y, width, height))
+            : this(texture._xnaTexture, new Rectangle(x, y, width, height))
         {
         }
 
@@ -54,14 +53,14 @@ namespace FrogWorks
             if (xnaTexture == null)
                 throw new NullReferenceException("XNA texture cannot be null.");
 
-            XnaTexture = xnaTexture;
+            _xnaTexture = xnaTexture;
             Bounds = bounds.Intersect(xnaTexture.Bounds);
             Size = bounds.Size;
 
-            var size = XnaTexture.Bounds.Size.ToVector2();
+            var size = _xnaTexture.Bounds.Size.ToVector2();
             MinUV = Bounds.Location.ToVector2().Divide(size);
             MaxUV = (Bounds.Location + Bounds.Size).ToVector2().Divide(size);
-        }        
+        }
 
         internal Texture(Texture2D xnaTexture, Point location, Point size)
             : this(xnaTexture, new Rectangle(location, size))
@@ -73,46 +72,73 @@ namespace FrogWorks
         {
         }
 
-        public void Draw(RendererBatch batch, Vector2 position, Vector2 origin, Vector2 scale, 
-                         float angle, Color color, SpriteEffects effects)
+        public void Draw(
+            RendererBatch batch,
+            Vector2 position,
+            Vector2 origin,
+            Vector2 scale,
+            float angle,
+            Color color,
+            SpriteEffects effects)
         {
-            batch.DrawSprites((sprite) => 
+            batch.DrawSprites((sprite) =>
             {
                 sprite.Draw(
-                    XnaTexture, position.Round(), Bounds, 
-                    color, angle, origin, scale, effects, 0f);
+                    _xnaTexture,
+                    position.Round(),
+                    Bounds,
+                    color,
+                    angle,
+                    origin,
+                    scale,
+                    effects,
+                    0f);
             });
         }
 
-        public void Draw(RendererBatch batch, Vector2 position, Rectangle bounds, Vector2 origin, 
-                         Vector2 scale, float angle, Color color, SpriteEffects effects)
+        public void Draw(
+            RendererBatch batch,
+            Vector2 position,
+            Rectangle bounds,
+            Vector2 origin,
+            Vector2 scale,
+            float angle,
+            Color color,
+            SpriteEffects effects)
         {
-            batch.DrawSprites((sprite) => 
+            batch.DrawSprites((sprite) =>
             {
                 sprite.Draw(
-                    XnaTexture, position.Round(), bounds, 
-                    color, angle, origin, scale, effects, 0f);
+                    _xnaTexture,
+                    position.Round(),
+                    bounds,
+                    color,
+                    angle,
+                    origin,
+                    scale,
+                    effects,
+                    0f);
             }, true);
         }
 
         public Texture ClipRegion(Rectangle bounds)
         {
-            return new Texture(XnaTexture, bounds);
+            return new Texture(_xnaTexture, bounds);
         }
 
         public Texture ClipRegion(Point location, Point size)
         {
-            return new Texture(XnaTexture, location, size);
+            return new Texture(_xnaTexture, location, size);
         }
 
         public Texture ClipRegion(int x, int y, int width, int height)
         {
-            return new Texture(XnaTexture, x, y, width, height);
+            return new Texture(_xnaTexture, x, y, width, height);
         }
 
         public Texture Clone()
         {
-            return new Texture(XnaTexture, Bounds);
+            return new Texture(_xnaTexture, Bounds);
         }
 
         #region Static Methods
@@ -146,12 +172,12 @@ namespace FrogWorks
 
         public static Texture[] Split(Texture texture, Point frameSize)
         {
-            return Split(texture.XnaTexture, frameSize);
+            return Split(texture._xnaTexture, frameSize);
         }
 
         public static Texture[] Split(Texture texture, int frameWidth, int frameHeight)
         {
-            return Split(texture.XnaTexture, new Point(frameWidth, frameHeight));
+            return Split(texture._xnaTexture, new Point(frameWidth, frameHeight));
         }
 
         internal static Texture2D FromStream(string path)

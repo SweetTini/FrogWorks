@@ -6,8 +6,8 @@ namespace FrogWorks
     public class AtlasSprite<T> : AtlasImage
         where T : struct
     {
-        private T _key;
-        private bool _isPlaying;
+        T _key;
+        bool _isPlaying;
 
         protected TextureAtlasTexture[] Textures { get; set; }
 
@@ -142,10 +142,24 @@ namespace FrogWorks
                 Play(key, true);
         }
 
-        public void AddOrUpdate(T key, int[] frames, float frameStep, AnimationPlayMode playMode,
-                                int maxLoops = 0, Action onFinished = null, Action onLoop = null)
+        public void AddOrUpdate(
+            T key,
+            int[] frames,
+            float frameStep,
+            AnimationPlayMode playMode,
+            int maxLoops = 0,
+            Action onFinished = null,
+            Action onLoop = null)
         {
-            AddOrUpdate(key, new Animation(frames, frameStep, playMode, maxLoops, onFinished, onLoop));
+            AddOrUpdate(
+                key,
+                new Animation(
+                    frames,
+                    frameStep,
+                    playMode,
+                    maxLoops,
+                    onFinished,
+                    onLoop));
         }
 
         public void Remove(T key)

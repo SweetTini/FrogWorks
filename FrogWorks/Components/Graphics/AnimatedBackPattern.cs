@@ -15,13 +15,22 @@ namespace FrogWorks
             Animation = animation;
         }
 
-        public AnimatedBackPattern(Texture[] textures, int[] frames, float frameStep, 
-                                   AnimationPlayMode playMode, int maxLoops = 0)
-            : this(textures, new Animation(frames, frameStep, playMode, maxLoops))
+        public AnimatedBackPattern(
+            Texture[] textures,
+            int[] frames,
+            float frameStep,
+            AnimationPlayMode playMode,
+            int maxLoops = 0)
+            : this(
+                  textures,
+                  new Animation(frames, frameStep, playMode, maxLoops))
         {
         }
 
-        public AnimatedBackPattern(Texture texture, Point frameSize, Animation animation)
+        public AnimatedBackPattern(
+            Texture texture,
+            Point frameSize,
+            Animation animation)
             : base(texture, true)
         {
             Textures = Texture.Split(texture, frameSize);
@@ -30,21 +39,44 @@ namespace FrogWorks
             Animation = animation;
         }
 
-        public AnimatedBackPattern(Texture texture, int frameWidth, int frameHeight, Animation animation)
-            : this(texture, new Point(frameWidth, frameHeight), animation)
+        public AnimatedBackPattern(
+            Texture texture,
+            int frameWidth,
+            int frameHeight,
+            Animation animation)
+            : this(
+                  texture,
+                  new Point(frameWidth, frameHeight),
+                  animation)
         {
         }
 
-        public AnimatedBackPattern(Texture texture, Point frameSize, int[] frames, float frameStep, 
-                                   AnimationPlayMode playMode, int maxLoops = 0)
-            : this(texture, frameSize, new Animation(frames, frameStep, playMode, maxLoops))
+        public AnimatedBackPattern(
+            Texture texture,
+            Point frameSize,
+            int[] frames,
+            float frameStep,
+            AnimationPlayMode playMode,
+            int maxLoops = 0)
+            : this(
+                  texture,
+                  frameSize,
+                  new Animation(frames, frameStep, playMode, maxLoops))
         {
         }
 
-        public AnimatedBackPattern(Texture texture, int frameWidth, int frameHeight, int[] frames, 
-                                   float frameStep, AnimationPlayMode playMode, int maxLoops = 0)
-            : this(texture, new Point(frameWidth, frameHeight), 
-                   new Animation(frames, frameStep, playMode, maxLoops))
+        public AnimatedBackPattern(
+            Texture texture,
+            int frameWidth,
+            int frameHeight,
+            int[] frames,
+            float frameStep,
+            AnimationPlayMode playMode,
+            int maxLoops = 0)
+            : this(
+                  texture,
+                  new Point(frameWidth, frameHeight),
+                  new Animation(frames, frameStep, playMode, maxLoops))
         {
         }
 

@@ -5,8 +5,8 @@ namespace FrogWorks
 {
     public class CoroutineCollection : Component
     {
-        private List<CoroutineItem> _coroutines, _coroutinesToRemove;
-        private bool _isRunning;
+        List<CoroutineItem> _coroutines, _coroutinesToRemove;
+        bool _isRunning;
 
         public CoroutineCollection()
             : base(true, false)

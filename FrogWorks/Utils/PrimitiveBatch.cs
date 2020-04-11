@@ -9,15 +9,16 @@ namespace FrogWorks
 {
     public class PrimitiveBatch : IDisposable
     {
-        private const int VertsPerLine = 2, VertsPerTriangle = 3;
+        const int VertsPerLine = 2,
+            VertsPerTriangle = 3;
 
-        private GraphicsDevice _graphicsDevice;
-        private BasicEffect _basicEffect;
-        private Effect _effect;
-        private VertexPositionColor[] _vertices;
-        private PrimitiveType _type;
-        private int _bufferIndex;
-        private bool _hasBegun;
+        GraphicsDevice _graphicsDevice;
+        BasicEffect _basicEffect;
+        Effect _effect;
+        VertexPositionColor[] _vertices;
+        PrimitiveType _type;
+        int _bufferIndex;
+        bool _hasBegun;
 
         public PrimitiveType PrimitiveType
         {
@@ -102,7 +103,7 @@ namespace FrogWorks
             }
         }
 
-        private void Flush()
+        void Flush()
         {
             CheckBeforeDraw();
 
@@ -129,7 +130,7 @@ namespace FrogWorks
         }
 
         #region Validation
-        private void CheckBeforeDraw()
+        void CheckBeforeDraw()
         {
             CheckIfDisposed();
 
@@ -141,7 +142,7 @@ namespace FrogWorks
             }
         }
 
-        private void CheckAfterDraw()
+        void CheckAfterDraw()
         {
             CheckIfDisposed();
 
@@ -149,7 +150,7 @@ namespace FrogWorks
                 throw new Exception("End must be called before Begin.");
         }
 
-        private void CheckIfDisposed()
+        void CheckIfDisposed()
         {
             if (IsDisposed)
                 throw new Exception("Cannot draw with disposed primitive batch.");

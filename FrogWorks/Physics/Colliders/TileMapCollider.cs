@@ -112,7 +112,7 @@ namespace FrogWorks
             if (base.Contains(point))
             {
                 var location = point
-                    .SnapToGrid(TileSize.ToVector2(), AbsolutePosition)
+                    .ToGrid(TileSize.ToVector2(), AbsolutePosition)
                     .ToPoint();
 
                 var tile = GetTileShape(location);
@@ -127,8 +127,8 @@ namespace FrogWorks
             if (base.Raycast(start, end, out hit))
             {
                 var tileSize = TileSize.ToVector2();
-                var gStart = start.SnapToGrid(tileSize, AbsolutePosition);
-                var gEnd = end.SnapToGrid(tileSize, AbsolutePosition);
+                var gStart = start.ToGrid(tileSize, AbsolutePosition);
+                var gEnd = end.ToGrid(tileSize, AbsolutePosition);
 
                 foreach (var location in PlotLine(gStart, gEnd))
                 {
@@ -146,7 +146,7 @@ namespace FrogWorks
             if (base.Overlaps(shape))
             {
                 var region = shape.Bounds
-                    .SnapToGrid(TileSize.ToVector2(), AbsolutePosition);
+                    .ToGrid(TileSize.ToVector2(), AbsolutePosition);
 
                 foreach (var location in PlotRegion(region))
                 {
@@ -166,7 +166,7 @@ namespace FrogWorks
             if (base.Overlaps(shape, out result))
             {
                 var region = shape.Bounds
-                    .SnapToGrid(TileSize.ToVector2(), AbsolutePosition);
+                    .ToGrid(TileSize.ToVector2(), AbsolutePosition);
 
                 foreach (var location in PlotRegion(region))
                 {
@@ -194,7 +194,7 @@ namespace FrogWorks
                 {
                     var shape = (collider as ShapeCollider).Shape;
                     var region = shape.Bounds
-                        .SnapToGrid(TileSize.ToVector2(), AbsolutePosition);
+                        .ToGrid(TileSize.ToVector2(), AbsolutePosition);
 
                     foreach (var location in PlotRegion(region))
                     {
@@ -217,7 +217,7 @@ namespace FrogWorks
                     var collide = false;
                     var shape = (collider as ShapeCollider).Shape;
                     var region = shape.Bounds
-                        .SnapToGrid(TileSize.ToVector2(), AbsolutePosition);
+                        .ToGrid(TileSize.ToVector2(), AbsolutePosition);
 
                     foreach (var location in PlotRegion(region))
                     {
@@ -279,14 +279,14 @@ namespace FrogWorks
 
             if (steep)
             {
-                Extensions.Swap(ref p1.X, ref p1.Y);
-                Extensions.Swap(ref p2.X, ref p2.Y);
+                Tools.Swap(ref p1.X, ref p1.Y);
+                Tools.Swap(ref p2.X, ref p2.Y);
             }
 
             if (p1.X > p2.X)
             {
-                Extensions.Swap(ref p1.X, ref p2.X);
-                Extensions.Swap(ref p1.Y, ref p2.Y);
+                Tools.Swap(ref p1.X, ref p2.X);
+                Tools.Swap(ref p1.Y, ref p2.Y);
             }
 
             var dx = p2.X - p1.X;

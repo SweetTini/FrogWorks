@@ -59,13 +59,15 @@ namespace FrogWorks
             {
                 var importer = new EffectImporter();
                 var processor = new EffectProcessor();
-                var pipelineManager = new PipelineManager(string.Empty, string.Empty, string.Empty)
+                var pipelineManager = new PipelineManager("", "", "")
                 {
                     Profile = Runner.Application.Game.Graphics.GraphicsProfile,
                     Platform = GetTargetPlatform()
                 };
 
-                var processorContext = new PipelineProcessorContext(pipelineManager, new PipelineBuildEvent());
+                var processorContext = new PipelineProcessorContext(
+                    pipelineManager, 
+                    new PipelineBuildEvent());
                 var content = importer.Import(fullPath, null);
                 var compiledContent = processor.Process(content, processorContext);
                 var graphicsDevice = Runner.Application.Game.GraphicsDevice;

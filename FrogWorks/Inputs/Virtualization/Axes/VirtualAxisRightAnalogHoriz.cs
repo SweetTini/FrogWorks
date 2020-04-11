@@ -6,7 +6,15 @@
 
         public float DeadZone { get; private set; }
 
-        public override float Value => Input.GamePads[PlayerIndex].GetRightAnalog().X.SignThreshold(DeadZone);
+        public override float Value
+        {
+            get
+            {
+                return Input.GamePads[PlayerIndex]
+                    .GetRightAnalog().X
+                    .SignThreshold(DeadZone);
+            }
+        }
 
         public VirtualAxisRightAnalogHoriz(int playerIndex, float deadZone)
         {

@@ -114,7 +114,7 @@ namespace FrogWorks
             if (IsCollidable)
             {
                 var location = point
-                    .SnapToGrid(TileSize.ToVector2(), AbsolutePosition)
+                    .ToGrid(TileSize.ToVector2(), AbsolutePosition)
                     .ToPoint();
 
                 var tile = GetTileShape(location);
@@ -155,8 +155,8 @@ namespace FrogWorks
             if (IsCollidable)
             {
                 var tileSize = TileSize.ToVector2();
-                var gStart = start.SnapToGrid(tileSize, AbsolutePosition);
-                var gEnd = end.SnapToGrid(tileSize, AbsolutePosition);
+                var gStart = start.ToGrid(tileSize, AbsolutePosition);
+                var gEnd = end.ToGrid(tileSize, AbsolutePosition);
 
                 foreach (var location in PlotLine(gStart, gEnd))
                 {
@@ -185,7 +185,7 @@ namespace FrogWorks
             if (IsCollidable && shape != null)
             {
                 var region = shape.Bounds
-                    .SnapToGrid(TileSize.ToVector2(), AbsolutePosition);
+                    .ToGrid(TileSize.ToVector2(), AbsolutePosition);
 
                 foreach (var location in PlotRegion(region))
                 {
@@ -208,7 +208,7 @@ namespace FrogWorks
             if (IsCollidable && shape != null)
             {
                 var region = shape.Bounds
-                    .SnapToGrid(TileSize.ToVector2(), AbsolutePosition);
+                    .ToGrid(TileSize.ToVector2(), AbsolutePosition);
 
                 foreach (var location in PlotRegion(region))
                 {
@@ -241,7 +241,7 @@ namespace FrogWorks
                 {
                     var shape = (collider as ShapeCollider).Shape;
                     var region = shape.Bounds
-                        .SnapToGrid(TileSize.ToVector2(), AbsolutePosition);
+                        .ToGrid(TileSize.ToVector2(), AbsolutePosition);
 
                     foreach (var location in PlotRegion(region))
                     {
@@ -272,7 +272,7 @@ namespace FrogWorks
                     var collide = false;
                     var shape = (collider as ShapeCollider).Shape;
                     var region = shape.Bounds
-                        .SnapToGrid(TileSize.ToVector2(), AbsolutePosition);
+                        .ToGrid(TileSize.ToVector2(), AbsolutePosition);
 
                     foreach (var location in PlotRegion(region))
                     {
@@ -400,7 +400,7 @@ namespace FrogWorks
         public TaggedTile<T> GetTile(Vector2 point)
         {
             var location = point
-                .SnapToGrid(TileSize.ToVector2(), AbsolutePosition)
+                .ToGrid(TileSize.ToVector2(), AbsolutePosition)
                 .ToPoint();
 
             return new TaggedTile<T>(location, Map[location]);
@@ -415,8 +415,8 @@ namespace FrogWorks
         {
             var tileSize = TileSize.ToVector2();
 
-            start = start.SnapToGrid(tileSize, AbsolutePosition);
-            end = end.SnapToGrid(tileSize, AbsolutePosition);
+            start = start.ToGrid(tileSize, AbsolutePosition);
+            end = end.ToGrid(tileSize, AbsolutePosition);
 
             foreach (var location in PlotLine(start, end))
                 yield return new TaggedTile<T>(location, Map[location]);
@@ -425,7 +425,7 @@ namespace FrogWorks
         public IEnumerable<TaggedTile<T>> GetTiles(Shape shape)
         {
             var region = shape.Bounds
-                .SnapToGrid(TileSize.ToVector2(), AbsolutePosition);
+                .ToGrid(TileSize.ToVector2(), AbsolutePosition);
 
             foreach (var location in PlotRegion(region))
                 yield return new TaggedTile<T>(location, Map[location]);
@@ -438,7 +438,7 @@ namespace FrogWorks
                 if (collider is ShapeCollider)
                 {
                     var region = collider.Bounds
-                        .SnapToGrid(TileSize.ToVector2(), AbsolutePosition);
+                        .ToGrid(TileSize.ToVector2(), AbsolutePosition);
 
                     foreach (var location in PlotRegion(region))
                         yield return new TaggedTile<T>(location, Map[location]);

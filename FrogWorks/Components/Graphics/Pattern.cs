@@ -4,7 +4,9 @@ namespace FrogWorks
 {
     public class Pattern : Image
     {
-        Point _size, _mapSize, _remaining;
+        Point _size,
+            _mapSize,
+            _remaining;
 
         public override Rectangle Bounds => new Rectangle(Point.Zero, Size);
 

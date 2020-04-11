@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace FrogWorks
 {
     public class VirtualAxis : VirtualInput
     {
-        protected List<VirtualAxisNode> Nodes { get; private set; }
+        List<VirtualAxisNode> _nodes;
+
+        protected ReadOnlyCollection<VirtualAxisNode> Nodes { get; private set; }
 
         public float CurrentValue { get; private set; }
 
@@ -13,7 +16,8 @@ namespace FrogWorks
         public VirtualAxis()
             : base()
         {
-            Nodes = new List<VirtualAxisNode>();
+            _nodes = new List<VirtualAxisNode>();
+            Nodes = new ReadOnlyCollection<VirtualAxisNode>(_nodes);
         }
 
         public VirtualAxis(params VirtualAxisNode[] nodes)
@@ -48,8 +52,8 @@ namespace FrogWorks
 
         public void Register(VirtualAxisNode node)
         {
-            if (!Nodes.Contains(node))
-                Nodes.Add(node);
+            if (!_nodes.Contains(node))
+                _nodes.Add(node);
         }
 
         public void Register(params VirtualAxisNode[] nodes)
@@ -60,7 +64,7 @@ namespace FrogWorks
 
         public void Register(IEnumerable<VirtualAxisNode> nodes)
         {
-            foreach (var node in Nodes)
+            foreach (var node in nodes)
                 Register(node);
         }
 

@@ -6,8 +6,8 @@ namespace FrogWorks
 {
     public class Coroutine : Component
     {
-        private Stack<IEnumerator> _enumerators;
-        private bool _hasEnded;
+        Stack<IEnumerator> _enumerators;
+        bool _hasEnded;
 
         public bool IsFinished { get; private set; }
 

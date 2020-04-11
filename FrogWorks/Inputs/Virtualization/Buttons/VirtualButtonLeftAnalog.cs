@@ -8,11 +8,32 @@
 
         public float DeadZone { get; private set; }
 
-        public override bool IsDown => Input.GamePads[PlayerIndex].IsLeftAnalogDown(Axis, DeadZone);
+        public override bool IsDown
+        {
+            get
+            {
+                return Input.GamePads[PlayerIndex]
+                    .IsLeftAnalogDown(Axis, DeadZone);
+            }
+        }
 
-        public override bool IsPressed => Input.GamePads[PlayerIndex].IsLeftAnalogPressed(Axis, DeadZone);
+        public override bool IsPressed
+        {
+            get
+            {
+                return Input.GamePads[PlayerIndex]
+                    .IsLeftAnalogPressed(Axis, DeadZone);
+            }
+        }
 
-        public override bool IsReleased => Input.GamePads[PlayerIndex].IsLeftAnalogReleased(Axis, DeadZone);
+        public override bool IsReleased
+        {
+            get
+            {
+                return Input.GamePads[PlayerIndex]
+                    .IsLeftAnalogReleased(Axis, DeadZone);
+            }
+        }
 
         public VirtualButtonLeftAnalog(int playerIndex, AnalogAxis axis, float deadZone)
         {

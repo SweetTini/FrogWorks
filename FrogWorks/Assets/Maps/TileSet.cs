@@ -5,8 +5,8 @@ namespace FrogWorks
 {
     public class TileSet
     {
-        private Texture[] _textures;
-        private Point _size;
+        Texture[] _textures;
+        Point _size;
 
         public Texture this[int x, int y]
         {

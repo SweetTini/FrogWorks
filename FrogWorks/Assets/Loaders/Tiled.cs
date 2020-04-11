@@ -40,19 +40,26 @@ namespace FrogWorks
         {
             var xmlRoot = xmlDoc["map"];
 
-            collection.Size = new Point(xmlRoot.AttrToInt32("width"), xmlRoot.AttrToInt32("height"));
-            collection.TileSize = new Point(xmlRoot.AttrToInt32("tilewidth"), xmlRoot.AttrToInt32("tileheight"));
+            collection.Size = new Point(
+                xmlRoot.AttrToInt32("width"), 
+                xmlRoot.AttrToInt32("height"));
+            collection.TileSize = new Point(
+                xmlRoot.AttrToInt32("tilewidth"), 
+                xmlRoot.AttrToInt32("tileheight"));
             collection.BackgroundColor = xmlRoot.AttrToColor("backgroundcolor");
 
             var tileSets = ReadTileSets(collection, xmlRoot, rootDirectory);
-            var layers = ReadLayers(collection, xmlRoot, tileSets);
+            var layers = ReadLayers(collection, xmlRoot);
             var objects = ReadObjectGroups(xmlRoot);
 
             layers.ForEach(x => BuildLayout(collection, tileSets, x));
             objects.ForEach(x => BuildObject(collection, x));
         }
 
-        static List<TiledTileSet> ReadTileSets(TileMap collection, XmlElement xmlRoot, string rootDirectory)
+        static List<TiledTileSet> ReadTileSets(
+            TileMap collection, 
+            XmlElement xmlRoot, 
+            string rootDirectory)
         {
             var tileSets = new List<TiledTileSet>();
 
@@ -74,7 +81,7 @@ namespace FrogWorks
             return tileSets;
         }
 
-        static List<TiledLayer> ReadLayers(TileMap collection, XmlElement xmlRoot, List<TiledTileSet> tileSets)
+        static List<TiledLayer> ReadLayers(TileMap collection, XmlElement xmlRoot)
         {
             var layers = new List<TiledLayer>();
 
@@ -189,7 +196,10 @@ namespace FrogWorks
         }
 
         #region Import Methods
-        static void BuildLayout(TileMap collection, List<TiledTileSet> tileSets, TiledLayer layer)
+        static void BuildLayout(
+            TileMap collection, 
+            List<TiledTileSet> tileSets, 
+            TiledLayer layer)
         {
             var renderer = null as TileMapRenderer;
 
@@ -249,7 +259,7 @@ namespace FrogWorks
             {
                 Name = obj.Name,
                 Type = obj.Type,
-                Region = obj.Region.SnapToGrid(collection.TileSize),
+                Region = obj.Region.ToGrid(collection.TileSize),
             };
 
             obj.Properties.ToList()
@@ -260,7 +270,9 @@ namespace FrogWorks
         #endregion
 
         #region Dependencies
-        static Stream GetDecodedStream(XmlElement xmlRoot, TiledCompression compression)
+        static Stream GetDecodedStream(
+            XmlElement xmlRoot, 
+            TiledCompression compression)
         {
             var rawData = Convert.FromBase64String(xmlRoot.InnerText);
 
@@ -291,7 +303,10 @@ namespace FrogWorks
 
             public int TileCount { get; set; }
 
-            public bool WithinOffset(int index) => index.Between(GidOffset, GidOffset + TileCount - 1);
+            public bool WithinOffset(int index)
+            {
+                return index.Between(GidOffset, GidOffset + TileCount - 1);
+            }                
         }
 
         class TiledLayer

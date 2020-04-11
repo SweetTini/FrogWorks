@@ -14,9 +14,12 @@
             {
                 switch (ThresholdMode)
                 {
-                    case ThresholdMode.GreaterThan: return Axis.CurrentValue >= Threshold;
-                    case ThresholdMode.LessThan: return Axis.CurrentValue <= Threshold;
-                    case ThresholdMode.EqualTo: return Axis.CurrentValue == Threshold;
+                    case ThresholdMode.GreaterThan:
+                        return Axis.CurrentValue >= Threshold;
+                    case ThresholdMode.LessThan:
+                        return Axis.CurrentValue <= Threshold;
+                    case ThresholdMode.EqualTo:
+                        return Axis.CurrentValue == Threshold;
                 }
 
                 return false;
@@ -29,9 +32,15 @@
             {
                 switch (ThresholdMode)
                 {
-                    case ThresholdMode.GreaterThan: return Axis.CurrentValue >= Threshold && Axis.LastValue < Threshold;
-                    case ThresholdMode.LessThan: return Axis.CurrentValue <= Threshold && Axis.LastValue > Threshold;
-                    case ThresholdMode.EqualTo: return Axis.CurrentValue == Threshold && Axis.LastValue != Threshold;
+                    case ThresholdMode.GreaterThan:
+                        return Axis.CurrentValue >= Threshold
+                            && Axis.LastValue < Threshold;
+                    case ThresholdMode.LessThan:
+                        return Axis.CurrentValue <= Threshold
+                            && Axis.LastValue > Threshold;
+                    case ThresholdMode.EqualTo:
+                        return Axis.CurrentValue == Threshold
+                            && Axis.LastValue != Threshold;
                 }
 
                 return false;
@@ -44,9 +53,15 @@
             {
                 switch (ThresholdMode)
                 {
-                    case ThresholdMode.GreaterThan: return Axis.CurrentValue < Threshold && Axis.LastValue >= Threshold;
-                    case ThresholdMode.LessThan: return Axis.CurrentValue > Threshold && Axis.LastValue <= Threshold;
-                    case ThresholdMode.EqualTo: return Axis.CurrentValue != Threshold && Axis.LastValue == Threshold;
+                    case ThresholdMode.GreaterThan:
+                        return Axis.CurrentValue < Threshold
+                            && Axis.LastValue >= Threshold;
+                    case ThresholdMode.LessThan:
+                        return Axis.CurrentValue > Threshold
+                            && Axis.LastValue <= Threshold;
+                    case ThresholdMode.EqualTo:
+                        return Axis.CurrentValue != Threshold
+                            && Axis.LastValue == Threshold;
                 }
 
                 return false;
@@ -58,7 +73,10 @@
         {
         }
 
-        public VirtualButtonHardAxisTrigger(VirtualHardAxis axis, int threshold, ThresholdMode thresholdMode)
+        public VirtualButtonHardAxisTrigger(
+            VirtualHardAxis axis,
+            int threshold,
+            ThresholdMode thresholdMode)
         {
             Axis = axis;
             Threshold = threshold;

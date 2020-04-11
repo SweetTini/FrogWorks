@@ -7,9 +7,9 @@ namespace FrogWorks
     public class StateMachine<T> : Component
         where T : struct
     {
-        private T? _key;
-        private Dictionary<T, State> _states;
-        private Coroutine _coroutine;
+        T? _key;
+        Dictionary<T, State> _states;
+        Coroutine _coroutine;
 
         public T? CurrentState
         {
@@ -26,7 +26,7 @@ namespace FrogWorks
 
         public bool IsLocked { get; set; }
 
-        public bool IsCoroutineFinished
+        public bool IsFinished
         {
             get
             {
@@ -61,10 +61,10 @@ namespace FrogWorks
         }
 
         protected void AddOrUpdate(
-            T key, 
-            Func<float, T?> update = null, 
-            Func<IEnumerator> coroutine = null, 
-            Action begin = null, 
+            T key,
+            Func<float, T?> update = null,
+            Func<IEnumerator> coroutine = null,
+            Action begin = null,
             Action end = null)
         {
             if (_states.ContainsKey(key))
@@ -85,10 +85,10 @@ namespace FrogWorks
         }
 
         public void SetCallbacks(
-            T key, 
-            Func<float, T?> update, 
-            Func<IEnumerator> coroutine = null, 
-            Action begin = null, 
+            T key,
+            Func<float, T?> update,
+            Func<IEnumerator> coroutine = null,
+            Action begin = null,
             Action end = null)
         {
             AddOrUpdate(key, update, coroutine, begin, end);
@@ -103,12 +103,12 @@ namespace FrogWorks
 
             if (Parent != null)
             {
-                update = (Func<float, T?>)Extensions.GetMethod<Func<float, T?>>(
+                update = (Func<float, T?>)Tools.GetMethod<Func<float, T?>>(
                     Parent, $"Update{name}");
-                coroutine = (Func<IEnumerator>)Extensions.GetMethod<Func<IEnumerator>>(
+                coroutine = (Func<IEnumerator>)Tools.GetMethod<Func<IEnumerator>>(
                     Parent, $"Coroutine{name}");
-                begin = (Action)Extensions.GetMethod<Action>(Parent, $"Begin{name}");
-                end = (Action)Extensions.GetMethod<Action>(Parent, $"End{name}");
+                begin = (Action)Tools.GetMethod<Action>(Parent, $"Begin{name}");
+                end = (Action)Tools.GetMethod<Action>(Parent, $"End{name}");
             }
 
             SetCallbacks(key, update, coroutine, begin, end);
@@ -132,7 +132,7 @@ namespace FrogWorks
             else _coroutine.Cancel();
         }
 
-        public static implicit operator T? (StateMachine<T> stateMachine)
+        public static implicit operator T?(StateMachine<T> stateMachine)
         {
             return stateMachine.CurrentState;
         }
@@ -149,9 +149,9 @@ namespace FrogWorks
             public Action End { get; set; }
 
             public State(
-                Func<float, T?> update, 
-                Func<IEnumerator> coroutine = null, 
-                Action begin = null, 
+                Func<float, T?> update,
+                Func<IEnumerator> coroutine = null,
+                Action begin = null,
                 Action end = null)
             {
                 Update = update;

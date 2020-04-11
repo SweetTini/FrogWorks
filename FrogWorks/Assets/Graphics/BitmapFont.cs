@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -9,15 +10,22 @@ namespace FrogWorks
 {
     public class BitmapFont
     {
-        private StringBuilder _builder;
-        private int _charSpacing;
+        StringBuilder _builder;
+        int _charSpacing;
 
         public BitmapCharacter this[int ascii]
         {
-            get { return Characters.ContainsKey(ascii) ? Characters[ascii] : null; }
+            get
+            {
+                return Characters.ContainsKey(ascii)
+                    ? Characters[ascii] : null;
+            }
         }
 
-        protected internal Dictionary<int, BitmapCharacter> Characters { get; private set; }
+        protected internal Dictionary<int, BitmapCharacter> Characters
+        {
+            get; private set;
+        }
 
         public int Spacing { get; set; }
 
@@ -35,16 +43,34 @@ namespace FrogWorks
             : this()
         {
             var textures = Texture.Split(texture, charWidth, charHeight);
-            var charCount = Math.Min(charSet.Length, textures.Length);
 
             for (int i = 0; i < charSet.Length; i++)
-                Characters.Add(charSet[i], new BitmapCharacter(textures[i], charSet[i], Point.Zero, charWidth));
+            {
+                Characters.Add(
+                    charSet[i],
+                    new BitmapCharacter(
+                        textures[i],
+                        charSet[i],
+                        Point.Zero,
+                        charWidth));
+            }
 
             _charSpacing = charWidth;
             DefaultLineHeight = charHeight;
         }
 
-        public void Draw(RendererBatch batch, string text, Rectangle bounds, HorizontalAlignment horizAlign = HorizontalAlignment.Left, VerticalAlignment vertAlign = VerticalAlignment.Top, bool wordWrap = false, Vector2? origin = null, Vector2? scale = null, float angle = 0f, Color? color = null, SpriteEffects effects = SpriteEffects.None)
+        public void Draw(
+            RendererBatch batch,
+            string text,
+            Rectangle bounds,
+            HorizontalAlignment horizAlign = HorizontalAlignment.Left,
+            VerticalAlignment vertAlign = VerticalAlignment.Top,
+            bool wordWrap = false,
+            Vector2? origin = null,
+            Vector2? scale = null,
+            float angle = 0f,
+            Color? color = null,
+            SpriteEffects effects = SpriteEffects.None)
         {
             if (string.IsNullOrEmpty(text)) return;
 
@@ -67,9 +93,16 @@ namespace FrogWorks
                         var kerning = 0;
                         if (j < line.Length - 1)
                             character.Kernings.TryGetValue(line[j + 1], out kerning);
-                        var charOrigin = (origin ?? Vector2.Zero) - (offset + character.Offset.ToVector2());
+                        var charOrigin = (origin ?? Vector2.Zero)
+                            - (offset + character.Offset.ToVector2());
 
-                        character.Texture.Draw(batch, position, charOrigin, scale ?? Vector2.One, angle, color ?? Color.White, effects);
+                        character.Texture.Draw(
+                            batch,
+                            position,
+                            charOrigin,
+                            scale ?? Vector2.One,
+                            angle, color ?? Color.White,
+                            effects);
                         offset.X += kerning + character.Spacing + Spacing;
                     }
                 }
@@ -78,9 +111,34 @@ namespace FrogWorks
             }
         }
 
-        public void Draw(RendererBatch batch, string text, int x, int y, int width, int height, HorizontalAlignment horizAlign = HorizontalAlignment.Left, VerticalAlignment vertAlign = VerticalAlignment.Top, bool wordWrap = false, Vector2? origin = null, Vector2? scale = null, float angle = 0f, Color? color = null, SpriteEffects effects = SpriteEffects.None)
+        public void Draw(
+            RendererBatch batch,
+            string text,
+            Vector2 position,
+            Vector2 size,
+            HorizontalAlignment horizAlign = HorizontalAlignment.Left,
+            VerticalAlignment vertAlign = VerticalAlignment.Top,
+            bool wordWrap = false,
+            Vector2? origin = null,
+            Vector2? scale = null,
+            float angle = 0f,
+            Color? color = null,
+            SpriteEffects effects = SpriteEffects.None)
         {
-            Draw(batch, text, new Rectangle(x, y, width, height), horizAlign, vertAlign, wordWrap, origin, scale, angle, color, effects);
+            Draw(
+                batch,
+                text,
+                new Rectangle(
+                    position.ToPoint(),
+                    size.ToPoint()),
+                horizAlign,
+                vertAlign,
+                wordWrap,
+                origin,
+                scale,
+                angle,
+                color,
+                effects);
         }
 
         public void Configure(int ascii, int offsetX, int offsetY, int spacing)
@@ -99,7 +157,11 @@ namespace FrogWorks
             BitmapCharacter character;
 
             if (Characters.TryGetValue(ascii, out character))
-                return new Point(character.Spacing + Spacing, DefaultLineHeight + LineHeight);
+            {
+                return new Point(
+                    character.Spacing + Spacing,
+                    DefaultLineHeight + LineHeight);
+            }
 
             return Point.Zero;
         }
@@ -175,33 +237,47 @@ namespace FrogWorks
             return lines * (DefaultLineHeight + LineHeight);
         }
 
-        public int MeasureHorizontalOffset(HorizontalAlignment alignment, string line, int width)
+        public int MeasureHorizontalOffset(
+            HorizontalAlignment alignment,
+            string line,
+            int width)
         {
             var lineWidth = MeasureWidth(line);
-            var spacing = _charSpacing + Spacing;
             var offset = 0;
 
             switch (alignment)
             {
-                case HorizontalAlignment.Left: break;
-                case HorizontalAlignment.Center: offset = (int)Math.Round((width - lineWidth) / 2f); break;
-                case HorizontalAlignment.Right: offset = width - lineWidth; break;
+                case HorizontalAlignment.Left:
+                    break;
+                case HorizontalAlignment.Center:
+                    offset = (int)Math.Round((width - lineWidth) / 2f);
+                    break;
+                case HorizontalAlignment.Right:
+                    offset = width - lineWidth;
+                    break;
             }
 
             return offset;
         }
 
-        public int MeasureVerticalOffset(VerticalAlignment alignment, string text, int height)
+        public int MeasureVerticalOffset(
+            VerticalAlignment alignment,
+            string text,
+            int height)
         {
             var textHeight = MeasureHeight(text);
-            var lineHeight = DefaultLineHeight + LineHeight;
             var offset = 0;
 
             switch (alignment)
             {
-                case VerticalAlignment.Top: break;
-                case VerticalAlignment.Center: offset = (int)Math.Round((height - textHeight) / 2f); break;
-                case VerticalAlignment.Bottom: offset = height - textHeight; break;
+                case VerticalAlignment.Top:
+                    break;
+                case VerticalAlignment.Center:
+                    offset = (int)Math.Round((height - textHeight) / 2f);
+                    break;
+                case VerticalAlignment.Bottom:
+                    offset = height - textHeight;
+                    break;
             }
 
             return offset;
@@ -270,6 +346,57 @@ namespace FrogWorks
                 DefaultLineHeight = DefaultLineHeight,
                 LineHeight = LineHeight
             };
+        }
+    }
+
+    public class BitmapCharacter
+    {
+        Dictionary<int, int> _kernings;
+
+        public Texture Texture { get; internal set; }
+
+        public int Ascii { get; internal set; }
+
+        public Point Offset { get; internal set; }
+
+        public int Spacing { get; internal set; }
+
+        public ReadOnlyDictionary<int, int> Kernings { get; }
+
+        internal BitmapCharacter()
+        {
+            _kernings = new Dictionary<int, int>();
+            Kernings = new ReadOnlyDictionary<int, int>(_kernings);
+        }
+
+        internal BitmapCharacter(
+            Texture texture,
+            int ascii,
+            Point offset = default,
+            int spacing = 0)
+            : this()
+        {
+            Texture = texture;
+            Ascii = ascii;
+            Offset = offset;
+            Spacing = spacing;
+        }
+
+        internal BitmapCharacter(
+            Texture texture,
+            int ascii,
+            int offsetX = 0,
+            int offsetY = 0,
+            int spacing = 0)
+            : this(texture, ascii, new Point(offsetX, offsetY), spacing)
+        {
+        }
+
+        internal void AddOrUpdateKerning(int ascii, int spacing)
+        {
+            if (_kernings.ContainsKey(ascii))
+                _kernings[ascii] = spacing;
+            else _kernings.Add(ascii, spacing);
         }
     }
 

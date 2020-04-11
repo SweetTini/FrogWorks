@@ -6,7 +6,7 @@ namespace FrogWorks
 {
     public class ShakerSet : Component
     {
-        private bool _isOngoing;
+        bool _isOngoing;
 
         internal static Stack<ShakerSet> Cache { get; } = new Stack<ShakerSet>();
 
@@ -41,7 +41,12 @@ namespace FrogWorks
         {
         }
 
-        private void Initialize(int length, float duration, Action<Vector2[]> onShake, bool removeOnCompletion, bool canActivate = false)
+        private void Initialize(
+            int length,
+            float duration,
+            Action<Vector2[]> onShake,
+            bool removeOnCompletion,
+            bool canActivate = false)
         {
             Values = new Vector2[Math.Max(Math.Abs(length), 1)];
             ResetValues();
@@ -72,7 +77,13 @@ namespace FrogWorks
             }
 
             for (int i = 0; i < Values.Length; i++)
-                Values[i] = new Vector2(RandomEX.Current.NextFloat(-1f, 1f), RandomEX.Current.NextFloat(-1f, 1f)).Round();
+            {
+                Values[i] = new Vector2(
+                        RandomEX.Current.NextFloat(-1f, 1f),
+                        RandomEX.Current.NextFloat(-1f, 1f))
+                    .Round();
+            }
+
             OnShake?.Invoke(Values);
         }
 

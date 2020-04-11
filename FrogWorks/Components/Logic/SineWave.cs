@@ -5,7 +5,7 @@ namespace FrogWorks
 {
     public class SineWave : Component
     {
-        private float _counter;
+        float _counter;
 
         public float Counter
         {
@@ -40,13 +40,25 @@ namespace FrogWorks
             OnUpdate?.Invoke(Value);
         }
 
-        public float OffsetValue(float offset) => (float)Math.Sin(_counter + offset);
+        public float OffsetValue(float offset)
+        {
+            return (float)Math.Sin(_counter + offset);
+        }
 
-        public void StartUpwards() => Counter = MathHelper.PiOver2;
+        public void StartUpwards()
+        {
+            Counter = MathHelper.PiOver2;
+        }
 
-        public void StartDownwards() => Counter = MathHelper.PiOver2 * 3f;
+        public void StartDownwards()
+        {
+            Counter = MathHelper.PiOver2 * 3f;
+        }
 
-        public void Reset() => Counter = 0f;
+        public void Reset()
+        {
+            Counter = 0f;
+        }
 
         public SineWave Randomize()
         {

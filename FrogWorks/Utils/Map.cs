@@ -5,7 +5,7 @@ namespace FrogWorks
 {
     public class Map<T>
     {
-        private T[,] _region;
+        T[,] _region;
 
         public T this[int x, int y]
         {

@@ -2,8 +2,8 @@
 {
     public class VirtualAxisKeyboard : VirtualAxisNode
     {
-        private float _value;
-        private bool _isFlipped;
+        float _value;
+        bool _isFlipped;
 
         public Keys Positive { get; private set; }
 

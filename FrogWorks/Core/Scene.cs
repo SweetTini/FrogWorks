@@ -103,7 +103,7 @@ namespace FrogWorks
                 Entities.Update(deltaTime);
                 TimeActive += deltaTime;
                 AfterUpdate(deltaTime);
-                
+
                 Camera.Update();
                 Layers.Update(deltaTime);
             }

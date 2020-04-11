@@ -4,7 +4,7 @@ namespace FrogWorks
 {
     public class CollidableComponent : Component
     {
-        private Collider _collider;
+        Collider _collider;
 
         public Collider Collider
         {

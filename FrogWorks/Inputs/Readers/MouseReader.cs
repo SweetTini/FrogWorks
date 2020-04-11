@@ -12,7 +12,11 @@ namespace FrogWorks
         #region Cursor
         public Vector2 Position
         {
-            get { return Runner.Application.Display.ToView(CurrentState.Position.ToVector2()); }
+            get 
+            { 
+                return Runner.Application.Display
+                    .ToView(CurrentState.Position.ToVector2()); 
+            }
             set
             {
                 var position = Runner.Application.Display.FromView(value).ToPoint();
@@ -53,7 +57,8 @@ namespace FrogWorks
 
         public bool IsDown(MouseButton button)
         {
-            return !Input.IsDisabled && Validate(button, ButtonState.Pressed);
+            return !Input.IsDisabled 
+                && Validate(button, ButtonState.Pressed);
         }
 
         public bool IsClicked(MouseButton button)
@@ -70,7 +75,7 @@ namespace FrogWorks
                 && Validate(button, ButtonState.Pressed, true);
         }
 
-        private bool Validate(MouseButton button, ButtonState status, bool checkLastState = false)
+        bool Validate(MouseButton button, ButtonState status, bool checkLastState = false)
         {
             var state = checkLastState ? LastState : CurrentState;
 

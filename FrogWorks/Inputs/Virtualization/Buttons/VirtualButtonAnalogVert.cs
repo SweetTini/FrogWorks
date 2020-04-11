@@ -14,9 +14,12 @@
             {
                 switch (ThresholdMode)
                 {
-                    case ThresholdMode.GreaterThan: return Analog.CurrentValue.Y >= Threshold;
-                    case ThresholdMode.LessThan: return Analog.CurrentValue.Y <= Threshold;
-                    case ThresholdMode.EqualTo: return Analog.CurrentValue.Y == Threshold;
+                    case ThresholdMode.GreaterThan:
+                        return Analog.CurrentValue.Y >= Threshold;
+                    case ThresholdMode.LessThan:
+                        return Analog.CurrentValue.Y <= Threshold;
+                    case ThresholdMode.EqualTo:
+                        return Analog.CurrentValue.Y == Threshold;
                 }
 
                 return false;
@@ -29,9 +32,15 @@
             {
                 switch (ThresholdMode)
                 {
-                    case ThresholdMode.GreaterThan: return Analog.CurrentValue.Y >= Threshold && Analog.LastValue.Y < Threshold;
-                    case ThresholdMode.LessThan: return Analog.CurrentValue.Y <= Threshold && Analog.LastValue.Y > Threshold;
-                    case ThresholdMode.EqualTo: return Analog.CurrentValue.Y == Threshold && Analog.LastValue.Y != Threshold;
+                    case ThresholdMode.GreaterThan:
+                        return Analog.CurrentValue.Y >= Threshold
+                            && Analog.LastValue.Y < Threshold;
+                    case ThresholdMode.LessThan:
+                        return Analog.CurrentValue.Y <= Threshold
+                            && Analog.LastValue.Y > Threshold;
+                    case ThresholdMode.EqualTo:
+                        return Analog.CurrentValue.Y == Threshold
+                            && Analog.LastValue.Y != Threshold;
                 }
 
                 return false;
@@ -44,9 +53,15 @@
             {
                 switch (ThresholdMode)
                 {
-                    case ThresholdMode.GreaterThan: return Analog.CurrentValue.Y < Threshold && Analog.LastValue.Y >= Threshold;
-                    case ThresholdMode.LessThan: return Analog.CurrentValue.Y > Threshold && Analog.LastValue.Y <= Threshold;
-                    case ThresholdMode.EqualTo: return Analog.CurrentValue.Y != Threshold && Analog.LastValue.Y == Threshold;
+                    case ThresholdMode.GreaterThan:
+                        return Analog.CurrentValue.Y < Threshold
+                            && Analog.LastValue.Y >= Threshold;
+                    case ThresholdMode.LessThan:
+                        return Analog.CurrentValue.Y > Threshold
+                            && Analog.LastValue.Y <= Threshold;
+                    case ThresholdMode.EqualTo:
+                        return Analog.CurrentValue.Y != Threshold
+                            && Analog.LastValue.Y == Threshold;
                 }
 
                 return false;
@@ -58,7 +73,10 @@
         {
         }
 
-        public VirtualButtonAnalogVert(VirtualAnalog analog, float threshold, ThresholdMode thresholdMode)
+        public VirtualButtonAnalogVert(
+            VirtualAnalog analog,
+            float threshold,
+            ThresholdMode thresholdMode)
         {
             Analog = analog;
             Threshold = threshold;

@@ -40,21 +40,37 @@ namespace FrogWorks
             Parent = null;
         }
 
-        protected virtual void Update(float deltaTime) { }
+        protected virtual void Update(float deltaTime)
+        {
+        }
 
-        protected virtual void BeforeUpdate(float deltaTime) { }
+        protected virtual void BeforeUpdate(float deltaTime)
+        {
+        }
 
-        protected virtual void AfterUpdate(float deltaTime) { }
+        protected virtual void AfterUpdate(float deltaTime)
+        {
+        }
 
-        protected virtual void Draw(RendererBatch batch) { }
+        protected virtual void Draw(RendererBatch batch)
+        {
+        }
 
-        protected virtual void BeforeDraw(RendererBatch batch) { }
+        protected virtual void BeforeDraw(RendererBatch batch)
+        {
+        }
 
-        protected virtual void AfterDraw(RendererBatch batch) { }
+        protected virtual void AfterDraw(RendererBatch batch)
+        {
+        }
 
-        protected virtual void OnAdded() { }
+        protected virtual void OnAdded()
+        {
+        }
 
-        protected virtual void OnRemoved() { }
+        protected virtual void OnRemoved()
+        {
+        }
 
         public abstract void Destroy();
     }

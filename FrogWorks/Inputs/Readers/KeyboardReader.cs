@@ -21,20 +21,21 @@ namespace FrogWorks
 
         public bool IsDown(Keys key)
         {
-            return !Input.IsDisabled && CurrentState.IsKeyDown((XnaKeys)key);
+            return !Input.IsDisabled
+                && CurrentState.IsKeyDown((XnaKeys)key);
         }
 
         public bool IsPressed(Keys key)
         {
-            return !Input.IsDisabled 
-                && CurrentState.IsKeyDown((XnaKeys)key) 
+            return !Input.IsDisabled
+                && CurrentState.IsKeyDown((XnaKeys)key)
                 && LastState.IsKeyUp((XnaKeys)key);
         }
 
         public bool IsReleased(Keys key)
         {
-            return !Input.IsDisabled 
-                && CurrentState.IsKeyUp((XnaKeys)key) 
+            return !Input.IsDisabled
+                && CurrentState.IsKeyUp((XnaKeys)key)
                 && LastState.IsKeyDown((XnaKeys)key);
         }
 

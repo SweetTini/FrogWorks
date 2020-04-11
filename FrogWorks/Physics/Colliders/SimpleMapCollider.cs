@@ -151,7 +151,7 @@ namespace FrogWorks
         public SimpleTile GetTile(Vector2 point)
         {
             var location = point
-                .SnapToGrid(TileSize.ToVector2(), AbsolutePosition)
+                .ToGrid(TileSize.ToVector2(), AbsolutePosition)
                 .ToPoint();
 
             return new SimpleTile(location, Map[location]);
@@ -166,8 +166,8 @@ namespace FrogWorks
         {
             var tileSize = TileSize.ToVector2();
 
-            start = start.SnapToGrid(tileSize, AbsolutePosition);
-            end = end.SnapToGrid(tileSize, AbsolutePosition);
+            start = start.ToGrid(tileSize, AbsolutePosition);
+            end = end.ToGrid(tileSize, AbsolutePosition);
 
             foreach (var location in PlotLine(start, end))
                 yield return new SimpleTile(location, Map[location]);
@@ -176,7 +176,7 @@ namespace FrogWorks
         public IEnumerable<SimpleTile> GetTiles(Shape shape)
         {
             var region = shape.Bounds
-                .SnapToGrid(TileSize.ToVector2(), AbsolutePosition);
+                .ToGrid(TileSize.ToVector2(), AbsolutePosition);
 
             foreach (var location in PlotRegion(region))
                 yield return new SimpleTile(location, Map[location]);
@@ -189,7 +189,7 @@ namespace FrogWorks
                 if (collider is ShapeCollider)
                 {
                     var region = collider.Bounds
-                        .SnapToGrid(TileSize.ToVector2(), AbsolutePosition);
+                        .ToGrid(TileSize.ToVector2(), AbsolutePosition);
 
                     foreach (var location in PlotRegion(region))
                         yield return new SimpleTile(location, Map[location]);

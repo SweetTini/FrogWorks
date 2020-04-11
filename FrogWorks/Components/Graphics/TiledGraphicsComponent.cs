@@ -109,8 +109,14 @@ namespace FrogWorks
                 var y = DrawRegion.Top + (i / DrawRegion.Width);
                 var position = DrawPosition.Floor() + new Vector2(x * TileWidth, y * TileHeight);
 
-                GetTile(x, y)?.Draw(batch, position, Vector2.Zero, Vector2.One, 0f,
-                                    Color * Opacity.Clamp(0f, 1f), SpriteEffects);
+                GetTile(x, y)?.Draw(
+                    batch,
+                    position,
+                    Vector2.Zero,
+                    Vector2.One,
+                    0f,
+                    Color * Opacity.Clamp(0f, 1f),
+                    SpriteEffects);
             }
         }
 

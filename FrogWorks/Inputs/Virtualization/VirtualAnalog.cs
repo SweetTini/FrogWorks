@@ -1,11 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace FrogWorks
 {
     public class VirtualAnalog : VirtualInput
     {
-        protected List<VirtualAnalogNode> Nodes { get; private set; }
+        List<VirtualAnalogNode> _nodes;
+
+        protected ReadOnlyCollection<VirtualAnalogNode> Nodes { get; private set; }
 
         public Vector2 CurrentValue { get; private set; }
 
@@ -18,7 +21,8 @@ namespace FrogWorks
         public VirtualAnalog()
             : base()
         {
-            Nodes = new List<VirtualAnalogNode>();
+            _nodes = new List<VirtualAnalogNode>();
+            Nodes = new ReadOnlyCollection<VirtualAnalogNode>(_nodes);
         }
 
         public VirtualAnalog(params VirtualAnalogNode[] nodes)
@@ -65,8 +69,8 @@ namespace FrogWorks
 
         public void Register(VirtualAnalogNode node)
         {
-            if (!Nodes.Contains(node))
-                Nodes.Add(node);
+            if (!_nodes.Contains(node))
+                _nodes.Add(node);
         }
 
         public void Register(params VirtualAnalogNode[] nodes)
@@ -77,7 +81,7 @@ namespace FrogWorks
 
         public void Register(IEnumerable<VirtualAnalogNode> nodes)
         {
-            foreach (var node in Nodes)
+            foreach (var node in nodes)
                 Register(node);
         }
 

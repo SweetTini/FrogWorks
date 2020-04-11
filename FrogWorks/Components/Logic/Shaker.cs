@@ -18,12 +18,16 @@ namespace FrogWorks
 
         public Action<Vector2> OnShake { get; set; }
 
-        private Shaker()
+        Shaker()
             : base(true, false)
         {
         }
 
-        private void Initialize(float duration, Action<Vector2> onShake, bool removeOnCompletion, bool canActivate = false)
+        void Initialize(
+            float duration,
+            Action<Vector2> onShake,
+            bool removeOnCompletion,
+            bool canActivate = false)
         {
             Value = Vector2.Zero;
             Duration = Math.Max(Math.Abs(duration), float.Epsilon);
@@ -49,11 +53,18 @@ namespace FrogWorks
                 return;
             }
 
-            Value = new Vector2(RandomEX.Current.NextFloat(-1f, 1f), RandomEX.Current.NextFloat(-1f, 1f)).Round();
+            Value = new Vector2(
+                    RandomEX.Current.NextFloat(-1f, 1f),
+                    RandomEX.Current.NextFloat(-1f, 1f))
+                .Round();
+
             OnShake?.Invoke(Value);
         }
 
-        protected override void OnRemoved() => Cache.Push(this);
+        protected override void OnRemoved()
+        {
+            Cache.Push(this);
+        }
 
         public void Start()
         {
@@ -79,14 +90,22 @@ namespace FrogWorks
         }
 
         #region Static Methods
-        public static Shaker Create(float duration, Action<Vector2> onShake, bool removeOnCompletion, bool canActivate = false)
+        public static Shaker Create(
+            float duration,
+            Action<Vector2> onShake,
+            bool removeOnCompletion,
+            bool canActivate = false)
         {
             var shaker = Cache.Count > 0 ? Cache.Pop() : new Shaker();
             shaker.Initialize(duration, onShake, removeOnCompletion, canActivate);
             return shaker;
         }
 
-        public static Shaker CreateAndApply(Entity entity, float duration, Action<Vector2> onShake, bool removeOnCompletion = true)
+        public static Shaker CreateAndApply(
+            Entity entity,
+            float duration,
+            Action<Vector2> onShake,
+            bool removeOnCompletion = true)
         {
             var shaker = Create(duration, onShake, removeOnCompletion, true);
             if (entity != null)

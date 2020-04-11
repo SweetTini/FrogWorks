@@ -51,12 +51,16 @@ namespace FrogWorks
         public Vector2 GetLeftAnalog(float deadZone = 0f)
         {
             var axis = CurrentState.ThumbSticks.Left * new Vector2(1f, -1f);
-            return !Input.IsDisabled && axis.LengthSquared() >= deadZone * deadZone ? axis : Vector2.Zero;
+            return !Input.IsDisabled
+                && axis.LengthSquared() >= deadZone * deadZone
+                    ? axis
+                    : Vector2.Zero;
         }
 
         public bool IsLeftAnalogDown(AnalogAxis axis, float deadZone)
         {
-            return !Input.IsDisabled && ValidateAnalog(axis, CurrentState.ThumbSticks.Left, deadZone);
+            return !Input.IsDisabled
+                && ValidateAnalog(axis, CurrentState.ThumbSticks.Left, deadZone);
         }
 
         public bool IsLeftAnalogPressed(AnalogAxis axis, float deadZone)
@@ -78,12 +82,16 @@ namespace FrogWorks
         public Vector2 GetRightAnalog(float deadZone = 0f)
         {
             var axis = CurrentState.ThumbSticks.Right * new Vector2(1f, -1f);
-            return !Input.IsDisabled && axis.LengthSquared() >= deadZone * deadZone ? axis : Vector2.Zero;
+            return !Input.IsDisabled
+                && axis.LengthSquared() >= deadZone * deadZone
+                    ? axis
+                    : Vector2.Zero;
         }
 
         public bool IsRightAnalogDown(AnalogAxis axis, float deadZone)
         {
-            return !Input.IsDisabled && ValidateAnalog(axis, CurrentState.ThumbSticks.Right, deadZone);
+            return !Input.IsDisabled
+                && ValidateAnalog(axis, CurrentState.ThumbSticks.Right, deadZone);
         }
 
         public bool IsRightAnalogPressed(AnalogAxis axis, float deadZone)
@@ -104,12 +112,14 @@ namespace FrogWorks
         #region Left Trigger
         public float GetLeftTrigger(float threshold = 0f)
         {
-            return CurrentState.Triggers.Left >= threshold ? CurrentState.Triggers.Left : 0f;
+            return CurrentState.Triggers.Left >= threshold
+                ? CurrentState.Triggers.Left : 0f;
         }
 
         public bool IsLeftTriggerDown(float threshold)
         {
-            return !Input.IsDisabled && ValidateTrigger(CurrentState.Triggers.Left, threshold);
+            return !Input.IsDisabled
+                && ValidateTrigger(CurrentState.Triggers.Left, threshold);
         }
 
         public bool IsLeftTriggerPressed(float threshold)
@@ -130,12 +140,14 @@ namespace FrogWorks
         #region Right Trigger
         public float GetRightTrigger(float threshold = 0f)
         {
-            return CurrentState.Triggers.Right >= threshold ? CurrentState.Triggers.Right : 0f;
+            return CurrentState.Triggers.Right >= threshold
+                ? CurrentState.Triggers.Right : 0f;
         }
 
         public bool IsRightTriggerDown(float threshold)
         {
-            return !Input.IsDisabled && ValidateTrigger(CurrentState.Triggers.Right, threshold);
+            return !Input.IsDisabled
+                && ValidateTrigger(CurrentState.Triggers.Right, threshold);
         }
 
         public bool IsRightTriggerPressed(float threshold)
@@ -153,7 +165,7 @@ namespace FrogWorks
         }
         #endregion
 
-        private bool ValidateAnalog(AnalogAxis axis, Vector2 analog, float deadZone)
+        bool ValidateAnalog(AnalogAxis axis, Vector2 analog, float deadZone)
         {
             analog *= new Vector2(1, -1);
 
@@ -168,7 +180,7 @@ namespace FrogWorks
             return false;
         }
 
-        private bool ValidateTrigger(float trigger, float threshold)
+        bool ValidateTrigger(float trigger, float threshold)
         {
             return trigger >= threshold;
         }

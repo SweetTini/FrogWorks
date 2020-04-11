@@ -73,9 +73,15 @@ namespace FrogWorks
         {
             State = ManagerState.Queue;
 
-            foreach (var child in Children)
+            C child;
+
+            for (int i = 0; i < Children.Count; i++)
+            {
+                child = Children[i];
+                
                 if (child.IsActive)
                     child.UpdateInternally(deltaTime);
+            }
 
             State = ManagerState.Opened;
         }
@@ -84,9 +90,15 @@ namespace FrogWorks
         {
             State = ManagerState.ThrowError;
 
-            foreach (var child in Children)
+            C child;
+
+            for (int i = 0; i < Children.Count; i++)
+            {
+                child = Children[i];
+
                 if (child.IsVisible)
                     child.DrawInternally(batch);
+            }
 
             State = ManagerState.Opened;
         }
@@ -112,14 +124,14 @@ namespace FrogWorks
 
         public void Add(params C[] children)
         {
-            foreach (var item in children)
-                Add(item);
+            for (int i = 0; i < children.Length; i++)
+                Add(children[i]);
         }
 
         public void Add(IEnumerable<C> children)
         {
-            foreach (var item in children)
-                Add(item);
+            foreach (var child in children)
+                Add(child);
         }
 
         public void Remove(C child)
@@ -143,14 +155,14 @@ namespace FrogWorks
 
         public void Remove(params C[] children)
         {
-            foreach (var item in children)
-                Remove(item);
+            for (int i = 0; i < children.Length; i++)
+                Remove(children[i]);
         }
 
         public void Remove(IEnumerable<C> children)
         {
-            foreach (var item in children)
-                Remove(item);
+            foreach (var child in children)
+                Remove(child);
         }
 
         protected void TryAdd(C child)

@@ -4,8 +4,9 @@ namespace FrogWorks
 {
     public class VirtualAnalogKeyboard : VirtualAnalogNode
     {
-        private Vector2 _value;
-        private bool _isFlippedHorizontally, _isFlippedVertically;
+        Vector2 _value;
+        bool _isFlippedHorizontally, 
+            _isFlippedVertically;
 
         public Keys Left { get; private set; }
 
@@ -19,12 +20,21 @@ namespace FrogWorks
 
         public override Vector2 Value => _value;
 
-        public VirtualAnalogKeyboard(Keys left, Keys right, Keys up, Keys down)
+        public VirtualAnalogKeyboard(
+            Keys left, 
+            Keys right, 
+            Keys up, 
+            Keys down)
             : this(left, right, up, down, OverlapMode.Cancel)
         {
         }
 
-        public VirtualAnalogKeyboard(Keys left, Keys right, Keys up, Keys down, OverlapMode overlapMode)
+        public VirtualAnalogKeyboard(
+            Keys left, 
+            Keys right, 
+            Keys up, 
+            Keys down, 
+            OverlapMode overlapMode)
         {
             Left = left;
             Right = right;
@@ -40,7 +50,11 @@ namespace FrogWorks
                 GetAxis(Up, Down, ref _value.Y, ref _isFlippedVertically));
         }
 
-        private float GetAxis(Keys negative, Keys positive, ref float nextValue, ref bool isFlipped)
+        float GetAxis(
+            Keys negative, 
+            Keys positive, 
+            ref float nextValue, 
+            ref bool isFlipped)
         {
             var lastValue = nextValue;
             var negValue = Input.Keyboard.IsDown(negative) ? 1f : 0f;

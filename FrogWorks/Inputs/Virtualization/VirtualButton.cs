@@ -1,17 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace FrogWorks
 {
     public class VirtualButton : VirtualInput
     {
-        private float _timer, _repeatTimer;
-        private float _bufferTime, _initialRepeatTime, _multiRepeatTime;
-        private bool _canRepeat, _isRepeating, _isConsumed;
+        List<VirtualButtonNode> _nodes;
+        float _timer, _repeatTimer;
+        float _bufferTime, 
+            _initialRepeatTime, 
+            _multiRepeatTime;
+        bool _canRepeat,
+            _isConsumed;
 
-        protected List<VirtualButtonNode> Nodes { get; private set; }
+        protected ReadOnlyCollection<VirtualButtonNode> Nodes { get; private set; }
 
-        public bool Repeat { get; private set; }
+        public bool IsRepeating { get; private set; }
 
         public float BufferTime
         {
@@ -23,7 +28,8 @@ namespace FrogWorks
         {
             get
             {
-                if (Input.IsDisabled) return false;
+                if (Input.IsDisabled) 
+                    return false;
 
                 for (int i = 0; i < Nodes.Count; i++)
                     if (Nodes[i].IsDown)
@@ -37,7 +43,11 @@ namespace FrogWorks
         {
             get
             {
-                if (Input.IsDisabled || _isConsumed) return false;
+                if (Input.IsDisabled || _isConsumed) 
+                    return false;
+
+                if (_timer > 0f || IsRepeating)
+                    return true;
 
                 for (int i = 0; i < Nodes.Count; i++)
                     if (Nodes[i].IsPressed)
@@ -51,7 +61,8 @@ namespace FrogWorks
         {
             get
             {
-                if (Input.IsDisabled) return false;
+                if (Input.IsDisabled) 
+                    return false;
 
                 for (int i = 0; i < Nodes.Count; i++)
                     if (Nodes[i].IsReleased)
@@ -64,7 +75,8 @@ namespace FrogWorks
         public VirtualButton(float bufferTime = 0f)
             : base()
         {
-            Nodes = new List<VirtualButtonNode>();
+            _nodes = new List<VirtualButtonNode>();
+            Nodes = new ReadOnlyCollection<VirtualButtonNode>(_nodes);
             BufferTime = bufferTime;
         }
 
@@ -92,8 +104,8 @@ namespace FrogWorks
 
         public override void Update(float deltaTime)
         {
-            _timer -= deltaTime;
             var bypass = _isConsumed = false;
+            _timer -= deltaTime;
 
             for (int i = 0; i < Nodes.Count; i++)
             {
@@ -103,6 +115,7 @@ namespace FrogWorks
                 {
                     if (Nodes[i].IsPressed)
                         _timer = _bufferTime;
+                    
                     bypass = true;
                 }
             }
@@ -110,26 +123,25 @@ namespace FrogWorks
             if (!bypass)
             {
                 _timer = _repeatTimer = 0f;
-                Repeat = _isRepeating = false;
+                IsRepeating = false;
                 return;
             }
-
-            if (_canRepeat)
+            else if (_canRepeat)
             {
-                _repeatTimer -= deltaTime;
-                Repeat = false;
+                IsRepeating = false;
 
-                if (_repeatTimer <= 0f)
+                if (_repeatTimer == 0f)
                 {
-                    if (!_isRepeating)
+                    _repeatTimer = _initialRepeatTime;
+                }
+                else
+                {
+                    _repeatTimer -= deltaTime;
+                    
+                    if (_repeatTimer <= 0f)
                     {
-                        _repeatTimer = _initialRepeatTime;
-                        _isRepeating = true;
-                    }
-                    else
-                    {
+                        IsRepeating = true;
                         _repeatTimer = _multiRepeatTime;
-                        Repeat = true;
                     }
                 }
             }
@@ -137,8 +149,8 @@ namespace FrogWorks
 
         public void Register(VirtualButtonNode node)
         {
-            if (!Nodes.Contains(node))
-                Nodes.Add(node);
+            if (!_nodes.Contains(node))
+                _nodes.Add(node);
         }
 
         public void Register(params VirtualButtonNode[] nodes)
@@ -149,7 +161,7 @@ namespace FrogWorks
 
         public void Register(IEnumerable<VirtualButtonNode> nodes)
         {
-            foreach (var node in Nodes)
+            foreach (var node in nodes)
                 Register(node);
         }
 
@@ -176,7 +188,7 @@ namespace FrogWorks
             _canRepeat = _initialRepeatTime > 0f;
 
             if (!_canRepeat)
-                Repeat = _isRepeating = false;
+                IsRepeating = false;
         }
 
         public static implicit operator bool(VirtualButton button)
