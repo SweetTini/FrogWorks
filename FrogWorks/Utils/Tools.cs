@@ -508,7 +508,7 @@ namespace FrogWorks
             return (num % divisor + divisor) % divisor;
         }
 
-        public static float Percent(float num, float from, float to)
+        public static float Percent(this float num, float from, float to)
         {
             var lowest = Math.Min(from, to);
             var highest = Math.Max(from, to);
@@ -814,6 +814,20 @@ namespace FrogWorks
             }
 
             return result;
+        }
+
+        public static Point Multiply(this Point point, int factor)
+        {
+            return new Point(
+                point.X * factor,
+                point.Y * factor);
+        }
+
+        public static Point Multiply(this Point point, Point factor)
+        {
+            return new Point(
+                point.X * factor.X,
+                point.Y * factor.Y);
         }
 
         public static Point Pow(this Point point, int exponent)
