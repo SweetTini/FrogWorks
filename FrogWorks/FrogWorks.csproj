@@ -175,6 +175,9 @@
     <None Include="MonoGame.Framework.dll.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\DebugFont.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="libmojoshader_64.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

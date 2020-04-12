@@ -10,6 +10,20 @@ namespace FrogWorks
 {
     public static class Tools
     {
+        #region Font
+        public static BitmapFont Font { get; private set; }
+
+        static Tools()
+        {
+            if (Font == null)
+            {
+                var texture = Texture.Load("DebugFont");
+                var charSet = Enumerable.Range(32, 96).Select(c => (char)c).ToArray();
+                Font = new BitmapFont(texture, 8, 8, string.Join("", charSet));
+            }
+        }
+        #endregion
+
         #region Arrays & Lists
         public static bool Between<T>(this int index, T[] array)
         {
