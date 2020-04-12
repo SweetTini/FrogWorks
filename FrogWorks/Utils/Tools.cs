@@ -299,6 +299,36 @@ namespace FrogWorks
         {
             return (int)Math.Round(Math.Sqrt(num));
         }
+
+        public static Point ToUnit(this int num)
+        {
+            return new Point(num, num);
+        }
+
+        public static Point ToUnitX(this int num)
+        {
+            return new Point(num, 0);
+        }
+
+        public static Point ToUnitY(this int num)
+        {
+            return new Point(0, num);
+        }
+
+        public static Vector2 ToUnitF(this int num)
+        {
+            return num * Vector2.One;
+        }
+
+        public static Vector2 ToUnitXF(this int num)
+        {
+            return num * Vector2.UnitX;
+        }
+
+        public static Vector2 ToUnitYF(this int num)
+        {
+            return num * Vector2.UnitY;
+        }
         #endregion
 
         #region Singles
@@ -590,6 +620,36 @@ namespace FrogWorks
             return MathHelper.ToRadians(degrees);
         }
 
+        public static Point ToUnit(this float num)
+        {
+            return new Point((int)num, (int)num);
+        }
+
+        public static Point ToUnitX(this float num)
+        {
+            return new Point((int)num, 0);
+        }
+
+        public static Point ToUnitY(this float num)
+        {
+            return new Point(0, (int)num);
+        }
+
+        public static Vector2 ToUnitF(this float num)
+        {
+            return num * Vector2.One;
+        }
+
+        public static Vector2 ToUnitXF(this float num)
+        {
+            return num * Vector2.UnitX;
+        }
+
+        public static Vector2 ToUnitYF(this float num)
+        {
+            return num * Vector2.UnitY;
+        }
+
         public static float Truncate(this float num)
         {
             return (float)Math.Truncate(num);
@@ -677,6 +737,16 @@ namespace FrogWorks
             var divY = divider != 0 ? point.Y / divider : 0;
 
             return new Point(divX, divY);
+        }
+
+        public static Point KeepX(this Point point)
+        {
+            return point * new Point(1, 0);
+        }
+
+        public static Point KeepY(this Point point)
+        {
+            return point * new Point(0, 1);
         }
 
         public static Point Lerp(this Point point, Point target, float amount)
@@ -856,6 +926,16 @@ namespace FrogWorks
             return new Point(
                 Math.Sign(point.X),
                 Math.Sign(point.Y));
+        }
+
+        public static Point SignX(this Point point)
+        {
+            return new Point(Math.Sign(point.X), 0);
+        }
+
+        public static Point SignY(this Point point)
+        {
+            return new Point(0, Math.Sign(point.Y));
         }
 
         public static Point Sqrt(this Point point)

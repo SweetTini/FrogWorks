@@ -62,27 +62,85 @@ namespace FrogWorks
         public void Draw(
             RendererBatch batch,
             string text,
-            Rectangle bounds,
-            HorizontalAlignment horizAlign = HorizontalAlignment.Left,
-            VerticalAlignment vertAlign = VerticalAlignment.Top,
-            bool wordWrap = false,
+            Point position,
+            Point size,
             Vector2? origin = null,
             Vector2? scale = null,
             float angle = 0f,
             Color? color = null,
-            SpriteEffects effects = SpriteEffects.None)
+            SpriteEffects effects = SpriteEffects.None,
+            HorizontalAlignment xAlign = HorizontalAlignment.Left,
+            VerticalAlignment yAlign = VerticalAlignment.Top,
+            bool wordWrap = false)
         {
-            if (string.IsNullOrEmpty(text)) return;
+            Draw(
+                batch,
+                text,
+                new Rectangle(position, size),
+                origin,
+                scale,
+                angle,
+                color,
+                effects,
+                xAlign,
+                yAlign,
+                wordWrap);
+        }
 
-            if (wordWrap) text = WordWrap(text, bounds.Width);
-            var offset = Vector2.UnitY * MeasureVerticalOffset(vertAlign, text, bounds.Height);
-            var position = bounds.Location.ToVector2();
+        public void Draw(
+            RendererBatch batch,
+            string text,
+            Vector2 position,
+            Vector2 size,
+            Vector2? origin = null,
+            Vector2? scale = null,
+            float angle = 0f,
+            Color? color = null,
+            SpriteEffects effects = SpriteEffects.None,
+            HorizontalAlignment xAlign = HorizontalAlignment.Left,
+            VerticalAlignment yAlign = VerticalAlignment.Top,
+            bool wordWrap = false)
+        {
+            Draw(
+                batch,
+                text,
+                new Rectangle(
+                    position.ToPoint(),
+                    size.ToPoint()),
+                origin,
+                scale,
+                angle,
+                color,
+                effects,
+                xAlign,
+                yAlign,
+                wordWrap);
+        }
+
+        public void Draw(
+            RendererBatch batch,
+            string text,
+            Rectangle destRect,
+            Vector2? origin = null,
+            Vector2? scale = null,
+            float angle = 0f,
+            Color? color = null,
+            SpriteEffects effects = SpriteEffects.None,
+            HorizontalAlignment xAlign = HorizontalAlignment.Left,
+            VerticalAlignment yAlign = VerticalAlignment.Top,
+            bool wordWrap = false)
+        {
+            if (text.IsNullOrEmpty()) return;
+            if (wordWrap) text = WordWrap(text, destRect.Width);
+
+            var offset = MeasureVerticalOffset(yAlign, text, destRect.Height).ToUnitYF();
+            var position = destRect.Location.ToVector2();
             var lines = text.Split('\n');
 
             for (int i = 0; i < lines.Length; i++)
             {
                 var line = lines[i];
-                offset.X = MeasureHorizontalOffset(horizAlign, line, bounds.Width);
+                offset.X = MeasureHorizontalOffset(xAlign, line, destRect.Width);
 
                 for (int j = 0; j < line.Length; j++)
                 {
@@ -101,44 +159,16 @@ namespace FrogWorks
                             position,
                             charOrigin,
                             scale ?? Vector2.One,
-                            angle, color ?? Color.White,
+                            angle, 
+                            color ?? Color.White,
                             effects);
+                        
                         offset.X += kerning + character.Spacing + Spacing;
                     }
                 }
 
                 offset.Y += DefaultLineHeight + LineHeight;
             }
-        }
-
-        public void Draw(
-            RendererBatch batch,
-            string text,
-            Vector2 position,
-            Vector2 size,
-            HorizontalAlignment horizAlign = HorizontalAlignment.Left,
-            VerticalAlignment vertAlign = VerticalAlignment.Top,
-            bool wordWrap = false,
-            Vector2? origin = null,
-            Vector2? scale = null,
-            float angle = 0f,
-            Color? color = null,
-            SpriteEffects effects = SpriteEffects.None)
-        {
-            Draw(
-                batch,
-                text,
-                new Rectangle(
-                    position.ToPoint(),
-                    size.ToPoint()),
-                horizAlign,
-                vertAlign,
-                wordWrap,
-                origin,
-                scale,
-                angle,
-                color,
-                effects);
         }
 
         public void Configure(int ascii, int offsetX, int offsetY, int spacing)
