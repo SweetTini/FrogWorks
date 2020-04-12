@@ -1213,6 +1213,11 @@ namespace FrogWorks
             return str.Substring(index, length);
         }
 
+        public static string PadWithZeros(this int num, int digits)
+        {
+            return num.ToString().PadLeft(digits, '0');
+        }
+
         public static string ReadNullTerminatedString(this BinaryReader reader)
         {
             var result = string.Empty;
@@ -1232,11 +1237,6 @@ namespace FrogWorks
             var index = str.Length - length - 1;
             index = MathHelper.Clamp(index, 0, str.Length - 1);
             return str.Substring(index, length);
-        }
-
-        public static string PadWithZeros(this int num, int digits)
-        {
-            return num.ToString().PadLeft(digits, '0');
         }
 
         public static string ToHex(this int num)
