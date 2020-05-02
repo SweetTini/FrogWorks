@@ -69,13 +69,37 @@ namespace FrogWorks
         {
             var index = Map[position];
 
-            if (Enum.IsDefined(typeof(T), index))
+            if (typeof(T).IsEnum)
             {
-                var origColor = color;
-                var tile = (T)Enum.ToObject(typeof(T), index);
+                var isFlag = typeof(T).IsDefined(typeof(FlagsAttribute), false);
 
-                if (!Colors.TryGetValue(tile, out color))
-                    color = origColor;
+                if (isFlag)
+                {
+                    var first = true;
+
+                    foreach (var pair in Colors)
+                    {
+                        var tile = (Enum)Enum.ToObject(typeof(T), index);
+                        var tileToFind = (Enum)Enum.ToObject(typeof(T), pair.Key);
+
+                        if (tile.HasFlag(tileToFind))
+                        {
+                            color = !first
+                                ? Color.Lerp(color, pair.Value, .5f)
+                                : pair.Value;
+
+                            first = false;
+                        }
+                    }
+                }
+                else
+                {
+                    var originalColor = color;
+                    var tile = (T)Enum.ToObject(typeof(T), index);
+
+                    if (!Colors.TryGetValue(tile, out color))
+                        color = originalColor;
+                }
             }
 
             base.DrawTileShape(batch, color, position);
