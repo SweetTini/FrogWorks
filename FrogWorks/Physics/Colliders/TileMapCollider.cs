@@ -19,7 +19,7 @@ namespace FrogWorks
                 var max = Layer?.Max ?? Scene?.Camera.Max ?? viewSize;
 
                 min = (min - AbsolutePosition).Divide(tileSize).Floor();
-                max = (max + AbsolutePosition).Divide(tileSize).Ceiling();
+                max = (max - AbsolutePosition).Divide(tileSize).Ceiling();
 
                 return new Rectangle(
                     min.ToPoint(),
