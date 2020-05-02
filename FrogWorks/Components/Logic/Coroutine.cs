@@ -60,7 +60,10 @@ namespace FrogWorks
             }
         }
 
-        public void ForceUpdate(float deltaTime) => Update(deltaTime);
+        public void ForceUpdate(float deltaTime)
+        {
+            Update(deltaTime);
+        }
 
         public void Replace(IEnumerator callback)
         {
@@ -68,6 +71,7 @@ namespace FrogWorks
             IsFinished = false;
             _enumerators.Clear();
             _enumerators.Push(callback ?? WaitForTicks(0));
+            ForceUpdate(Runner.Application.DeltaTime);
         }
 
         public void Cancel()
