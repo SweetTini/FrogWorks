@@ -745,6 +745,11 @@ namespace FrogWorks
             return new Point(divX, divY);
         }
 
+        public static Point Flip(this Point point)
+        {
+            return new Point(point.Y, point.X);
+        }
+
         public static Point KeepX(this Point point)
         {
             return point * new Point(1, 0);
@@ -1021,6 +1026,11 @@ namespace FrogWorks
             var divY = divider > float.Epsilon ? vec.Y / divider : 0f;
 
             return new Vector2(divX, divY);
+        }
+
+        public static Vector2 Flip(this Vector2 vec)
+        {
+            return new Vector2(vec.Y, vec.X);
         }
 
         public static Vector2 Floor(this Vector2 vec)
