@@ -75,6 +75,19 @@ namespace FrogWorks
         {
             return components.Any(c => c is T);
         }
+
+        public static int CountType<T>(this IEnumerable<Component> components)
+            where T : Component
+        {
+            return components.Count(c => c is T);
+        }
+
+        public static void ForEachOfType<T>(
+            this IEnumerable<Component> components, Action<T> action)
+            where T : Component
+        {
+            components.Where(c => c is T).Select(c => c as T).ToList().ForEach(action);
+        }
         #endregion
     }
 }
