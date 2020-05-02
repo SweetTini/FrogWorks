@@ -13,7 +13,7 @@ namespace FrogWorks
 
         protected Matrix TransformMatrix { get; private set; }
 
-        protected Rectangle View { get; private set; }
+        public Rectangle View { get; private set; }
 
         public BlendState BlendState { get; protected set; }
 

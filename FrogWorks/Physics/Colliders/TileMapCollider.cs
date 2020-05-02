@@ -14,9 +14,9 @@ namespace FrogWorks
             get
             {
                 var tileSize = TileSize.ToVector2();
-                var viewSize = Runner.Application.ActualSize.ToVector2();
-                var min = Layer?.Min ?? Scene?.Camera.Min ?? Vector2.Zero;
-                var max = Layer?.Max ?? Scene?.Camera.Max ?? viewSize;
+                var viewSize = Runner.Application.ActualSize;
+                var min = (Layer?.View.Location ?? Scene?.Camera.View.Location ?? Point.Zero).ToVector2();
+                var max = min + (Layer?.View.Size ?? Scene?.Camera.View.Size ?? viewSize).ToVector2();
 
                 min = (min - AbsolutePosition).Divide(tileSize).Floor();
                 max = (max - AbsolutePosition).Divide(tileSize).Ceiling();
