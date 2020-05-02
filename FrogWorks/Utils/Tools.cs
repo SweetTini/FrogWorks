@@ -93,7 +93,13 @@ namespace FrogWorks
         }
         #endregion
 
-        #region Object Swap
+        #region Generics
+        public static bool IsAny<T>(this T left, params T[] items)
+            where T : struct
+        {
+            return items.Contains(left);
+        }
+
         public static void Swap<T>(ref T left, ref T right)
         {
             var temp = left;
