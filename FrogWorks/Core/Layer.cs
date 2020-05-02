@@ -11,7 +11,7 @@ namespace FrogWorks
 
         protected internal RenderTarget2D RenderTarget { get; private set; }
 
-        protected Matrix TransformMatrix { get; private set; }
+        public Matrix TransformMatrix { get; private set; }
 
         public Rectangle View { get; private set; }
 
