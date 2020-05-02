@@ -7,18 +7,15 @@ namespace FrogWorks
     {
         const float _defaultFrameRate = 60f;
         private int[] _frames;
-        private float
-            _timer, 
+        private float _timer, 
             _delayPerFrame, 
             _initialDelayPerFrame;
-        private int 
-            _index, 
+        private int _index, 
             _randomIndex,
             _loops, 
             _maxLoops, 
             _initialMaxLoops;
-        private AnimationPlayMode 
-            _playMode, 
+        private PlayMode _playMode, 
             _initialPlayMode;
 
         public ReadOnlyCollection<int> Frames { get; }
@@ -29,8 +26,8 @@ namespace FrogWorks
             {
                 switch (_playMode)
                 {
-                    case AnimationPlayMode.Yoyo:
-                    case AnimationPlayMode.LoopYoyo:
+                    case PlayMode.Yoyo:
+                    case PlayMode.LoopYoyo:
                         return (_frames.Length - 1) * 2;
                     default:
                         return _frames.Length;
@@ -44,16 +41,16 @@ namespace FrogWorks
             {
                 switch (_playMode)
                 {
-                    case AnimationPlayMode.Reverse:
-                    case AnimationPlayMode.LoopReverse:
+                    case PlayMode.Reverse:
+                    case PlayMode.LoopReverse:
                         return (MaxFrames - 1) - _index;
-                    case AnimationPlayMode.Yoyo:
-                    case AnimationPlayMode.LoopYoyo:
+                    case PlayMode.Yoyo:
+                    case PlayMode.LoopYoyo:
                         var half = MaxFrames / 2;
                         return _index > half
                             ? half - (_index - half)
                             : _index;
-                    case AnimationPlayMode.LoopRandom:
+                    case PlayMode.LoopRandom:
                         return _randomIndex;
                     default:
                         return _index;
@@ -66,11 +63,11 @@ namespace FrogWorks
 
                 switch (_playMode)
                 {
-                    case AnimationPlayMode.Reverse:
-                    case AnimationPlayMode.LoopReverse:
+                    case PlayMode.Reverse:
+                    case PlayMode.LoopReverse:
                         _index = (MaxFrames - 1) - value;
                         break;
-                    case AnimationPlayMode.LoopRandom:
+                    case PlayMode.LoopRandom:
                         _index = value;
                         _randomIndex = _index;
                         break;
@@ -95,7 +92,7 @@ namespace FrogWorks
 
         public float Duration => _delayPerFrame * MaxFrames;
 
-        public AnimationPlayMode PlayMode
+        public PlayMode PlayMode
         {
             get { return _playMode; }
             set
@@ -116,10 +113,10 @@ namespace FrogWorks
         {
             get
             {
-                return _playMode == AnimationPlayMode.Loop
-                    || _playMode == AnimationPlayMode.LoopReverse
-                    || _playMode == AnimationPlayMode.LoopYoyo
-                    || _playMode == AnimationPlayMode.LoopRandom;
+                return _playMode == PlayMode.Loop
+                    || _playMode == PlayMode.LoopReverse
+                    || _playMode == PlayMode.LoopYoyo
+                    || _playMode == PlayMode.LoopRandom;
             }
             set
             {
@@ -127,14 +124,14 @@ namespace FrogWorks
                 {
                     switch (_initialPlayMode)
                     {
-                        case AnimationPlayMode.Normal:
-                            _playMode = AnimationPlayMode.Loop;
+                        case PlayMode.Normal:
+                            _playMode = PlayMode.Loop;
                             break;
-                        case AnimationPlayMode.Reverse:
-                            _playMode = AnimationPlayMode.LoopReverse;
+                        case PlayMode.Reverse:
+                            _playMode = PlayMode.LoopReverse;
                             break;
-                        case AnimationPlayMode.Yoyo:
-                            _playMode = AnimationPlayMode.LoopYoyo;
+                        case PlayMode.Yoyo:
+                            _playMode = PlayMode.LoopYoyo;
                             break;
                     }
                 }
@@ -142,15 +139,15 @@ namespace FrogWorks
                 {
                     switch (_initialPlayMode)
                     {
-                        case AnimationPlayMode.Loop:
-                        case AnimationPlayMode.LoopRandom:
-                            _playMode = AnimationPlayMode.Normal;
+                        case PlayMode.Loop:
+                        case PlayMode.LoopRandom:
+                            _playMode = PlayMode.Normal;
                             break;
-                        case AnimationPlayMode.LoopReverse:
-                            _playMode = AnimationPlayMode.Reverse;
+                        case PlayMode.LoopReverse:
+                            _playMode = PlayMode.Reverse;
                             break;
-                        case AnimationPlayMode.LoopYoyo:
-                            _playMode = AnimationPlayMode.Yoyo;
+                        case PlayMode.LoopYoyo:
+                            _playMode = PlayMode.Yoyo;
                             break;
                     }
                 }
@@ -166,7 +163,7 @@ namespace FrogWorks
         public Animation(
             int[] frames,
             float frameStep,
-            AnimationPlayMode playMode,
+            PlayMode playMode,
             int maxLoops = 0,
             Action onFinished = null,
             Action onLoop = null)
@@ -286,7 +283,7 @@ namespace FrogWorks
         }
     }
 
-    public enum AnimationPlayMode
+    public enum PlayMode
     {
         Normal,
         Reverse,

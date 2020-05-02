@@ -79,7 +79,7 @@ namespace FrogWorks
             TileSet tileSet,
             int[] frames,
             float frameStep,
-            AnimationPlayMode playMode,
+            PlayMode playMode,
             Point location,
             Point size)
         {
@@ -93,7 +93,7 @@ namespace FrogWorks
             TileSet tileSet,
             int[] frames,
             float frameStep,
-            AnimationPlayMode playMode,
+            PlayMode playMode,
             int x,
             int y,
             int columns,

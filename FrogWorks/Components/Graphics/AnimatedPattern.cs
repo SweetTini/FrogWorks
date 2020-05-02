@@ -29,7 +29,7 @@ namespace FrogWorks
             Point size,
             int[] frames,
             float frameStep,
-            AnimationPlayMode playMode,
+            PlayMode playMode,
             int maxLoops = 0)
             : this(
                   textures,
@@ -44,7 +44,7 @@ namespace FrogWorks
             int height,
             int[] frames,
             float frameStep,
-            AnimationPlayMode playMode,
+            PlayMode playMode,
             int maxLoops = 0)
             : this(
                   textures,
@@ -86,7 +86,7 @@ namespace FrogWorks
             Point size,
             int[] frames,
             float frameStep,
-            AnimationPlayMode playMode,
+            PlayMode playMode,
             int maxLoops = 0)
             : this(
                   texture,
@@ -104,7 +104,7 @@ namespace FrogWorks
             int height,
             int[] frames,
             float frameStep,
-            AnimationPlayMode playMode,
+            PlayMode playMode,
             int maxLoops = 0)
             : this(
                   texture,

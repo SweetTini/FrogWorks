@@ -6,72 +6,73 @@ namespace FrogWorks
     public class AtlasSprite<T> : AtlasImage
         where T : struct
     {
-        T _key;
         bool _isPlaying;
 
         protected TextureAtlasTexture[] Textures { get; set; }
 
         protected Dictionary<T, Animation> Animations { get; private set; }
 
-        protected Animation Current
+        protected Animation Animation
         {
             get
             {
                 Animation animation;
-                Animations.TryGetValue(_key, out animation);
+                Animations.TryGetValue(CurrentAnimation, out animation);
                 return animation;
             }
         }
 
-        public int MaxFrames => Current?.MaxFrames ?? 1;
+        public T CurrentAnimation { get; private set; }
+
+        public int MaxFrames => Animation?.MaxFrames ?? 1;
 
         public int FrameIndex
         {
-            get { return Current?.FrameIndex ?? 0; }
+            get { return Animation?.FrameIndex ?? 0; }
             set
             {
-                if (Current != null)
-                    Current.FrameIndex = value;
+                if (Animation != null)
+                    Animation.FrameIndex = value;
             }
         }
 
         public float FrameStep
         {
-            get { return Current?.FrameStep ?? 0f; }
+            get { return Animation?.FrameStep ?? 0f; }
             set
             {
-                if (Current != null)
-                    Current.FrameStep = value;
+                if (Animation != null)
+                    Animation.FrameStep = value;
             }
         }
 
         public float DelayPerFrame
         {
-            get { return Current?.DelayPerFrame ?? 0f; }
+            get { return Animation?.DelayPerFrame ?? 0f; }
             set
             {
-                if (Current != null)
-                    Current.DelayPerFrame = value;
+                if (Animation != null)
+                    Animation.DelayPerFrame = value;
             }
         }
 
         public int MaxLoops
         {
-            get { return Current?.MaxLoops ?? 0; }
+            get { return Animation?.MaxLoops ?? 0; }
             set
             {
-                if (Current != null)
-                    Current.MaxLoops = value;
+                if (Animation != null)
+                    Animation.MaxLoops = value;
             }
         }
 
-        public AnimationPlayMode PlayMode
+        public PlayMode PlayMode
         {
-            get { return Current?.PlayMode ?? AnimationPlayMode.Normal; }
+            get { return Animation?.PlayMode ?? PlayMode.Normal; }
             set
             {
-                if (Current != null)
-                    Current.PlayMode = value;
+                if (Animation != null)
+                    Animation.PlayMode = value;
             }
         }
 
@@ -85,12 +86,12 @@ namespace FrogWorks
         protected override void Update(float deltaTime)
         {
             if (_isPlaying)
-                Current?.Update(deltaTime);
+                Animation?.Update(deltaTime);
         }
 
         protected override void Draw(RendererBatch batch)
         {
-            Texture = Current?.GetFrame(Textures) ?? Textures[0];
+            Texture = Animation?.GetFrame(Textures) ?? Textures[0];
             base.Draw(batch);
         }
 
@@ -98,31 +99,31 @@ namespace FrogWorks
         {
             if (Animations.ContainsKey(key) && (!IsPlaying(key) || restart))
             {
-                _key = key;
-                Current?.ResetChanges();
+                CurrentAnimation = key;
+                Animation?.ResetChanges();
                 _isPlaying = true;
             }
         }
 
         public bool IsPlaying()
         {
-            return Animations.ContainsKey(_key) && _isPlaying;
+            return Animations.ContainsKey(CurrentAnimation) && _isPlaying;
         }
 
         public bool IsPlaying(T key)
         {
-            return Animations.ContainsKey(key) && key.Equals(_key) && _isPlaying;
+            return Animations.ContainsKey(key) && key.Equals(CurrentAnimation) && _isPlaying;
         }
 
         public void Stop()
         {
-            Current?.Reset();
+            Animation?.Reset();
             _isPlaying = false;
         }
 
         public void Resume()
         {
-            if (Animations.ContainsKey(_key) && !_isPlaying)
+            if (Animations.ContainsKey(CurrentAnimation) && !_isPlaying)
                 _isPlaying = true;
         }
 
@@ -146,7 +147,7 @@ namespace FrogWorks
             T key,
             int[] frames,
             float frameStep,
-            AnimationPlayMode playMode,
+            PlayMode playMode,
             int maxLoops = 0,
             Action onFinished = null,
             Action onLoop = null)
@@ -175,7 +176,7 @@ namespace FrogWorks
 
         public void SetFrames(params int[] frames)
         {
-            Current?.SetFrames(frames);
+            Animation?.SetFrames(frames);
         }
 
         public void SetFrames(T key, params int[] frames)
