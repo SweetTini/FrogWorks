@@ -14,7 +14,7 @@ namespace FrogWorks
 
         internal EntityManager Entities { get; private set; }
 
-        internal World World { get; private set; }
+        public World World { get; private set; }
 
         public Camera Camera { get; private set; }
 
@@ -333,96 +333,6 @@ namespace FrogWorks
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
-        }
-        #endregion
-
-        #region Collision
-        protected void DrawBroadphase(RendererBatch batch, Color treeColor, Color leafColor)
-        {
-            World.DrawBroadphase(batch, treeColor, leafColor);
-        }
-
-        public IEnumerable<Entity> Contains(float x, float y)
-        {
-            return Contains(new Vector2(x, y));
-        }
-
-        public IEnumerable<Entity> Contains(Vector2 point)
-        {
-            return World.Contains(point).ToEntityList();
-        }
-
-        public IEnumerable<Entity> Raycast(float x1, float y1, float x2, float y2)
-        {
-            return Raycast(new Vector2(x1, y1), new Vector2(x2, y2));
-        }
-
-        public IEnumerable<Entity> Raycast(
-            float x, float y,
-            float xNormal, float yNormal,
-            float distance)
-        {
-            var start = new Vector2(x, y);
-            var normal = new Vector2(xNormal, yNormal);
-            return Raycast(start, start + normal * distance);
-        }
-
-        public IEnumerable<Entity> Raycast(Vector2 start, Vector2 end)
-        {
-            return World.Raycast(start, end).ToEntityList();
-        }
-
-        public IEnumerable<Entity> Raycast(Vector2 start, Vector2 normal, float distance)
-        {
-            return World.Raycast(start, start + normal * distance).ToEntityList();
-        }
-
-        public IEnumerable<EntityHitPair<Raycast>> RaycastEx(
-            float x1, float y1, float x2, float y2)
-        {
-            return RaycastEx(new Vector2(x1, y1), new Vector2(x2, y2));
-        }
-
-        public IEnumerable<EntityHitPair<Raycast>> RaycastEx(
-            float x, float y,
-            float xNormal, float yNormal,
-            float distance)
-        {
-            var start = new Vector2(x, y);
-            var normal = new Vector2(xNormal, yNormal);
-            return RaycastEx(start, start + normal * distance);
-        }
-
-        public IEnumerable<EntityHitPair<Raycast>> RaycastEx(
-            Vector2 start, Vector2 end)
-        {
-            return World.RaycastEx(start, end).ToEntityList();
-        }
-
-        public IEnumerable<EntityHitPair<Raycast>> RaycastEx(
-            Vector2 start, Vector2 normal, float distance)
-        {
-            return World.RaycastEx(start, start + normal * distance).ToEntityList();
-        }
-
-        public IEnumerable<Entity> Overlaps(Shape shape)
-        {
-            return World.Overlaps(shape).ToEntityList();
-        }
-
-        public IEnumerable<Entity> Overlaps(Entity entity)
-        {
-            return World.Overlaps(entity).ToEntityList();
-        }
-
-        public IEnumerable<EntityHitPair<CollisionResult>> OverlapsEx(Shape shape)
-        {
-            return World.OverlapsEx(shape).ToEntityList();
-        }
-
-        public IEnumerable<EntityHitPair<CollisionResult>> OverlapsEx(Entity entity)
-        {
-            return World.OverlapsEx(entity).ToEntityList();
         }
         #endregion
 

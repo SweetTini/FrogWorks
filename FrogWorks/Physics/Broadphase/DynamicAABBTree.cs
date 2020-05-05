@@ -16,7 +16,7 @@ namespace FrogWorks
             _padding = padding.Abs();
         }
 
-        public IEnumerable<Collider> Query(AABB aabb, Func<Collider, bool> onCollide)
+        public IEnumerable<Collider> Query(AABB aabb, Func<Collider, bool> collides = null)
         {
             var colliders = new List<Collider>();
             var nodes = new Stack<Node>();
@@ -33,7 +33,7 @@ namespace FrogWorks
                     {
                         var collider = node.Collider;
 
-                        if (collider != null && onCollide(collider))
+                        if (collider != null && (collides == null || collides(collider)))
                             colliders.Add(collider);
                     }
                     else

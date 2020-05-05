@@ -29,132 +29,226 @@ namespace FrogWorks
             _broadphaseTree.Remove(collider);
         }
 
-        internal void DrawBroadphase(RendererBatch batch, Color treeColor, Color leafColor)
-        {
-            _broadphaseTree.Draw(batch, treeColor, leafColor);
-        }
-
         internal void Reset()
         {
             _broadphaseTree.Clear();
         }
 
-        #region Queries
+        public void Draw(RendererBatch batch, Color treeColor, Color leafColor)
+        {
+            _broadphaseTree.Draw(batch, treeColor, leafColor);
+        }
+
+        #region Broadphase Queries
+        public IEnumerable<Collider> Query(Vector2 point)
+        {
+            return _broadphaseTree.Query(new AABB(point, point + Vector2.UnitX));
+        }
+
+        public IEnumerable<Collider> Query(Vector2 start, Vector2 end)
+        {
+            var min = Vector2.Min(start, end);
+            var max = Vector2.Max(start, end);
+
+            return _broadphaseTree.Query(new AABB(min, max));
+        }
+
+        public IEnumerable<Collider> Query(Vector2 origin, Vector2 normal, float distance)
+        {
+            return Query(origin, origin + normal * distance);
+        }
+
+        public IEnumerable<Collider> Query(Shape shape)
+        {
+            if (shape != null)
+            {
+                var min = shape.Bounds.Location.ToVector2();
+                var max = min + shape.Bounds.Size.ToVector2();
+
+                return _broadphaseTree.Query(new AABB(min, max));
+            }
+
+            return new List<Collider>();
+        }
+
+        public IEnumerable<Collider> Query(Shape shape, Vector2 offset)
+        {
+            if (shape != null)
+            {
+                var lastPosition = shape.Position;
+                var bounds = shape.Bounds;
+                shape.Position += offset;
+                var nextBounds = shape.Bounds;
+                shape.Position = lastPosition;
+
+                var union = bounds.Union(nextBounds);
+                var min = union.Location.ToVector2();
+                var max = min + union.Size.ToVector2();
+
+                return _broadphaseTree.Query(new AABB(min, max));
+            }
+
+            return new List<Collider>();
+        }
+
+        public IEnumerable<Collider> Query(Collider collider)
+        {
+            return collider != null
+                ? _broadphaseTree.Query(new AABB(collider.Min, collider.Max))
+                : new List<Collider>();
+        }
+
+        public IEnumerable<Collider> Query(Collider collider, Vector2 offset)
+        {
+            if (collider != null)
+            {
+                var lastPosition = collider.AbsolutePosition;
+                var bounds = collider.Bounds;
+                collider.AbsolutePosition += offset;
+                var nextBounds = collider.Bounds;
+                collider.AbsolutePosition = lastPosition;
+
+                var union = bounds.Union(nextBounds);
+                var min = union.Location.ToVector2();
+                var max = min + union.Size.ToVector2();
+
+                return _broadphaseTree.Query(new AABB(min, max));
+            }
+
+            return new List<Collider>();
+        }
+
+        public IEnumerable<Collider> Query(Entity entity)
+        {
+            return Query(entity?.Collider);
+        }
+
+        public IEnumerable<Collider> Query(Entity entity, Vector2 offset)
+        {
+            return Query(entity?.Collider, offset);
+        }
+        #endregion
+
+        #region Narrowphase Queries
         public IEnumerable<Collider> Contains(Vector2 point)
         {
-            var aabb = new AABB(point, point + Vector2.One);
-            Func<Collider, bool> onCollide = c => c.Contains(point);
-            return _broadphaseTree.Query(aabb, onCollide);
+            return _broadphaseTree.Query(
+                new AABB(point, point + Vector2.One),
+                c => c.Contains(point));
         }
 
         public IEnumerable<Collider> Raycast(Vector2 start, Vector2 end)
         {
             var min = Vector2.Min(start, end);
             var max = Vector2.Max(start, end);
-            var aabb = new AABB(min, max);
 
-            Func<Collider, bool> onCollide = c => c.Raycast(start, end, out _);
-
-            return _broadphaseTree.Query(aabb, onCollide);
+            return _broadphaseTree.Query(
+                new AABB(min, max),
+                c => c.Raycast(start, end, out _));
         }
 
-        public IEnumerable<Raycast> RaycastEx(Vector2 start, Vector2 end)
+        public IEnumerable<Collider> Raycast(Vector2 origin, Vector2 normal, float distance)
         {
-            var results = new List<Raycast>();
-            var min = Vector2.Min(start, end);
-            var max = Vector2.Max(start, end);
-            var aabb = new AABB(min, max);
-
-            Func<Collider, bool> onCollide = c =>
-            {
-                Raycast hit;
-
-                if (c.Raycast(start, end, out hit))
-                {
-                    hit.Collider = c;
-                    results.Add(hit);
-                    return true;
-                }
-
-                return false;
-            };
-
-            _broadphaseTree.Query(aabb, onCollide);
-
-            return results;
+            return Raycast(origin, origin + normal * distance);
         }
 
         public IEnumerable<Collider> Overlaps(Shape shape)
         {
-            var min = shape.Bounds.Location.ToVector2();
-            var max = min + shape.Bounds.Size.ToVector2();
-            var aabb = new AABB(min, max);
+            if (shape != null)
+            {
+                var min = shape.Bounds.Location.ToVector2();
+                var max = min + shape.Bounds.Size.ToVector2();
 
-            Func<Collider, bool> onCollide = c => c.Overlaps(shape);
+                return _broadphaseTree.Query(
+                    new AABB(min, max),
+                    c => c.Overlaps(shape));
+            }
 
-            return _broadphaseTree.Query(aabb, onCollide);
+            return new List<Collider>();
+        }
+
+        public IEnumerable<Collider> Overlaps(Collider collider)
+        {
+            return collider != null
+                ? _broadphaseTree.Query(
+                    new AABB(collider.Min, collider.Max),
+                    c => c.Overlaps(collider))
+                : new List<Collider>();
         }
 
         public IEnumerable<Collider> Overlaps(Entity entity)
         {
-            var aabb = new AABB(entity.Min, entity.Max);
-            Func<Collider, bool> onCollide = c => c.Overlaps(entity);
-            return _broadphaseTree.Query(aabb, onCollide);
+            return Overlaps(entity?.Collider);
         }
 
-        public IEnumerable<CollisionResult> OverlapsEx(Shape shape)
+        public IEnumerable<Raycast> RaycastWithHits(Vector2 start, Vector2 end)
         {
-            var results = new List<CollisionResult>();
-            var min = shape.Bounds.Location.ToVector2();
-            var max = min + shape.Bounds.Size.ToVector2();
-            var aabb = new AABB(min, max);
+            var hits = new List<Raycast>();
+            var min = Vector2.Min(start, end);
+            var max = Vector2.Max(start, end);
 
-            Func<Collider, bool> onCollide = c =>
+            _broadphaseTree.Query(new AABB(min, max), c =>
             {
-                CollisionResult result;
+                var gotHit = c.Raycast(start, end, out var hit);
+                if (gotHit) hits.Add(hit);
+                return gotHit;
+            });
 
-                if (c.Overlaps(shape, out result))
-                {
-                    results.Add(result);
-                    return true;
-                }
-
-                return false;
-            };
-
-            _broadphaseTree.Query(aabb, onCollide);
-
-            return results;
+            return hits;
         }
 
-        public IEnumerable<CollisionResult> OverlapsEx(Entity entity)
+        public IEnumerable<Raycast> RaycastWithHits(Vector2 origin, Vector2 normal, float distance)
         {
-            var results = new List<CollisionResult>();
-            var aabb = new AABB(entity.Min, entity.Max);
+            return RaycastWithHits(origin, origin + normal * distance);
+        }
 
-            Func<Collider, bool> onCollide = c =>
+        public IEnumerable<CollisionResult> OverlapWithHits(Shape shape)
+        {
+            var hits = new List<CollisionResult>();
+
+            if (shape != null)
             {
-                CollisionResult result;
+                var min = shape.Bounds.Location.ToVector2();
+                var max = min + shape.Bounds.Size.ToVector2();
 
-                if (c.Overlaps(entity, out result))
+                _broadphaseTree.Query(new AABB(min, max), c =>
                 {
-                    results.Add(result);
-                    return true;
-                }
+                    var gotHit = c.Overlaps(shape, out var hit);
+                    if (gotHit) hits.Add(hit);
+                    return gotHit;
+                });
+            }
 
-                return false;
-            };
+            return hits;
+        }
 
-            _broadphaseTree.Query(aabb, onCollide);
+        public IEnumerable<CollisionResult> OverlapWithHits(Collider collider)
+        {
+            var hits = new List<CollisionResult>();
 
-            return results;
+            if (collider != null)
+            {
+                _broadphaseTree.Query(new AABB(collider.Min, collider.Max), c =>
+                {
+                    var gotHit = c.Overlaps(collider, out var hit);
+                    if (gotHit) hits.Add(hit);
+                    return gotHit;
+                });
+            }
+
+            return hits;
+        }
+
+        public IEnumerable<CollisionResult> OverlapWithHits(Entity entity)
+        {
+            return OverlapWithHits(entity?.Collider);
         }
         #endregion
     }
 
     public static class WorldEX
     {
-        internal static IEnumerable<Entity> ToEntityList(
+        public static IEnumerable<Entity> ToEntityList(
             this IEnumerable<Collider> colliders)
         {
             return colliders
@@ -164,7 +258,7 @@ namespace FrogWorks
                 .ToList();
         }
 
-        internal static IEnumerable<EntityHitPair<Raycast>> ToEntityList(
+        public static IEnumerable<EntityHitPair<Raycast>> ToEntityList(
             this IEnumerable<Raycast> hits)
         {
             return hits
@@ -175,7 +269,7 @@ namespace FrogWorks
                 .ToList();
         }
 
-        internal static IEnumerable<EntityHitPair<CollisionResult>> ToEntityList(
+        public static IEnumerable<EntityHitPair<CollisionResult>> ToEntityList(
             this IEnumerable<CollisionResult> results)
         {
             return results
