@@ -5,15 +5,35 @@ namespace FrogWorks
 {
     public class Layer : Manageable<Scene>
     {
+        Matrix _transformMatrix;
+        Rectangle _transformView;
+        Vector2 _coefficient = Vector2.One;
+        float _zoom = 1f, _angle;
+        bool _isDirty = true;
+
         protected internal Scene Scene => Parent;
 
         protected GraphicsDevice GraphicsDevice { get; private set; }
 
         protected internal RenderTarget2D RenderTarget { get; private set; }
 
-        public Matrix TransformMatrix { get; private set; }
+        public Matrix Matrix
+        {
+            get
+            {
+                UpdateMatrixAndView();
+                return _transformMatrix;
+            }
+        }
 
-        public Rectangle View { get; private set; }
+        public Rectangle View
+        {
+            get
+            {
+                UpdateMatrixAndView();
+                return _transformView;
+            }
+        }
 
         public BlendState BlendState { get; protected set; }
 
@@ -23,35 +43,27 @@ namespace FrogWorks
 
         public Color Color { get; set; } = Color.White;
 
-        public Vector2 Min
-        {
-            get
-            {
-                return Vector2.Transform(
-                    Vector2.Zero,
-                    Matrix.Invert(TransformMatrix));
-            }
-        }
+        public Vector2 Min => Vector2.Transform(Vector2.Zero, Matrix.Invert(Matrix));
 
         public float Left => Min.X;
 
         public float Top => Min.Y;
 
-        public Vector2 Max
-        {
-            get
-            {
-                return Vector2.Transform(
-                    View.Size.ToVector2(),
-                    Matrix.Invert(TransformMatrix));
-            }
-        }
+        public Vector2 Max => Vector2.Transform(View.Size.ToVector2(), Matrix.Invert(Matrix));
 
         public float Right => Max.X;
 
         public float Bottom => Max.Y;
 
-        public Vector2 Coefficient { get; set; } = Vector2.One;
+        public Vector2 Coefficient
+        {
+            get { return _coefficient; }
+            set
+            {
+                _isDirty = _isDirty || _coefficient != value;
+                _coefficient = value;
+            }
+        }
 
         public float XCoefficient
         {
@@ -65,9 +77,26 @@ namespace FrogWorks
             set { Coefficient = new Vector2(Coefficient.X, value); }
         }
 
-        public float Zoom { get; set; } = 1f;
+        public float Zoom
+        {
+            get { return _zoom; }
+            set
+            {
+                value = value.Clamp(.1f, 5f);
+                _isDirty = _isDirty || _zoom != value;
+                _zoom = value;
+            }
+        }
 
-        public float Angle { get; set; }
+        public float Angle
+        {
+            get { return _angle; }
+            set
+            {
+                _isDirty = _isDirty || _angle != value;
+                _angle = value;
+            }
+        }
 
         public float AngleInDegrees
         {
@@ -84,7 +113,6 @@ namespace FrogWorks
 
         protected sealed override void Update(float deltaTime)
         {
-            UpdateTransformMatrixAndView();
         }
 
         protected sealed override void Draw(RendererBatch batch)
@@ -92,7 +120,7 @@ namespace FrogWorks
             if (Scene?.Entities == null) return;
 
             Scene.Entities.State = ManagerState.ThrowError;
-            batch.Configure(BlendState, DepthStencilState, Effect, TransformMatrix);
+            batch.Configure(BlendState, DepthStencilState, Effect, Matrix);
             batch.Begin();
 
             foreach (var entity in Scene.Entities.OnLayer(this))
@@ -105,12 +133,14 @@ namespace FrogWorks
 
         protected override void OnAdded()
         {
+            Scene.Camera.OnTranslated += MarkAsDirty;
             ResetRenderTarget();
         }
 
         protected override void OnRemoved()
         {
             ResetRenderTarget(true);
+            Scene.Camera.OnTranslated -= MarkAsDirty;
         }
 
         protected void ResetRenderTarget(bool dispose = false)
@@ -127,7 +157,7 @@ namespace FrogWorks
                     SurfaceFormat.Color,
                     DepthFormat.Depth24Stencil8);
 
-                UpdateTransformMatrixAndView();
+                UpdateMatrixAndView(true);
             }
         }
 
@@ -143,21 +173,38 @@ namespace FrogWorks
 
         public Vector2 ViewToWorld(Vector2 position)
         {
-            return Vector2.Transform(position, Matrix.Invert(TransformMatrix));
+            return Vector2.Transform(position, Matrix.Invert(Matrix));
         }
 
         public Vector2 WorldToView(Vector2 position)
         {
-            return Vector2.Transform(position, TransformMatrix);
+            return Vector2.Transform(position, Matrix);
         }
 
-        void UpdateTransformMatrixAndView()
+        void UpdateMatrixAndView(bool forceUpdate = false)
         {
-            TransformMatrix = Scene?.Camera?.UpdateTransformMatrix(
-                Coefficient, Zoom, Angle) ?? Matrix.Identity;
-            
-            View = Scene?.Camera?.UpdateView(Coefficient, Zoom, Angle)
-                ?? new Rectangle(Point.Zero, Runner.Application.ActualSize);
+            if (_isDirty || forceUpdate)
+            {
+                var camera = Scene?.Camera;
+
+                if (camera != null)
+                {
+                    _transformMatrix = camera.UpdateMatrix(Coefficient, Zoom, Angle);
+                    _transformView = camera.UpdateView(Coefficient, Zoom, Angle);
+                }
+                else
+                {
+                    _transformMatrix = Matrix.Identity;
+                    _transformView = new Rectangle(Point.Zero, Runner.Application.ActualSize);
+                }
+
+                _isDirty = false;
+            }
+        }
+
+        void MarkAsDirty()
+        {
+            _isDirty = true;
         }
 
         #region Ordering

@@ -62,7 +62,7 @@ namespace FrogWorks
             };
             Effect = null;
 
-            batch.Configure(BlendState, DepthStencilState, Effect, TransformMatrix);
+            batch.Configure(BlendState, DepthStencilState, Effect, Matrix);
             batch.Begin();
             batch.DrawPrimitives(primitive =>
             {

@@ -103,9 +103,6 @@ namespace FrogWorks
                 Entities.Update(deltaTime);
                 TimeActive += deltaTime;
                 AfterUpdate(deltaTime);
-
-                Camera.Update();
-                Layers.Update(deltaTime);
             }
         }
 
@@ -128,7 +125,7 @@ namespace FrogWorks
             BeforeDraw(batch);
 
             Entities.State = ManagerState.ThrowError;
-            batch.Configure(transformMatrix: Camera.TransformMatrix);
+            batch.Configure(transformMatrix: Camera.Matrix);
             batch.Begin();
 
             foreach (var entity in Entities.OnLayer(null))

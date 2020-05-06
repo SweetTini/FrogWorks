@@ -45,7 +45,7 @@ namespace FrogWorks.Demo.Scenes
             var offset = display - Vector2.One * 17f;
             var size = Vector2.One * 16f;
 
-            batch.Configure(transformMatrix: Camera.TransformMatrix);
+            batch.Configure(transformMatrix: Camera.Matrix);
             batch.Begin();
             batch.DrawPrimitives(b =>
             {
