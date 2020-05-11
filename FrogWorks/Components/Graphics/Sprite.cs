@@ -98,12 +98,17 @@ namespace FrogWorks
 
         public bool IsPlaying()
         {
-            return Animations.ContainsKey(CurrentAnimation) && _isPlaying;
+            return Animations.ContainsKey(CurrentAnimation) 
+                && _isPlaying
+                && Animation.IsPlaying;
         }
 
         public bool IsPlaying(T key)
         {
-            return Animations.ContainsKey(key) && key.Equals(CurrentAnimation) && _isPlaying;
+            return Animations.ContainsKey(key) 
+                && key.Equals(CurrentAnimation) 
+                && _isPlaying
+                && Animation.IsPlaying;
         }
 
         public void Stop()

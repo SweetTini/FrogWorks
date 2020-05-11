@@ -43,7 +43,7 @@ namespace FrogWorks
                 {
                     case PlayMode.Reverse:
                     case PlayMode.LoopReverse:
-                        return (MaxFrames - 1) - _index;
+                        return MaxFrames - _index - 1;
                     case PlayMode.Yoyo:
                     case PlayMode.LoopYoyo:
                         var half = MaxFrames / 2;
@@ -154,7 +154,15 @@ namespace FrogWorks
             }
         }
 
-        public bool IsPlaying => _maxLoops < 1 || _loops < _maxLoops - 1;
+        public bool IsPlaying
+        {
+            get
+            {
+                return Loop
+                    || (_maxLoops < 1 && _loops < 1)
+                    || _loops < _maxLoops - 1;
+            }
+        }
 
         public Action OnFinished { get; set; }
 
@@ -233,7 +241,7 @@ namespace FrogWorks
         public Texture GetFrame(Texture[] textures)
         {
             if (textures == null)
-                return default(Texture);
+                return default;
 
             var index = _frames[FrameIndex].Mod(textures.Length);
             return textures[index];
@@ -242,7 +250,7 @@ namespace FrogWorks
         public TextureAtlasTexture GetFrame(TextureAtlasTexture[] textures)
         {
             if (textures == null)
-                return default(TextureAtlasTexture);
+                return default;
 
             var index = _frames[FrameIndex].Mod(textures.Length);
             return textures[index];
