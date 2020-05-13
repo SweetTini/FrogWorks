@@ -47,6 +47,8 @@ namespace FrogWorks
 
         public bool IsCollidable { get; set; } = true;
 
+        public bool IsDestroyed { get; set; }
+
         public int Priority
         {
             get { return _priority; }
@@ -174,6 +176,8 @@ namespace FrogWorks
 
         protected override void OnAdded()
         {
+            IsDestroyed = false;
+            
             Collider?.OnEntityAddedInternally();
 
             foreach (var component in Components)
@@ -247,7 +251,11 @@ namespace FrogWorks
 
         public sealed override void Destroy()
         {
-            Parent?.Entities.Remove(this);
+            if (Parent != null)
+            {
+                Parent.Entities.Remove(this);
+                IsDestroyed = true;
+            }
         }
 
         #region Components
