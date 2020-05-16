@@ -61,8 +61,32 @@ namespace FrogWorks
 
         public override bool Contains(Vector2 point)
         {
-            return Min.X <= point.X && point.X < Max.X
-                && Min.Y <= point.Y && point.Y < Max.Y;
+            return Min.X <= point.X && point.X <= Max.X
+                && Min.Y <= point.Y && point.Y <= Max.Y;
+        }
+
+        public override Vector2 GetClosestPoint(Vector2 point)
+        {
+            var vertices = GetVertices();
+            var minDistSq = float.PositiveInfinity;
+            var closest = Vector2.Zero;
+
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                var p1 = vertices[i];
+                var p2 = vertices[(i + 1).Mod(vertices.Length)];
+
+                var next = PlotEX.GetClosestPointOnLine(p1, p2, point);
+                var distSq = (point - next).LengthSquared();
+
+                if (minDistSq > distSq)
+                {
+                    minDistSq = distSq;
+                    closest = next;
+                }
+            }
+
+            return closest;
         }
 
         public override void Draw(
@@ -91,7 +115,7 @@ namespace FrogWorks
             {
                 Position,
                 Position + Size * Vector2.UnitX,
-                Position + Size,
+                Position + Size * Vector2.One,
                 Position + Size * Vector2.UnitY
             };
         }

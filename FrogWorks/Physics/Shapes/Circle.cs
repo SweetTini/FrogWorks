@@ -50,6 +50,11 @@ namespace FrogWorks
             return (point - Center).LengthSquared() < Radius * Radius;
         }
 
+        public override Vector2 GetClosestPoint(Vector2 point)
+        {
+            return Center + Vector2.Normalize(point - Center) * Radius;
+        }
+
         public override void Draw(
             RendererBatch batch,
             Color strokeColor,

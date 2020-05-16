@@ -1746,77 +1746,6 @@ namespace FrogWorks
             return new Rectangle(min, max - min);
         }
 
-        public static Vector2[] ToConvexHull(this Vector2[] verts, int segments = 8)
-        {
-            if (verts.Length < 3)
-                return verts;
-
-            segments = Math.Min(verts.Length, segments);
-
-            var farIndex = 0;
-            var farX = verts[0].X;
-
-            for (int i = 1; i < segments; i++)
-            {
-                if (farX < verts[i].X)
-                {
-                    farIndex = i;
-                    farX = verts[i].X;
-                }
-                else if (farX == verts[i].X
-                    && verts[farIndex].Y > verts[i].Y)
-                {
-                    farIndex = i;
-                }
-            }
-
-            var hull = new int[segments];
-            var index = farIndex;
-            var outCount = 0;
-
-            while (true)
-            {
-                hull[outCount] = index;
-                var nextIndex = 0;
-
-                for (int i = 1; i < segments; i++)
-                {
-                    if (nextIndex == index)
-                    {
-                        nextIndex = i;
-                        continue;
-                    }
-
-                    var hullIndex = hull[outCount];
-                    var edgeA = verts[nextIndex] - verts[hullIndex];
-                    var edgeB = verts[i] - verts[hullIndex];
-                    var det = edgeA.Cross(edgeB);
-
-                    var dotProdA = Vector2.Dot(edgeA, edgeA);
-                    var dotProdB = Vector2.Dot(edgeB, edgeB);
-
-                    if (det < 0 || det == 0 && dotProdB > dotProdA)
-                        nextIndex = i;
-                }
-
-                outCount++;
-                index = nextIndex;
-
-                if (nextIndex == farIndex)
-                    break;
-            }
-
-            var result = new Vector2[segments];
-
-            for (int i = 0; i < outCount; i++)
-            {
-                var hullIndex = hull[i];
-                result[i] = verts[hullIndex];
-            }
-
-            return result;
-        }
-
         public static Vector2[] ToOrigin(this Vector2[] verts)
         {
             return verts.Transform(-verts.Min());
@@ -1918,6 +1847,87 @@ namespace FrogWorks
             var max = MathEX.Max(rect.Location + rect.Size, other.Location + other.Size);
 
             return new Rectangle(min, max - min);
+        }
+        #endregion
+
+        #region Shapes
+        public static Vector2 GetClosestPointOnLine(Vector2 start, Vector2 end, Vector2 point)
+        {
+            var v = end - start;
+            var w = point - start;
+            var t = (Vector2.Dot(w, v) / Vector2.Dot(v, v)).Clamp(0, 1);
+            return start + v * t;
+        }
+
+        public static Vector2[] ToConvexHull(this Vector2[] verts, int segments = 8)
+        {
+            if (verts.Length < 3)
+                return verts;
+
+            segments = Math.Min(verts.Length, segments);
+
+            var farIndex = 0;
+            var farX = verts[0].X;
+
+            for (int i = 1; i < segments; i++)
+            {
+                if (farX < verts[i].X)
+                {
+                    farIndex = i;
+                    farX = verts[i].X;
+                }
+                else if (farX == verts[i].X
+                    && verts[farIndex].Y > verts[i].Y)
+                {
+                    farIndex = i;
+                }
+            }
+
+            var hull = new int[segments];
+            var index = farIndex;
+            var outCount = 0;
+
+            while (true)
+            {
+                hull[outCount] = index;
+                var nextIndex = 0;
+
+                for (int i = 1; i < segments; i++)
+                {
+                    if (nextIndex == index)
+                    {
+                        nextIndex = i;
+                        continue;
+                    }
+
+                    var hullIndex = hull[outCount];
+                    var edgeA = verts[nextIndex] - verts[hullIndex];
+                    var edgeB = verts[i] - verts[hullIndex];
+                    var det = edgeA.Cross(edgeB);
+
+                    var dotProdA = Vector2.Dot(edgeA, edgeA);
+                    var dotProdB = Vector2.Dot(edgeB, edgeB);
+
+                    if (det < 0 || det == 0 && dotProdB > dotProdA)
+                        nextIndex = i;
+                }
+
+                outCount++;
+                index = nextIndex;
+
+                if (nextIndex == farIndex)
+                    break;
+            }
+
+            var result = new Vector2[segments];
+
+            for (int i = 0; i < outCount; i++)
+            {
+                var hullIndex = hull[i];
+                result[i] = verts[hullIndex];
+            }
+
+            return result;
         }
         #endregion
     }

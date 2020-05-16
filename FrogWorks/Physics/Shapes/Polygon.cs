@@ -118,6 +118,29 @@ namespace FrogWorks
             return inPoly;
         }
 
+        public override Vector2 GetClosestPoint(Vector2 point)
+        {
+            var minDistSq = float.PositiveInfinity;
+            var closest = Vector2.Zero;
+
+            for (int i = 0; i < Count; i++)
+            {
+                var p1 = this[i];
+                var p2 = this[(i + 1).Mod(Count)];
+
+                var next = PlotEX.GetClosestPointOnLine(p1, p2, point);
+                var distSq = (point - next).LengthSquared();
+
+                if (minDistSq > distSq)
+                {
+                    minDistSq = distSq;
+                    closest = next;
+                }
+            }
+
+            return closest;
+        }
+
         public override void Draw(
             RendererBatch batch,
             Color strokeColor,

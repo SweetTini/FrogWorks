@@ -153,7 +153,7 @@ namespace FrogWorks
                     var dist = Shape.GetIntervalDepth(minA, maxA, minB, maxB);
                     if (dist == 0) return false;
 
-                    if (Shape.IntervalsContained(minA, maxA, minB, maxB))
+                    if (Shape.ContainsIntervals(minA, maxA, minB, maxB))
                     {
                         var min = (minA - minB).Abs();
                         var max = (maxA - maxB).Abs();

@@ -79,6 +79,8 @@ namespace FrogWorks
 
         public abstract bool Contains(Vector2 point);
 
+        public abstract Vector2 GetClosestPoint(Vector2 point);
+
         public bool Raycast(float x1, float y1, float x2, float y2, out Raycast hit)
         {
             return Raycast(new Vector2(x1, y1), new Vector2(x2, y2), out hit);
@@ -153,7 +155,7 @@ namespace FrogWorks
             {
                 var foci = focis[i];
                 var offset = normals.Length + i;
-                var closest = GetClosestPoint(foci);
+                var closest = GetClosestPointOnVertices(foci);
 
                 axes[offset] = Vector2.Normalize(foci - closest);
             }
@@ -178,7 +180,7 @@ namespace FrogWorks
             }
         }
 
-        Vector2 GetClosestPoint(Vector2 point)
+        Vector2 GetClosestPointOnVertices(Vector2 point)
         {
             var vertices = GetVertices();
             var minDistSq = float.PositiveInfinity;
@@ -216,7 +218,7 @@ namespace FrogWorks
             return 0f;
         }
 
-        internal static bool IntervalsContained(
+        internal static bool ContainsIntervals(
             float minA,
             float maxA,
             float minB,
