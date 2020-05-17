@@ -325,6 +325,11 @@ namespace FrogWorks
         {
             Layer = Scene?.Layers[index];
         }
+
+        public int GetLayerIndex()
+        {
+            return Scene?.Layers.IndexOf(Layer) ?? -1;
+        }
         #endregion
     }
 }
