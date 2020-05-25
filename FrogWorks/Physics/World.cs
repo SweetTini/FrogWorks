@@ -94,7 +94,8 @@ namespace FrogWorks
         public IEnumerable<Collider> Query(Collider collider)
         {
             return collider != null
-                ? _broadphaseTree.Query(new AABB(collider.Min, collider.Max)).Where(c => !c.Equals(collider))
+                ? _broadphaseTree.Query(new AABB(collider.Min, collider.Max))
+                    .Where(c => !c.Equals(collider) && !c.Entity.Equals(collider.Entity))
                 : new List<Collider>();
         }
 
@@ -112,7 +113,8 @@ namespace FrogWorks
                 var min = union.Location.ToVector2();
                 var max = min + union.Size.ToVector2();
 
-                return _broadphaseTree.Query(new AABB(min, max)).Where(c => !c.Equals(collider));
+                return _broadphaseTree.Query(new AABB(min, max))
+                    .Where(c => !c.Equals(collider) && !c.Entity.Equals(collider.Entity));
             }
 
             return new List<Collider>();
