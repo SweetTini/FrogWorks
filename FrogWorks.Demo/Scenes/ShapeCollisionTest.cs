@@ -176,6 +176,8 @@ namespace FrogWorks.Demo.Scenes
                     {
                         foreach (var result in _raycasts)
                         {
+                            var projection = result.Contact + result.Normal * result.Depth;
+                            p.DrawLine(result.Contact, projection, Color.Lime);
                             p.DrawDot(result.Contact, Color.Yellow);
                             p.DrawCircle(result.Contact, 3f, Color.Yellow);
                         }

@@ -2,7 +2,7 @@
 
 namespace FrogWorks
 {
-    public class Collision
+    public static class Collision
     {
         #region Raycasting
         public static bool CastRay(
@@ -14,9 +14,12 @@ namespace FrogWorks
         {
             hit = default;
 
-            if (shape is Box) return CastRay(origin, normal, distance, shape as Box, out hit);
-            if (shape is Circle) return CastRay(origin, normal, distance, shape as Circle, out hit);
-            if (shape is Polygon) return CastRay(origin, normal, distance, shape as Polygon, out hit);
+            if (shape is Box) 
+                return CastRay(origin, normal, distance, shape as Box, out hit);
+            else if (shape is Circle) 
+                return CastRay(origin, normal, distance, shape as Circle, out hit);
+            else if (shape is Polygon) 
+                return CastRay(origin, normal, distance, shape as Polygon, out hit);
 
             return false;
         }
@@ -29,7 +32,7 @@ namespace FrogWorks
             out Raycast hit)
         {
             hit = default;
-
+            
             var inv = normal.Inverse();
             var dA = (box.Min - origin) * inv;
             var dB = (box.Max - origin) * inv;
@@ -41,7 +44,7 @@ namespace FrogWorks
             if (hi >= 0f && hi >= lo && lo <= distance)
             {
                 var contact = origin + normal * lo;
-                var center = contact - (box.Max * .5f);
+                var center = contact - box.Center;
                 var unit = center.Abs().X > center.Abs().Y ? Vector2.UnitX : Vector2.UnitY;
 
                 hit.Contact = contact;
@@ -147,23 +150,25 @@ namespace FrogWorks
         {
             if (shapeA is Box)
             {
-                if (shapeB is Box) return Overlaps(shapeA as Box, shapeB as Box);
-                if (shapeB is Circle) return Overlaps(shapeA as Box, shapeB as Circle);
-                if (shapeB is Polygon) return Overlaps(shapeA as Box, shapeB as Polygon);
+                if (shapeB is Box)
+                    return Overlaps(shapeA as Box, shapeB as Box);
+                else if (shapeB is Circle)
+                    return Overlaps(shapeA as Box, shapeB as Circle);
+                else if (shapeB is Polygon)
+                    return Overlaps(shapeA as Box, shapeB as Polygon);
             }
-
-            if (shapeA is Circle)
+            else if (shapeA is Circle)
             {
-                if (shapeB is Box) return Overlaps(shapeA as Circle, shapeB as Box);
-                if (shapeB is Circle) return Overlaps(shapeA as Circle, shapeB as Circle);
-                if (shapeB is Polygon) return Overlaps(shapeA as Circle, shapeB as Polygon);
+                if (shapeB is Box)
+                    return Overlaps(shapeA as Circle, shapeB as Box);
+                else if (shapeB is Circle)
+                    return Overlaps(shapeA as Circle, shapeB as Circle);
+                else if (shapeB is Polygon)
+                    return Overlaps(shapeA as Circle, shapeB as Polygon);
             }
-
-            if (shapeA is Polygon)
+            else if (shapeA is Polygon)
             {
-                if (shapeB is Box) return Overlaps(shapeA as Polygon, shapeB as Box);
-                if (shapeB is Circle) return Overlaps(shapeA as Polygon, shapeB as Circle);
-                if (shapeB is Polygon) return Overlaps(shapeA as Polygon, shapeB as Polygon);
+                Overlaps(shapeA as Polygon, shapeB);
             }
 
             return false;
@@ -203,70 +208,23 @@ namespace FrogWorks
             return Overlaps(poly, circ);
         }
 
-        public static bool Overlaps(Polygon poly, Box box)
+        public static bool Overlaps(Polygon poly, Shape shape)
         {
-            var axesA = poly.GetVertices().Normalize();
-            var axesB = box.GetVertices().Normalize();
+            var polyAxes = poly.GetVertices().Normalize();
+            var shapeAxes = shape is Circle
+                ? new Vector2[] { Vector2.Normalize(shape.Center - poly.GetClosestPoint(shape.Center)) }
+                : shape.GetVertices().Normalize();
 
             Vector2 axis;
 
-            for (int i = 0; i < axesA.Length + axesB.Length; i++)
+            for (int i = 0; i < polyAxes.Length + shapeAxes.Length; i++)
             {
-                axis = i < axesA.Length ? axesA[i] : axesB[i - axesA.Length];
+                axis = i < polyAxes.Length ? polyAxes[i] : shapeAxes[i - polyAxes.Length];
 
                 if (axis != Vector2.Zero)
                 {
-                    Project(poly, axis, out float minA, out float maxA);
-                    Project(box, axis, out float minB, out float maxB);
-
-                    var dist = GetIntervalDepth(minA, maxA, minB, maxB);
-                    if (dist == 0) return false;
-                }
-            }
-
-            return true;
-        }
-
-        public static bool Overlaps(Polygon poly, Circle circ)
-        {
-            var axes = poly.GetVertices().Normalize();
-            var center = circ.Center;
-            var circleAxis = Vector2.Normalize(center - GetClosestPointOnPolygon(poly, center));
-
-            Vector2 axis;
-
-            for (int i = 0; i <= axes.Length; i++)
-            {
-                axis = i < axes.Length ? axes[i] : circleAxis;
-
-                if (axis != Vector2.Zero)
-                {
-                    Project(poly, axis, out float minA, out float maxA);
-                    Project(circ, axis, out float minB, out float maxB);
-
-                    var dist = GetIntervalDepth(minA, maxA, minB, maxB);
-                    if (dist == 0) return false;
-                }
-            }
-
-            return true;
-        }
-
-        public static bool Overlaps(Polygon polyA, Polygon polyB)
-        {
-            var axesA = polyA.GetVertices().Normalize();
-            var axesB = polyB.GetVertices().Normalize();
-
-            Vector2 axis;
-
-            for (int i = 0; i < axesA.Length + axesB.Length; i++)
-            {
-                axis = i < axesA.Length ? axesA[i] : axesB[i - axesA.Length];
-
-                if (axis != Vector2.Zero)
-                {
-                    Project(polyA, axis, out float minA, out float maxA);
-                    Project(polyB, axis, out float minB, out float maxB);
+                    poly.Project(axis, out float minA, out float maxA);
+                    shape.Project(axis, out float minB, out float maxB);
 
                     var dist = GetIntervalDepth(minA, maxA, minB, maxB);
                     if (dist == 0) return false;
@@ -284,23 +242,25 @@ namespace FrogWorks
 
             if (shapeA is Box)
             {
-                if (shapeB is Box) return Overlaps(shapeA as Box, shapeB as Box, out hit);
-                if (shapeB is Circle) return Overlaps(shapeA as Box, shapeB as Circle, out hit);
-                if (shapeB is Polygon) return Overlaps(shapeA as Box, shapeB as Polygon, out hit);
+                if (shapeB is Box)
+                    return Overlaps(shapeA as Box, shapeB as Box, out hit);
+                else if (shapeB is Circle)
+                    return Overlaps(shapeA as Box, shapeB as Circle, out hit);
+                else if (shapeB is Polygon)
+                    return Overlaps(shapeA as Box, shapeB as Polygon, out hit);
             }
-
-            if (shapeA is Circle)
+            else if (shapeA is Circle)
             {
-                if (shapeB is Box) return Overlaps(shapeA as Circle, shapeB as Box, out hit);
-                if (shapeB is Circle) return Overlaps(shapeA as Circle, shapeB as Circle, out hit);
-                if (shapeB is Polygon) return Overlaps(shapeA as Circle, shapeB as Polygon, out hit);
+                if (shapeB is Box)
+                    return Overlaps(shapeA as Circle, shapeB as Box, out hit);
+                else if (shapeB is Circle)
+                    return Overlaps(shapeA as Circle, shapeB as Circle, out hit);
+                else if (shapeB is Polygon)
+                    return Overlaps(shapeA as Circle, shapeB as Polygon, out hit);
             }
-
-            if (shapeA is Polygon)
+            else if (shapeA is Polygon)
             {
-                if (shapeB is Box) return Overlaps(shapeA as Polygon, shapeB as Box, out hit);
-                if (shapeB is Circle) return Overlaps(shapeA as Polygon, shapeB as Circle, out hit);
-                if (shapeB is Polygon) return Overlaps(shapeA as Polygon, shapeB as Polygon, out hit);
+                return Overlaps(shapeA as Polygon, shapeB, out hit);
             }
 
             return false;
@@ -312,7 +272,7 @@ namespace FrogWorks
 
             var halfA = boxA.Size * .5f;
             var halfB = boxB.Size * .5f;
-            var distance = boxB.Center - boxA.Center;
+            var distance = boxA.Center - boxB.Center;
             var offset = halfA + halfB - distance.Abs();
             if (offset.X < 0f || offset.Y < 0f) return false;
 
@@ -320,8 +280,8 @@ namespace FrogWorks
             var normal = offset.X < offset.Y ? Vector2.UnitX : Vector2.UnitY;
             var factor = offset.X < offset.Y ? distance.X : distance.Y;
 
-            normal *= factor < 0f ? -1f : 1f;
-            hit.Normal = -normal;
+            normal *= factor < 0 ? -1 : 1;
+            hit.Normal = normal;
             hit.Depth = depth;
 
             return true;
@@ -345,7 +305,7 @@ namespace FrogWorks
         {
             hit = default;
 
-            var distance = circ.Center.Clamp(box.Min, box.Max) - circ.Center;
+            var distance = circ.Center - circ.Center.Clamp(box.Min, box.Max);
             var distanceSq = Vector2.Dot(distance, distance);
             var radiusSq = circ.Radius * circ.Radius;
 
@@ -356,7 +316,7 @@ namespace FrogWorks
                     var length = distanceSq.Sqrt();
                     var normal = Vector2.Normalize(distance);
 
-                    hit.Normal = -normal;
+                    hit.Normal = normal;
                     hit.Depth = circ.Radius - length;
                 }
                 else
@@ -369,8 +329,8 @@ namespace FrogWorks
                     var normal = offset.X < offset.Y ? Vector2.UnitX : Vector2.UnitY;
                     var factor = offset.X < offset.Y ? length.X : length.Y;
 
-                    normal *= factor < 0 ? 1f : -1f;
-                    hit.Normal = -normal;
+                    normal *= factor < 0 ? -1 : 1;
+                    hit.Normal = normal;
                     hit.Depth = circ.Radius + depth;
                 }
 
@@ -410,25 +370,27 @@ namespace FrogWorks
             return overlaps;
         }
 
-        public static bool Overlaps(Polygon poly, Box box, out Manifold hit)
+        public static bool Overlaps(Polygon poly, Shape shape, out Manifold hit)
         {
             hit = default;
 
             var normal = Vector2.Zero;
             var depth = float.PositiveInfinity;
-            var axesA = poly.GetVertices().Normalize();
-            var axesB = box.GetVertices().Normalize();
+            var polyAxes = poly.GetVertices().Normalize();
+            var shapeAxes = shape is Circle
+                ? new Vector2[] { Vector2.Normalize(shape.Center - poly.GetClosestPoint(shape.Center)) }
+                : shape.GetVertices().Normalize();
 
             Vector2 axis;
 
-            for (int i = 0; i < axesA.Length + axesB.Length; i++)
+            for (int i = 0; i < polyAxes.Length + shapeAxes.Length; i++)
             {
-                axis = i < axesA.Length ? axesA[i] : axesB[i - axesA.Length];
+                axis = i < polyAxes.Length ? polyAxes[i] : shapeAxes[i - polyAxes.Length];
 
                 if (axis != Vector2.Zero)
                 {
-                    Project(poly, axis, out float minA, out float maxA);
-                    Project(box, axis, out float minB, out float maxB);
+                    poly.Project(axis, out float minA, out float maxA);
+                    shape.Project(axis, out float minB, out float maxB);
 
                     var dist = GetIntervalDepth(minA, maxA, minB, maxB);
                     if (dist == 0) return false;
@@ -450,106 +412,7 @@ namespace FrogWorks
                 }
             }
 
-            var offset = Vector2.Dot(poly.Center - box.Center, normal);
-            if (offset < 0) normal = -normal;
-
-            hit.Depth = depth;
-            hit.Normal = normal;
-
-            return true;
-        }
-
-        public static bool Overlaps(Polygon poly, Circle circ, out Manifold hit)
-        {
-            hit = default;
-
-            var normal = Vector2.Zero;
-            var depth = float.PositiveInfinity;
-            var axes = poly.GetVertices().Normalize();
-            var center = circ.Center;
-            var circleAxis = Vector2.Normalize(center - GetClosestPointOnPolygon(poly, center));
-
-            Vector2 axis;
-
-            for (int i = 0; i <= axes.Length; i++)
-            {
-                axis = i < axes.Length ? axes[i] : circleAxis;
-
-                if (axis != Vector2.Zero)
-                {
-                    Project(poly, axis, out float minA, out float maxA);
-                    Project(circ, axis, out float minB, out float maxB);
-
-                    var dist = GetIntervalDepth(minA, maxA, minB, maxB);
-                    if (dist == 0) return false;
-
-                    if (ContainsIntervals(minA, maxA, minB, maxB))
-                    {
-                        var min = (minA - minB).Abs();
-                        var max = (maxA - maxB).Abs();
-
-                        dist += max > min ? min : max;
-                        if (max > min) axis = -axis;
-                    }
-
-                    if (depth > dist)
-                    {
-                        depth = dist;
-                        normal = axis;
-                    }
-                }
-            }
-
-            var offset = Vector2.Dot(poly.Center - center, normal);
-            if (offset < 0) normal = -normal;
-
-            hit.Depth = depth;
-            hit.Normal = normal;
-
-            return true;
-        }
-
-        public static bool Overlaps(Polygon polyA, Polygon polyB, out Manifold hit)
-        {
-            hit = default;
-
-            var normal = Vector2.Zero;
-            var depth = float.PositiveInfinity;
-            var axesA = polyA.GetVertices().Normalize();
-            var axesB = polyB.GetVertices().Normalize();
-
-            Vector2 axis;
-
-            for (int i = 0; i < axesA.Length + axesB.Length; i++)
-            {
-                axis = i < axesA.Length ? axesA[i] : axesB[i - axesA.Length];
-
-                if (axis != Vector2.Zero)
-                {
-                    Project(polyA, axis, out float minA, out float maxA);
-                    Project(polyB, axis, out float minB, out float maxB);
-
-                    var dist = GetIntervalDepth(minA, maxA, minB, maxB);
-                    if (dist == 0) return false;
-
-                    if (ContainsIntervals(minA, maxA, minB, maxB))
-                    {
-                        var min = (minA - minB).Abs();
-                        var max = (maxA - maxB).Abs();
-
-                        dist += max > min ? min : max;
-                        if (max > min) axis = -axis;
-                    }
-
-                    if (depth > dist)
-                    {
-                        depth = dist;
-                        normal = axis;
-                    }
-                }
-            }
-
-            var offset = Vector2.Dot(polyA.Center - polyB.Center, normal);
+            var offset = Vector2.Dot(poly.Center - shape.Center, normal);
             if (offset < 0) normal = -normal;
 
             hit.Depth = depth;
@@ -560,49 +423,35 @@ namespace FrogWorks
         #endregion
 
         #region Misc.
-        static void Project(Box box, Vector2 axis, out float min, out float max)
+        static void Project(this Shape shape, Vector2 axis, out float min, out float max)
         {
             min = float.PositiveInfinity;
             max = float.NegativeInfinity;
 
-            var vertices = box.GetVertices();
-            float dotProd;
-
-            for (int i = 0; i < vertices.Length; i++)
+            if (shape is Circle)
             {
-                dotProd = Vector2.Dot(vertices[i], axis);
+                var dotProd = Vector2.Dot(shape.Center, axis);
+                var radius = (shape as Circle).Radius;
 
-                if (min > dotProd) min = dotProd;
-                if (max < dotProd) max = dotProd;
+                min = dotProd - radius;
+                max = dotProd + radius;
+            }
+            else
+            {
+                var vertices = shape.GetVertices();
+                float dotProd;
+
+                for (int i = 0; i < vertices.Length; i++)
+                {
+                    dotProd = Vector2.Dot(vertices[i], axis);
+
+                    if (min > dotProd) min = dotProd;
+                    if (max < dotProd) max = dotProd;
+                }
             }
         }
 
-        static void Project(Circle circ, Vector2 axis, out float min, out float max)
-        {
-            var dotProd = Vector2.Dot(circ.Center, axis);
-
-            min = dotProd - circ.Radius;
-            max = dotProd + circ.Radius;
-        }
-
-        static void Project(Polygon poly, Vector2 axis, out float min, out float max)
-        {
-            min = float.PositiveInfinity;
-            max = float.NegativeInfinity;
-
-            var vertices = poly.GetVertices();
-            float dotProd;
-
-            for (int i = 0; i < vertices.Length; i++)
-            {
-                dotProd = Vector2.Dot(vertices[i], axis);
-
-                if (min > dotProd) min = dotProd;
-                if (max < dotProd) max = dotProd;
-            }
-        }
-
-        static Vector2 GetClosestPointOnPolygon(Polygon poly, Vector2 point)
+        static Vector2 GetClosestPoint(this Polygon poly, Vector2 point)
         {
             var vertices = poly.GetVertices();
             var minDistance = float.PositiveInfinity;
