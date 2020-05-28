@@ -182,7 +182,7 @@ namespace FrogWorks
 
         public static bool Overlaps(Box box, Polygon poly)
         {
-            return Overlaps(new Polygon(box.Position, box.GetVertices()), poly);
+            return Overlaps(poly, box);
         }
 
         public static bool Overlaps(Circle circ, Box box)
@@ -205,7 +205,26 @@ namespace FrogWorks
 
         public static bool Overlaps(Polygon poly, Box box)
         {
-            return Overlaps(box, poly);
+            var axesA = poly.GetVertices().Normalize();
+            var axesB = box.GetVertices().Normalize();
+
+            Vector2 axis;
+
+            for (int i = 0; i < axesA.Length + axesB.Length; i++)
+            {
+                axis = i < axesA.Length ? axesA[i] : axesB[i - axesA.Length];
+
+                if (axis != Vector2.Zero)
+                {
+                    Project(poly, axis, out float minA, out float maxA);
+                    Project(box, axis, out float minB, out float maxB);
+
+                    var dist = GetIntervalDepth(minA, maxA, minB, maxB);
+                    if (dist == 0) return false;
+                }
+            }
+
+            return true;
         }
 
         public static bool Overlaps(Polygon poly, Circle circ)
@@ -317,7 +336,9 @@ namespace FrogWorks
 
         public static bool Overlaps(Box box, Polygon poly, out Manifold hit)
         {
-            return Overlaps(new Polygon(box.Position, box.GetVertices()), poly, out hit);
+            var overlaps = Overlaps(poly, box, out hit);
+            hit.Normal = -hit.Normal;
+            return overlaps;
         }
 
         public static bool Overlaps(Circle circ, Box box, out Manifold hit)
@@ -391,9 +412,51 @@ namespace FrogWorks
 
         public static bool Overlaps(Polygon poly, Box box, out Manifold hit)
         {
-            var overlaps = Overlaps(box, poly, out hit);
-            hit.Normal = -hit.Normal;
-            return overlaps;
+            hit = default;
+
+            var normal = Vector2.Zero;
+            var depth = float.PositiveInfinity;
+            var axesA = poly.GetVertices().Normalize();
+            var axesB = box.GetVertices().Normalize();
+
+            Vector2 axis;
+
+            for (int i = 0; i < axesA.Length + axesB.Length; i++)
+            {
+                axis = i < axesA.Length ? axesA[i] : axesB[i - axesA.Length];
+
+                if (axis != Vector2.Zero)
+                {
+                    Project(poly, axis, out float minA, out float maxA);
+                    Project(box, axis, out float minB, out float maxB);
+
+                    var dist = GetIntervalDepth(minA, maxA, minB, maxB);
+                    if (dist == 0) return false;
+
+                    if (ContainsIntervals(minA, maxA, minB, maxB))
+                    {
+                        var min = (minA - minB).Abs();
+                        var max = (maxA - maxB).Abs();
+
+                        dist += max > min ? min : max;
+                        if (max > min) axis = -axis;
+                    }
+
+                    if (depth > dist)
+                    {
+                        depth = dist;
+                        normal = axis;
+                    }
+                }
+            }
+
+            var offset = Vector2.Dot(poly.Center - box.Center, normal);
+            if (offset < 0) normal = -normal;
+
+            hit.Depth = depth;
+            hit.Normal = normal;
+
+            return true;
         }
 
         public static bool Overlaps(Polygon poly, Circle circ, out Manifold hit)
@@ -497,6 +560,23 @@ namespace FrogWorks
         #endregion
 
         #region Misc.
+        static void Project(Box box, Vector2 axis, out float min, out float max)
+        {
+            min = float.PositiveInfinity;
+            max = float.NegativeInfinity;
+
+            var vertices = box.GetVertices();
+            float dotProd;
+
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                dotProd = Vector2.Dot(vertices[i], axis);
+
+                if (min > dotProd) min = dotProd;
+                if (max < dotProd) max = dotProd;
+            }
+        }
+
         static void Project(Circle circ, Vector2 axis, out float min, out float max)
         {
             var dotProd = Vector2.Dot(circ.Center, axis);
