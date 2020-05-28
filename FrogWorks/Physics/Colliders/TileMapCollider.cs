@@ -111,10 +111,7 @@ namespace FrogWorks
         {
             if (base.Contains(point))
             {
-                var location = point
-                    .ToGrid(TileSize.ToVector2(), AbsolutePosition)
-                    .ToPoint();
-
+                var location = point.ToGrid(TileSize.ToVector2(), AbsolutePosition).ToPoint();
                 var tile = GetTileShape(location);
                 return tile?.Contains(point) ?? false;
             }
@@ -122,18 +119,30 @@ namespace FrogWorks
             return false;
         }
 
-        public sealed override bool Raycast(Vector2 start, Vector2 end, out Raycast hit)
+        public sealed override bool Contains(Vector2 point, out Vector2 depth)
         {
-            if (base.Raycast(start, end, out hit))
+            if (base.Contains(point, out depth))
+            {
+                var location = point.ToGrid(TileSize.ToVector2(), AbsolutePosition).ToPoint();
+                var tile = GetTileShape(location);
+                return tile?.Contains(point, out depth) ?? false;
+            }
+
+            return false;
+        }
+
+        public sealed override bool CastRay(Vector2 origin, Vector2 normal, float distance, out Raycast hit)
+        {
+            if (base.CastRay(origin, normal, distance, out hit))
             {
                 var tileSize = TileSize.ToVector2();
-                var gStart = start.ToGrid(tileSize, AbsolutePosition);
-                var gEnd = end.ToGrid(tileSize, AbsolutePosition);
+                var gStart = origin.ToGrid(tileSize, AbsolutePosition);
+                var gEnd = (origin + normal * distance).ToGrid(tileSize, AbsolutePosition);
 
                 foreach (var location in PlotLine(gStart, gEnd))
                 {
                     var tile = GetTileShape(location);
-                    var hitDetected = tile?.Raycast(start, end, out hit) ?? false;
+                    var hitDetected = tile?.CastRay(origin, normal, distance) ?? false;
                     if (hitDetected) return true;
                 }
             }

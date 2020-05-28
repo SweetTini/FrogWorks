@@ -10,11 +10,11 @@ namespace FrogWorks.Demo.Scenes
         List<Raycast> _raycasts;
         List<Manifold> _manifolds;
         Shape _shapeSelected;
-        Vector2 _mouseOffset, 
-            _rayStart, 
+        Vector2 _mouseOffset,
+            _rayStart,
             _rayEnd;
-        bool _isDragging, 
-            _isColliding, 
+        bool _isDragging,
+            _isColliding,
             _isRaycasting,
             _isRayHit;
 
@@ -40,7 +40,7 @@ namespace FrogWorks.Demo.Scenes
             _shapes.Add(new Circle(112, 72, 16));
             _shapes.Add(new Circle(62, 126, 40));
             _shapes.Add(new Polygon(170, 36, polyVerts));
-            _shapes.Add(new Polygon(168, 126, 1.5f, 1.5f, .5f, polyVerts));
+            _shapes.Add(new Polygon(168, 126, Vector2.One * 1.5f, .5f, polyVerts));
         }
 
         protected override void BeforeUpdate(float deltaTime)
@@ -117,8 +117,10 @@ namespace FrogWorks.Demo.Scenes
 
                 foreach (var shape in _shapes)
                 {
-                    Raycast hit;
-                    if (shape.Raycast(_rayStart, _rayEnd, out hit))
+                    var normal = Vector2.Normalize(_rayEnd - _rayStart);
+                    var distance = (_rayEnd - _rayStart).Length();
+
+                    if (shape.CastRay(_rayStart, normal, distance, out var hit))
                     {
                         _isRayHit = true;
                         _raycasts.Add(hit);
@@ -138,9 +140,9 @@ namespace FrogWorks.Demo.Scenes
 
                 if (shape == _shapeSelected)
                 {
-                    if (_isColliding) 
+                    if (_isColliding)
                         color = Color.Yellow;
-                    else if (_isDragging) 
+                    else if (_isDragging)
                         color = Color.Magenta;
 
                     if (_isColliding)
@@ -156,7 +158,7 @@ namespace FrogWorks.Demo.Scenes
                         shape.Position = lastPos;
                     }
                 }
-                
+
                 shape.Draw(batch, color);
             }
 

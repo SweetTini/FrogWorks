@@ -137,41 +137,36 @@ namespace FrogWorks
             _position = position;
         }
 
-        public bool Contains(float x, float y)
-        {
-            return Contains(new Vector2(x, y));
-        }
-
         public virtual bool Contains(Vector2 point)
         {
             return IsCollidable;
         }
 
-        public bool Raycast(float x1, float y1, float x2, float y2, out Raycast hit)
+        public bool Contains(float x, float y)
         {
-            return Raycast(new Vector2(x1, y1), new Vector2(x2, y2), out hit);
+            return Contains(new Vector2(x, y));
         }
 
-        public bool Raycast(
-            float x, float y,
-            float xNormal, float yNormal,
-            float distance,
-            out Raycast hit)
+        public virtual bool Contains(Vector2 point, out Vector2 depth)
         {
-            var start = new Vector2(x, y);
-            var normal = new Vector2(xNormal, yNormal);
-            return Raycast(start, start + normal * distance, out hit);
-        }
-
-        public virtual bool Raycast(Vector2 start, Vector2 end, out Raycast hit)
-        {
-            hit = default;
+            depth = default;
             return IsCollidable;
         }
 
-        public bool Raycast(Vector2 start, Vector2 normal, float distance, out Raycast hit)
+        public bool Contains(float x, float y, out Vector2 depth)
         {
-            return Raycast(start, start + normal * distance, out hit);
+            return Contains(new Vector2(x, y), out depth);
+        }
+
+        public bool CastRay(Vector2 origin, Vector2 normal, float distance)
+        {
+            return CastRay(origin, normal, distance, out _);
+        }
+
+        public virtual bool CastRay(Vector2 origin, Vector2 normal, float distance, out Raycast hit)
+        {
+            hit = default;
+            return IsCollidable;
         }
 
         public virtual bool Overlaps(Shape shape)

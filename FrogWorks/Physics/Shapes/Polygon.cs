@@ -1,23 +1,26 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
 
 namespace FrogWorks
 {
     public sealed class Polygon : Shape
     {
-        Vector2[] _vertices, _transformed;
+        Vector2[] _vertices, _transform;
         Vector2 _origin, _scale;
         float _angle;
+        bool _isDirty = true;
 
-        public Vector2 this[int index] => _transformed[index];
-
-        public int Count => _vertices.Length;
-
-        public override Vector2 Center
+        Vector2[] Vertices
         {
-            get { return Position + _origin; }
-            set { Position = value - _origin; }
+            get
+            {
+                RecalculateVertices();
+                return _transform;
+            }
         }
+
+        public Vector2 this[int index] => Vertices[index];
+
+        public int Count => Vertices.Length;
 
         public Vector2 Scale
         {
@@ -27,8 +30,8 @@ namespace FrogWorks
                 if (_scale != value)
                 {
                     _scale = value;
+                    _isDirty = true;
                     MarkAsDirty();
-                    RecalculateVertices();
                 }
             }
         }
@@ -41,26 +44,26 @@ namespace FrogWorks
                 if (_angle != value)
                 {
                     _angle = value;
+                    _isDirty = true;
                     MarkAsDirty();
-                    RecalculateVertices();
                 }
             }
         }
 
         public float AngleInDegrees
         {
-            get { return MathHelper.ToDegrees(Angle); }
-            set { Angle = MathHelper.ToRadians(value); }
+            get { return Angle.ToDeg(); }
+            set { Angle = value.ToRad(); }
         }
 
-        public Polygon(Vector2[] vertices)
-            : this(vertices.Min(), Vector2.One, 0f, vertices)
-        {
-        }
+        public Vector2 Min => Vertices.Min();
 
-        public Polygon(float x, float y, Vector2[] vertices)
-            : this(new Vector2(x, y), Vector2.One, 0f, vertices)
+        public Vector2 Max => Vertices.Max();
+
+        public override Vector2 Center
         {
+            get { return Position + _origin; }
+            set { Position = value - _origin; }
         }
 
         public Polygon(Vector2 position, Vector2[] vertices)
@@ -68,10 +71,8 @@ namespace FrogWorks
         {
         }
 
-        public Polygon(
-            float x, float y, float xScale, float yScale, 
-            float angle, Vector2[] vertices)
-            : this(new Vector2(x, y), new Vector2(xScale, yScale), angle, vertices)
+        public Polygon(float x, float y, Vector2[] vertices)
+            : this(new Vector2(x, y), Vector2.One, 0f, vertices)
         {
         }
 
@@ -81,94 +82,72 @@ namespace FrogWorks
             _scale = scale;
             _angle = angle;
             _vertices = vertices.ToOrigin().ToConvexHull();
-            _origin = _vertices.Center();
-            RecalculateVertices();
+            _origin = vertices.Center();
         }
 
-        void RecalculateVertices()
+        public Polygon(float x, float y, Vector2 scale, float angle, Vector2[] vertices)
+            : this(new Vector2(x, y), scale, angle, vertices)
         {
-            _transformed = _vertices.Transform(Position, _origin, _scale, _angle, false);
-        }
-
-        protected override Rectangle RecalculateBounds()
-        {
-            var min = _transformed.Min();
-            var max = _transformed.Max();
-
-            return new Rectangle(min.ToPoint(), (max - min).ToPoint());
         }
 
         public override bool Contains(Vector2 point)
         {
-            var inPoly = false;
+            var inside = false;
 
             for (int i = 0; i < Count; i++)
             {
-                var p1 = this[i];
-                var p2 = this[(i + 1).Mod(Count)];
-                var edge = p2 - p1;
+                var start = this[i];
+                var end = this[(i + 1).Mod(Count)];
+                var edge = end - start;
 
-                if ((p1.Y > point.Y) != (p2.Y > point.Y))
+                if ((start.Y > point.Y) != (end.Y > point.Y))
                 {
-                    var area = edge.X * (point.Y - p1.Y) / edge.Y + p1.X;
-                    if (point.X < area) inPoly = !inPoly;
+                    var area = edge.X * (point.Y - start.Y) / edge.Y + start.X;
+                    if (point.X < area) inside = !inside;
                 }
             }
 
-            return inPoly;
+            return inside;
         }
 
-        public override Vector2 GetClosestPoint(Vector2 point)
+        public override Vector2[] GetVertices()
         {
-            var minDistSq = float.PositiveInfinity;
-            var closest = Vector2.Zero;
-
-            for (int i = 0; i < Count; i++)
-            {
-                var p1 = this[i];
-                var p2 = this[(i + 1).Mod(Count)];
-
-                var next = PlotEX.GetClosestPointOnLine(p1, p2, point);
-                var distSq = (point - next).LengthSquared();
-
-                if (minDistSq > distSq)
-                {
-                    minDistSq = distSq;
-                    closest = next;
-                }
-            }
-
-            return closest;
+            return Vertices;
         }
 
-        public override void Draw(
-            RendererBatch batch,
-            Color strokeColor,
-            Color? fillColor = null)
+        public override void Draw(RendererBatch batch, Color color, Color fill)
         {
             batch.DrawPrimitives(p =>
             {
-                if (fillColor.HasValue)
-                    p.FillPolygon(_transformed, fillColor.Value);
+                if (fill != default)
+                    p.FillPolygon(Vertices, fill);
 
-                p.DrawPolygon(_transformed, strokeColor);
-                p.DrawDot(Center, strokeColor);
+                p.DrawPolygon(Vertices, color);
             });
         }
 
         public override Shape Clone()
         {
-            return new Polygon(Position, _scale, _angle, _vertices);
+            return new Polygon(Position, Scale, Angle, _vertices);
         }
 
-        protected override void OnTranslated()
+        protected override Rectangle RecalculateBounds()
         {
-            RecalculateVertices();
+            return new Rectangle(Min.ToPoint(), (Max - Min).ToPoint());
         }
 
-        internal override Vector2[] GetVertices()
+        protected override void OnTranslate()
         {
-            return _transformed;
+            _isDirty = true;
+        }
+
+        void RecalculateVertices()
+        {
+            if (_isDirty)
+            {
+                _transform = _vertices.Transform(Position, _origin, _scale, _angle, false);
+                _isDirty = false;
+            }
         }
     }
 }

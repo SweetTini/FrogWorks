@@ -6,12 +6,6 @@ namespace FrogWorks
     {
         Vector2 _size;
 
-        public override Vector2 Center
-        {
-            get { return Position + Size * .5f; }
-            set { Position = value - Size * .5f; }
-        }
-
         public Vector2 Size
         {
             get { return _size; }
@@ -43,9 +37,10 @@ namespace FrogWorks
 
         public Vector2 Max => Position + Size;
 
-        public Box(float x, float y, float width, float height)
-            : this(new Vector2(x, y), new Vector2(width, height))
+        public override Vector2 Center 
         {
+            get { return Position + Size * .5f; }
+            set { Position = value - Size * .5f; }
         }
 
         public Box(Vector2 position, Vector2 size)
@@ -54,53 +49,42 @@ namespace FrogWorks
             _size = size.Abs();
         }
 
-        protected override Rectangle RecalculateBounds()
+        public Box(float x, float y, float width, float height)
+            : this(new Vector2(x, y), new Vector2(width, height))
         {
-            return new Rectangle(Position.ToPoint(), Size.ToPoint());
         }
 
         public override bool Contains(Vector2 point)
         {
-            return Min.X <= point.X && point.X <= Max.X
+            return Min.X <= point.X && point.X <= Max.X 
                 && Min.Y <= point.Y && point.Y <= Max.Y;
         }
 
-        public override Vector2 GetClosestPoint(Vector2 point)
+        public bool Overlaps(Shape shape, bool nearestAxis, out CollisionResult result)
         {
-            var vertices = GetVertices();
-            var minDistSq = float.PositiveInfinity;
-            var closest = Vector2.Zero;
-
-            for (int i = 0; i < vertices.Length; i++)
-            {
-                var p1 = vertices[i];
-                var p2 = vertices[(i + 1).Mod(vertices.Length)];
-
-                var next = PlotEX.GetClosestPointOnLine(p1, p2, point);
-                var distSq = (point - next).LengthSquared();
-
-                if (minDistSq > distSq)
-                {
-                    minDistSq = distSq;
-                    closest = next;
-                }
-            }
-
-            return closest;
+            result = default;
+            return false;
         }
 
-        public override void Draw(
-            RendererBatch batch,
-            Color strokeColor,
-            Color? fillColor = null)
+        public override Vector2[] GetVertices()
         {
-            batch.DrawPrimitives(p =>
+            return new Vector2[]
             {
-                if (fillColor.HasValue)
-                    p.FillRectangle(Position, Size, fillColor.Value);
+                Position,
+                Position + Size * Vector2.UnitX,
+                Position + Size,
+                Position + Size * Vector2.UnitY
+            };
+        }
 
-                p.DrawRectangle(Position, Size, strokeColor);
-                p.DrawDot(Center, strokeColor);
+        public override void Draw(RendererBatch batch, Color color, Color fill)
+        {
+            batch.DrawPrimitives(p => 
+            {
+                if (fill != default)
+                    p.FillRectangle(Position, Size, fill);
+
+                p.DrawRectangle(Position, Size, color);
             });
         }
 
@@ -109,15 +93,9 @@ namespace FrogWorks
             return new Box(Position, Size);
         }
 
-        internal override Vector2[] GetVertices()
+        protected override Rectangle RecalculateBounds()
         {
-            return new Vector2[]
-            {
-                Position,
-                Position + Size * Vector2.UnitX,
-                Position + Size * Vector2.One,
-                Position + Size * Vector2.UnitY
-            };
+            return new Rectangle(Position.ToPoint(), Size.ToPoint());
         }
     }
 }

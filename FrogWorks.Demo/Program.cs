@@ -10,7 +10,7 @@ namespace FrogWorks.Demo
         {
             using (var runner = new DesktopRunner(256, 224, 2))
             {
-                runner.GoTo<DisplayTest>();
+                runner.GoTo<ShapeCollisionTest>();
                 runner.AllowUserResizing = true;
                 runner.IsMouseVisible = true;
                 runner.Run();

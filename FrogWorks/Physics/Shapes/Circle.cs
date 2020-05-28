@@ -6,12 +6,6 @@ namespace FrogWorks
     {
         float _radius;
 
-        public override Vector2 Center
-        {
-            get { return Position + Vector2.One * Radius; }
-            set { Position = value - Vector2.One * Radius; }
-        }
-
         public float Radius
         {
             get { return _radius; }
@@ -27,9 +21,10 @@ namespace FrogWorks
             }
         }
 
-        public Circle(float x, float y, float radius)
-            : this(new Vector2(x, y), radius)
+        public override Vector2 Center
         {
+            get { return Position + Vector2.One * Radius; }
+            set { Position = value - Vector2.One * Radius; }
         }
 
         public Circle(Vector2 position, float radius)
@@ -38,11 +33,9 @@ namespace FrogWorks
             _radius = radius.Abs();
         }
 
-        protected override Rectangle RecalculateBounds()
+        public Circle(float x, float y, float radius)
+            : this(new Vector2(x, y), radius)
         {
-            var position = Position.ToPoint();
-            var size = (Vector2.One * _radius * 2f).ToPoint();
-            return new Rectangle(position, size);
         }
 
         public override bool Contains(Vector2 point)
@@ -50,47 +43,40 @@ namespace FrogWorks
             return (point - Center).LengthSquared() < Radius * Radius;
         }
 
-        public override Vector2 GetClosestPoint(Vector2 point)
+        public override Vector2 GetClosestPointOnPoint(Vector2 point)
         {
             return Center + Vector2.Normalize(point - Center) * Radius;
         }
 
-        public override void Draw(
-            RendererBatch batch,
-            Color strokeColor,
-            Color? fillColor = null)
+        public override Vector2[] GetVertices()
+        {
+            return new[] { Center };
+        }
+
+        public override void Draw(RendererBatch batch, Color color, Color fill)
+        {
+            Draw(batch, color, fill, 16);
+        }
+
+        public void Draw(RendererBatch batch, Color color, Color fill, int segments)
         {
             batch.DrawPrimitives(p =>
             {
-                if (fillColor.HasValue)
-                    p.FillCircle(Center, _radius, fillColor.Value);
+                if (fill != default)
+                    p.FillCircle(Center, Radius, fill, segments);
 
-                p.DrawCircle(Center, _radius, strokeColor);
-                p.DrawDot(Center, strokeColor);
+                p.DrawCircle(Center, Radius, color, segments);
             });
         }
 
         public override Shape Clone()
         {
-            return new Circle(Position, _radius);
+            return new Circle(Position, Radius);
         }
 
-        internal override Vector2[] GetFocis()
+        protected override Rectangle RecalculateBounds()
         {
-            return new Vector2[] { Center };
-        }
-
-        internal override Vector2[] GetAxes(Vector2[] focis)
-        {
-            return new Vector2[] { Vector2.Zero };
-        }
-
-        internal override void Project(Vector2 axis, out float min, out float max)
-        {
-            var dotProd = Vector2.Dot(Center, axis);
-
-            min = dotProd - Radius;
-            max = dotProd + Radius;
+            return new Rectangle(Position.ToPoint(), (Vector2.One * _radius * 2f).ToPoint());
         }
     }
 }

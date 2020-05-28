@@ -17,10 +17,16 @@ namespace FrogWorks
                 && Shape.Contains(point);
         }
 
-        public sealed override bool Raycast(Vector2 start, Vector2 end, out Raycast hit)
+        public sealed override bool Contains(Vector2 point, out Vector2 depth)
         {
-            return base.Raycast(start, end, out hit)
-                && Shape.Raycast(start, end, out hit);
+            return base.Contains(point, out depth)
+                && Shape.Contains(point, out depth);
+        }
+
+        public sealed override bool CastRay(Vector2 origin, Vector2 normal, float distance, out Raycast hit)
+        {
+            return base.CastRay(origin, normal, distance, out hit)
+                && Shape.CastRay(origin, normal, distance, out hit);
         }
 
         public sealed override bool Overlaps(Shape shape)

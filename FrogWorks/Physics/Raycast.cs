@@ -12,17 +12,8 @@ namespace FrogWorks
 
         public float Depth { get; internal set; }
 
-        internal Raycast(
-            Collider collider,
-            Vector2 contact,
-            Vector2 normal,
-            float depth)
-            : this()
-        {
-            Collider = collider;
-            Contact = contact;
-            Normal = normal;
-            Depth = depth;
-        }
+        public float Percent { get; internal set; }
+
+        public float Distance { get; internal set; }
     }
 }

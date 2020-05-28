@@ -73,7 +73,6 @@
     <Compile Include="Physics\Collision.cs" />
     <Compile Include="Physics\CollisionResult.cs" />
     <Compile Include="Physics\Manifold.cs" />
-    <Compile Include="Physics\Ray2D.cs" />
     <Compile Include="Physics\Raycast.cs" />
     <Compile Include="Physics\Shapes\Box.cs" />
     <Compile Include="Physics\Shapes\Circle.cs" />

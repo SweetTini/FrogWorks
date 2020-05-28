@@ -139,19 +139,14 @@ namespace FrogWorks
                 c => c.Contains(point));
         }
 
-        public IEnumerable<Collider> Raycast(Vector2 start, Vector2 end)
+        public IEnumerable<Collider> CastRay(Vector2 origin, Vector2 normal, float distance)
         {
-            var min = Vector2.Min(start, end);
-            var max = Vector2.Max(start, end);
+            var min = Vector2.Min(origin, origin + normal * distance);
+            var max = Vector2.Max(origin, origin + normal * distance);
 
             return _broadphaseTree.Query(
                 new AABB(min, max),
-                c => c.Raycast(start, end, out _));
-        }
-
-        public IEnumerable<Collider> Raycast(Vector2 origin, Vector2 normal, float distance)
-        {
-            return Raycast(origin, origin + normal * distance);
+                c => c.CastRay(origin, normal, distance, out _));
         }
 
         public IEnumerable<Collider> Overlaps(Shape shape)
@@ -183,25 +178,20 @@ namespace FrogWorks
             return Overlaps(entity?.Collider);
         }
 
-        public IEnumerable<Raycast> RaycastWithHits(Vector2 start, Vector2 end)
+        public IEnumerable<Raycast> CastRayWithHits(Vector2 origin, Vector2 normal, float distance)
         {
             var hits = new List<Raycast>();
-            var min = Vector2.Min(start, end);
-            var max = Vector2.Max(start, end);
+            var min = Vector2.Min(origin, origin + normal * distance);
+            var max = Vector2.Max(origin, origin + normal * distance);
 
             _broadphaseTree.Query(new AABB(min, max), c =>
             {
-                var gotHit = c.Raycast(start, end, out var hit);
+                var gotHit = c.CastRay(origin, normal, distance, out var hit);
                 if (gotHit) hits.Add(hit);
                 return gotHit;
             });
 
             return hits;
-        }
-
-        public IEnumerable<Raycast> RaycastWithHits(Vector2 origin, Vector2 normal, float distance)
-        {
-            return RaycastWithHits(origin, origin + normal * distance);
         }
 
         public IEnumerable<CollisionResult> OverlapWithHits(Shape shape)

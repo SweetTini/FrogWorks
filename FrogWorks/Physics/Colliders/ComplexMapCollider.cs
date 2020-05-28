@@ -148,19 +148,11 @@ namespace FrogWorks
             return collider;
         }
 
-        public bool Contains(float x, float y, T attributes)
-        {
-            return Contains(new Vector2(x, y), attributes);
-        }
-
         public bool Contains(Vector2 point, T attributes)
         {
             if (IsCollidable)
             {
-                var location = point
-                    .ToGrid(TileSize.ToVector2(), AbsolutePosition)
-                    .ToPoint();
-
+                var location = point.ToGrid(TileSize.ToVector2(), AbsolutePosition).ToPoint();
                 var tile = GetTileShape(location);
                 var collide = tile?.Contains(point) ?? false;
                 return collide && HasTags(location, attributes);
@@ -169,59 +161,65 @@ namespace FrogWorks
             return false;
         }
 
-        public bool Raycast(
-            float x1,
-            float y1,
-            float x2,
-            float y2,
-            T attributes,
-            out Raycast hit)
+        public bool Contains(float x, float y, T attributes)
         {
-            return Raycast(new Vector2(x1, y1), new Vector2(x2, y2), attributes, out hit);
+            return Contains(new Vector2(x, y), attributes);
         }
 
-        public bool Raycast(
-            float x, float y,
-            float xNormal, float yNormal,
+        public bool Contains(Vector2 point, T attributes, out Vector2 depth)
+        {
+            depth = default;
+
+            if (IsCollidable)
+            {
+                var location = point.ToGrid(TileSize.ToVector2(), AbsolutePosition).ToPoint();
+                var tile = GetTileShape(location);
+                var collide = tile?.Contains(point, out depth) ?? false;
+                return collide && HasTags(location, attributes);
+            }
+
+            return false;
+        }
+
+        public bool Contains(float x, float y, T attributes, out Vector2 depth)
+        {
+            return Contains(new Vector2(x, y), attributes, out depth);
+        }
+
+        public bool CastRay(
+            Vector2 origin,
+            Vector2 normal,
+            float distance,
+            T attributes)
+        {
+            return CastRay(origin, normal, distance, attributes, out _);
+        }
+
+        public bool CastRay(
+            Vector2 origin,
+            Vector2 normal,
             float distance,
             T attributes,
             out Raycast hit)
-        {
-            var start = new Vector2(x, y);
-            var normal = new Vector2(xNormal, yNormal);
-            return Raycast(start, start + normal * distance, attributes, out hit);
-        }
-
-        public bool Raycast(Vector2 start, Vector2 end, T attributes, out Raycast hit)
         {
             hit = default;
 
             if (IsCollidable)
             {
                 var tileSize = TileSize.ToVector2();
-                var gStart = start.ToGrid(tileSize, AbsolutePosition);
-                var gEnd = end.ToGrid(tileSize, AbsolutePosition);
+                var gStart = origin.ToGrid(tileSize, AbsolutePosition);
+                var gEnd = (origin + normal * distance).ToGrid(tileSize, AbsolutePosition);
 
                 foreach (var location in PlotLine(gStart, gEnd))
                 {
                     var tile = GetTileShape(location);
-                    var hitDetected = tile?.Raycast(start, end, out hit) ?? false;
+                    var hitDetected = tile?.CastRay(origin, normal, distance, out hit) ?? false;
                     if (hitDetected && HasTags(location, attributes))
                         return true;
                 }
             }
 
             return false;
-        }
-
-        public bool Raycast(
-            Vector2 start,
-            Vector2 normal,
-            float distance,
-            T attributes,
-            out Raycast hit)
-        {
-            return Raycast(start, start + normal * distance, attributes, out hit);
         }
 
         public bool Overlaps(Shape shape, T attributes)

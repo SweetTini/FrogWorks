@@ -17,8 +17,8 @@ namespace FrogWorks
                 if (_position != value)
                 {
                     _position = value;
-                    MarkAsDirty();
-                    OnTranslated();
+                    _isDirty = true;
+                    OnTranslate();
                 }
             }
         }
@@ -53,58 +53,40 @@ namespace FrogWorks
         {
             get
             {
-                if (_isDirty)
-                    RecalculateBoundsInternally();
-
+                RecalculateBoundsInternally();
                 return _bounds;
             }
         }
 
         protected Shape(Vector2 position)
+            : base()
         {
             _position = position;
         }
 
-        internal void RecalculateBoundsInternally()
-        {
-            _bounds = RecalculateBounds();
-        }
-
-        protected abstract Rectangle RecalculateBounds();
-
-        public bool Contains(float x, float y)
-        {
-            return Contains(new Vector2(x, y));
-        }
-
         public abstract bool Contains(Vector2 point);
 
-        public abstract Vector2 GetClosestPoint(Vector2 point);
-
-        public bool Raycast(float x1, float y1, float x2, float y2, out Raycast hit)
+        public bool Contains(Vector2 point, out Vector2 depth)
         {
-            return Raycast(new Vector2(x1, y1), new Vector2(x2, y2), out hit);
+            depth = default;
+
+            if (Contains(point))
+            {
+                depth = GetClosestPointOnPoint(point) - point;
+                return true;
+            }
+
+            return false;
         }
 
-        public bool Raycast(
-            float x, float y,
-            float xNormal, float yNormal,
-            float distance,
-            out Raycast hit)
+        public bool CastRay(Vector2 origin, Vector2 normal, float distance)
         {
-            var start = new Vector2(x, y);
-            var normal = new Vector2(xNormal, yNormal);
-            return Raycast(start, start + normal * distance, out hit);
+            return CastRay(origin, normal, distance, out _);
         }
 
-        public bool Raycast(Vector2 start, Vector2 end, out Raycast hit)
+        public bool CastRay(Vector2 origin, Vector2 normal, float distance, out Raycast hit)
         {
-            return Collision.Raycast(start, end, this, out hit);
-        }
-
-        public bool Raycast(Vector2 start, Vector2 normal, float distance, out Raycast hit)
-        {
-            return Collision.Raycast(start, start + normal * distance, this, out hit);
+            return Collision.CastRay(origin, normal, distance, this, out hit);
         }
 
         public bool Overlaps(Shape shape)
@@ -117,83 +99,22 @@ namespace FrogWorks
             return Collision.Overlaps(this, shape, out hit);
         }
 
-        public abstract void Draw(
-            RendererBatch batch,
-            Color strokeColor,
-            Color? fillColor = null);
-
-        public abstract Shape Clone();
-
-        protected void MarkAsDirty()
-        {
-            _isDirty = true;
-        }
-
-        protected virtual void OnTranslated()
-        {
-        }
-
-        internal virtual Vector2[] GetVertices()
-        {
-            return null;
-        }
-
-        internal virtual Vector2[] GetFocis()
-        {
-            return null;
-        }
-
-        internal virtual Vector2[] GetAxes(Vector2[] focis)
-        {
-            var normals = GetVertices().Normalize();
-            var fociCount = focis?.Length ?? 0;
-            var axes = new Vector2[normals.Length + fociCount];
-
-            Array.Copy(normals, 0, axes, 0, normals.Length);
-
-            for (int i = 0; i < fociCount; i++)
-            {
-                var foci = focis[i];
-                var offset = normals.Length + i;
-                var closest = GetClosestPointOnVertices(foci);
-
-                axes[offset] = Vector2.Normalize(foci - closest);
-            }
-
-            return axes;
-        }
-
-        internal virtual void Project(Vector2 axis, out float min, out float max)
-        {
-            min = float.PositiveInfinity;
-            max = float.NegativeInfinity;
-
-            var vertices = GetVertices();
-            float dotProd;
-
-            for (int i = 0; i < vertices.Length; i++)
-            {
-                dotProd = Vector2.Dot(vertices[i], axis);
-
-                if (min > dotProd) min = dotProd;
-                if (max < dotProd) max = dotProd;
-            }
-        }
-
-        Vector2 GetClosestPointOnVertices(Vector2 point)
+        public virtual Vector2 GetClosestPointOnPoint(Vector2 point)
         {
             var vertices = GetVertices();
-            var minDistSq = float.PositiveInfinity;
+            var minDistance = float.PositiveInfinity;
             var closest = Vector2.Zero;
 
             for (int i = 0; i < vertices.Length; i++)
             {
-                var next = vertices[i];
-                var distSq = (point - next).LengthSquared();
+                var start = vertices[i];
+                var end = vertices[(i + 1).Mod(vertices.Length)];
+                var next = PlotEX.GetClosestPointOnLine(start, end, point);
+                var distance = (point - next).LengthSquared();
 
-                if (minDistSq > distSq)
+                if (minDistance > distance)
                 {
-                    minDistSq = distSq;
+                    minDistance = distance;
                     closest = next;
                 }
             }
@@ -201,32 +122,35 @@ namespace FrogWorks
             return closest;
         }
 
-        #region Static Methods
-        internal static float GetIntervalDepth(
-            float minA,
-            float maxA,
-            float minB,
-            float maxB)
+        public abstract Vector2[] GetVertices();
+
+        public void Draw(RendererBatch batch, Color color)
         {
-            if (!(minA > maxB || minB > maxA))
+            Draw(batch, color, default);
+        }
+
+        public abstract void Draw(RendererBatch batch, Color color, Color fill);
+
+        public abstract Shape Clone();
+
+        internal void RecalculateBoundsInternally()
+        {
+            if (_isDirty)
             {
-                var min = Math.Min(maxA, maxB);
-                var max = Math.Max(minA, minB);
-                return min - max;
+                _bounds = RecalculateBounds();
+                _isDirty = false;
             }
-
-            return 0f;
         }
 
-        internal static bool ContainsIntervals(
-            float minA,
-            float maxA,
-            float minB,
-            float maxB)
+        protected abstract Rectangle RecalculateBounds();
+
+        protected virtual void OnTranslate()
         {
-            return (minA > minB && maxA < maxB)
-                || (minB > minA && maxB < maxA);
         }
-        #endregion
+
+        protected void MarkAsDirty()
+        {
+            _isDirty = true;
+        }
     }
 }
