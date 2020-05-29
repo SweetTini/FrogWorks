@@ -142,7 +142,7 @@ namespace FrogWorks
                 foreach (var location in PlotLine(gStart, gEnd))
                 {
                     var tile = GetTileShape(location);
-                    var hitDetected = tile?.CastRay(origin, normal, distance) ?? false;
+                    var hitDetected = tile?.CastRay(origin, normal, distance, out hit) ?? false;
                     if (hitDetected) return true;
                 }
             }

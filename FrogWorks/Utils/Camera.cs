@@ -98,7 +98,7 @@ namespace FrogWorks
 
         public Camera()
         {
-            Position = Runner.Application.Size.ToVector2() * .5f;
+            Position = Runner.Application.Size.ToVector2() / 2f;
             UpdateViewport();
         }
 
@@ -133,9 +133,9 @@ namespace FrogWorks
 
         internal Matrix UpdateMatrix(Vector2 coefficient, float zoom, float angle)
         {
-            var position = (Position * coefficient).Round();
+            var position = Position * coefficient;
             var scale = zoom * Vector2.One;
-            var origin = _view.Size.ToVector2() * .5f;
+            var origin = _view.Size.ToVector2() / 2f;
 
             return Matrix.CreateTranslation(new Vector3(-position, 0f))
                 * Matrix.CreateRotationZ(angle)
@@ -145,9 +145,9 @@ namespace FrogWorks
 
         internal Rectangle UpdateView(Vector2 coefficient, float zoom, float angle)
         {
-            var position = (Position * coefficient).Round();
+            var position = Position * coefficient;
             var inversedZoom = Vector2.One.Divide(zoom);
-            var origin = _view.Size.ToVector2() * .5f;
+            var origin = _view.Size.ToVector2() / 2f;
 
             return _view.Transform(position, origin, inversedZoom, angle);
         }

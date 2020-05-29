@@ -46,9 +46,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Entities\Apple.cs" />
+    <Compile Include="Entities\Moveable.cs" />
+    <Compile Include="Entities\Playfield.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scenes\DisplayTest.cs" />
+    <Compile Include="Scenes\MapTest.cs" />
     <Compile Include="Scenes\ShapeCollisionTest.cs" />
     <Compile Include="Shaders\WaveShader.cs" />
   </ItemGroup>

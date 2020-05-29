@@ -86,7 +86,7 @@ namespace FrogWorks
 
             var divider = MathHelper.Pi / segments;
             var angle = (float)Math.Floor(
-                (vec.ToAngle() + divider * .5f) / divider) * divider;
+                (vec.ToAngle() + divider / 2f) / divider) * divider;
 
             return angle.FromAngle(vec.Length());
         }
@@ -100,7 +100,7 @@ namespace FrogWorks
 
             var divider = MathHelper.Pi / (segments > 0f ? segments : 1f);
             var angle = (float)Math.Floor(
-                (vec.ToAngle() + divider * .5f) / divider) * divider;
+                (vec.ToAngle() + divider / 2f) / divider) * divider;
 
             return angle.FromAngle(1f);
         }

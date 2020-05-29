@@ -14,96 +14,10 @@ namespace FrogWorks
         {
             hit = default;
 
-            if (shape is Box) 
-                return CastRay(origin, normal, distance, shape as Box, out hit);
-            else if (shape is Circle) 
+            if (shape is Circle)
                 return CastRay(origin, normal, distance, shape as Circle, out hit);
-            else if (shape is Polygon) 
-                return CastRay(origin, normal, distance, shape as Polygon, out hit);
 
-            return false;
-        }
-
-        public static bool CastRay(
-            Vector2 origin,
-            Vector2 normal,
-            float distance,
-            Box box,
-            out Raycast hit)
-        {
-            hit = default;
-            
-            var inv = normal.Inverse();
-            var dA = (box.Min - origin) * inv;
-            var dB = (box.Max - origin) * inv;
-            var vA = Vector2.Min(dA, dB);
-            var vB = Vector2.Max(dA, dB);
-            var lo = vA.X.Max(vA.Y);
-            var hi = vB.X.Min(vB.Y);
-
-            if (hi >= 0f && hi >= lo && lo <= distance)
-            {
-                var contact = origin + normal * lo;
-                var center = contact - box.Center;
-                var unit = center.Abs().X > center.Abs().Y ? Vector2.UnitX : Vector2.UnitY;
-
-                hit.Contact = contact;
-                hit.Normal = center.Sign() * unit;
-                hit.Depth = distance - lo;
-                hit.Percent = lo.Divide(distance);
-                hit.Distance = lo;
-
-                return true;
-            }
-
-            return false;
-        }
-
-        public static bool CastRay(
-            Vector2 origin,
-            Vector2 normal,
-            float distance,
-            Circle circ,
-            out Raycast hit)
-        {
-            hit = default;
-
-            var m = origin - circ.Center;
-            var b = Vector2.Dot(m, normal);
-            var c = Vector2.Dot(m, m) - circ.Radius * circ.Radius;
-            if (b > 0f && c > 0f) return false;
-
-            var discr = b * b - c;
-            if (discr < 0f) return false;
-
-            var depth = -b - discr.Sqrt();
-
-            if (depth.Between(0f, distance))
-            {
-                var contact = origin + normal * depth;
-
-                hit.Contact = contact;
-                hit.Normal = Vector2.Normalize(contact - circ.Center);
-                hit.Depth = distance - depth;
-                hit.Percent = depth.Divide(distance);
-                hit.Distance = depth;
-
-                return true;
-            }
-
-            return false;
-        }
-
-        public static bool CastRay(
-            Vector2 origin,
-            Vector2 normal,
-            float distance,
-            Polygon poly,
-            out Raycast hit)
-        {
-            hit = default;
-
-            var vertices = poly.GetVertices();
+            var vertices = shape.GetVertices();
             var polyNorms = vertices.Normalize();
             var polyNorm = Vector2.Zero;
             var minDist = 0f;
@@ -135,6 +49,41 @@ namespace FrogWorks
                 hit.Depth = distance - minDist;
                 hit.Percent = minDist.Divide(distance);
                 hit.Distance = minDist;
+
+                return true;
+            }
+
+            return false;
+        }
+
+        static bool CastRay(
+            Vector2 origin,
+            Vector2 normal,
+            float distance,
+            Circle circ,
+            out Raycast hit)
+        {
+            hit = default;
+
+            var m = origin - circ.Center;
+            var b = Vector2.Dot(m, normal);
+            var c = Vector2.Dot(m, m) - circ.Radius * circ.Radius;
+            if (b > 0f && c > 0f) return false;
+
+            var discr = b * b - c;
+            if (discr < 0f) return false;
+
+            var depth = -b - discr.Sqrt();
+
+            if (depth.Between(0f, distance))
+            {
+                var contact = origin + normal * depth;
+
+                hit.Contact = contact;
+                hit.Normal = Vector2.Normalize(contact - circ.Center);
+                hit.Depth = distance - depth;
+                hit.Percent = depth.Divide(distance);
+                hit.Distance = depth;
 
                 return true;
             }
@@ -270,8 +219,8 @@ namespace FrogWorks
         {
             hit = default;
 
-            var halfA = boxA.Size * .5f;
-            var halfB = boxB.Size * .5f;
+            var halfA = boxA.Size / 2f;
+            var halfB = boxB.Size / 2f;
             var distance = boxA.Center - boxB.Center;
             var offset = halfA + halfB - distance.Abs();
             if (offset.X < 0f || offset.Y < 0f) return false;
@@ -321,7 +270,7 @@ namespace FrogWorks
                 }
                 else
                 {
-                    var halfSize = box.Size * .5f;
+                    var halfSize = box.Size / 2f;
                     var length = circ.Center - box.Center;
                     var offset = halfSize - length.Abs();
 

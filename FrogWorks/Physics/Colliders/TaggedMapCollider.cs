@@ -59,7 +59,7 @@ namespace FrogWorks
             {
                 var tileSize = TileSize.ToVector2();
                 var location = AbsolutePosition + position.ToVector2() * tileSize;
-                return new Box(location, tileSize);
+                return new Box(location, tileSize - Vector2.One);
             }
 
             return null;

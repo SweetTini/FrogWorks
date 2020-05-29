@@ -185,7 +185,7 @@ namespace FrogWorks
             }
 
             ViewSize = (Size.ToVector2() * Scale).Round().ToPoint();
-            Padding = ((ClientSize - ViewSize).ToVector2() * .5f).Round().ToPoint();
+            Padding = ((ClientSize - ViewSize).ToVector2() / 2f).Round().ToPoint();
 
             _viewport = new Viewport(new Rectangle(Padding, ViewSize));
             _matrix = Matrix.CreateScale(new Vector3(Scale, 1f));

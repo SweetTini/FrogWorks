@@ -85,7 +85,7 @@ namespace FrogWorks
             {
                 sprite.Draw(
                     _xnaTexture,
-                    position.Round(),
+                    position,
                     Bounds,
                     color,
                     angle,
@@ -110,7 +110,7 @@ namespace FrogWorks
             {
                 sprite.Draw(
                     _xnaTexture,
-                    position.Round(),
+                    position,
                     bounds,
                     color,
                     angle,

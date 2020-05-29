@@ -104,7 +104,7 @@ namespace FrogWorks
                 {
                     Vector2.Zero,
                     Vector2.UnitX * size,
-                    Vector2.One,
+                    Vector2.One * size,
                     Vector2.UnitY * size
                 })
         {

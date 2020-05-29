@@ -76,7 +76,8 @@ namespace FrogWorks
             Draw(
                 batch,
                 text,
-                new Rectangle(position, size),
+                position.ToVector2(),
+                size.ToVector2(),
                 origin,
                 scale,
                 angle,
@@ -101,46 +102,16 @@ namespace FrogWorks
             VerticalAlignment yAlign = VerticalAlignment.Top,
             bool wordWrap = false)
         {
-            Draw(
-                batch,
-                text,
-                new Rectangle(
-                    position.ToPoint(),
-                    size.ToPoint()),
-                origin,
-                scale,
-                angle,
-                color,
-                effects,
-                xAlign,
-                yAlign,
-                wordWrap);
-        }
-
-        public void Draw(
-            RendererBatch batch,
-            string text,
-            Rectangle destRect,
-            Vector2? origin = null,
-            Vector2? scale = null,
-            float angle = 0f,
-            Color? color = null,
-            SpriteEffects effects = SpriteEffects.None,
-            HorizontalAlignment xAlign = HorizontalAlignment.Left,
-            VerticalAlignment yAlign = VerticalAlignment.Top,
-            bool wordWrap = false)
-        {
             if (text.IsNullOrEmpty()) return;
-            if (wordWrap) text = WordWrap(text, destRect.Width);
+            if (wordWrap) text = WordWrap(text, (int)size.X);
 
-            var offset = MeasureVerticalOffset(yAlign, text, destRect.Height).ToUnitYF();
-            var position = destRect.Location.ToVector2();
+            var offset = MeasureVerticalOffset(yAlign, text, (int)size.Y).ToUnitYF();
             var lines = text.Split('\n');
 
             for (int i = 0; i < lines.Length; i++)
             {
                 var line = lines[i];
-                offset.X = MeasureHorizontalOffset(xAlign, line, destRect.Width);
+                offset.X = MeasureHorizontalOffset(xAlign, line, (int)size.X);
 
                 for (int j = 0; j < line.Length; j++)
                 {
@@ -159,10 +130,10 @@ namespace FrogWorks
                             position,
                             charOrigin,
                             scale ?? Vector2.One,
-                            angle, 
+                            angle,
                             color ?? Color.White,
                             effects);
-                        
+
                         offset.X += kerning + character.Spacing + Spacing;
                     }
                 }

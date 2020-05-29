@@ -1014,16 +1014,16 @@ namespace FrogWorks
 
         public static Vector2 Divide(this Vector2 vec, Vector2 divider)
         {
-            var divX = divider.X > float.Epsilon ? vec.X / divider.X : 0f;
-            var divY = divider.Y > float.Epsilon ? vec.Y / divider.Y : 0f;
+            var divX = Math.Abs(divider.X) > float.Epsilon ? vec.X / divider.X : 0f;
+            var divY = Math.Abs(divider.Y) > float.Epsilon ? vec.Y / divider.Y : 0f;
 
             return new Vector2(divX, divY);
         }
 
         public static Vector2 Divide(this Vector2 vec, float divider)
         {
-            var divX = divider > float.Epsilon ? vec.X / divider : 0f;
-            var divY = divider > float.Epsilon ? vec.Y / divider : 0f;
+            var divX = Math.Abs(divider) > float.Epsilon ? vec.X / divider : 0f;
+            var divY = Math.Abs(divider) > float.Epsilon ? vec.Y / divider : 0f;
 
             return new Vector2(divX, divY);
         }
@@ -1635,7 +1635,7 @@ namespace FrogWorks
             for (int i = 0; i < verts.Length; i++)
             {
                 j = (i + 1) % verts.Length;
-                center = (verts[i] + verts[j]) * .5f;
+                center = (verts[i] + verts[j]) / 2f;
                 sum += center;
             }
 

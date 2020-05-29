@@ -8,7 +8,7 @@ namespace FrogWorks
 
         public Vector2 Max { get; internal set; }
 
-        public Vector2 Center => (Min + Max) * .5f;
+        public Vector2 Center => (Min + Max) / 2f;
 
         public Vector2 Size => Max - Min;
 

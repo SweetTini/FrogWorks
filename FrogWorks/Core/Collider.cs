@@ -116,8 +116,8 @@ namespace FrogWorks
 
         public Vector2 Center
         {
-            get { return (Min + Max) * .5f; }
-            set { Min = value - (Min - Max) * .5f; }
+            get { return (Min + Max) / 2f; }
+            set { Min = value - (Min - Max) / 2f; }
         }
 
         public float CenterX

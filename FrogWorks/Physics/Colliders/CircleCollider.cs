@@ -30,7 +30,7 @@ namespace FrogWorks
             set
             {
                 value = value.Abs();
-                Radius = Math.Max(value.X, value.Y) * .5f;
+                Radius = Math.Max(value.X, value.Y) / 2f;
             }
         }
 

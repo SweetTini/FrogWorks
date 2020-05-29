@@ -66,7 +66,7 @@ namespace FrogWorks
                 {
                     var tileSize = TileSize.ToVector2();
                     var offset = AbsolutePosition + position.ToVector2() * tileSize;
-                    var vertices = tile.Vertices.Transform(scale: tileSize);
+                    var vertices = tile.Vertices.Transform(scale: tileSize - Vector2.One);
 
                     return new Polygon(offset, vertices);
                 }
