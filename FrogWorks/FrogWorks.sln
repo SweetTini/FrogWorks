@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31423.177
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrogWorks", "FrogWorks.csproj", "{A5AE92CB-466D-420E-AE47-46BA1193980F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrogWorks.Demo", "..\FrogWorks.Demo\FrogWorks.Demo.csproj", "{D9FAD6F5-1B16-4928-816D-AF8DFF4D09A8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrogWorks.Demo.WinDX", "..\FrogWorks.Demo\FrogWorks.Demo.WinDX.csproj", "{D9FAD6F5-1B16-4928-816D-AF8DFF4D09A8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,5 +24,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5BC085B8-1B97-4124-B485-B2A1530BF7B3}
 	EndGlobalSection
 EndGlobal
